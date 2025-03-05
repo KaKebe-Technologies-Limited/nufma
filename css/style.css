@@ -239,6 +239,39 @@
     background-size: cover;
 }
 
+.page-header-a{
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background-size: cover;
+}
+.page-header-b{
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(2\).png) center center no-repeat;
+    background-size: cover;
+}
+
+.page-header-c{
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(3\).png) center center no-repeat;
+    background-size: cover;
+}
+.page-header-d{
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background-size: cover;
+}
+
+
+.page-header-e{
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background-size: cover;
+}
+.page-header-f{
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background-size: cover;
+}
+
+
+
+
+
+
 .breadcrumb-item + .breadcrumb-item::before {
     color: var(--light);
 }
