@@ -71,6 +71,16 @@
       width: 100%;
     }
     
+    .carousel-image {
+    height: 400px; /* Adjust this value to the height you desire */
+    object-fit: cover;
+}
+.owl-carousel-item img {
+    height: 800px; /* Adjust as needed */
+    object-fit: cover;
+}
+
+
   </style>
 </head>
 
@@ -282,7 +292,7 @@
     var swiper = new Swiper(".mySwiper", {
       effect: "coverflow",
       grabCursor: true,
-      centeredSlides: false,
+      centeredSlides: true,
       slidesPerView: "auto",
       coverflowEffect: {
         rotate: 50,
@@ -516,12 +526,12 @@
                 <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                     <div class="team-item">
                         <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/team.png" alt="">
+                            <img class="img-fluid" src="img/team-3.png" alt="">
                         </div>
                         <div class="team-text">
                             <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Full Name</h5>
-                                <small>Designation</small>
+                                <h5 class="fw-bold mb-0">Ojok Odong</h5>
+                                <small>President</small>
                             </div>
                             <div class="bg-primary">
                                 <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
@@ -531,6 +541,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
                     <div class="team-item">
                         <div class="position-relative overflow-hidden">
@@ -538,8 +549,8 @@
                         </div>
                         <div class="team-text">
                             <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Full Name</h5>
-                                <small>Designation</small>
+                                <h5 class="fw-bold mb-0">Nimaro Precious</h5>
+                                <small>Vice President</small>
                             </div>
                             <div class="bg-primary">
                                 <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
@@ -549,42 +560,47 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/team.png" alt="">
-                        </div>
-                        <div class="team-text">
-                            <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Full Name</h5>
-                                <small>Designation</small>
+              
+                    <!-- Achiro Margereth Sharon -->
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                        <div class="team-item" itemscope itemtype="https://schema.org/Person">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="img/team-2.png" alt="Achiro Margereth Sharon - Finance & Admin" itemprop="image">
                             </div>
-                            <div class="bg-primary">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="team-item">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="img/team.png" alt="">
-                        </div>
-                        <div class="team-text">
-                            <div class="bg-light">
-                                <h5 class="fw-bold mb-0">Full Name</h5>
-                                <small>Designation</small>
-                            </div>
-                            <div class="bg-primary">
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-twitter"></i></a>
-                                <a class="btn btn-square mx-1" href=""><i class="fab fa-instagram"></i></a>
+                            <div class="team-text">
+                                <div class="bg-light">
+                                    <h5 class="fw-bold mb-0" itemprop="name">Achiro Margereth Sharon</h5>
+                                    <small itemprop="jobTitle">Finance & Admin</small>
+                                </div>
+                                <div class="bg-primary">
+                                    <a class="btn btn-square mx-1" href="#" aria-label="Facebook Profile of Achiro Margereth Sharon"><i class="fab fa-facebook-f"></i></a>
+                                    <a class="btn btn-square mx-1" href="#" aria-label="Twitter Profile of Achiro Margereth Sharon"><i class="fab fa-twitter"></i></a>
+                                    <a class="btn btn-square mx-1" href="#" aria-label="Instagram Profile of Achiro Margereth Sharon"><i class="fab fa-instagram"></i></a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                
+                    <!-- Komakech Moses -->
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
+                        <div class="team-item" itemscope itemtype="https://schema.org/Person">
+                            <div class="position-relative overflow-hidden">
+                                <img class="img-fluid" src="img/team-1.png" alt="Komakech Moses - Publicity Secretary" itemprop="image">
+                            </div>
+                            <div class="team-text">
+                                <div class="bg-light">
+                                    <h5 class="fw-bold mb-0" itemprop="name">Komakech Moses</h5>
+                                    <small itemprop="jobTitle">Publicity Secretary</small>
+                                </div>
+                                <div class="bg-primary">
+                                    <a class="btn btn-square mx-1" href="#" aria-label="Facebook Profile of Komakech Moses"><i class="fab fa-facebook-f"></i></a>
+                                    <a class="btn btn-square mx-1" href="#" aria-label="Twitter Profile of Komakech Moses"><i class="fab fa-twitter"></i></a>
+                                    <a class="btn btn-square mx-1" href="#" aria-label="Instagram Profile of Komakech Moses"><i class="fab fa-instagram"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
             </div>
         </div>
     </div>
