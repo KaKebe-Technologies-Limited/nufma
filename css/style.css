@@ -253,7 +253,7 @@
     background-size: cover;
 }
 .page-header-d{
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/banner\ \(1\).png) center center no-repeat;
     background-size: cover;
 }
 
@@ -279,7 +279,7 @@
 
 /*** Facts ***/
 .fact {
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/bg.jpg) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/banner\ \(2\).png) center center no-repeat;
     background-size: cover;
 }
 

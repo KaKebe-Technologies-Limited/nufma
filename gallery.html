@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -32,6 +35,34 @@
     <link href="css/style.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <style>
+      .gallery-item {
+          position: relative;
+          overflow: hidden;
+          cursor: pointer;
+          border-radius: 10px;
+      }
+      .gallery-item img {
+          width: 100%;
+          transition: transform 0.3s ease-in-out;
+      }
+      .gallery-item:hover img {
+          transform: scale(1.1);
+      }
+      .gallery-item::after {
+          content: "";
+          position: absolute;
+          top: 0; left: 0;
+          width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.3);
+          opacity: 0;
+          transition: opacity 0.3s ease-in-out;
+      }
+      .gallery-item:hover::after {
+          opacity: 1;
+      }
+  </style>
 
     <!-- Demo styles -->
     <style>
@@ -208,102 +239,308 @@
             </nav>
         </div>
     </div>
-    <!-- Page Header End -->
 
-    <div style="--swiper-navigation-color: #fff; --swiper-pagination-color: #fff" class="swiper mySwiper2">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide">
-            <img src="img/action1.JPG" />
+    <!-- Gallery Section -->
+
+    <div class="container py-5">
+      <h2 class="text-center mb-4">Northern Uganda Film Awards Gallery</h2>
+      <div class="row g-4">
+          <!-- Gallery Images -->
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal1">
+                  <img src="img/gallery/nufa-1.png" alt="Northern Uganda Film Awards - Movie Premiere in Gulu, Acholi Region" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal2">
+                  <img src="img/gallery/nufa-2.png" alt="Karamoja Cultural Film Showcase - Northern Uganda Cinema Event" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal3">
+                  <img src="img/gallery/nufa-3.png" alt="West Nile Film Industry - Movie Directors at Arua Film Screening" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal4">
+                  <img src="img/gallery/nufa-4.png" alt="Lango Region Film Actors in Action - Northern Uganda Film Industry" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal5">
+                  <img src="img/gallery/nufa-5.png" alt="Gulu Cinematic Experience - Film Awards and Movie Screening" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal6">
+                  <img src="img/gallery/nufa-6.png" alt="Karamoja Filmmakers at Work - Movie Set in Northern Uganda" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal7">
+                  <img src="img/gallery/nufa-7.png" alt="Arua Film Festival - Celebrating Cinematic Talent in West Nile" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal8">
+                  <img src="img/gallery/nufa-8.png" alt="Lira Film Production - Emerging Movie Directors in Lango" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal9">
+                  <img src="img/gallery/nufa-9.png" alt="Northern Uganda Action Movie - Film Shoot in Gulu City" class="img-fluid">
+              </div>
           </div>
-          <div class="swiper-slide">
-            <   <img src="img/action1.JPG" />
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal10">
+                  <img src="img/gallery/nufa-10.png" alt="Karamoja Traditional Storytelling in Film - Uganda Cinema" class="img-fluid">
+              </div>
           </div>
-        </div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal11">
+                  <img src="img/gallery/nufa-11.png" alt="West Nile Movie Premiere - Award-Winning Films in Arua" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal12">
+                  <img src="img/gallery/nufa-12.png" alt="Lango Filmmaking Hub - Young Directors and Actors in Lira" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal13">
+                  <img src="img/gallery/nufa-13.png" alt="Gulu Movie Awards Ceremony - Best Northern Uganda Films" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal14">
+                  <img src="img/gallery/nufa-14.png" alt="Karamoja Indigenous Film Production - Cultural Heritage Movies" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal15">
+                  <img src="img/gallery/nufa-15.png" alt="West Nile Storytelling in Cinema - Arua’s Rising Filmmakers" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal16">
+                  <img src="img/gallery/nufa-16.png" alt="Lira Film Stars on Set - Northern Uganda Movie Industry" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal17">
+                  <img src="img/gallery/nufa-17.png" alt="Gulu Youth Filmmakers - Training Future Cinematic Talents" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal18">
+                  <img src="img/gallery/nufa-18.png" alt="Karamoja Region Movie Production - Northern Uganda Film Excellence" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal19">
+                  <img src="img/gallery/nufa-19.png" alt="West Nile Film Awards - Recognizing Cinematic Achievements" class="img-fluid">
+              </div>
+          </div>
+  
+          <div class="col-md-3 col-sm-6">
+              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal20">
+                  <img src="img/gallery/nufa-20.png" alt="Lango Region Cinema - Actors and Directors Behind the Scenes" class="img-fluid">
+              </div>
+          </div>
       </div>
-      <div thumbsSlider="" class="swiper mySwiper">
-        <div class="swiper-wrapper">
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-               <img src="img/action1.JPG" />
-          </div>
-          <div class="swiper-slide">
-              <img src="img/action1.JPG" />
-          </div>
+  </div>
+  
+  
+      <!-- Image Modals -->
+      <div class="modal fade" id="imageModal1" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-1.png" class="img-fluid" alt="Nufa Leadership Workshop - Young Professionals Collaborating">
+            </div>
         </div>
       </div>
-    
-      <!-- Swiper JS -->
-      <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    
-      <!-- Initialize Swiper -->
-      <script>
-        var swiper = new Swiper(".mySwiper", {
-          spaceBetween: 10,
-          slidesPerView: 4,
-          freeMode: true,
-          watchSlidesProgress: true,
-        });
-        var swiper2 = new Swiper(".mySwiper2", {
-          spaceBetween: 10,
-          navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-          },
-          thumbs: {
-            swiper: swiper,
-          },
-        });
-      </script>
-    <!-- Testimonial End -->
+
+      <div class="modal fade" id="imageModal2" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-2.png" class="img-fluid" alt="Nufa Leadership Workshop - Teamwork and Innovation">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal3" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-3.png" class="img-fluid" alt="Nufa Leadership Workshop - Networking for Growth">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal4" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-4.png" class="img-fluid" alt="Nufa Leadership Workshop - Empowering Young Leaders">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal5" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-5.png" class="img-fluid" alt="Nufa Leadership Workshop - Building Strong Connections">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal6" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-6.png" class="img-fluid" alt="Nufa Leadership Workshop - Leadership Development">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal7" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-7.png" class="img-fluid" alt="Nufa Leadership Workshop - Practical Leadership Skills">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal8" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-8.png" class="img-fluid" alt="Nufa Leadership Workshop - Collaborative Solutions">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal9" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-9.png" class="img-fluid" alt="Nufa Leadership Workshop - Skill Development and Networking">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal10" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-10.png" class="img-fluid" alt="Nufa Leadership Workshop - Youth Leadership and Innovation">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal11" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-11.png" class="img-fluid" alt="Nufa Leadership Workshop - Growing Future Leaders">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal12" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-12.png" class="img-fluid" alt="Nufa Leadership Workshop - Leading with Purpose">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal13" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-13.png" class="img-fluid" alt="Nufa Leadership Workshop - Networking for Future Opportunities">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal14" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-14.png" class="img-fluid" alt="Nufa Leadership Workshop - Transforming Ideas into Action">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal15" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-15.png" class="img-fluid" alt="Nufa Leadership Workshop - Young Professionals Collaborating">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal16" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-16.png" class="img-fluid" alt="Nufa Leadership Workshop - Building Strong Professional Networks">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal17" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-17.png" class="img-fluid" alt="Nufa Leadership Workshop - Creating Opportunities for Growth">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal18" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-18.png" class="img-fluid" alt="Nufa Leadership Workshop - A Platform for Change Makers">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal19" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-19.png" class="img-fluid" alt="Nufa Leadership Workshop - Strengthening Leadership Skills">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal20" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-20.png" class="img-fluid" alt="Nufa Leadership Workshop - Future Leaders in Action">
+            </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="imageModal21" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-21.png" class="img-fluid" alt="Nufa Leadership Workshop - Preparing Young Leaders for Tomorrow">
+            </div>
+        </div>
+      </div>
+
+        
+  
+   
         
  <!-- Footer Start -->
 <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
