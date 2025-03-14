@@ -132,16 +132,34 @@
 
 
     <!-- Movie Box starts here -->
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Movie Collection - Northern Uganda</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    </head>
-    <body>
+     
+    <style>
+        /* Add this CSS to ensure consistent card-text height */
+        .card-text {
+            height: 100px; /* Set a fixed height */
+            overflow: hidden; /* Hide overflow text */
+            text-overflow: ellipsis; /* Add ellipsis for overflow text */
+            display: -webkit-box;
+            -webkit-line-clamp: 4; /* Limit the number of lines */
+            line-clamp: 4; /* Standard property for compatibility */
+            -webkit-box-orient: vertical;
+        }
     
+        .card-text.expanded {
+            height: auto; /* Allow full height when expanded */
+            -webkit-line-clamp: unset; /* Remove line clamp */
+            line-clamp: unset; /* Standard property for compatibility */
+        }
+    
+        .more-button {
+            display: block;
+            margin-top: 10px;
+            color: blue;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+
     <div class="container my-5">
         <h2 class="text-center mb-4">Northern Uganda Movie Collection</h2>
     
@@ -154,55 +172,74 @@
                     </div>
                     <div class="card-body bi-text-left">
                         <h5 class="card-title">CRUSH (2025) SHORT FILM</h5>
-                        <p class="card-text"> In the Forests of Northern Uganda, a young female cigarettes smuggler faces a life-altering motorcycle accident while fleeing from the Revenue Authority. 
+                        <p class="card-text">In the Forests of Northern Uganda, a young female cigarettes smuggler faces a life-altering motorcycle accident while fleeing from the Revenue Authority. 
                             Found by two illegal charcoal burners, their conflicting views on her fate ignite a moral battle between the younger, 
-                            compassionate underdog who sees a chance to save her and the older, arrogant leader who believes she should be left for dead</p>
+                            compassionate underdog who sees a chance to save her and the older, arrogant leader who believes she should be left for dead.</p>
+                        <span class="more-button" onclick="toggleText(this)">More</span>
                     </div>
                 </div>
             </div>
-    
+            
             <!-- Movie 2 -->
             <div class="col-md-3">
                 <div class="card shadow">
                     <div class="ratio ratio-16x9">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/watch?v=NlifSYYJ1i4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/NlifSYYJ1i4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
                     <div class="card-body bi-text-left">
                         <h5 class="card-title">Shame Of Puberty</h5>
                         <p class="card-text">Akello, a 14 year old impoverished but open minded girl sees a chance of rejoining school through the school project competition but her menstruation period occurs abruptly in the
                             presence of boys, with no money to buy pads, she opts to overcome the problem in a unique way.</p>
+                        <span class="more-button" onclick="toggleText(this)">More</span>
                     </div>
                 </div>
             </div>
-    
+            
             <!-- Movie 3 -->
             <div class="col-md-3">
                 <div class="card shadow">
                     <div class="ratio ratio-16x9">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/watch?v=EwTGJtkDWVY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/EwTGJtkDWVY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
                     <div class="card-body bi-text-left">
-                        <h5 class="card-title">FRANKA'S HEART FULL MOVIE 2020</h5>
-                        <p class="card-text"> The FRANKA’s HEART contributes to addressing the challenges that impede the achievement of the 90-90-90 targets (90%tested, 90% on treatment and 90% viral load suppressed), 
+                        <h5 class="card-title">FRANKA'S HEART 2020</h5>
+                        <p class="card-text">The FRANKA’s HEART contributes to addressing the challenges that impede the achievement of the 90-90-90 targets (90% tested, 90% on treatment and 90% viral load suppressed), 
                             with plays deliberately targeting stigma against and discrimination of People Living with HIV (PLHIV).</p>
+                        <span class="more-button" onclick="toggleText(this)">More</span>
                     </div>
                 </div>
             </div>
-    
+            
             <!-- Movie 4 -->
             <div class="col-md-3">
                 <div class="card shadow">
                     <div class="ratio ratio-16x9">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/watch?v=JN7v0cGGU8Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                        <iframe width="560" height="315" src="https://www.youtube.com/embed/JN7v0cGGU8Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                     </div>
                     <div class="card-body bi-text-left">
                         <h5 class="card-title">Mato Oput Final Cut</h5>
                         <p class="card-text">Upcoming movie from film256Gulu 2019</p>
+                        <span class="more-button" onclick="toggleText(this)">More</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // JavaScript to toggle text expansion
+        function toggleText(button) {
+            const cardText = button.previousElementSibling; // Get the card-text element
+            cardText.classList.toggle("expanded"); // Toggle the expanded class
+    
+            // Change button text based on the state
+            if (cardText.classList.contains("expanded")) {
+                button.textContent = "Less";
+            } else {
+                button.textContent = "More";
+            }
+        }
+    </script>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
