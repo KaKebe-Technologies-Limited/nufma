@@ -203,7 +203,7 @@
 
 
 
-    <!-- Booking Start -->
+    <!-- Submission Start -->
     <div class="container-fluid my-5 px-0">
         <div class="video wow fadeInUp" data-wow-delay="0.1s">
             <!-- <button type="button" class="btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videoModal"> -->
@@ -239,13 +239,13 @@
                         <form>
                             <div class="row g-3">
                                 <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control border-0" placeholder="Your Name" style="height: 55px;">
+                                    <input type="text" class="form-control border-0" placeholder="Your Name" style="height: 55px;" required>
                                 </div>
                                 <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control border-0" placeholder="Your Company/Group" style="height: 55px;">
+                                    <input type="text" class="form-control border-0" placeholder="Your Company/Group" style="height: 55px;" required>
                                 </div>
                                 <div class="col-12 col-sm-6">
-                                    <input type="email" class="form-control border-0" placeholder="Your Email" style="height: 55px;">
+                                    <input type="email" class="form-control border-0" placeholder="Your Email" style="height: 55px;" required>
                                 </div>
                                 <div class="col-12 col-sm-6">
                                     <select class="form-select border-0" style="height: 55px;">
@@ -272,7 +272,10 @@
                                     </select>
                                 </div>
                                 <div class="col-12 col-sm-6">
-                                    <input type="text" class="form-control border-0" placeholder="Link to Your Project" style="height: 55px;">
+                                    <input type="file" id="file_upload" name="file_upload" accept="video/*, image/*, .mp4, .mov, .avi, .mkv" required>
+                                </div>
+                                <div class="col-12 col-sm-6">
+                                    <input type="text" class="form-control border-0" placeholder="Link to Your Project" style="height: 55px;" required>
                                 </div>
                                 <div class="col-12">
                                     <textarea class="form-control border-0" placeholder="Summary of Submission (Optional)"></textarea>
@@ -287,7 +290,7 @@
             </div>
         </div>
     </div>
-    <!-- Booking End -->
+    <!-- Submission End -->
     
 
 
