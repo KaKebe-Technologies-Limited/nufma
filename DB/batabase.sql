@@ -1,15 +1,15 @@
-CREATE DATABASE media_submissions;
+CREATE DATABASE film_submissions;
 
-USE media_submissions;
+USE film_submissions;
 
-CREATE TABLE submissions (
+CREATE TABLE IF NOT EXISTS submissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     company VARCHAR(255),
     email VARCHAR(255) NOT NULL,
-    category VARCHAR(255),
-    submission_date DATE,
-    comments TEXT,
-    file_path VARCHAR(255) NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    file VARCHAR(255),
+    projectLink VARCHAR(255),
+    summary TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
