@@ -607,6 +607,63 @@ var swiper = new Swiper(".mySwiper", {
             </div>
 
             <h1 class="text-white mb-4">Buy Your Ticket</h1>
+            <div class="card-container">
+                <div class="card">
+                    <h3>Table</h3>
+                    <p>UGX 200,000 Per Ticket</p>
+                </div>
+                <div class="card">
+                    <h3>VVIP</h3>
+                    <p>UGX 50,000 Per Ticket</p>
+                </div>
+                <div class="card">
+                    <h3>VIP</h3>
+                    <p>UGX 30,000 Per Ticket</p>
+                </div>
+                <div class="card">
+                    <h3>Ordinary</h3>
+                    <p>UGX 15,000 Per Ticket</p>
+                </div>
+            </div>
+
+            <style>
+                .text-white {
+                    color: white;
+                }
+                .bg-light {
+                    background-color: #f8f9fa;
+                }
+                .wow {
+                    visibility: visible;
+                }
+                .form-control, .form-select {
+                    width: 100%;
+                }
+
+                .card-container {
+                    display: flex;
+                    justify-content: space-between;
+                    margin: 20px 0;
+                }
+                .card {
+                    background: #FF8C00;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                    width: 23%; /* Adjusted width to fit 4 cards */
+                    text-align: center;
+                }
+                .card h3 {
+                    margin: 0 0 10px;
+                    color: white;
+                }
+                .card p {
+                    margin: 0;
+                    color: #000;
+                }
+            </style>
+
             <h3 class="text-white mb-0">Secure Your Spot Now!</h3>
             </div>
             <div class="container position-relative wow fadeInUp" data-wow-delay="0.1s" style="margin-top: -6rem;">
