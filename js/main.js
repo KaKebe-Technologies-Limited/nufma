@@ -52,6 +52,37 @@
             $dropdown.off("mouseenter mouseleave");
         }
     });
+
+
+// Anticlone Start
+
+    // Disable right-click
+document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+});
+
+// Disable text selection
+document.addEventListener('selectstart', function (e) {
+    e.preventDefault();
+});
+
+document.addEventListener('keydown', function (e) {
+    // Disable Ctrl+C, Ctrl+U, Ctrl+S
+    if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 's')) {
+        e.preventDefault();
+    }
+});
+
+
+document.addEventListener('keydown', function (e) {
+    // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+    if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) || (e.ctrlKey && e.key === 'u')) {
+        e.preventDefault();
+    }
+});
+
+
+// Anticlone End
     
     
     // Back to top button
