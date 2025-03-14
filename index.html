@@ -458,38 +458,79 @@ var swiper = new Swiper(".mySwiper", {
     <!-- Fact End -->
 
 
-     <!-- Services Start -->
-     <div class="container-fluid py-5 px-4 px-lg-0">
-        <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-            <h6 class="text-secondary text-uppercase">Our Services</h6>
-            <h1 class="mb-5">What We Offer</h1>
+<!-- Services Start -->
+<div class="container-fluid py-5 px-4 px-lg-0">
+    <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+        <h6 class="text-secondary text-uppercase">Our Services</h6>
+        <h1 class="mb-5">What We Offer</h1>
+    </div>
+    <div class="row g-4">
+        <!-- Film Screening -->
+        <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
+            <div class="service-item bg-light text-center p-4">
+                <i class="fa fa-film fa-3x text-primary mb-3"></i>
+                <h4 class="mb-3">Film Screening</h4>
+                <p>Showcasing the best films from Northern Uganda and beyond, celebrating diverse storytelling.</p>
+            </div>
         </div>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="service-item bg-light text-center p-4">
-                    <i class="fa fa-film fa-3x text-primary mb-3"></i>
-                    <h4 class="mb-3">Film Screening</h4>
-                    <p>Showcasing the best films from Northern Uganda and beyond, celebrating diverse storytelling.</p>
-                </div>
+
+        <!-- Workshops & Training -->
+        <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.3s">
+            <div class="service-item bg-light text-center p-4">
+                <i class="fa fa-users fa-3x text-primary mb-3"></i>
+                <h4 class="mb-3">Workshops & Training</h4>
+                <p>Empowering filmmakers with skills in directing, production, scriptwriting, and cinematography.</p>
             </div>
-            <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.3s">
-                <div class="service-item bg-light text-center p-4">
-                    <i class="fa fa-users fa-3x text-primary mb-3"></i>
-                    <h4 class="mb-3">Workshops & Training</h4>
-                    <p>Empowering filmmakers with skills in directing, production, scriptwriting, and cinematography.</p>
-                </div>
+        </div>
+
+        <!-- Award Ceremonies -->
+        <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
+            <div class="service-item bg-light text-center p-4">
+                <i class="fa fa-trophy fa-3x text-primary mb-3"></i>
+                <h4 class="mb-3">Award Ceremonies</h4>
+                <p>Recognizing outstanding talent and contributions in the Northern Uganda film industry.</p>
             </div>
-            <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
-                <div class="service-item bg-light text-center p-4">
-                    <i class="fa fa-trophy fa-3x text-primary mb-3"></i>
-                    <h4 class="mb-3">Award Ceremonies</h4>
-                    <p>Recognizing outstanding talent and contributions in the Northern Uganda film industry.</p>
-                </div>
+        </div>
+
+        <!-- Centered Orange Card -->
+        <div class="col-12 text-center wow fadeInUp" data-wow-delay="0.7s">
+            <div class="service-item bg-orange text-white text-center p-4 d-inline-block">
+                <i class="fa fa-play-circle fa-3x text-white mb-3"></i>
+                <h4 class="mb-3">Explore Local Content</h4>
+                <p>Click below to watch local content, including movies, documentaries, short films, poetry, and more.</p>
+                <a href="moviebox.html" class="btn btn-white btn-lg text-orange">Click Me</a>
             </div>
         </div>
     </div>
-    <!-- Services End -->
+</div>
+<!-- Services End -->
 
+<style>
+/* Custom CSS for the orange card */
+.bg-orange {
+    background-color: #FFA500; /* Orange color */
+    border-radius: 10px; /* Rounded corners */
+}
+
+/* Custom CSS for white text */
+.text-white {
+    color: #ffffff; /* White color */
+}
+
+/* Custom CSS for the white button with orange text */
+.btn-white {
+    background-color: #ffffff; /* White background */
+    color: #FFA500; /* Orange text */
+    border: 2px solid #ffffff; /* White border */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-white:hover {
+    background-color: #FFA500; /* Orange background on hover */
+    color: #ffffff; /* White text on hover */
+    border-color: #FFA500; /* Orange border on hover */
+}
+</style>
 
     <!-- Submission Start -->
     <div id="submit" class="container-fluid my-5 px-0">
