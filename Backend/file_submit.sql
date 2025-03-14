@@ -1,6 +1,6 @@
-CREATE DATABASE film_submissions;
+CREATE DATABASE file_submit;
 
-USE film_submissions;
+USE file_submit;
 
 CREATE TABLE IF NOT EXISTS submissions (
     id INT AUTO_INCREMENT PRIMARY KEY,
