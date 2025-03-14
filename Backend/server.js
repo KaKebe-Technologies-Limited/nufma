@@ -11,8 +11,8 @@ const PORT = process.env.PORT || 5000;
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
-    password: '101619',
-    database: 'film_submissions'
+    password: '@Admin101619',
+    database: 'file_submit'
 });
 
 // Middleware
