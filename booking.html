@@ -175,41 +175,51 @@
             </div>
 
             <style>
-                .text-white {
-                    color: white;
-                }
-                .bg-light {
-                    background-color: #f8f9fa;
-                }
-                .wow {
-                    visibility: visible;
-                }
-                .form-control, .form-select {
-                    width: 100%;
-                }
-
                 .card-container {
                     display: flex;
-                    justify-content: space-between;
-                    margin: 20px 0;
+                    flex-wrap: wrap; /* Allow cards to wrap to the next line */
+                    gap: 20px; /* Space between cards */
+                    justify-content: center; /* Center cards horizontally */
+                    padding: 20px; /* Add padding around the container */
                 }
+
+            /* Individual Card */
                 .card {
-                    background: #FF8C00;
-                    border: 1px solid #ddd;
-                    border-radius: 8px;
-                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                    padding: 20px;
-                    width: 23%; /* Adjusted width to fit 4 cards */
-                    text-align: center;
+                    background-color: #ffffff; /* White background */
+                    border: 1px solid #ff9500; /* Light border */
+                    border-radius: 20px; /* Rounded corners */
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+                    padding: 20px; /* Padding inside the card */
+                    text-align: center; /* Center text */
+                    flex: 1 1 calc(25% - 40px); /* Flex basis for 4 cards per row */
+                    max-width: 300px; /* Maximum width for each card */
                 }
+
+            /* Card Heading */
                 .card h3 {
-                    margin: 0 0 10px;
-                    color: white;
+                    font-size: 1.5rem; /* Larger font size for headings */
+                    margin-bottom: 10px; /* Space below the heading */
+                    color: #333333; /* Dark text color */
                 }
+
+            /* Card Paragraph */
                 .card p {
-                    margin: 0;
-                    color: #000;
+                    font-size: 1.2rem; /* Font size for price */
+                    color: #555555; /* Slightly lighter text color */
                 }
+
+            /* Responsive Design */
+                @media (max-width: 1024px) {
+                .card {
+                    flex: 1 1 calc(50% - 40px); /* 2 cards per row on tablets */
+                }
+            }
+
+                @media (max-width: 768px) {
+    .card {
+        flex: 1 1 calc(100% - 40px); /* 1 card per row on mobile */
+    }
+            }
             </style>
 
             <h3 class="text-white mb-0">Secure Your Spot Now!</h3>
