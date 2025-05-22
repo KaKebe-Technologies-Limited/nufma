@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Northern Uganda Film Awards – NUFA Winners 2025</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="NUFA winners, Northern Uganda Film Awards 2025, NUFA award winners, best Ugandan films, Ugandan cinema awards, Northern Uganda filmmakers, NUFA nominations, Ugandan film industry, African cinema awards, best actors Uganda" name="keywords">
+    <meta content="Discover the winners of the 2025 Northern Uganda Film Awards. Celebrating excellence in filmmaking across Northern Uganda with categories for Best Film, Director, Actor, Actress, and more. See who triumphed at this year's prestigious awards!" name="description">
+
+    <!-- Favicon -->
+    <link href="img/logo nufa.jpg" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- Updated CSS for Modern Award Categories Page with Animations and Video Section -->
+    <style>
+        /* Category Section Styling */
+        .category-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+            transition: transform 0.3s ease;
+        }
+
+        .category-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-title {
+            color: #ff6b00;
+            font-weight: 700;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #ff6b00;
+            padding-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        /* Winner Card Styling */
+        .winner-card, .highlight-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            min-height: 150px; /* Ensures equal height */
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .winner-card:hover, .highlight-card:hover {
+            border-color: #ff6b00;
+        }
+
+        .winner-card img, .highlight-card img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+
+        .winner-card .card-content, .highlight-card .card-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .winner-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .film-title {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .winner-description {
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        /* Highlight Card for Special Awards */
+        .highlight-card {
+            background: linear-gradient(135deg, #ff9500, #ff6b00);
+            color: white;
+        }
+
+        .highlight-card .winner-name {
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .highlight-card .film-title {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .highlight-card .winner-description {
+            color: rgba(255,255,255,0.85);
+        }
+
+        /* Article Section Styling */
+        .article-section {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .article-title {
+            color: #ff6b00;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .article-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .article-row {
+            margin-bottom: 40px;
+            display: flex;
+            align-items: stretch;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px; /* Ensures equal height on desktop */
+        }
+
+        .article-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .article-text h3 {
+            color: #ff6b00;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .article-text p {
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .article-text .text-content {
+            max-height: 250px; /* Matches carousel height */
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .article-text .text-content.expanded {
+            max-height: none;
+        }
+
+        .more-btn {
+            background-color: #ff6b00;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s ease;
+            align-self: flex-start;
+            display: none; /* Hidden by default, shown via JS */
+        }
+
+        .more-btn:hover {
+            background-color: #e65c00;
+        }
+
+        /* Subsection Carousel Styling */
+        .subsection-carousel {
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .subsection-carousel .carousel-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .subsection-carousel .carousel-caption {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+            bottom: 15px;
+        }
+
+        .subsection-carousel .carousel-control-prev,
+        .subsection-carousel .carousel-control-next {
+            width: 30px;
+            background: rgba(255, 107, 0, 0.3);
+            transition: background 0.3s ease;
+        }
+
+        .subsection-carousel .carousel-control-prev:hover,
+        .subsection-carousel .carousel-control-next:hover {
+            background: rgba(255, 107, 0, 0.5);
+        }
+
+        .subsection-carousel .carousel-control-prev-icon,
+        .subsection-carousel .carousel-control-next-icon {
+            background-color: #ff6b00;
+            border-radius: 50%;
+            padding: 10px;
+        }
+
+        /* Gallery Section Styling */
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        /* Video Section Styling */
+        .video-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .video-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .video-item:hover {
+            transform: scale(1.05);
+        }
+
+        .video-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+
+        .video-item::after {
+            content: '\f144'; /* Font Awesome play icon */
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff6b00;
+            font-size: 40px;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-item:hover::after {
+            opacity: 1;
+        }
+
+        .video-modal .modal-content {
+            background: transparent;
+            border: none;
+        }
+
+        .video-modal video {
+            width: 100%;
+            max-height: 80vh;
+            border-radius: 8px;
+            border: 2px solid #ff6b00;
+        }
+
+        /* Ensure animations don't break layout */
+        .article-row.wow, .video-item.wow {
+            visibility: hidden; /* WOW.js handles visibility */
+        }
+
+        .article-row.wow.animated, .video-item.wow.animated {
+            visibility: visible;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .category-section, .article-section {
+                padding: 20px;
+            }
+
+            .category-title, .article-title {
+                font-size: 1.3rem;
+            }
+
+            .winner-card img, .highlight-card img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .article-row {
+                flex-direction: column;
+                min-height: auto;
+                padding: 15px;
+            }
+
+            .subsection-carousel {
+                margin-bottom: 20px;
+            }
+
+            .subsection-carousel .carousel-item img,
+            .video-item img {
+                height: 200px;
+            }
+
+            .article-text .text-content {
+                max-height: none; /* Show all text on mobile */
+            }
+
+            .more-btn {
+                display: none; /* Hide on mobile */
+            }
+
+            .subsection-carousel .carousel-caption {
+                font-size: 0.8rem;
+                padding: 6px 10px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .subsection-carousel .carousel-item img,
+            .video-item img {
+                height: 150px;
+            }
+
+            .winner-card, .highlight-card {
+                min-height: 120px;
+            }
+
+            .video-modal video {
+                max-height: 50vh;
+            }
+
+            .subsection-carousel .carousel-caption {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar Start -->
+    <div class="container-fluid bg-light d-none d-lg-block">
+        <div class="row align-items-center top-bar">
+            <div class="col-lg-3 col-md-12 text-center text-lg-start">
+                <a href="index.html" class="navbar-brand m-0 p-0">
+                    <img class="logo m-0" src="img/logo nufa.jpg" alt="" style="position: relative; width: 70px; height: auto;">
+                </a>
+            </div>
+            <div class="col-lg-9 col-md-12 text-end">
+                <div class="h-100 d-inline-flex align-items-center me-4">
+                    <i class="fa fa-map-marker-alt text-primary me-2"></i>
+                    <p class="m-0">Plot 43 Gulu City, Uganda</p>
+                </div>
+                <div class="h-100 d-inline-flex align-items-center me-4">
+                    <i class="far fa-envelope-open text-primary me-2"></i>
+                    <p class="m-0">info@nufa.media</p>
+                </div>
+                <div class="h-100 d-inline-flex align-items-center">
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href="https://www.facebook.com/profile.php?id=61566267335013" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href="https://x.com/NUFA_OFFICIAL1" target="_blank"><i class="fab fa-twitter"></i></a>
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href="https://www.linkedin.com/company/northern-uganda-film-makers-association-nufa" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href="https://www.instagram.com/nufa2025?igsh=bHVkaHF2dzBhZjg4" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a class="btn btn-sm-square bg-white text-primary me-1" href="https://www.youtube.com/@NorthernUgandaFilmAssociation" target="_blank"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <div class="container-fluid nav-bar bg-light">
+        <nav class="navbar navbar-expand-lg navbar-light bg-white p-3 py-lg-0 px-lg-4">
+            <a href="" class="navbar-brand d-flex align-items-center m-0 p-0 d-lg-none">
+                <img class="logo m-0" src="img/logo nufa.jpg" alt="" style="position: relative; width: 60px; height: auto;">
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="fa fa-bars"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <div class="navbar-nav me-auto">
+                    <a href="index.html" class="nav-item nav-link">Home</a>
+                    <a href="about.html" class="nav-item nav-link">About</a>
+                    <a href="service.html" class="nav-item nav-link">Services</a>
+                    <a href="nominees.html" class="nav-item nav-link">Nominees</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
+                        <div class="dropdown-menu fade-up m-0">
+                            <a href="team.html" class="dropdown-item">Team</a>
+                            <a href="gallery.html" class="dropdown-item">Gallery</a>
+                            <a href="activities.html" class="dropdown-item active">Recent Activities</a>
+                            <a href="booking.html" class="dropdown-item">Tickets</a>
+                            <a href="moviebox.html" class="dropdown-item">Northern Uganda Movie Box</a>
+                        </div>
+                    </div>
+                    <a href="contact.html" class="nav-item nav-link">Contact</a>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- Navbar End -->
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header mb-5 py-5">
+        <div class="container">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">NUFA Awards 2025: A Night of Triumph</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb text-uppercase">
+                    <li class="breadcrumb-item"><a class="text-white" href="index.html">Home</a></li>
+                    <li class="breadcrumb-item text-white active" aria-current="page">Winners</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Article Section Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="article-section wow fadeInUp" data-wow-delay="0.1s">
+                <h1 class="article-title">NUFA Awards 2025: A Night of Triumph, Culture, and Dreams</h1>
+                <div class="article-meta">By Makai Ivan M | Gulu City, April 26, 2025</div>
+                <div class="article-content">
+                    <!-- Row 1: Introduction (Carousel Left, Text Right, zoomIn) -->
+                    <div class="row article-row wow zoomIn" data-wow-delay="0.2s">
+                        <div class="col-md-6">
+                            <div id="carouselIntro" class="carousel slide subsection-carousel" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="img/article/slide1-1.jpg" class="d-block w-100" alt="NUFA 2025 Event">
+                                        <div class="carousel-caption">NUFA 2025 at Acholi Inn</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide1-2.jpg" class="d-block w-100" alt="NUFA 2025 Award Ceremony Stage">
+                                        <div class="carousel-caption">Award Ceremony Stage</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide1-3.jpg" class="d-block w-100" alt="Audience Cheering at NUFA 2025">
+                                        <div class="carousel-caption">Enthusiastic Audience</div>
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselIntro" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselIntro" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 article-text">
+                            <h3>A Night of Celebration</h3>
+                            <div class="text-content">
+                                <p>Under the sparkling lights of the Acholi Inn Hotel, Northern Uganda witnessed an unforgettable celebration of storytelling, culture, and creative resilience as the Northern Uganda Film Awards (NUFA) 2025 unfolded in all its glory. It was not just a night of awarding excellence; it was a night of affirming Northern Uganda’s unwavering spirit, rich culture, and cinematic dreams.</p>
+                                <p>The Acholi Inn Upper Hall was a hive of energy, packed to capacity with filmmakers, dignitaries, fans, and creative minds from all corners of the region and beyond. This year’s edition, hosted with brilliance by the Northern Uganda Filmmakers Association (NUFA), once again proved why the awards are considered the crowning jewel of the region’s film industry.</p>
+                            </div>
+                            <button class="more-btn">More</button>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: About NUFA (Text Left, Carousel Right, zoomIn) -->
+                    <div class="row article-row wow zoomIn" data-wow-delay="0.2s">
+                        <div class="col-md-6 article-text">
+                            <h3>About Northern Uganda Filmmakers Association (NUFA)</h3>
+                            <div class="text-content">
+                                <p>The Northern Uganda Filmmakers Association (NUFA) is a fully registered organization with URSB, uniting filmmakers from across Northern Uganda. NUFA’s mission centers on film development, capacity building, promotion, and advocating for policies that drive progress within the film sector, while also creating opportunities for the broader community.</p>
+                                <p>NUFA envisions transforming Northern Uganda through cinema by showcasing local stories that preserve and share the region’s rich cultural heritage with the world. The Association’s work celebrates diversity and brings together all the subregions: West Nile, Acholi, Lango, and Karamoja. Northern Uganda’s people possess a deep-rooted cultural identity with unique beliefs, customs, and artistic expressions and through the art of film, NUFA captures and elevates these vibrant traditions.</p>
+                            </div>
+                            <button class="more-btn">More</button>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="carouselAbout" class="carousel slide subsection-carousel" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="img/article/slide2-1.jpg" class="d-block w-100" alt="Cultural Heritage">
+                                        <div class="carousel-caption">Celebrating Cultural Heritage</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide2-2.jpg" class="d-block w-100" alt="Filmmakers on Set">
+                                        <div class="carousel-caption">Filmmakers Collaborating</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide2-3.jpg" class="d-block w-100" alt="Cultural Performance">
+                                        <div class="carousel-caption">Northern Uganda Culture</div>
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselAbout" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselAbout" data-bs-slide="next">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Organizers and Partners (Carousel Left, Text Right, zoomIn) -->
+                    <div class="row article-row wow zoomIn" data-wow-delay="0.2s">
+                        <div class="col-md-6">
+                            <div id="carouselOrganizers" class="carousel slide subsection-carousel" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="img/article/slide3-1.jpg" class="d-block w-100" alt="Organizers">
+                                        <div class="carousel-caption">NUFA Organizing Team</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide3-2.jpg" class="d-block w-100" alt="NUFA Team Planning">
+                                        <div class="carousel-caption">Event Planning Session</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide3-3.jpg" class="d-block w-100" alt="Partners Collaboration">
+                                        <div class="carousel-caption">Partners’ Support</div>
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselOrganizers" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselOrganizers" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-md-6 article-text">
+                            <h3>Appreciating the Organizers and Partners</h3>
+                            <div class="text-content">
+                                <p>The 2025 ceremony stood as a testament to the hard work, passion, and collaborative spirit of the organizing team led by Francis Ojok Odong, President of NUFA. In his heartfelt opening speech, Ojok thanked the numerous partners who made the night possible: Q FM Lira, Uganda Communications Commission (UCC), Kakebe Technologies, Luo Foundation, and many more whose support made the night a resounding success.</p>
+                                <p>"This wouldn’t have been possible without the help of our esteemed partners. We would love to see this event last forever," Ojok said, drawing cheers from the crowd.</p>
+                                <p>The presence of high-ranking guests such as Hon. Betty Amongi (Minister of Gender, Labour and Social Development), Ambassador Dr. Olara Otunnu, Hon. Andrew Ojok Oulanyah, and Prof. Okaka Dokotum highlighted the growing national significance of the event.</p>
+                                <p>Leonard Amanya of UCC perfectly summed up the spirit of the evening: "We are celebrating not just the talents of creatives, but the power of resilience. Your work is not just entertainment; it is a mirror to the community."</p>
+                                <p>In a moving keynote address, Minister Amongi praised the filmmakers for their initiative in creating employment and preserving cultural heritage. She announced a transformative policy initiative a UGX 3 billion fund dedicated to supporting the creative industries at a low 6% interest rate, modeled after the Parish Development Model.</p>
+                                <p>In a personal show of support, she pledged UGX 5 million toward NUFA 2026, cementing the government’s commitment to the future of Northern Uganda’s creative economy.</p>
+                            </div>
+                            <button class="more-btn">More</button>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: A Bright Future (Text Left, Carousel Right, zoomIn) -->
+                    <div class="row article-row wow zoomIn" data-wow-delay="0.2s">
+                        <div class="col-md-6 article-text">
+                            <h3>A Bright Future</h3>
+                            <div class="text-content">
+                                <p>As the curtains fell on NUFA 2025, a powerful message lingered in the air — the best is yet to come for Northern Uganda’s filmmakers. Through their lenses, the region’s rich narratives are finding new life and new audiences, not just locally, but potentially on the world stage.</p>
+                                <p>With strong institutional support, growing public interest, and unstoppable creative energy, the dream of seeing Northern Uganda’s stories on platforms like Hollywood no longer seems distant; it feels inevitable.</p>
+                                <p>To the filmmakers, organizers, partners, and all the visionaries behind NUFA: Northern Uganda celebrates you. Your voices matter, your stories matter, and your dreams are shaping the future.</p>
+                            </div>
+                            <button class="more-btn">More</button>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="carouselFuture" class="carousel slide subsection-carousel" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <img src="img/article/slide4-1.jpg" class="d-block w-100" alt="Cinematic Future">
+                                        <div class="carousel-caption">Future of NUFA Cinema</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide4-2.jpg" class="d-block w-100" alt="Young Filmmaker">
+                                        <div class="carousel-caption">Next Generation Filmmaker</div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <img src="img/article/slide4-3.jpg" class="d-block w-100" alt="Global NUFA Screening">
+                                        <div class="carousel-caption">Global Film Showcase</div>
+                                    </div>
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselFuture" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselFuture" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Article Section End -->
+
+    <!-- Winners Section Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-secondary text-uppercase">Celebrating Excellence in Northern Uganda Cinema</h6>
+                <h1 class="mb-5">NUFA 2025 Award Winners</h1>
+                <p class="mb-4">The Northern Uganda Film Awards proudly presents the winners for the 2025 ceremony. These talented filmmakers and performers represent the pinnacle of our region's vibrant cinema industry.</p>
+            </div>
+            <div class="category-section">
+                <h2 class="category-title">Award Categories</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/nimaro-precious.jpg" alt="Nimaro Precious">
+                            <div class="card-content">
+                                <div class="winner-name">Nimaro Precious</div>
+                                <div class="film-title">Best Make Up and Hair</div>
+                                <div class="winner-description">Recognized for outstanding creativity in makeup and hair design.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/olivia-sharon.jpg" alt="Olivia Sharon">
+                            <div class="card-content">
+                                <div class="winner-name">Olivia Sharon</div>
+                                <div class="film-title">Best Costume Designer - My Culture Karamoja</div>
+                                <div class="winner-description">Honored for exceptional costume design showcasing Karamoja's culture.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/denis-omuta.jpg" alt="Denis Omuta">
+                            <div class="card-content">
+                                <div class="winner-name">Denis Omuta</div>
+                                <div class="film-title">Best Lighting - As I Dream</div>
+                                <div class="winner-description">Awarded for masterful lighting techniques enhancing the film's mood.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/blaq-boy-media.jpg" alt="Blaq Boy Media">
+                            <div class="card-content">
+                                <div class="winner-name">Blaq Boy Media</div>
+                                <div class="film-title">Best Sounds - The Crush</div>
+                                <div class="winner-description">Celebrated for immersive sound design in The Crush.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/aturo-daniella.jpg" alt="Aturo Daniella">
+                            <div class="card-content">
+                                <div class="winner-name">Aturo Daniella</div>
+                                <div class="film-title">Best Soundtrack - Don't Mess with Me</div>
+                                <div class="winner-description">Recognized for a compelling and emotive soundtrack.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/otim-elvis-dan.jpg" alt="Otim Elvis Dan">
+                            <div class="card-content">
+                                <div class="winner-name">Otim Elvis Dan</div>
+                                <div class="film-title">Best Cinematography - The Crush</div>
+                                <div class="winner-description">Honored for stunning visual storytelling through cinematography.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/okumu-sylvester.jpg" alt="Okumu Sylvester">
+                            <div class="card-content">
+                                <div class="winner-name">Okumu Sylvester</div>
+                                <div class="film-title">Best Editor - As I Dream</div>
+                                <div class="winner-description">Awarded for seamless and impactful editing.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/otim-isaac.jpg" alt="Otim Isaac">
+                            <div class="card-content">
+                                <div class="winner-name">Otim Isaac / Akello Eeno Nyeko Martin</div>
+                                <div class="film-title">Best Screenplay - Tears of Akello</div>
+                                <div class="winner-description">Celebrated for a powerful and engaging screenplay.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/one-last-puff.jpg" alt="One Last Puff">
+                            <div class="card-content">
+                                <div class="winner-name">One Last Puff</div>
+                                <div class="film-title">Best Short Film</div>
+                                <div class="winner-description">Recognized for excellence in short-form storytelling.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/echo-nyumba.jpg" alt="Echo Nyumba">
+                            <div class="card-content">
+                                <div class="winner-name">Echo Nyumba</div>
+                                <div class="film-title">Best Documentary Film</div>
+                                <div class="winner-description">Honored for impactful documentary storytelling.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/odong-morris.jpg" alt="Odong Morris">
+                            <div class="card-content">
+                                <div class="winner-name">Odong Morris</div>
+                                <div class="film-title">Best Actor in Short Film - One Last Puff</div>
+                                <div class="winner-description">Awarded for a compelling performance in a short film.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/auma-delish.jpg" alt="Auma Delish">
+                            <div class="card-content">
+                                <div class="winner-name">Auma Delish</div>
+                                <div class="film-title">Best Actress in Short Film - Shame Of Poverty</div>
+                                <div class="winner-description">Celebrated for a powerful portrayal in a short film.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/moses-agenonga.jpg" alt="Moses Agenonga">
+                            <div class="card-content">
+                                <div class="winner-name">Moses Agenonga</div>
+                                <div class="film-title">Best Actor in a Feature Film - Don't Look Back</div>
+                                <div class="winner-description">Recognized for an outstanding lead performance.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/lucaci-rose.jpg" alt="Lucaci Rose">
+                            <div class="card-content">
+                                <div class="winner-name">Lucaci Rose</div>
+                                <div class="film-title">Best Actress in a Feature Film - Tears Of Akello</div>
+                                <div class="winner-description">Honored for a captivating lead performance.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="winner-card">
+                            <img src="img/winners/acan-eunice.jpg" alt="Acan Eunice">
+                            <div class="card-content">
+                                <div class="winner-name">Acan Eunice</div>
+                                <div class="film-title">Best Director - As I Dream</div>
+                                <div class="winner-description">Awarded for visionary direction and storytelling.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="highlight-card">
+                            <img src="img/winners/akello-barbara.jpg" alt="Akello Barbara">
+                            <div class="card-content">
+                                <div class="winner-name">Akello Barbara (aka Abonyo Sylvia Rose)</div>
+                                <div class="film-title">Northern Uganda Film Legacy Award</div>
+                                <div class="winner-description">Celebrated for lifelong contributions to Northern Uganda cinema.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="highlight-card">
+                            <img src="img/winners/tears-of-akello.jpg" alt="Tears Of Akello">
+                            <div class="card-content">
+                                <div class="winner-name">Tears Of Akello</div>
+                                <div class="film-title">Best Feature Film</div>
+                                <div class="winner-description">Recognized as the outstanding feature film of NUFA 2025.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Winners Section End -->
+
+    <!-- Video Clips Section Start -->
+    <div class="container py-5">
+        <h2 class="text-center mb-4">NUFA 2025 Video Highlights</h2>
+        <div class="row video-row">
+            <div class="col-md-8 mx-auto">
+                <div class="row g-4">
+                    <div class="col-md-6 col-12">
+                        <div class="video-item wow zoomIn" data-wow-delay="0.3s" data-bs-toggle="modal" data-bs-target="#videoModal2">
+                            <img src="img/video/poster2.jpg" alt="Red Carpet Moments NUFA 2025" class="img-fluid">
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="video-item wow zoomIn" data-wow-delay="0.4s" data-bs-toggle="modal" data-bs-target="#videoModal3">
+                            <img src="img/video/poster3.jpg" alt="Tears of Akello Trailer" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Video Clips Section End -->
+
+    <!-- Video Modals -->
+    <div class="modal fade video-modal" id="videoModal2" tabindex="-1" aria-label="NUFA 2025 Red Carpet Video" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <video controls>
+                    <source src="video/red-carpet.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade video-modal" id="videoModal3" tabindex="-1" aria-label="Tears of Akello Trailer Video" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <video controls>
+                    <source src="video/tears-of-akello-trailer.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gallery Section Start -->
+    <div class="container py-5">
+        <h2 class="text-center mb-4">Northern Uganda Film Awards Gallery</h2>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal1">
+                    <img src="img/gallery/nufa-1.jpg" alt="Movie Premiere in Gulu, Acholi Region" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal2">
+                    <img src="img/gallery/nufa-2.jpg" alt="Karamoja Cultural Film Showcase" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal3">
+                    <img src="img/gallery/nufa-3.jpg" alt="West Nile Film Industry - Arua Screening" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal4">
+                    <img src="img/gallery/nufa-4.jpg" alt="Lango Region Film Actors in Action" class="img-fluid">
+                </div>
+            </div>
+        </div>
+        <div class="row g-4 mt-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal5">
+                    <img src="img/gallery/nufa-5.jpg" alt="Red Carpet at Acholi Inn" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal6">
+                    <img src="img/gallery/nufa-6.jpg" alt="Award Presentation Moment" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal7">
+                    <img src="img/gallery/nufa-7.jpg" alt="Filmmakers’ Workshop in Lira" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal8">
+                    <img src="img/gallery/nufa-8.jpg" alt="Cultural Dance Performance" class="img-fluid">
+                </div>
+            </div>
+        </div>
+        <div class="row g-4 mt-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal9">
+                    <img src="img/gallery/nufa-9.jpg" alt="Behind-the-Scenes Film Shoot" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal10">
+                    <img src="img/gallery/nufa-10.jpg" alt="Audience at Gulu Screening" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal11">
+                    <img src="img/gallery/nufa-11.jpg" alt="NUFA Team with Partners" class="img-fluid">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal12">
+                    <img src="img/gallery/nufa-12.jpg" alt="Young Filmmakers’ Training" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Gallery Section End -->
+
+    <!-- Image Modals -->
+    <div class="modal fade" id="imageModal1" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-1.jpg" class="img-fluid" alt="Movie Premiere in Gulu, Acholi Region">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal2" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-2.jpg" class="img-fluid" alt="Karamoja Cultural Film Showcase">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal3" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-3.jpg" class="img-fluid" alt="West Nile Film Industry - Arua Screening">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal4" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-4.jpg" class="img-fluid" alt="Lango Region Film Actors in Action">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal5" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-5.jpg" class="img-fluid" alt="Red Carpet at Acholi Inn">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal6" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-6.jpg" class="img-fluid" alt="Award Presentation Moment">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal7" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-7.jpg" class="img-fluid" alt="Filmmakers’ Workshop in Lira">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal8" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-8.jpg" class="img-fluid" alt="Cultural Dance Performance">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal9" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-9.jpg" class="img-fluid" alt="Behind-the-Scenes Film Shoot">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal10" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-10.jpg" class="img-fluid" alt="Audience at Gulu Screening">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal11" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-11.jpg" class="img-fluid" alt="NUFA Team with Partners">
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="imageModal12" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <img src="img/gallery/nufa-12.jpg" class="img-fluid" alt="Young Filmmakers’ Training">
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer pt-5 mt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Contact Information</h4>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Plot 43 Gulu City, Northern Uganda</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+256 774 757 587</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@nufa.media</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social" href="https://www.facebook.com/profile.php?id=61566267335013" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://www.instagram.com/nufa2025?igsh=bHVkaHF2dzBhZjg4" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://www.youtube.com/@NorthernUgandaFilmAssociation" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social" href="https://www.linkedin.com/company/northern-uganda-film-makers-association-nufa" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Event Hours</h4>
+                    <h6 class="text-light">Monday - Friday:</h6>
+                    <p class="mb-4">09.00 AM - 06.00 PM</p>
+                    <h6 class="text-light">Saturday - Sunday:</h6>
+                    <p class="mb-0">10.00 AM - 02.00 PM</p>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb arcane-black">Major Awards Categories</h4>
+                    <a class="btn btn-link" href="">Best Film</a>
+                    <a class="btn btn-link" href="">Best Director</a>
+                    <a class="btn btn-link" href="">Best Actor/Actress</a>
+                    <a class="btn btn-link" href="">Best Cinematography</a>
+                    <a class="btn btn-link" href="">Best Documentary</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="text-light mb-4">Stay Updated</h4>
+                    <p>Sign up for updates and news about NUFA 2025 and the film industry in Northern Uganda.</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        © <a class="border-bottom" href="#">NUFA 2025</a>, All Rights Reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        Designed by <a class="border-bottom" href="https://kakebe.tech">Kakebe Tech</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-0 back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+
+    <!-- Custom JavaScript for More Button, Overflow Detection, and WOW.js Initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize WOW.js
+            new WOW({
+                boxClass: 'wow', // Default class for animated elements
+                animateClass: 'animated', // Default class when animation triggers
+                offset: 100, // Distance to start animation (pixels from bottom)
+                mobile: true, // Enable animations on mobile
+                live: true // Detect dynamically added elements
+            }).init();
+
+            // Check for text overflow and show "More" button
+            document.querySelectorAll('.text-content').forEach(content => {
+                const moreBtn = content.nextElementSibling;
+                if (content.scrollHeight > content.clientHeight) {
+                    moreBtn.style.display = 'block'; // Show button if text overflows
+                }
+            });
+
+            // Toggle text visibility on "More" button click
+            document.querySelectorAll('.more-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const textContent = button.previousElementSibling;
+                    textContent.classList.toggle('expanded');
+                    button.textContent = textContent.classList.contains('expanded') ? 'Less' : 'More';
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
