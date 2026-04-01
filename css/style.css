@@ -235,35 +235,35 @@
 }
 
 .page-header {
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/bg.jpg) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/bg.webp) center center no-repeat;
     background-size: cover;
 }
 
 .page-header-a{
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).webp) center center no-repeat;
     background-size: cover;
 }
 .page-header-b{
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(2\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(2\).webp) center center no-repeat;
     background-size: cover;
 }
 
 .page-header-c{
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(3\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(3\).webp) center center no-repeat;
     background-size: cover;
 }
 .page-header-d{
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/banner\ \(1\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/banner\ \(1\).webp) center center no-repeat;
     background-size: cover;
 }
 
 
 .page-header-e{
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).webp) center center no-repeat;
     background-size: cover;
 }
 .page-header-f{
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/slide\ \(1\).webp) center center no-repeat;
     background-size: cover;
 }
 
@@ -279,7 +279,7 @@
 
 /*** Facts ***/
 .fact {
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/banner\ \(2\).png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/banner\ \(2\).webp) center center no-repeat;
     background-size: cover;
 }
 
@@ -321,7 +321,7 @@
 .video {
     position: relative;
     padding: 8rem 0 12rem 0;
-    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/frame.png) center center no-repeat;
+    background: linear-gradient(rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(../img/frame.webp) center center no-repeat;
     background-size: cover;
     display: flex;
     flex-direction: column;

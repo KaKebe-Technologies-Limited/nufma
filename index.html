@@ -190,7 +190,7 @@
 <div class="container-fluid p-0 mb-5">
     <div class="owl-carousel header-carousel position-relative">
         <div class="owl-carousel-item position-relative">
-            <img class="img-fluid" src="img/action1.JPG" alt="Northern Uganda Film Awards - Celebrating Creativity and Talent">
+           <img class="img-fluid" loading="lazy" src="img/action1.webp" srcset="img/action1-small.webp 500w, img/action1.webp 3336w, img/action1-large.webp 800w" sizes="(width <= 500px) 500w, (width > 500px) 800w, (width >= 1920px) 3336w" alt="Northern Uganda Film Awards - Celebrating Creativity and Talent">
             <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(0, 0, 0, .4);">
                 <div class="container">
                     <div class="row justify-content-start">
@@ -279,70 +279,67 @@
   <div class="swiper mySwiper">
     <div class="swiper-wrapper">
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/Frame 89.webp" />
+        <img loading="lazy" src="img/thumbnails/Frame 89-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/Frame 90.webp" />
+        <img loading="lazy" src="img/thumbnails/Frame 90-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-7_1.webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-7_1-small.webp" />
       </div>
       <div class="swiper-slide">
-              <img loading="lazy" src="img/gallery/nufa-8_1.webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-8_1-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-21.webp" />
-      </div>
-     
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-14.webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-21-small.webp" />
       </div>
       <div class="swiper-slide">
-              <img loading="lazy" src="img/nuf (6).webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-14-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/Frame 89.webp" />
+        <img loading="lazy" src="img/thumbnails/nuf (6)-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/Frame 90.webp" />
+        <img loading="lazy" src="img/thumbnails/Frame 89-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-7_1.webp" />
+        <img loading="lazy" src="img/thumbnails/Frame 90-small.webp" />
       </div>
       <div class="swiper-slide">
-              <img loading="lazy" src="img/gallery/nufa-8_1.webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-7_1-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-21.webp" />
-      </div>
-     
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-14.webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-8_1-small.webp" />
       </div>
       <div class="swiper-slide">
-              <img loading="lazy" src="img/nuf (6).webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-21-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/Frame 89.webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-14-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/Frame 90.webp" />
+        <img loading="lazy" src="img/thumbnails/nuf (6)-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-7_1.webp" />
+        <img loading="lazy" src="img/thumbnails/Frame 89-small.webp" />
       </div>
       <div class="swiper-slide">
-              <img loading="lazy" src="img/gallery/nufa-8_1.webp" />
+        <img loading="lazy" src="img/thumbnails/Frame 90-small.webp" />
       </div>
       <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-21.webp" />
-      </div>
-     
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/gallery/nufa-14.webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-7_1-small.webp" />
       </div>
       <div class="swiper-slide">
-              <img loading="lazy" src="img/nuf (6).webp" />
+        <img loading="lazy" src="img/thumbnails/nufa-8_1-small.webp" />
+      </div>
+      <div class="swiper-slide">
+        <img loading="lazy" src="img/thumbnails/nufa-21-small.webp" />
+      </div>
+      <div class="swiper-slide">
+        <img loading="lazy" src="img/thumbnails/nufa-14-small.webp" />
+      </div>
+      <div class="swiper-slide">
+        <img loading="lazy" src="img/thumbnails/nuf (6)-small.webp" />
       </div>
     </div>
     <div class="swiper-pagination"></div>
@@ -353,28 +350,27 @@
 
   <!-- Initialize Swiper -->
   <script>
-var swiper = new Swiper(".mySwiper", {
-  effect: "coverflow",
-  grabCursor: true,
-  centeredSlides: true,
-  slidesPerView: "auto",
-  coverflowEffect: {
-    rotate: 50,
-    stretch: 0,
-    depth: 200,
-    modifier: 1,
-    slideShadows: true,
-  },
-  autoplay: {
-    delay: 1000, // Adjust delay (in milliseconds)
-    disableOnInteraction: false, // Keeps autoplay running even after user interacts
-  },
-  pagination: {
-    el: ".swiper-pagination",
-    clickable: true, // Allows users to click on pagination dots
-  },
-});
-
+    var swiper = new Swiper(".mySwiper", {
+    effect: "coverflow",
+    grabCursor: true,
+    centeredSlides: true,
+    slidesPerView: "auto",
+    coverflowEffect: {
+        rotate: 50,
+        stretch: 0,
+        depth: 200,
+        modifier: 1,
+        slideShadows: true,
+    },
+    autoplay: {
+        delay: 1000, // Adjust delay (in milliseconds)
+        disableOnInteraction: false, // Keeps autoplay running even after user interacts
+    },
+    pagination: {
+        el: ".swiper-pagination",
+        clickable: true, // Allows users to click on pagination dots
+    },
+    });
   </script>
 
 
