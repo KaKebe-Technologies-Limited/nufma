@@ -17,7 +17,7 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -33,117 +33,6 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-    <style>
-      .gallery-item {
-          position: relative;
-          overflow: hidden;
-          cursor: pointer;
-          border-radius: 10px;
-      }
-      .gallery-item img {
-          width: 100%;
-          transition: transform 0.3s ease-in-out;
-      }
-      .gallery-item:hover img {
-          transform: scale(1.1);
-      }
-      .gallery-item::after {
-          content: "";
-          position: absolute;
-          top: 0; left: 0;
-          width: 100%; height: 100%;
-          background: rgba(0, 0, 0, 0.3);
-          opacity: 0;
-          transition: opacity 0.3s ease-in-out;
-      }
-      .gallery-item:hover::after {
-          opacity: 1;
-      }
-  </style>
-
-    <!-- Demo styles -->
-    <style>
-      html,
-      body {
-        position: relative;
-        height: 100%;
-      }
-  
-      body {
-        background: #eee;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-        font-size: 14px;
-        color: #000;
-        margin: 0;
-        padding: 0;
-      }
-  
-      .swiper {
-        width: 100%;
-        height: 100%;
-      }
-  
-      .swiper-slide {
-        text-align: center;
-        font-size: 18px;
-        background: #fff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-  
-      .swiper-slide img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-  
-     
-  
-      .swiper {
-        width: 100%;
-        height: 300px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-  
-      .swiper-slide {
-        background-size: cover;
-        background-position: center;
-      }
-  
-      .mySwiper2 {
-        height: 80%;
-        width: 100%;
-      }
-  
-      .mySwiper {
-        height: 20%;
-        box-sizing: border-box;
-        padding: 10px 0;
-      }
-  
-      .mySwiper .swiper-slide {
-        width: 25%;
-        height: 100%;
-        opacity: 0.4;
-      }
-  
-      .mySwiper .swiper-slide-thumb-active {
-        opacity: 1;
-      }
-  
-      .swiper-slide img {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-    </style>
 </head>
 
 <body>
@@ -199,28 +88,29 @@
                 <div class="navbar-nav me-auto">
                     <a href="index.html" class="nav-item nav-link">Home</a>
                     <a href="about.html" class="nav-item nav-link">About</a>
-                    <a href="service.html" class="nav-item nav-link">Services</a>
-                    <a href="nominees.html" class="nav-item nav-link">Nominees</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Awards</a>
+                        <div class="dropdown-menu fade-up m-0">
+                            <a href="nominees.html" class="dropdown-item">2025 Winners</a>
+                            <a href="index.html#awards-timeline" class="dropdown-item">2026 Recap</a>
+                            <a href="index.html#awards-timeline" class="dropdown-item">2027 — Upcoming</a>
+                        </div>
+                    </div>
+                    <a href="gallery.html" class="nav-item nav-link active">Gallery</a>
+                    <a href="activities.html" class="nav-item nav-link">News</a>
+                    <a href="team.html" class="nav-item nav-link">Team</a>
+                    <a href="contact.html" class="nav-item nav-link">Contact</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
                         <div class="dropdown-menu fade-up m-0">
-                            <a href="team.html" class="dropdown-item">Team</a>
-                            <a href="gallery.html" class="dropdown-item active">Gallery</a>
-                            <a href="activities.html" class="dropdown-item">Recent Activities</a>
+                            <a href="service.html" class="dropdown-item">Services</a>
                             <a href="booking.html" class="dropdown-item">Tickets</a>
-                            <a href="moviebox.html" class="dropdown-item">Northern Uganda Movie Box</a>                    
+                            <a href="moviebox.html" class="dropdown-item">Northern Uganda Movie Box</a>
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
                 </div>
-                    <!-- <div class="mt-4 mt-lg-0 me-lg-n4 py-3 px-4 bg-primary d-flex align-items-center">
-                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white" style="width: 45px; height: 45px;">
-                            <i class="fa fa-phone-alt text-primary"></i>
-                        </div>
-                        <div class="ms-3">
-            <p class="mb-1 text-white">Emergency 24/7</p>
-                            <h5 class="m-0 text-secondary">0774757587 </h5>
-                        </div> -->
+                <div class="mt-3 mt-lg-0">
+                    <a href="contact.html" class="btn btn-secondary py-2 px-4">Become a Partner</a>
                 </div>
             </div>
         </nav>
@@ -246,136 +136,104 @@
     <!-- Gallery Section -->
 
     <div class="container py-5">
-      <h2 class="text-center mb-4">Northern Uganda Film Awards Gallery</h2>
-      <div class="row g-4">
-          <!-- Gallery Images -->
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal1">
-                  <img src="img/gallery/nufa-1_1.webp" alt="Northern Uganda Film Awards - Movie Premiere in Gulu, Acholi Region" class="img-fluid" loading="lazy">
-              </div>
+      <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+          <h6 class="text-secondary text-uppercase">2025 Gala</h6>
+          <h1 class="mb-5">Northern Uganda Film Awards Gallery</h1>
+      </div>
+      <div class="masonry wow fadeInUp" data-wow-delay="0.2s">
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal1">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-1_1.webp" alt="Northern Uganda Film Awards - Movie Premiere in Gulu, Acholi Region" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal2">
-                  <img src="img/gallery/nufa-2_1.webp" alt="Karamoja Cultural Film Showcase - Northern Uganda Cinema Event" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal2">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-2_1.webp" alt="Karamoja Cultural Film Showcase - Northern Uganda Cinema Event" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal3">
-                  <img src="img/gallery/nufa-3_1.webp" alt="West Nile Film Industry - Movie Directors at Arua Film Screening" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal3">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-3_1.webp" alt="West Nile Film Industry - Movie Directors at Arua Film Screening" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal4">
-                  <img src="img/gallery/nufa-4_1.webp" alt="Lango Region Film Actors in Action - Northern Uganda Film Industry" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal4">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-4_1.webp" alt="Lango Region Film Actors in Action - Northern Uganda Film Industry" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal5">
-                  <img src="img/gallery/nufa-5_1.webp" alt="Gulu Cinematic Experience - Film Awards and Movie Screening" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal5">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-5_1.webp" alt="Gulu Cinematic Experience - Film Awards and Movie Screening" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal6">
-                  <img src="img/gallery/nufa-6_1.webp" alt="Karamoja Filmmakers at Work - Movie Set in Northern Uganda" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal6">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-6_1.webp" alt="Karamoja Filmmakers at Work - Movie Set in Northern Uganda" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal7">
-                  <img src="img/gallery/nufa-7_1.webp" alt="Arua Film Festival - Celebrating Cinematic Talent in West Nile" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal7">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-7_1.webp" alt="Arua Film Festival - Celebrating Cinematic Talent in West Nile" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal8">
-                  <img src="img/gallery/nufa-8_1.webp" alt="Lira Film Production - Emerging Movie Directors in Lango" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal8">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-8_1.webp" alt="Lira Film Production - Emerging Movie Directors in Lango" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal9">
-                  <img src="img/gallery/nufa-9_1.webp" alt="Northern Uganda Action Movie - Film Shoot in Gulu City" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal9">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-9_1.webp" alt="Northern Uganda Action Movie - Film Shoot in Gulu City" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal10">
-                  <img src="img/gallery/nufa-10_1.webp" alt="Karamoja Traditional Storytelling in Film - Uganda Cinema" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal10">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-10_1.webp" alt="Karamoja Traditional Storytelling in Film - Uganda Cinema" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal11">
-                  <img src="img/gallery/nufa-11_1.webp" alt="West Nile Movie Premiere - Award-Winning Films in Arua" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal11">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-11_1.webp" alt="West Nile Movie Premiere - Award-Winning Films in Arua" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal12">
-                  <img src="img/gallery/nufa-12_1.webp" alt="Lango Filmmaking Hub - Young Directors and Actors in Lira" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal12">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-12_1.webp" alt="Lango Filmmaking Hub - Young Directors and Actors in Lira" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal13">
-                  <img src="img/gallery/nufa-13.webp" alt="Gulu Movie Awards Ceremony - Best Northern Uganda Films" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal13">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-13.webp" alt="Gulu Movie Awards Ceremony - Best Northern Uganda Films" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal14">
-                  <img src="img/gallery/nufa-14.webp" alt="Karamoja Indigenous Film Production - Cultural Heritage Movies" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal14">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-14.webp" alt="Karamoja Indigenous Film Production - Cultural Heritage Movies" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal15">
-                  <img src="img/gallery/nufa-15.webp" alt="West Nile Storytelling in Cinema - Arua’s Rising Filmmakers" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal15">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-15.webp" alt="West Nile Storytelling in Cinema - Arua's Rising Filmmakers" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal16">
-                  <img src="img/gallery/nufa-16.webp" alt="Lira Film Stars on Set - Northern Uganda Movie Industry" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal16">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-16.webp" alt="Lira Film Stars on Set - Northern Uganda Movie Industry" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal17">
-                  <img src="img/gallery/nufa-17.webp" alt="Gulu Youth Filmmakers - Training Future Cinematic Talents" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal17">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-17.webp" alt="Gulu Youth Filmmakers - Training Future Cinematic Talents" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal18">
-                  <img src="img/gallery/nufa-18.webp" alt="Karamoja Region Movie Production - Northern Uganda Film Excellence" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal18">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-18.webp" alt="Karamoja Region Movie Production - Northern Uganda Film Excellence" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal19">
-                  <img src="img/gallery/nufa-19.webp" alt="West Nile Film Awards - Recognizing Cinematic Achievements" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal19">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-19.webp" alt="West Nile Film Awards - Recognizing Cinematic Achievements" loading="lazy">
           </div>
-  
-          <div class="col-md-3 col-sm-6">
-              <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal20">
-                  <img src="img/gallery/nufa-20.webp" alt="Lango Region Cinema - Actors and Directors Behind the Scenes" class="img-fluid" loading="lazy">
-              </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal20">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-20.webp" alt="Lango Region Cinema - Actors and Directors Behind the Scenes" loading="lazy">
+          </div>
+          <div class="masonry-item" data-bs-toggle="modal" data-bs-target="#imageModal21">
+              <span class="badge-year">2025 Gala</span>
+              <img src="img/gallery/nufa-21.webp" alt="Northern Uganda Film Awards - Closing Moments of the 2025 Gala" loading="lazy">
           </div>
       </div>
+      <p class="text-center text-secondary mt-5 wow fadeInUp" data-wow-delay="0.1s">2026 and 2027 photos will be added here after each edition.</p>
     </div>
 
     <!-- Image Modals -->
     <div class="modal fade" id="imageModal1" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <img src="img/gallery/nufa-1_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Young Professionals Collaborating">
+                <img src="img/gallery/nufa-1_1.webp" class="img-fluid" alt="NUFA Gala Moment - Young Professionals Collaborating">
             </div>
         </div>
     </div>
@@ -383,7 +241,7 @@
     <div class="modal fade" id="imageModal2" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <img src="img/gallery/nufa-2_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Teamwork and Innovation">
+                <img src="img/gallery/nufa-2_1.webp" class="img-fluid" alt="NUFA Gala Moment - Teamwork and Innovation">
             </div>
         </div>
     </div>
@@ -391,7 +249,7 @@
     <div class="modal fade" id="imageModal3" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-3_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Networking for Growth">
+            <img src="img/gallery/nufa-3_1.webp" class="img-fluid" alt="NUFA Gala Moment - Networking for Growth">
         </div>
     </div>
     </div>
@@ -399,7 +257,7 @@
     <div class="modal fade" id="imageModal4" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-4_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Empowering Young Leaders">
+            <img src="img/gallery/nufa-4_1.webp" class="img-fluid" alt="NUFA Gala Moment - Empowering Young Leaders">
         </div>
     </div>
     </div>
@@ -407,7 +265,7 @@
     <div class="modal fade" id="imageModal5" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-5_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Building Strong Connections">
+            <img src="img/gallery/nufa-5_1.webp" class="img-fluid" alt="NUFA Gala Moment - Building Strong Connections">
         </div>
     </div>
     </div>
@@ -415,7 +273,7 @@
     <div class="modal fade" id="imageModal6" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-6_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Leadership Development">
+            <img src="img/gallery/nufa-6_1.webp" class="img-fluid" alt="NUFA Gala Moment - Leadership Development">
         </div>
     </div>
     </div>
@@ -423,7 +281,7 @@
     <div class="modal fade" id="imageModal7" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-7_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Practical Leadership Skills">
+            <img src="img/gallery/nufa-7_1.webp" class="img-fluid" alt="NUFA Gala Moment - Practical Leadership Skills">
         </div>
     </div>
     </div>
@@ -431,7 +289,7 @@
     <div class="modal fade" id="imageModal8" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-8_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Collaborative Solutions">
+            <img src="img/gallery/nufa-8_1.webp" class="img-fluid" alt="NUFA Gala Moment - Collaborative Solutions">
         </div>
     </div>
     </div>
@@ -439,7 +297,7 @@
     <div class="modal fade" id="imageModal9" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-9_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Skill Development and Networking">
+            <img src="img/gallery/nufa-9_1.webp" class="img-fluid" alt="NUFA Gala Moment - Skill Development and Networking">
         </div>
     </div>
     </div>
@@ -447,7 +305,7 @@
     <div class="modal fade" id="imageModal10" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-10_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Youth Leadership and Innovation">
+            <img src="img/gallery/nufa-10_1.webp" class="img-fluid" alt="NUFA Gala Moment - Youth Leadership and Innovation">
         </div>
     </div>
     </div>
@@ -455,7 +313,7 @@
     <div class="modal fade" id="imageModal11" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-11_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Growing Future Leaders">
+            <img src="img/gallery/nufa-11_1.webp" class="img-fluid" alt="NUFA Gala Moment - Growing Future Leaders">
         </div>
     </div>
     </div>
@@ -463,7 +321,7 @@
     <div class="modal fade" id="imageModal12" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-12_1.webp" class="img-fluid" alt="Nufa Leadership Workshop - Leading with Purpose">
+            <img src="img/gallery/nufa-12_1.webp" class="img-fluid" alt="NUFA Gala Moment - Leading with Purpose">
         </div>
     </div>
     </div>
@@ -471,7 +329,7 @@
     <div class="modal fade" id="imageModal13" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-13.webp" class="img-fluid" alt="Nufa Leadership Workshop - Networking for Future Opportunities">
+            <img src="img/gallery/nufa-13.webp" class="img-fluid" alt="NUFA Gala Moment - Networking for Future Opportunities">
         </div>
     </div>
     </div>
@@ -479,7 +337,7 @@
     <div class="modal fade" id="imageModal14" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-14.webp" class="img-fluid" alt="Nufa Leadership Workshop - Transforming Ideas into Action">
+            <img src="img/gallery/nufa-14.webp" class="img-fluid" alt="NUFA Gala Moment - Transforming Ideas into Action">
         </div>
     </div>
     </div>
@@ -487,7 +345,7 @@
     <div class="modal fade" id="imageModal15" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-15.webp" class="img-fluid" alt="Nufa Leadership Workshop - Young Professionals Collaborating">
+            <img src="img/gallery/nufa-15.webp" class="img-fluid" alt="NUFA Gala Moment - Young Professionals Collaborating">
         </div>
     </div>
     </div>
@@ -495,7 +353,7 @@
     <div class="modal fade" id="imageModal16" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-16.webp" class="img-fluid" alt="Nufa Leadership Workshop - Building Strong Professional Networks">
+            <img src="img/gallery/nufa-16.webp" class="img-fluid" alt="NUFA Gala Moment - Building Strong Professional Networks">
         </div>
     </div>
     </div>
@@ -503,7 +361,7 @@
     <div class="modal fade" id="imageModal17" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-17.webp" class="img-fluid" alt="Nufa Leadership Workshop - Creating Opportunities for Growth">
+            <img src="img/gallery/nufa-17.webp" class="img-fluid" alt="NUFA Gala Moment - Creating Opportunities for Growth">
         </div>
     </div>
     </div>
@@ -511,7 +369,7 @@
     <div class="modal fade" id="imageModal18" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-18.webp" class="img-fluid" alt="Nufa Leadership Workshop - A Platform for Change Makers">
+            <img src="img/gallery/nufa-18.webp" class="img-fluid" alt="NUFA Gala Moment - A Platform for Change Makers">
         </div>
     </div>
     </div>
@@ -519,7 +377,7 @@
     <div class="modal fade" id="imageModal19" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-19.webp" class="img-fluid" alt="Nufa Leadership Workshop - Strengthening Leadership Skills">
+            <img src="img/gallery/nufa-19.webp" class="img-fluid" alt="NUFA Gala Moment - Strengthening Leadership Skills">
         </div>
     </div>
     </div>
@@ -527,7 +385,7 @@
     <div class="modal fade" id="imageModal20" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-20.webp" class="img-fluid" alt="Nufa Leadership Workshop - Future Leaders in Action">
+            <img src="img/gallery/nufa-20.webp" class="img-fluid" alt="NUFA Gala Moment - Future Leaders in Action">
         </div>
     </div>
     </div>
@@ -535,7 +393,7 @@
     <div class="modal fade" id="imageModal21" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <img src="img/gallery/nufa-21.webp" class="img-fluid" alt="Nufa Leadership Workshop - Preparing Young Leaders for Tomorrow">
+            <img src="img/gallery/nufa-21.webp" class="img-fluid" alt="NUFA Gala Moment - Preparing Young Leaders for Tomorrow">
         </div>
     </div>
     </div>
@@ -550,7 +408,7 @@
         <div class="row g-5">
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Contact Information</h4>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Plot 43 Guly City, Northern Uganda</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Plot 43 Gulu City, Northern Uganda</p>
                 <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+256 774 757 587</p>
                 <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@nufa.media</p>
                 <div class="d-flex pt-2">
@@ -562,23 +420,24 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <h4 class="text-light mb-4">Event Hours</h4>
-                <h6 class="text-light">Monday - Friday:</h6>
-                <p class="mb-4">09.00 AM - 06.00 PM</p>
-                <h6 class="text-light">Saturday - Sunday:</h6>
-                <p class="mb-0">10.00 AM - 02.00 PM</p>
+                <h4 class="text-light mb-4">Explore</h4>
+                <a class="btn btn-link" href="about.html">About NUFMA</a>
+                <a class="btn btn-link" href="index.html#awards-timeline">Awards Timeline</a>
+                <a class="btn btn-link" href="gallery.html">Gallery</a>
+                <a class="btn btn-link" href="team.html">Our Team</a>
+                <a class="btn btn-link" href="index.html#partners">Partners</a>
             </div>
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Major Awards Categories</h4>
-                <a class="btn btn-link" href="">Best Film</a>
-                <a class="btn btn-link" href="">Best Director</a>
-                <a class="btn btn-link" href="">Best Actor/Actress</a>
-                <a class="btn btn-link" href="">Best Cinematography</a>
-                <a class="btn btn-link" href="">Best Documentary</a>
+                <a class="btn btn-link" href="nominees.html">Best Film</a>
+                <a class="btn btn-link" href="nominees.html">Best Director</a>
+                <a class="btn btn-link" href="nominees.html">Best Actor/Actress</a>
+                <a class="btn btn-link" href="nominees.html">Best Cinematography</a>
+                <a class="btn btn-link" href="nominees.html">Best Documentary</a>
             </div>
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Stay Updated</h4>
-                <p>Sign up for updates and news about NUFA 2025 and the film industry in Northern Uganda.</p>
+                <p>Sign up for updates and news about NUFMA and the film industry in Northern Uganda.</p>
                 <div class="position-relative mx-auto" style="max-width: 400px;">
                     <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
                     <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Sign Up</button>
@@ -590,7 +449,7 @@
         <div class="copyright">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">NUFA 2025</a>, All Rights Reserved.
+                    &copy; <a class="border-bottom" href="#">NUFMA</a>, All Rights Reserved.
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     Designed by <a class="border-bottom" href="https://kakebe.tech">Kakebe Tech</a>

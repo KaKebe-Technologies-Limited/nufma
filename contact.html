@@ -14,7 +14,7 @@
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -85,29 +85,29 @@
                 <div class="navbar-nav me-auto">
                     <a href="index.html" class="nav-item nav-link">Home</a>
                     <a href="about.html" class="nav-item nav-link">About</a>
-                    <a href="service.html" class="nav-item nav-link">Services</a>
-                    <a href="nominees.html" class="nav-item nav-link">Nominees</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Awards</a>
+                        <div class="dropdown-menu fade-up m-0">
+                            <a href="nominees.html" class="dropdown-item">2025 Winners</a>
+                            <a href="index.html#awards-timeline" class="dropdown-item">2026 Recap</a>
+                            <a href="index.html#awards-timeline" class="dropdown-item">2027 — Upcoming</a>
+                        </div>
+                    </div>
+                    <a href="gallery.html" class="nav-item nav-link">Gallery</a>
+                    <a href="activities.html" class="nav-item nav-link">News</a>
+                    <a href="team.html" class="nav-item nav-link">Team</a>
+                    <a href="contact.html" class="nav-item nav-link active">Contact</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
                         <div class="dropdown-menu fade-up m-0">
-                            <a href="team.html" class="dropdown-item">Team</a>
-                            <a href="gallery.html" class="dropdown-item">Gallery</a>
-                            <a href="activities.html" class="dropdown-item">Recent Activities</a>
+                            <a href="service.html" class="dropdown-item">Services</a>
                             <a href="booking.html" class="dropdown-item">Tickets</a>
                             <a href="moviebox.html" class="dropdown-item">Northern Uganda Movie Box</a>
-                    
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link active">Contact</a>
                 </div>
-                    <!-- <div class="mt-4 mt-lg-0 me-lg-n4 py-3 px-4 bg-primary d-flex align-items-center">
-                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white" style="width: 45px; height: 45px;">
-                            <i class="fa fa-phone-alt text-primary"></i>
-                        </div>
-                        <div class="ms-3">
-            <p class="mb-1 text-white">Emergency 24/7</p>
-                            <h5 class="m-0 text-secondary">0774757587 </h5>
-                        </div> -->
+                <div class="mt-3 mt-lg-0">
+                    <a href="contact.html" class="btn btn-secondary py-2 px-4">Become a Partner</a>
                 </div>
             </div>
         </nav>
@@ -138,12 +138,12 @@
                 <div class="col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                     <h6 class="text-secondary text-uppercase">Get In Touch</h6>
                     <h1 class="mb-4">Contact Us</h1>
-                    <p class="mb-4">Connect with us to foster growth and collaboration. Together, we achieve more. <a href="https://htmlcodex.com/contact-form">Get in Touch</a>.</p>
+                    <p class="mb-4">Whether you're a filmmaker, a partner, or a fan of Northern Uganda's stories, we'd love to hear from you. Connect with us to foster growth and collaboration — together, we achieve more.</p>
 
                     <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63762.21770567179!2d32.24676015442228!3d2.7753206836080415!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1771a65c0fc42a27%3A0xce6ef3d1c3d80e06!2sGulu!5e0!3m2!1sen!2sug!4v1741784700706!5m2!1sen!2sug" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div>
                 <div class="col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="bg-light p-5 h-100 d-flex align-items-center">
+                    <div class="card-elevated p-5 h-100 d-flex align-items-center">
                         <form>
                             <div class="row g-3">
                                 <div class="col-md-6">
@@ -188,7 +188,7 @@
         <div class="row g-5">
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Contact Information</h4>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Plot 43 Guly City, Northern Uganda</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Plot 43 Gulu City, Northern Uganda</p>
                 <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+256 774 757 587</p>
                 <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@nufa.media</p>
                 <div class="d-flex pt-2">
@@ -200,23 +200,24 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <h4 class="text-light mb-4">Event Hours</h4>
-                <h6 class="text-light">Monday - Friday:</h6>
-                <p class="mb-4">09.00 AM - 06.00 PM</p>
-                <h6 class="text-light">Saturday - Sunday:</h6>
-                <p class="mb-0">10.00 AM - 02.00 PM</p>
+                <h4 class="text-light mb-4">Explore</h4>
+                <a class="btn btn-link" href="about.html">About NUFMA</a>
+                <a class="btn btn-link" href="index.html#awards-timeline">Awards Timeline</a>
+                <a class="btn btn-link" href="gallery.html">Gallery</a>
+                <a class="btn btn-link" href="team.html">Our Team</a>
+                <a class="btn btn-link" href="index.html#partners">Partners</a>
             </div>
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Major Awards Categories</h4>
-                <a class="btn btn-link" href="">Best Film</a>
-                <a class="btn btn-link" href="">Best Director</a>
-                <a class="btn btn-link" href="">Best Actor/Actress</a>
-                <a class="btn btn-link" href="">Best Cinematography</a>
-                <a class="btn btn-link" href="">Best Documentary</a>
+                <a class="btn btn-link" href="nominees.html">Best Film</a>
+                <a class="btn btn-link" href="nominees.html">Best Director</a>
+                <a class="btn btn-link" href="nominees.html">Best Actor/Actress</a>
+                <a class="btn btn-link" href="nominees.html">Best Cinematography</a>
+                <a class="btn btn-link" href="nominees.html">Best Documentary</a>
             </div>
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Stay Updated</h4>
-                <p>Sign up for updates and news about NUFA 2025 and the film industry in Northern Uganda.</p>
+                <p>Sign up for updates and news about NUFMA and the film industry in Northern Uganda.</p>
                 <div class="position-relative mx-auto" style="max-width: 400px;">
                     <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
                     <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Sign Up</button>
@@ -228,7 +229,7 @@
         <div class="copyright">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">NUFA 2025</a>, All Rights Reserved.
+                    &copy; <a class="border-bottom" href="#">NUFMA</a>, All Rights Reserved.
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     Designed by <a class="border-bottom" href="https://kakebe.tech">Kakebe Tech</a>

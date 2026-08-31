@@ -28,10 +28,7 @@
         <!-- Google Web Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="preload" as="font" crossorigin>
-    
-        <!-- Link Swiper's CSS -->
-        <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
 
         <!-- Icon Font Stylesheet -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet" media=print>
@@ -55,53 +52,8 @@
             <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
             <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
             <link href="css/bootstrap.min.css" rel="stylesheet">
-            <link href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
         </noscript>
-    
-        <!-- Demo styles -->
-        <style>
-            html,
-            body {
-            position: relative;
-            height: 100%;
-            }
-
-            body {
-            background: #eee;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            font-size: 14px;
-            color: #000;
-            margin: 0;
-            padding: 0;
-            }
-
-            .swiper {
-            width: 100%;
-            padding-top: 50px;
-            padding-bottom: 50px;
-            }
-
-            .swiper-slide {
-            background-position: center;
-            background-size: cover;
-            width: 300px;
-            height: 300px;
-            }
-
-            .swiper-slide img {
-            display: block;
-            width: 100%;
-            }
-            
-            .carousel-image {
-            height: 400px; /* Adjust this value to the height you desire */
-            object-fit: cover;
-            }
-            .owl-carousel-item img {
-                height: 800px; /* Adjust as needed */
-                object-fit: cover;
-            }
-        </style>
 </head>
 
 <body>
@@ -157,29 +109,29 @@
                 <div class="navbar-nav me-auto">
                     <a href="index.html" class="nav-item nav-link active">Home</a>
                     <a href="about.html" class="nav-item nav-link">About</a>
-                    <a href="service.html" class="nav-item nav-link">Services</a>
-                    <a href="nominees.html" class="nav-item nav-link">Nominees</a>
+                    <div class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Awards</a>
+                        <div class="dropdown-menu fade-up m-0">
+                            <a href="nominees.html" class="dropdown-item">2025 Winners</a>
+                            <a href="index.html#awards-timeline" class="dropdown-item">2026 Recap</a>
+                            <a href="index.html#awards-timeline" class="dropdown-item">2027 — Upcoming</a>
+                        </div>
+                    </div>
+                    <a href="gallery.html" class="nav-item nav-link">Gallery</a>
+                    <a href="activities.html" class="nav-item nav-link">News</a>
+                    <a href="team.html" class="nav-item nav-link">Team</a>
+                    <a href="contact.html" class="nav-item nav-link">Contact</a>
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
                         <div class="dropdown-menu fade-up m-0">
-                            <a href="team.html" class="dropdown-item">Team</a>
-                            <a href="gallery.html" class="dropdown-item">Gallery</a>
-                            <a href="activities.html" class="dropdown-item">Recent Activities</a>
+                            <a href="service.html" class="dropdown-item">Services</a>
                             <a href="booking.html" class="dropdown-item">Tickets</a>
                             <a href="moviebox.html" class="dropdown-item">Northern Uganda Movie Box</a>
-                    
                         </div>
                     </div>
-                    <a href="contact.html" class="nav-item nav-link">Contact</a>
                 </div>
-                    <!-- <div class="mt-4 mt-lg-0 me-lg-n4 py-3 px-4 bg-primary d-flex align-items-center">
-                        <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white" style="width: 45px; height: 45px;">
-                            <i class="fa fa-phone-alt text-primary"></i>
-                        </div>
-                        <div class="ms-3">
-            <p class="mb-1 text-white">Emergency 24/7</p>
-                            <h5 class="m-0 text-secondary">0774757587 </h5>
-                        </div> -->
+                <div class="mt-3 mt-lg-0">
+                    <a href="contact.html" class="btn btn-secondary py-2 px-4">Become a Partner</a>
                 </div>
             </div>
         </nav>
@@ -195,11 +147,11 @@
                 <div class="container">
                     <div class="row justify-content-start">
                         <div class="col-10 col-lg-8">
-                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Recognizing Creative Talent</h5>
-                            <h1 class="display-3 text-white animated slideInDown mb-4">Bringing Together The Filmmaking Fraternity in Northern Uganda.</h1>
-                            <p class="fs-5 fw-medium text-white mb-4 pb-2">Join us to celebrate and promote the exceptional artistry of filmmakers in Northern Uganda.</p>
-                            <a href="booking.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Buy Ticket</a>
-                            <a href="#submit" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Submit Your Film</a>
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Northern Uganda Filmmakers Association</h5>
+                            <h1 class="display-3 text-white animated slideInDown mb-4">Celebrating the Spirit of Northern Cinema.</h1>
+                            <p class="fs-5 fw-medium text-white mb-4 pb-2">NUFMA empowers, trains, and celebrates the filmmakers shaping Northern Uganda's storytelling future.</p>
+                            <a href="#awards-timeline" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Explore 2027 Awards</a>
+                            <a href="contact.html" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Become a Partner</a>
                         </div>
                     </div>
                 </div>
@@ -211,10 +163,10 @@
                 <div class="container">
                     <div class="row justify-content-start">
                         <div class="col-10 col-lg-8">
-                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Celebrating Cinema Excellence</h5>
-                            <h1 class="display-3 text-white animated slideInDown mb-4">Northern Uganda Film Awards</h1>
-                            <p class="fs-5 fw-medium text-white mb-4 pb-2">NUFA honors filmmakers for their contributions to storytelling and the arts.</p>
-                            <a href="booking.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Buy Ticket</a>
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Northern Uganda Film Awards</h5>
+                            <h1 class="display-3 text-white animated slideInDown mb-4">Honoring Northern Uganda's Finest Storytellers</h1>
+                            <p class="fs-5 fw-medium text-white mb-4 pb-2">NUFA is NUFMA's flagship celebration, recognizing the artistry, courage, and craft of local filmmakers.</p>
+                            <a href="nominees.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">View 2025 Winners</a>
                             <a href="#submit" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Submit Your Film</a>
                         </div>
                     </div>
@@ -227,10 +179,10 @@
                 <div class="container">
                     <div class="row justify-content-start">
                         <div class="col-10 col-lg-8">
-                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Celebrating Innovation</h5>
-                            <h1 class="display-3 text-white animated slideInDown mb-4">Showcasing Northern Uganda’s Films</h1>
-                            <p class="fs-5 fw-medium text-white mb-4 pb-2">Support filmmakers who are shaping the future of Northern Uganda’s film industry.</p>
-                            <a href="booking.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Buy Ticket</a>
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Community & Craft</h5>
+                            <h1 class="display-3 text-white animated slideInDown mb-4">United Voices, Limitless Stories</h1>
+                            <p class="fs-5 fw-medium text-white mb-4 pb-2">From Gulu to West Nile, we're building a thriving film community across Northern Uganda.</p>
+                            <a href="team.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Meet the Team</a>
                             <a href="#submit" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Submit Your Film</a>
                         </div>
                     </div>
@@ -243,10 +195,10 @@
                 <div class="container">
                     <div class="row justify-content-start">
                         <div class="col-10 col-lg-8">
-                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Honoring Creativity</h5>
-                            <h1 class="display-3 text-white animated slideInDown mb-4">Showcasing Northern Uganda’s Film Talent</h1>
-                            <p class="fs-5 fw-medium text-white mb-4 pb-2">Celebrate the impact of film in Northern Uganda and its role in storytelling.</p>
-                            <a href="about.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Explore More</a>
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Training & Growth</h5>
+                            <h1 class="display-3 text-white animated slideInDown mb-4">Building Skills, Building Careers</h1>
+                            <p class="fs-5 fw-medium text-white mb-4 pb-2">Workshops, mentorship, and screenings that turn passion into profession.</p>
+                            <a href="service.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Our Services</a>
                             <a href="#submit" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Submit Your Film</a>
                         </div>
                     </div>
@@ -259,11 +211,11 @@
                 <div class="container">
                     <div class="row justify-content-start">
                         <div class="col-10 col-lg-8">
-                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Fostering Innovation</h5>
-                            <h1 class="display-3 text-white animated slideInDown mb-4">Celebrating Northern Uganda’s Films</h1>
-                            <p class="fs-5 fw-medium text-white mb-4 pb-2">Join us in recognizing and honoring the talent and hard work of local filmmakers.</p>
-                            <a href="about.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Explore More</a>
-                            <a href="#submit" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Submit Your Film</a>
+                            <h5 class="text-white text-uppercase mb-3 animated slideInDown">Join the Movement</h5>
+                            <h1 class="display-3 text-white animated slideInDown mb-4">Fuel the Future of Northern Cinema</h1>
+                            <p class="fs-5 fw-medium text-white mb-4 pb-2">Partner with NUFMA and help us take Northern Uganda's stories further.</p>
+                            <a href="contact.html" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Become a Partner</a>
+                            <a href="booking.html" class="btn btn-secondary py-md-3 px-md-5 animated slideInRight">Buy Tickets</a>
                         </div>
                     </div>
                 </div>
@@ -274,155 +226,17 @@
 <!-- Carousel End -->
 
 
-
-    <!-- Swiper -->
-  <div class="swiper mySwiper">
-    <div class="swiper-wrapper">
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/Frame 89-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/Frame 90-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-7_1-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-8_1-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-21-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-14-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nuf (6)-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/Frame 89-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/Frame 90-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-7_1-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-8_1-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-21-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-14-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nuf (6)-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/Frame 89-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/Frame 90-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-7_1-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-8_1-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-21-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nufa-14-small.webp" />
-      </div>
-      <div class="swiper-slide">
-        <img loading="lazy" src="img/thumbnails/nuf (6)-small.webp" />
-      </div>
-    </div>
-    <div class="swiper-pagination"></div>
-  </div>
-
-  <!-- Swiper JS -->
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-  <!-- Initialize Swiper -->
-  <script>
-    var swiper = new Swiper(".mySwiper", {
-    effect: "coverflow",
-    grabCursor: true,
-    centeredSlides: true,
-    slidesPerView: "auto",
-    coverflowEffect: {
-        rotate: 50,
-        stretch: 0,
-        depth: 200,
-        modifier: 1,
-        slideShadows: true,
-    },
-    autoplay: {
-        delay: 1000, // Adjust delay (in milliseconds)
-        disableOnInteraction: false, // Keeps autoplay running even after user interacts
-    },
-    pagination: {
-        el: ".swiper-pagination",
-        clickable: true, // Allows users to click on pagination dots
-    },
-    });
-  </script>
-
-
-
-    <!-- Service Start -->
-    <!-- <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6 service-item-top wow fadeInUp" data-wow-delay="0.1s">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid w-100 h-100" src="img/nuf (2).webp" alt="">
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between bg-light p-4">
-                        <h5 class="text-truncate me-3 mb-0">Film Screenings</h5>
-                        <a class="btn btn-square btn-outline-primary border-2 border-white flex-shrink-0" href=""><i class="fa fa-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 service-item-top wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid w-100 h-100" src="img/nuf (3).webp" alt="">
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between bg-light p-4">
-                        <h5 class="text-truncate me-3 mb-0">Awards & Recognition</h5>
-                        <a class="btn btn-square btn-outline-primary border-2 border-white flex-shrink-0" href=""><i class="fa fa-arrow-right"></i></a>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 service-item-top wow fadeInUp" data-wow-delay="0.5s">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid w-100 h-100" src="img/nuf (2).webp" alt="">
-                    </div>
-                    <div class="d-flex align-items-center justify-content-between bg-light p-4">
-                        <h5 class="text-truncate me-3 mb-0">Workshops & Training</h5>
-                        <a class="btn btn-square btn-outline-primary border-2 border-white flex-shrink-0" href=""><i class="fa fa-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
-    <!-- Service End -->
-
-
       <!-- About Start -->
       <div class="container-xxl py-5">
         <div class="container">
             <div class="row g-5">
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s">
                     <h6 class="text-secondary text-uppercase">About Us</h6>
-                    <h1 class="mb-4">Northern Uganda Film Awards</h1>
-                    <p class="mb-4">The Northern Uganda Film Awards (NUFA) is dedicated to celebrating and promoting the incredible talent in the region’s film industry. We honor the best in storytelling, cinematography, and artistic expression while fostering growth and collaboration within the creative community.</p>
-                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Recognizing Excellence in Filmmaking</p>
-                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Empowering Local Talent & Creatives</p>
-                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Workshops, Networking & Industry Growth</p>
+                    <h1 class="mb-4">The Northern Uganda Filmmakers Association</h1>
+                    <p class="mb-4">NUFMA is a permanent home for Northern Uganda's film industry — training, connecting, and championing local filmmakers year-round. The Northern Uganda Film Awards (NUFA) is our flagship program, honoring the best in storytelling, cinematography, and artistic expression.</p>
+                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Training & Mentorship for Emerging Filmmakers</p>
+                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>A Growing Network Across Northern Uganda</p>
+                    <p class="fw-medium text-primary"><i class="fa fa-check text-success me-3"></i>Recognition Through the Annual NUFA Awards</p>
                     <div class="bg-primary d-flex align-items-center p-4 mt-5">
                         <div class="d-flex flex-shrink-0 align-items-center justify-content-center bg-white" style="width: 60px; height: 60px;">
                             <i class="fa fa-envelope fa-2x text-primary"></i>
@@ -449,31 +263,79 @@
       <div class="container-fluid fact bg-dark my-5 py-5">
         <div class="container">
             <div class="row g-4">
-                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.1s">
-                    <i class="fa fa-check fa-2x text-white mb-3"></i>
-                    <h2 class="text-white mb-2" data-toggle="counter-up">70</h2>
-                    <p class="text-white mb-0">Films Submitted</p>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.1s">
+                    <div class="stat-chip text-center">
+                        <i class="fa fa-check fa-2x text-white mb-3"></i>
+                        <h2 class="text-white mb-2" data-toggle="counter-up">70</h2>
+                        <p class="text-white mb-0">Films Submitted</p>
+                    </div>
                 </div>
-                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.3s">
-                    <i class="fa fa-users-cog fa-2x text-white mb-3"></i>
-                    <h2 class="text-white mb-2" data-toggle="counter-up">10</h2>
-                    <p class="text-white mb-0">Feature Films</p>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.3s">
+                    <div class="stat-chip text-center">
+                        <i class="fa fa-users-cog fa-2x text-white mb-3"></i>
+                        <h2 class="text-white mb-2" data-toggle="counter-up">10</h2>
+                        <p class="text-white mb-0">Feature Films</p>
+                    </div>
                 </div>
-                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.5s">
-                    <i class="fa fa-users fa-2x text-white mb-3"></i>
-                    <h2 class="text-white mb-2" data-toggle="counter-up">110</h2>
-                    <p class="text-white mb-0">Actors</p>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.5s">
+                    <div class="stat-chip text-center">
+                        <i class="fa fa-users fa-2x text-white mb-3"></i>
+                        <h2 class="text-white mb-2" data-toggle="counter-up">110</h2>
+                        <p class="text-white mb-0">Actors</p>
+                    </div>
                 </div>
-               
-                <div class="col-md-6 col-lg-3 text-center wow fadeIn" data-wow-delay="0.7s">
-                    <i class="fa fa-wrench fa-2x text-white mb-3"></i>
-                    <h2 class="text-white mb-2" data-toggle="counter-up">4</h2>
-                    <p class="text-white mb-0">Sub Regions</p>
+                <div class="col-md-6 col-lg-3 wow fadeIn" data-wow-delay="0.7s">
+                    <div class="stat-chip text-center">
+                        <i class="fa fa-wrench fa-2x text-white mb-3"></i>
+                        <h2 class="text-white mb-2" data-toggle="counter-up">4</h2>
+                        <p class="text-white mb-0">Sub Regions</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Fact End -->
+
+
+    <!-- Awards Timeline Start -->
+    <div id="awards-timeline" class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-secondary text-uppercase">Awards Timeline</h6>
+                <h1 class="mb-5">Three Editions, One Mission</h1>
+            </div>
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="timeline-card">
+                        <span class="timeline-status">Past Edition</span>
+                        <div class="timeline-year">2025</div>
+                        <h4 class="mb-3">The First NUFA</h4>
+                        <p>Our inaugural awards night honored 2025's nominees at the Gulu Grand Hotel — the edition that started it all.</p>
+                        <a href="nominees.html" class="btn btn-outline-primary mt-2">View 2025 Winners</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="timeline-card">
+                        <span class="timeline-status">Past Edition</span>
+                        <div class="timeline-year">2026</div>
+                        <h4 class="mb-3">Building Momentum</h4>
+                        <p>The 2026 edition brought together more filmmakers across Northern Uganda. Full recap and gallery coming soon.</p>
+                        <a href="gallery.html" class="btn btn-outline-primary mt-2">Explore the Gallery</a>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.5s">
+                    <div class="timeline-card timeline-card--featured">
+                        <span class="timeline-status">Upcoming Edition</span>
+                        <div class="timeline-year">2027</div>
+                        <h4 class="mb-3">The Next NUFA</h4>
+                        <p>Submissions and partnership details for 2027 are opening soon. Be part of the next chapter of Northern Uganda cinema.</p>
+                        <a href="#submit" class="btn btn-primary mt-2">Submit Your Film</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Awards Timeline End -->
 
 
 <!-- Services Start -->
@@ -485,70 +347,122 @@
     <div class="row g-4">
         <!-- Film Screening -->
         <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.1s">
-            <div class="service-item bg-light text-center p-4">
+            <div class="card-elevated service-item text-center p-4 h-100">
                 <i class="fa fa-film fa-3x text-primary mb-3"></i>
                 <h4 class="mb-3">Film Screening</h4>
-                <p>Showcasing the best films from Northern Uganda and beyond, celebrating diverse storytelling.</p>
+                <p class="mb-0">Showcasing the best films from Northern Uganda and beyond, celebrating diverse storytelling.</p>
             </div>
         </div>
 
         <!-- Workshops & Training -->
         <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.3s">
-            <div class="service-item bg-light text-center p-4">
+            <div class="card-elevated service-item text-center p-4 h-100">
                 <i class="fa fa-users fa-3x text-primary mb-3"></i>
                 <h4 class="mb-3">Workshops & Training</h4>
-                <p>Empowering filmmakers with skills in directing, production, scriptwriting, and cinematography.</p>
+                <p class="mb-0">Empowering filmmakers with skills in directing, production, scriptwriting, and cinematography.</p>
             </div>
         </div>
 
         <!-- Award Ceremonies -->
         <div class="col-md-6 col-lg-4 wow fadeInUp" data-wow-delay="0.5s">
-            <div class="service-item bg-light text-center p-4">
+            <div class="card-elevated service-item text-center p-4 h-100">
                 <i class="fa fa-trophy fa-3x text-primary mb-3"></i>
                 <h4 class="mb-3">Award Ceremonies</h4>
-                <p>Recognizing outstanding talent and contributions in the Northern Uganda film industry.</p>
+                <p class="mb-0">Recognizing outstanding talent and contributions in the Northern Uganda film industry.</p>
             </div>
         </div>
 
-        <!-- Centered Orange Card -->
+        <!-- Centered CTA Card -->
         <div class="col-12 text-center wow fadeInUp" data-wow-delay="0.7s">
-            <div class="service-item bg-orange text-white text-center p-4 d-inline-block">
+            <div class="cta-card text-center p-4 d-inline-block">
                 <i class="fa fa-play-circle fa-3x text-white mb-3"></i>
                 <h4 class="mb-3">Explore Local Content</h4>
                 <p>Click below to watch local content, including movies, documentaries, short films, poetry, and more.</p>
-                <a href="moviebox.html" class="btn btn-white btn-lg text-orange">Click Me</a>
+                <a href="moviebox.html" class="btn btn-white btn-lg">Click Me</a>
             </div>
         </div>
     </div>
 </div>
 <!-- Services End -->
 
-<style>
-/* Custom CSS for the orange card */
-.bg-orange {
-    background-color: #FFA500; /* Orange color */
-    border-radius: 10px; /* Rounded corners */
-}
+    <!-- Gallery Preview Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-secondary text-uppercase">Pictorial</h6>
+                <h1 class="mb-5">Moments From the Gala</h1>
+            </div>
+            <div class="masonry wow fadeInUp" data-wow-delay="0.2s">
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-1_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-2_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-3_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-4_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-5_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-6_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-7_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+                <div class="masonry-item">
+                    <span class="badge-year">2025 Gala</span>
+                    <img src="img/gallery/nufa-8_1.webp" alt="NUFA 2025 Gala moment" loading="lazy">
+                </div>
+            </div>
+            <div class="text-center mt-4 wow fadeInUp" data-wow-delay="0.3s">
+                <a href="gallery.html" class="btn btn-outline-primary px-5 py-3">View Full Gallery</a>
+            </div>
+        </div>
+    </div>
+    <!-- Gallery Preview End -->
 
-/* Custom CSS for white text */
-.text-white {
-    color: #ffffff; /* White color */
-}
 
-/* Custom CSS for the white button with orange text */
-.btn-white {
-    background-color: #ffffff; /* White background */
-    color: #FFA500; /* Orange text */
-    border: 2px solid #ffffff; /* White border */
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
+    <!-- Partners Start -->
+    <div id="partners" class="container-fluid py-5" style="background: var(--light);">
+        <div class="container">
+            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
+                <h6 class="text-secondary text-uppercase">Our Partners</h6>
+                <h1 class="mb-2">Backed By Organizations Who Believe in Northern Cinema</h1>
+                <p class="mb-5">We're proud to work alongside partners who help make NUFA possible.</p>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-6 col-md-3 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="partner-card">Q FM Lira</div>
+                </div>
+                <div class="col-6 col-md-3 wow fadeInUp" data-wow-delay="0.2s">
+                    <div class="partner-card">Uganda Communications Commission</div>
+                </div>
+                <div class="col-6 col-md-3 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="partner-card">Kakebe Technologies</div>
+                </div>
+                <div class="col-6 col-md-3 wow fadeInUp" data-wow-delay="0.4s">
+                    <div class="partner-card">Luo Foundation</div>
+                </div>
+            </div>
+            <div class="text-center mt-5 wow fadeInUp" data-wow-delay="0.5s">
+                <a href="contact.html" class="btn btn-secondary px-5 py-3">Become a Partner</a>
+            </div>
+        </div>
+    </div>
+    <!-- Partners End -->
 
-.btn-white:hover {
-    background-color: #FFA500; /* Orange background on hover */
-    color: #ffffff; /* White text on hover */
-    border-color: #FFA500; /* Orange border on hover */
-}
-</style>
 
     <!-- Submission Start -->
     <div id="submit" class="container-fluid my-5 px-0">
@@ -643,21 +557,20 @@
     </div>
     <div class="container-fluid my-5 px-0">
         <div class="video wow fadeInUp" data-wow-delay="0.1s">
-            <button type="button" class="btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videoModal">
+            <button type="button" class="btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videoModalTicket">
                 <span></span>
             </button>
 
-            <div class="modal fade" id="videoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="videoModalTicket" tabindex="-1" aria-labelledby="ticketVideoModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content rounded-0">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Youtube Video</h5>
+                            <h5 class="modal-title" id="ticketVideoModalLabel">Youtube Video</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            16:9 aspect ratio
                             <div class="ratio ratio-16x9">
-                                <iframe class="embed-responsive-item" src="" id="video" allowfullscreen allowscriptaccess="always"
+                                <iframe class="embed-responsive-item" src="" id="videoTicket" allowfullscreen allowscriptaccess="always"
                                     allow="autoplay"></iframe>
                             </div>
                         </div>
@@ -666,70 +579,22 @@
             </div>
 
             <h1 class="text-white mb-4">Buy Your Ticket</h1>
-            <div class="card-container">
-                <div class="card">
+            <div class="ticket-card-container">
+                <div class="ticket-card">
                     <h3>Table of 5</h3>
                     <p>UGX 300,000 Per Ticket</p>
                 </div>
-                <div class="card">
+                <div class="ticket-card">
                     <h3>VIP</h3>
                     <p>UGX 50,000 Per Ticket</p>
                 </div>
-                <div class="card">
+                <div class="ticket-card">
                     <h3>Ordinary</h3>
                     <p>UGX 20,000 Per Ticket</p>
                 </div>
             </div>
 
-            <style>
-                .card-container {
-                    display: flex;
-                    flex-wrap: wrap; /* Allow cards to wrap to the next line */
-                    gap: 20px; /* Space between cards */
-                    justify-content: center; /* Center cards horizontally */
-                    padding: 20px; /* Add padding around the container */
-                }
-
-            /* Individual Card */
-                .card {
-                    background-color: #ffffff; /* White background */
-                    border: 1px solid #ff9500; /* Light border */
-                    border-radius: 20px; /* Rounded corners */
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-                    padding: 20px; /* Padding inside the card */
-                    text-align: center; /* Center text */
-                    flex: 1 1 calc(25% - 40px); /* Flex basis for 4 cards per row */
-                    max-width: 300px; /* Maximum width for each card */
-                }
-
-            /* Card Heading */
-                .card h3 {
-                    font-size: 1.5rem; /* Larger font size for headings */
-                    margin-bottom: 10px; /* Space below the heading */
-                    color: #333333; /* Dark text color */
-                }
-
-            /* Card Paragraph */
-                .card p {
-                    font-size: 1.2rem; /* Font size for price */
-                    color: #555555; /* Slightly lighter text color */
-                }
-
-            /* Responsive Design */
-                @media (max-width: 1024px) {
-                .card {
-                    flex: 1 1 calc(50% - 40px); /* 2 cards per row on tablets */
-                }
-            }
-
-                @media (max-width: 768px) {
-    .card {
-        flex: 1 1 calc(100% - 40px); /* 1 card per row on mobile */
-    }
-            }
-            </style>
-
-            <h3 class="text-white mb-0">Secure Your Spot Now!</h3>
+            <h3 class="text-white mb-0 mt-4">Secure Your Spot Now!</h3>
             </div>
             <div class="container position-relative wow fadeInUp" data-wow-delay="0.1s" style="margin-top: -6rem;">
                 <div class="row justify-content-center">
@@ -774,6 +639,7 @@
                     </div>
                 </div>
             </div>
+        </div>
     <!-- Ticket End -->
 
     <!-- Discount Logic Start-->
@@ -826,6 +692,30 @@
         calculateTotal();
     </script>
     <!-- Discount Logic End-->
+
+    <!-- Ticket Video Modal Logic -->
+    <script>
+        (function () {
+            var ticketVideoSrc;
+            document.addEventListener('DOMContentLoaded', function () {
+                var playBtn = document.querySelector('[data-bs-target="#videoModalTicket"]');
+                if (playBtn) {
+                    playBtn.addEventListener('click', function () {
+                        ticketVideoSrc = this.getAttribute('data-src');
+                    });
+                }
+                var modal = document.getElementById('videoModalTicket');
+                if (modal) {
+                    modal.addEventListener('shown.bs.modal', function () {
+                        document.getElementById('videoTicket').setAttribute('src', ticketVideoSrc + '?autoplay=1&modestbranding=1&showinfo=0');
+                    });
+                    modal.addEventListener('hide.bs.modal', function () {
+                        document.getElementById('videoTicket').setAttribute('src', '');
+                    });
+                }
+            });
+        })();
+    </script>
 
 
     <!-- Team Start -->
@@ -917,6 +807,9 @@
                     </div>
                 </div>
             </div>
+            <div class="text-center mt-5 wow fadeInUp" data-wow-delay="0.1s">
+                <a href="team.html" class="btn btn-outline-primary px-5 py-3">Meet the Full Team</a>
+            </div>
         </div>
     <!-- Team End -->
 
@@ -930,7 +823,7 @@
         <div class="row g-5">
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Contact Information</h4>
-                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Plot 43 Guly City, Northern Uganda</p>
+                <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Plot 43 Gulu City, Northern Uganda</p>
                 <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+256 774 757 587</p>
                 <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@nufa.media</p>
                 <div class="d-flex pt-2">
@@ -942,23 +835,24 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <h4 class="text-light mb-4">Event Hours</h4>
-                <h6 class="text-light">Monday - Friday:</h6>
-                <p class="mb-4">09.00 AM - 06.00 PM</p>
-                <h6 class="text-light">Saturday - Sunday:</h6>
-                <p class="mb-0">10.00 AM - 02.00 PM</p>
+                <h4 class="text-light mb-4">Explore</h4>
+                <a class="btn btn-link" href="about.html">About NUFMA</a>
+                <a class="btn btn-link" href="index.html#awards-timeline">Awards Timeline</a>
+                <a class="btn btn-link" href="gallery.html">Gallery</a>
+                <a class="btn btn-link" href="team.html">Our Team</a>
+                <a class="btn btn-link" href="index.html#partners">Partners</a>
             </div>
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Major Awards Categories</h4>
-                <a class="btn btn-link" href="">Best Film</a>
-                <a class="btn btn-link" href="">Best Director</a>
-                <a class="btn btn-link" href="">Best Actor/Actress</a>
-                <a class="btn btn-link" href="">Best Cinematography</a>
-                <a class="btn btn-link" href="">Best Documentary</a>
+                <a class="btn btn-link" href="nominees.html">Best Film</a>
+                <a class="btn btn-link" href="nominees.html">Best Director</a>
+                <a class="btn btn-link" href="nominees.html">Best Actor/Actress</a>
+                <a class="btn btn-link" href="nominees.html">Best Cinematography</a>
+                <a class="btn btn-link" href="nominees.html">Best Documentary</a>
             </div>
             <div class="col-lg-3 col-md-6">
                 <h4 class="text-light mb-4">Stay Updated</h4>
-                <p>Sign up for updates and news about NUFA 2025 and the film industry in Northern Uganda.</p>
+                <p>Sign up for updates and news about NUFMA and the film industry in Northern Uganda.</p>
                 <div class="position-relative mx-auto" style="max-width: 400px;">
                     <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
                     <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Sign Up</button>
@@ -970,7 +864,7 @@
         <div class="copyright">
             <div class="row">
                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                    &copy; <a class="border-bottom" href="#">NUFA 2025</a>, All Rights Reserved.
+                    &copy; <a class="border-bottom" href="#">NUFMA</a>, All Rights Reserved.
                 </div>
                 <div class="col-md-6 text-center text-md-end">
                     Designed by <a class="border-bottom" href="https://kakebe.tech">Kakebe Tech</a>
