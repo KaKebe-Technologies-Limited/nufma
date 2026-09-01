@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /includes/
+Disallow: /contact-submit.php
+Disallow: /subscribe.php
+Allow: /
+
+Sitemap: /sitemap.php
