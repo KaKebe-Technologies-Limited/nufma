@@ -1,13 +1,14 @@
 <?php
 /**
- * Copy this file to db.config.php on the live server and fill in the real
- * MySQL credentials from Hostinger hPanel -> Databases -> MySQL Databases.
+ * Optional credential override.
  *
- * db.config.php is git-ignored so the password never lands in the repo.
+ * db.php works without this file (it auto-detects local vs. live). Copy this
+ * to db.config.php only if you need to force specific credentials on a given
+ * environment. db.config.php is git-ignored so passwords stay out of the repo.
  */
 return [
     "host" => "localhost",
-    "user" => "u850523537_xxxxx",   // Hostinger DB user
-    "pass" => "REPLACE_WITH_DB_PASSWORD",
-    "name" => "u850523537_xxxxx",   // Hostinger DB name
+    "user" => "u850523537_NUFAUser2",
+    "pass" => "your-db-password",
+    "name" => "u850523537_NUFADB2",
 ];
