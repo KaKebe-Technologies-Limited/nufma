@@ -1,9 +1,11 @@
 <?php
-$pageTitle = "Gallery — NUFA Awards Pictorials | NUFA";
-$pageDesc  = "Pictorials from the NUFA Awards — relive the red carpet, the gala and the community behind Northern Uganda's film industry.";
+$pageTitle = "NUFA Awards Gallery — Red Carpet & Gala Photos";
+$pageDesc  = "Pictorials from the NUFA Awards — the red carpet, the gala night and the community driving Northern Uganda's film industry forward.";
 $activeNav = "gallery";
 $base = "";
 $canonicalPath = "gallery.php";
+$ogImage = "assets/images/og/og-gallery.jpg";
+$ogImageAlt = "Guests at the NUFA Awards gala night";
 include __DIR__ . "/includes/header.php";
 ?>
 <script type="application/ld+json">

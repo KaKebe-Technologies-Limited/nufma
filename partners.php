@@ -1,9 +1,11 @@
 <?php
-$pageTitle = "Partners & Sponsors — NUFA | Northern Uganda Filmmakers Association";
-$pageDesc  = "Meet the organisations backing NUFA and the NUFA Awards, and find out how your brand can partner with Northern Uganda's film industry.";
+$pageTitle = "Partner With NUFA — Sponsor Northern Uganda Film";
+$pageDesc  = "Meet the organisations backing NUFA and the NUFA Awards, and find out how your brand can partner with Northern Uganda's fast-growing film industry.";
 $activeNav = "partners";
 $base = "";
 $canonicalPath = "partners.php";
+$ogImage = "assets/images/og/og-partners.jpg";
+$ogImageAlt = "A NUFA crew filming livestock keepers in Karamoja";
 require __DIR__ . "/includes/db.php";
 include __DIR__ . "/includes/header.php";
 ?>

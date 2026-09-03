@@ -1,9 +1,11 @@
 <?php
-$pageTitle = "Contact — NUFA | Northern Uganda Filmmakers Association";
-$pageDesc  = "Get in touch with NUFA — membership, training, press and partnership enquiries welcome.";
+$pageTitle = "Contact NUFA — Membership, Training & Press";
+$pageDesc  = "Get in touch with NUFA for membership, training, press and partnership enquiries. Reach the Northern Uganda Filmmakers Association team in Gulu City.";
 $activeNav = "contact";
 $base = "";
 $canonicalPath = "contact.php";
+$ogImage = "assets/images/og/og-contact.jpg";
+$ogImageAlt = "A guest in beaded regalia at the NUFA Awards";
 include __DIR__ . "/includes/header.php";
 ?>
 <a id="top"></a>

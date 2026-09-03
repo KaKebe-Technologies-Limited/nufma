@@ -1,9 +1,11 @@
 <?php
-$pageTitle = "About NUFA — Our Story, Vision, Values & Team | Northern Uganda Filmmakers Association";
-$pageDesc  = "Meet NUFA: our story, mission, vision, values and the executive team uniting, training and celebrating filmmakers across Acholi, Lango, West Nile and Karamoja.";
+$pageTitle = "About NUFA — Our Story, Mission, Vision & Team";
+$pageDesc  = "The story behind NUFA: our mission to unite and train Northern Uganda's filmmakers, the vision and values that guide us, and the executive team leading the association.";
 $activeNav = "about";
 $base = "";
 $canonicalPath = "about.php";
+$ogImage = "assets/images/og/og-about.jpg";
+$ogImageAlt = "Two NUFA filmmakers reviewing a shot on a cinema camera";
 include __DIR__ . "/includes/header.php";
 ?>
 <a id="top"></a>

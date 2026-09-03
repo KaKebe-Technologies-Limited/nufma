@@ -3,13 +3,23 @@
  * Shared site header. Each page sets $pageTitle, $pageDesc and $activeNav
  * before including this file.
  */
-if(!isset($pageTitle)) $pageTitle = "NUFA — Northern Uganda Filmmakers Association";
+if(!isset($pageTitle)) $pageTitle = "NUFA — Northern Uganda Filmmakers Association | Home of Northern Storytellers";
 if(!isset($pageDesc)) $pageDesc = "NUFA is the home of Northern Uganda's filmmakers — uniting, training and celebrating storytellers across Acholi, Lango, West Nile and Karamoja through the annual NUFA Awards.";
 if(!isset($activeNav)) $activeNav = "";
 if(!isset($base)) $base = "";
-if(!isset($ogImage)) $ogImage = "assets/images/logo/nufa-logo.png";
+if(!isset($ogImage)) $ogImage = "assets/images/og/og-default.jpg";
+if(!isset($ogImageAlt)) $ogImageAlt = "NUFA — Northern Uganda Filmmakers Association";
+if(!isset($ogType)) $ogType = "website";
+if(!isset($metaRobots)) $metaRobots = "index, follow, max-image-preview:large, max-snippet:-1";
+if(!isset($articleMeta)) $articleMeta = null; // ['published'=>, 'modified'=>, 'section'=>, 'author'=>]
 if(!isset($canonicalPath)) $canonicalPath = basename($_SERVER['PHP_SELF']);
-$siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']) === '/' ? '' : dirname(str_replace('\\','/',$_SERVER['SCRIPT_NAME'])), '/');
+$scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') ? 'https://' : 'http://';
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$scriptDir = ($scriptDir === '/' || $scriptDir === '.') ? '' : rtrim($scriptDir, '/');
+$siteUrl = $scheme . $_SERVER['HTTP_HOST'] . $scriptDir;
+$canonicalUrl = $siteUrl . '/' . ltrim($canonicalPath, '/');
+$ogImageUrl = preg_match('~^https?://~', $ogImage) ? $ogImage : $siteUrl . '/' . ltrim($ogImage, '/');
 if(!isset($conn)) require __DIR__ . "/db.php";
 require __DIR__ . "/fonts.php";
 $activeFont = nufa_get_font_preset($conn);
@@ -20,21 +30,35 @@ $activeFont = nufa_get_font_preset($conn);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo $pageTitle; ?></title>
 <meta name="description" content="<?php echo $pageDesc; ?>">
+<meta name="robots" content="<?php echo htmlspecialchars($metaRobots); ?>">
 <meta name="theme-color" content="#FAF6EE">
-<link rel="canonical" href="<?php echo $siteUrl . '/' . ltrim($canonicalPath,'/'); ?>">
+<link rel="canonical" href="<?php echo htmlspecialchars($canonicalUrl); ?>">
 
 <meta property="og:site_name" content="NUFA — Northern Uganda Filmmakers Association">
-<meta property="og:title" content="<?php echo $pageTitle; ?>">
-<meta property="og:description" content="<?php echo $pageDesc; ?>">
-<meta property="og:type" content="website">
-<meta property="og:url" content="<?php echo $siteUrl . '/' . ltrim($canonicalPath,'/'); ?>">
-<meta property="og:image" content="<?php echo $siteUrl . '/' . $ogImage; ?>">
+<meta property="og:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+<meta property="og:description" content="<?php echo htmlspecialchars($pageDesc); ?>">
+<meta property="og:type" content="<?php echo htmlspecialchars($ogType); ?>">
+<meta property="og:url" content="<?php echo htmlspecialchars($canonicalUrl); ?>">
+<meta property="og:image" content="<?php echo htmlspecialchars($ogImageUrl); ?>">
+<meta property="og:image:secure_url" content="<?php echo htmlspecialchars($ogImageUrl); ?>">
+<meta property="og:image:type" content="<?php echo str_ends_with($ogImageUrl, '.png') ? 'image/png' : 'image/jpeg'; ?>">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="<?php echo htmlspecialchars($ogImageAlt); ?>">
 <meta property="og:locale" content="en_UG">
+<?php if ($articleMeta): ?>
+<meta property="article:published_time" content="<?php echo htmlspecialchars($articleMeta['published'] ?? ''); ?>">
+<meta property="article:modified_time" content="<?php echo htmlspecialchars($articleMeta['modified'] ?? $articleMeta['published'] ?? ''); ?>">
+<meta property="article:section" content="<?php echo htmlspecialchars($articleMeta['section'] ?? 'News'); ?>">
+<meta property="article:author" content="<?php echo htmlspecialchars($articleMeta['author'] ?? 'NUFA Team'); ?>">
+<?php endif; ?>
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="<?php echo $pageTitle; ?>">
-<meta name="twitter:description" content="<?php echo $pageDesc; ?>">
-<meta name="twitter:image" content="<?php echo $siteUrl . '/' . $ogImage; ?>">
+<meta name="twitter:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+<meta name="twitter:description" content="<?php echo htmlspecialchars($pageDesc); ?>">
+<meta name="twitter:image" content="<?php echo htmlspecialchars($ogImageUrl); ?>">
+<meta name="twitter:image:alt" content="<?php echo htmlspecialchars($ogImageAlt); ?>">
 <meta name="twitter:site" content="@NUFA_OFFICIAL1">
+<meta name="twitter:creator" content="@NUFA_OFFICIAL1">
 
 <script type="application/ld+json">
 {

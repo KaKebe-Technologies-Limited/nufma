@@ -2,7 +2,11 @@
 require __DIR__ . "/includes/db.php";
 header("Content-Type: application/xml; charset=utf-8");
 
-$siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+$scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') ? 'https://' : 'http://';
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$scriptDir = ($scriptDir === '/' || $scriptDir === '.') ? '' : rtrim($scriptDir, '/');
+$siteUrl = $scheme . $_SERVER['HTTP_HOST'] . $scriptDir;
 
 $staticPages = [
     ["index.php", "1.0", "weekly"],

@@ -1,9 +1,11 @@
 <?php
-$pageTitle = "News — NUFA | Northern Uganda Filmmakers Association";
-$pageDesc  = "Award recaps, training programmes, partnerships and the road to the NUFA Awards 2027 — the latest from NUFA.";
+$pageTitle = "NUFA News — Awards Recaps, Training & Updates";
+$pageDesc  = "The latest from NUFA: awards recaps, training programmes, new partnerships and the road to the NUFA Awards 2027 across Northern Uganda's film community.";
 $activeNav = "news";
 $base = "";
 $canonicalPath = "news.php";
+$ogImage = "assets/images/og/og-news.jpg";
+$ogImageAlt = "A NUFA film crew recording on location with a boom mic";
 require __DIR__ . "/includes/db.php";
 include __DIR__ . "/includes/header.php";
 ?>

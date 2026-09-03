@@ -1,8 +1,11 @@
 <?php
-$pageTitle = "NUFA — Northern Uganda Filmmakers Association | Home of Northern Storytellers";
-$pageDesc  = "NUFA unites, trains and celebrates filmmakers across Acholi, Lango, West Nile and Karamoja. Discover the NUFA Awards, our community, and how to partner with us.";
+$pageTitle = "NUFA | Northern Uganda Filmmakers Association";
+$pageDesc  = "NUFA unites, trains and celebrates filmmakers across Acholi, Lango, West Nile and Karamoja — home of the annual NUFA Awards. Explore our work and partner with us.";
 $activeNav = "home";
 $base = "";
+$canonicalPath = "index.php";
+$ogImage = "assets/images/og/og-home.jpg";
+$ogImageAlt = "A NUFA film crew shooting on location in a Northern Uganda village";
 require __DIR__ . "/includes/db.php";
 include __DIR__ . "/includes/header.php";
 ?>

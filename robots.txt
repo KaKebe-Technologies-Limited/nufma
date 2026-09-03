@@ -5,4 +5,4 @@ Disallow: /contact-submit.php
 Disallow: /subscribe.php
 Allow: /
 
-Sitemap: /sitemap.php
+Sitemap: https://nufawards.com/sitemap.php

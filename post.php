@@ -12,13 +12,26 @@ if (!$post) {
     exit;
 }
 
-$conn->query("UPDATE posts SET views = views + 1 WHERE id = " . (int)$post['id']);
+// keep updated_at stable so it doesn't invalidate the article's dateModified on every view
+$conn->query("UPDATE posts SET views = views + 1, updated_at = updated_at WHERE id = " . (int)$post['id']);
+
+$metaDescRaw = trim($post['excerpt']) !== '' ? $post['excerpt'] : strip_tags($post['body']);
+$metaDescRaw = preg_replace('/\s+/', ' ', trim($metaDescRaw));
+if (mb_strlen($metaDescRaw) > 160) $metaDescRaw = mb_substr($metaDescRaw, 0, 157) . '…';
 
 $pageTitle = htmlspecialchars($post['title']) . " | NUFA News";
-$pageDesc  = htmlspecialchars($post['excerpt']);
+$pageDesc  = htmlspecialchars($metaDescRaw);
 $activeNav = "news";
 $base = "";
-$ogImage = "assets/images/" . $post['image'];
+$ogImage = !empty($post['image']) ? "assets/images/" . $post['image'] : "assets/images/og/og-news.jpg";
+$ogImageAlt = htmlspecialchars($post['title']);
+$ogType = "article";
+$articleMeta = [
+  'published' => date('c', strtotime($post['published_at'])),
+  'modified'  => date('c', strtotime($post['updated_at'] ?: $post['published_at'])),
+  'section'   => $post['category'],
+  'author'    => $post['author'],
+];
 $canonicalPath = "post.php?slug=" . $post['slug'];
 include __DIR__ . "/includes/header.php";
 ?>
@@ -26,11 +39,14 @@ include __DIR__ . "/includes/header.php";
 {
   "@context": "https://schema.org",
   "@type": "NewsArticle",
-  "headline": <?php echo json_encode($post['title']); ?>,
-  "description": <?php echo json_encode($post['excerpt']); ?>,
-  "image": [<?php echo json_encode($siteUrl . "/assets/images/" . $post['image']); ?>],
+  "mainEntityOfPage": {"@type": "WebPage", "@id": <?php echo json_encode($canonicalUrl); ?>},
+  "headline": <?php echo json_encode(mb_substr($post['title'], 0, 110)); ?>,
+  "description": <?php echo json_encode($metaDescRaw); ?>,
+  "image": [<?php echo json_encode($ogImageUrl); ?>],
   "datePublished": "<?php echo date('c', strtotime($post['published_at'])); ?>",
-  "author": {"@type": "Organization", "name": <?php echo json_encode($post['author']); ?>},
+  "dateModified": "<?php echo date('c', strtotime($post['updated_at'] ?: $post['published_at'])); ?>",
+  "articleSection": <?php echo json_encode($post['category']); ?>,
+  "author": {"@type": "Person", "name": <?php echo json_encode($post['author']); ?>},
   "publisher": {
     "@type": "Organization",
     "name": "NUFA — Northern Uganda Filmmakers Association",

@@ -1,9 +1,10 @@
 <?php
-$pageTitle = "NUFA Awards 2026 Winners & 2027 Tickets — Northern Uganda Film Awards";
-$pageDesc  = "NUFA26 \"Stories That Redefine Us\": 92 submissions, 64 nominations, 1,000+ guests and the full winners list. Relive 2025 & 2026, and get tickets for NUFA Awards 2027.";
+$pageTitle = "NUFA Awards — 2026 Winners & 2027 Tickets";
+$pageDesc  = "The NUFA Awards honour the best of Northern Uganda film. See the NUFA26 winners list, relive the 2025 and 2026 editions, and get tickets for NUFA Awards 2027.";
 $activeNav = "awards";
 $base = "";
-$ogImage = "assets/images/gallery/2026/nufa26-15.jpg";
+$ogImage = "assets/images/og/og-awards.jpg";
+$ogImageAlt = "On stage at the NUFA Awards 2025 Golden Night";
 $canonicalPath = "awards.php";
 include __DIR__ . "/includes/header.php";
 ?>
