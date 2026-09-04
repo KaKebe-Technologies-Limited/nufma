@@ -47,7 +47,7 @@ function hc_col($imgs){
           <img src="assets/images/team/team-guild-leader.webp" alt="">
           <img src="assets/images/team/team-publicity.webp" alt="">
         </div>
-        <div class="stat"><b>1,000+</b><span>NUFA26 gala attendees</span></div>
+        <div class="stat"><b>1,000+</b><span>NUFA26 Gala attendees</span></div>
       </div>
     </div>
   </div>
