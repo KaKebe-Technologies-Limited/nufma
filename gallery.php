@@ -7,6 +7,11 @@ $canonicalPath = "gallery.php";
 $ogImage = "assets/images/og/og-gallery.jpg";
 $ogImageAlt = "Guests at the NUFA Awards gala night";
 include __DIR__ . "/includes/header.php";
+require __DIR__ . "/includes/content.php";
+require __DIR__ . "/includes/content-schemas.php";
+$gallerySchema = $CMS_SCHEMAS['gallery']['fields'];
+$galleryVals = cms_load($conn, 'gallery', $gallerySchema);
+function gallery_c($key) { global $gallerySchema, $galleryVals; return cms_out($gallerySchema, $galleryVals, $key); }
 ?>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
@@ -40,13 +45,13 @@ for($i=1;$i<=21;$i++){
 <a id="top"></a>
 
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-12.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo htmlspecialchars($galleryVals['hero_image']); ?>" alt="" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Gallery</span></div>
-    <div class="eyebrow">Pictorials</div>
-    <h1 style="margin-top:18px">The moments behind the red carpet</h1>
-    <p>A running record of every NUFA Awards edition — from the inaugural 2025 gala to NUFA26 at Acholi Inn.</p>
+    <div class="eyebrow"><?php echo gallery_c('hero_eyebrow'); ?></div>
+    <h1 style="margin-top:18px"><?php echo gallery_c('hero_heading'); ?></h1>
+    <p><?php echo gallery_c('hero_lede'); ?></p>
   </div>
 </section>
 

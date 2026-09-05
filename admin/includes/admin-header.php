@@ -23,9 +23,21 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="3" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="3" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="currentColor" stroke-width="1.6"/></svg>
         Dashboard
       </a>
+      <a href="content.php" class="<?php echo ($adminNav??'')==='content'?'active':''; ?>">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 9h8M8 13h8M8 17h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Page Content
+      </a>
       <a href="posts.php" class="<?php echo ($adminNav??'')==='posts'?'active':''; ?>">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h13l3 3v11H4V5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         Blog Posts
+      </a>
+      <a href="award-editions.php" class="<?php echo ($adminNav??'')==='awards'?'active':''; ?>">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 10l-5 4.3L17.4 21 12 17.3 6.6 21 8 14.3 3 10l6.4-1.4L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        Awards Archive
+      </a>
+      <a href="team.php" class="<?php echo ($adminNav??'')==='team'?'active':''; ?>">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/><path d="M4 20v-1a5 5 0 0 1 5-5h1a5 5 0 0 1 5 5v1M15.5 4.2a3.5 3.5 0 0 1 0 6.6M18 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        Team
       </a>
       <a href="sliders.php" class="<?php echo ($adminNav??'')==='sliders'?'active':''; ?>">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 15l5-4 4 3 5-5 4 3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>

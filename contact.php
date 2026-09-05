@@ -7,6 +7,11 @@ $canonicalPath = "contact.php";
 $ogImage = "assets/images/og/og-contact.jpg";
 $ogImageAlt = "A guest in beaded regalia at the NUFA Awards";
 include __DIR__ . "/includes/header.php";
+require __DIR__ . "/includes/content.php";
+require __DIR__ . "/includes/content-schemas.php";
+$contactSchema = $CMS_SCHEMAS['contact']['fields'];
+$contactVals = cms_load($conn, 'contact', $contactSchema);
+function contact_c($key) { global $contactSchema, $contactVals; return cms_out($contactSchema, $contactVals, $key); }
 ?>
 <a id="top"></a>
 <script type="application/ld+json">
@@ -17,13 +22,13 @@ include __DIR__ . "/includes/header.php";
 </script>
 
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-20.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo htmlspecialchars($contactVals['hero_image']); ?>" alt="" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Contact</span></div>
-    <div class="eyebrow">Get In Touch</div>
-    <h1 style="margin-top:18px">Let's talk film</h1>
-    <p>Membership, training, press or partnership — reach out and the NUFA team will get back to you.</p>
+    <div class="eyebrow"><?php echo contact_c('hero_eyebrow'); ?></div>
+    <h1 style="margin-top:18px"><?php echo contact_c('hero_heading'); ?></h1>
+    <p><?php echo contact_c('hero_lede'); ?></p>
   </div>
 </section>
 
@@ -32,25 +37,25 @@ include __DIR__ . "/includes/header.php";
     <div class="contact-info-card" data-reveal>
       <div class="contact-row">
         <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.6"/></svg></span>
-        <div><b>Visit</b><span>Acholi Inn, Gulu City — Northern Uganda</span></div>
+        <div><b>Visit</b><span><?php echo htmlspecialchars($siteSettings['site_address']); ?></span></div>
       </div>
       <div class="contact-row">
         <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="1.6"/></svg></span>
-        <div><b>Email</b><a href="mailto:info@nufa.media">info@nufa.media</a></div>
+        <div><b>Email</b><a href="mailto:<?php echo htmlspecialchars($siteSettings['site_email']); ?>"><?php echo htmlspecialchars($siteSettings['site_email']); ?></a></div>
       </div>
       <div class="contact-row">
         <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .3 2 .7 3a2 2 0 0 1-.5 2.1L8 10a16 16 0 0 0 6 6l1.2-1.3a2 2 0 0 1 2.1-.5c1 .4 2 .6 3 .7a2 2 0 0 1 1.7 2Z" stroke="currentColor" stroke-width="1.6"/></svg></span>
-        <div><b>Call</b><a href="tel:+256700000000">+256 700 000 000</a></div>
+        <div><b>Call</b><a href="tel:<?php echo htmlspecialchars(nufa_tel_href($siteSettings['site_phone'])); ?>"><?php echo htmlspecialchars($siteSettings['site_phone']); ?></a></div>
       </div>
       <div class="contact-row">
         <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10h18M7 3v4M17 3v4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/></svg></span>
-        <div><b>Office hours</b><span>Mon – Fri, 9am – 5pm EAT</span></div>
+        <div><b>Office hours</b><span><?php echo contact_c('office_hours'); ?></span></div>
       </div>
       <div class="social-row">
-        <a href="https://x.com/NUFA_OFFICIAL1" target="_blank" rel="noopener" aria-label="X / Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.2-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 4h-1.8l12.1 16Z"/></svg></a>
-        <a href="https://www.facebook.com/nufa2026" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.1c0-.95.27-1.6 1.63-1.6H17V3.5c-.3-.04-1.3-.13-2.5-.13-2.47 0-4.16 1.5-4.16 4.27v2.6H7.5v3.3h2.84V22h3.16Z"/></svg></a>
-        <a href="https://www.instagram.com/nufa2026" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Zm0 5.9a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6ZM16.9 6a.85.85 0 1 1 0 1.7.85.85 0 0 1 0-1.7Z"/><path d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5Zm3.3 15a3.3 3.3 0 0 1-3.3 3.3H7A3.3 3.3 0 0 1 3.7 17V7A3.3 3.3 0 0 1 7 3.7h10A3.3 3.3 0 0 1 20.3 7v10Z"/></svg></a>
-        <a href="https://www.linkedin.com/company/northern-uganda-film-makers-association-nufa" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92ZM20.44 20h-3.37v-5.9c0-1.4-.03-3.2-1.95-3.2-1.96 0-2.26 1.53-2.26 3.1V20H9.5V8.5h3.24v1.57h.05c.45-.86 1.56-1.77 3.21-1.77 3.44 0 4.07 2.26 4.07 5.2V20Z"/></svg></a>
+        <a href="<?php echo htmlspecialchars($siteSettings['x_url']); ?>" target="_blank" rel="noopener" aria-label="X / Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.2-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 4h-1.8l12.1 16Z"/></svg></a>
+        <a href="<?php echo htmlspecialchars($siteSettings['facebook_url']); ?>" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.1c0-.95.27-1.6 1.63-1.6H17V3.5c-.3-.04-1.3-.13-2.5-.13-2.47 0-4.16 1.5-4.16 4.27v2.6H7.5v3.3h2.84V22h3.16Z"/></svg></a>
+        <a href="<?php echo htmlspecialchars($siteSettings['instagram_url']); ?>" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Zm0 5.9a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6ZM16.9 6a.85.85 0 1 1 0 1.7.85.85 0 0 1 0-1.7Z"/><path d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5Zm3.3 15a3.3 3.3 0 0 1-3.3 3.3H7A3.3 3.3 0 0 1 3.7 17V7A3.3 3.3 0 0 1 7 3.7h10A3.3 3.3 0 0 1 20.3 7v10Z"/></svg></a>
+        <a href="<?php echo htmlspecialchars($siteSettings['linkedin_url']); ?>" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92ZM20.44 20h-3.37v-5.9c0-1.4-.03-3.2-1.95-3.2-1.96 0-2.26 1.53-2.26 3.1V20H9.5V8.5h3.24v1.57h.05c.45-.86 1.56-1.77 3.21-1.77 3.44 0 4.07 2.26 4.07 5.2V20Z"/></svg></a>
       </div>
     </div>
 

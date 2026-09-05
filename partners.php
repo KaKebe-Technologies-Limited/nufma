@@ -8,6 +8,11 @@ $ogImage = "assets/images/og/og-partners.jpg";
 $ogImageAlt = "A NUFA crew filming livestock keepers in Karamoja";
 require __DIR__ . "/includes/db.php";
 include __DIR__ . "/includes/header.php";
+require __DIR__ . "/includes/content.php";
+require __DIR__ . "/includes/content-schemas.php";
+$partnersSchema = $CMS_SCHEMAS['partners']['fields'];
+$partnersVals = cms_load($conn, 'partners', $partnersSchema);
+function partners_c($key) { global $partnersSchema, $partnersVals; return cms_out($partnersSchema, $partnersVals, $key); }
 ?>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
@@ -26,13 +31,13 @@ while ($row = $res->fetch_assoc()) {
 <a id="top"></a>
 
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-19.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo htmlspecialchars($partnersVals['hero_image']); ?>" alt="" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Partners</span></div>
-    <div class="eyebrow">Partners &amp; Sponsors</div>
-    <h1 style="margin-top:18px">Backed by organisations who believe in Northern storytelling</h1>
-    <p>From media houses to technology firms, these partners make NUFA's training and the NUFA Awards possible.</p>
+    <div class="eyebrow"><?php echo partners_c('hero_eyebrow'); ?></div>
+    <h1 style="margin-top:18px"><?php echo partners_c('hero_heading'); ?></h1>
+    <p><?php echo partners_c('hero_lede'); ?></p>
   </div>
 </section>
 

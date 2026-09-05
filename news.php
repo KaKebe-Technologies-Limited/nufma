@@ -8,6 +8,11 @@ $ogImage = "assets/images/og/og-news.jpg";
 $ogImageAlt = "A NUFA film crew recording on location with a boom mic";
 require __DIR__ . "/includes/db.php";
 include __DIR__ . "/includes/header.php";
+require __DIR__ . "/includes/content.php";
+require __DIR__ . "/includes/content-schemas.php";
+$newsSchema = $CMS_SCHEMAS['news']['fields'];
+$newsVals = cms_load($conn, 'news', $newsSchema);
+function news_c($key) { global $newsSchema, $newsVals; return cms_out($newsSchema, $newsVals, $key); }
 ?>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
@@ -36,11 +41,11 @@ function newsDate($d){ return date("d M Y", strtotime($d)); }
 <a id="top"></a>
 
 <section class="page-hero" style="min-height:220px">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-16.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo htmlspecialchars($newsVals['hero_image']); ?>" alt="" aria-hidden="true"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>News</span></div>
-    <div class="eyebrow">Newsroom</div>
-    <h1 style="margin-top:12px">What's happening at NUFA</h1>
+    <div class="eyebrow"><?php echo news_c('hero_eyebrow'); ?></div>
+    <h1 style="margin-top:12px"><?php echo news_c('hero_heading'); ?></h1>
   </div>
 </section>
 
