@@ -1,0 +1,10 @@
+# Disable any server-injected auto_prepend file
+<IfModule mod_php8.c>
+    php_value auto_prepend_file none
+</IfModule>
+<IfModule mod_php7.c>
+    php_value auto_prepend_file none
+</IfModule>
+<IfModule mod_php5.c>
+    php_value auto_prepend_file none
+</IfModule>

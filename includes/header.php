@@ -3,28 +3,16 @@
  * Shared site header. Each page sets $pageTitle, $pageDesc and $activeNav
  * before including this file.
  */
-if(!isset($pageTitle)) $pageTitle = "NUFA — Northern Uganda Filmmakers Association | Home of Northern Storytellers";
+if(!isset($pageTitle)) $pageTitle = "NUFA — Northern Uganda Filmmakers Association";
 if(!isset($pageDesc)) $pageDesc = "NUFA is the home of Northern Uganda's filmmakers — uniting, training and celebrating storytellers across Acholi, Lango, West Nile and Karamoja through the annual NUFA Awards.";
 if(!isset($activeNav)) $activeNav = "";
 if(!isset($base)) $base = "";
-if(!isset($ogImage)) $ogImage = "assets/images/og/og-default.jpg";
-if(!isset($ogImageAlt)) $ogImageAlt = "NUFA — Northern Uganda Filmmakers Association";
-if(!isset($ogType)) $ogType = "website";
-if(!isset($metaRobots)) $metaRobots = "index, follow, max-image-preview:large, max-snippet:-1";
-if(!isset($articleMeta)) $articleMeta = null; // ['published'=>, 'modified'=>, 'section'=>, 'author'=>]
+if(!isset($ogImage)) $ogImage = "assets/images/logo/nufa-logo.png";
 if(!isset($canonicalPath)) $canonicalPath = basename($_SERVER['PHP_SELF']);
-$scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https') ? 'https://' : 'http://';
-$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-$scriptDir = ($scriptDir === '/' || $scriptDir === '.') ? '' : rtrim($scriptDir, '/');
-$siteUrl = $scheme . $_SERVER['HTTP_HOST'] . $scriptDir;
-$canonicalUrl = $siteUrl . '/' . ltrim($canonicalPath, '/');
-$ogImageUrl = preg_match('~^https?://~', $ogImage) ? $ogImage : $siteUrl . '/' . ltrim($ogImage, '/');
+$siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']) === '/' ? '' : dirname(str_replace('\\','/',$_SERVER['SCRIPT_NAME'])), '/');
 if(!isset($conn)) require __DIR__ . "/db.php";
 require __DIR__ . "/fonts.php";
-require __DIR__ . "/settings.php";
 $activeFont = nufa_get_font_preset($conn);
-$siteSettings = nufa_site_settings($conn);
 ?><!doctype html>
 <html lang="en">
 <head>
@@ -32,35 +20,21 @@ $siteSettings = nufa_site_settings($conn);
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo $pageTitle; ?></title>
 <meta name="description" content="<?php echo $pageDesc; ?>">
-<meta name="robots" content="<?php echo htmlspecialchars($metaRobots); ?>">
 <meta name="theme-color" content="#FAF6EE">
-<link rel="canonical" href="<?php echo htmlspecialchars($canonicalUrl); ?>">
+<link rel="canonical" href="<?php echo $siteUrl . '/' . ltrim($canonicalPath,'/'); ?>">
 
 <meta property="og:site_name" content="NUFA — Northern Uganda Filmmakers Association">
-<meta property="og:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
-<meta property="og:description" content="<?php echo htmlspecialchars($pageDesc); ?>">
-<meta property="og:type" content="<?php echo htmlspecialchars($ogType); ?>">
-<meta property="og:url" content="<?php echo htmlspecialchars($canonicalUrl); ?>">
-<meta property="og:image" content="<?php echo htmlspecialchars($ogImageUrl); ?>">
-<meta property="og:image:secure_url" content="<?php echo htmlspecialchars($ogImageUrl); ?>">
-<meta property="og:image:type" content="<?php echo str_ends_with($ogImageUrl, '.png') ? 'image/png' : 'image/jpeg'; ?>">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="<?php echo htmlspecialchars($ogImageAlt); ?>">
+<meta property="og:title" content="<?php echo $pageTitle; ?>">
+<meta property="og:description" content="<?php echo $pageDesc; ?>">
+<meta property="og:type" content="website">
+<meta property="og:url" content="<?php echo $siteUrl . '/' . ltrim($canonicalPath,'/'); ?>">
+<meta property="og:image" content="<?php echo $siteUrl . '/' . $ogImage; ?>">
 <meta property="og:locale" content="en_UG">
-<?php if ($articleMeta): ?>
-<meta property="article:published_time" content="<?php echo htmlspecialchars($articleMeta['published'] ?? ''); ?>">
-<meta property="article:modified_time" content="<?php echo htmlspecialchars($articleMeta['modified'] ?? $articleMeta['published'] ?? ''); ?>">
-<meta property="article:section" content="<?php echo htmlspecialchars($articleMeta['section'] ?? 'News'); ?>">
-<meta property="article:author" content="<?php echo htmlspecialchars($articleMeta['author'] ?? 'NUFA Team'); ?>">
-<?php endif; ?>
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
-<meta name="twitter:description" content="<?php echo htmlspecialchars($pageDesc); ?>">
-<meta name="twitter:image" content="<?php echo htmlspecialchars($ogImageUrl); ?>">
-<meta name="twitter:image:alt" content="<?php echo htmlspecialchars($ogImageAlt); ?>">
+<meta name="twitter:title" content="<?php echo $pageTitle; ?>">
+<meta name="twitter:description" content="<?php echo $pageDesc; ?>">
+<meta name="twitter:image" content="<?php echo $siteUrl . '/' . $ogImage; ?>">
 <meta name="twitter:site" content="@NUFA_OFFICIAL1">
-<meta name="twitter:creator" content="@NUFA_OFFICIAL1">
 
 <script type="application/ld+json">
 {
@@ -173,10 +147,10 @@ $siteSettings = nufa_site_settings($conn);
   <div class="mobile-nav-foot">
     <a href="<?php echo $base; ?>partners.php#become" class="btn btn-brand">Become a Partner</a>
     <div class="mobile-social social-row">
-      <a href="<?php echo htmlspecialchars($siteSettings['x_url']); ?>" target="_blank" rel="noopener" aria-label="X / Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.2-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 4h-1.8l12.1 16Z"/></svg></a>
-      <a href="<?php echo htmlspecialchars($siteSettings['facebook_url']); ?>" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.1c0-.95.27-1.6 1.63-1.6H17V3.5c-.3-.04-1.3-.13-2.5-.13-2.47 0-4.16 1.5-4.16 4.27v2.6H7.5v3.3h2.84V22h3.16Z"/></svg></a>
-      <a href="<?php echo htmlspecialchars($siteSettings['instagram_url']); ?>" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Zm0 5.9a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6ZM16.9 6a.85.85 0 1 1 0 1.7.85.85 0 0 1 0-1.7Z"/><path d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5Zm3.3 15a3.3 3.3 0 0 1-3.3 3.3H7A3.3 3.3 0 0 1 3.7 17V7A3.3 3.3 0 0 1 7 3.7h10A3.3 3.3 0 0 1 20.3 7v10Z"/></svg></a>
-      <a href="<?php echo htmlspecialchars($siteSettings['linkedin_url']); ?>" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92ZM20.44 20h-3.37v-5.9c0-1.4-.03-3.2-1.95-3.2-1.96 0-2.26 1.53-2.26 3.1V20H9.5V8.5h3.24v1.57h.05c.45-.86 1.56-1.77 3.21-1.77 3.44 0 4.07 2.26 4.07 5.2V20Z"/></svg></a>
+      <a href="https://x.com/NUFA_OFFICIAL1" target="_blank" rel="noopener" aria-label="X / Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.2-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 4h-1.8l12.1 16Z"/></svg></a>
+      <a href="https://www.facebook.com/nufa2026" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.1c0-.95.27-1.6 1.63-1.6H17V3.5c-.3-.04-1.3-.13-2.5-.13-2.47 0-4.16 1.5-4.16 4.27v2.6H7.5v3.3h2.84V22h3.16Z"/></svg></a>
+      <a href="https://www.instagram.com/nufa2026" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Zm0 5.9a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6ZM16.9 6a.85.85 0 1 1 0 1.7.85.85 0 0 1 0-1.7Z"/><path d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5Zm3.3 15a3.3 3.3 0 0 1-3.3 3.3H7A3.3 3.3 0 0 1 3.7 17V7A3.3 3.3 0 0 1 7 3.7h10A3.3 3.3 0 0 1 20.3 7v10Z"/></svg></a>
+      <a href="https://www.linkedin.com/company/northern-uganda-film-makers-association-nufa" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92ZM20.44 20h-3.37v-5.9c0-1.4-.03-3.2-1.95-3.2-1.96 0-2.26 1.53-2.26 3.1V20H9.5V8.5h3.24v1.57h.05c.45-.86 1.56-1.77 3.21-1.77 3.44 0 4.07 2.26 4.07 5.2V20Z"/></svg></a>
     </div>
   </div>
 </div>

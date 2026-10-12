@@ -12,22 +12,31 @@ if (isset($_GET['delete'])) {
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!empty($_FILES['image']['name'])) {
-        $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-        if (in_array($ext, ['jpg','jpeg','png','webp'])) {
-            $fname = 'gallery-' . time() . '.' . $ext;
-            $dest = __DIR__ . "/../assets/images/uploads/posts/" . $fname;
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
-                $caption = trim($_POST['caption']);
-                $edition = trim($_POST['edition']);
-                $image = "uploads/posts/" . $fname;
-                $stmt = $conn->prepare("INSERT INTO gallery_images (image, caption, edition) VALUES (?,?,?)");
-                $stmt->bind_param("sss", $image, $caption, $edition);
-                $stmt->execute();
-                header("Location: gallery.php?added=1");
-                exit;
+        if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
+            $error = "Upload failed (error code " . $_FILES['image']['error'] . "). Try a smaller file.";
+        } else {
+            $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            if (!in_array($ext, ['jpg','jpeg','png','webp'])) {
+                $error = "Please upload a JPG, PNG or WEBP image.";
+            } else {
+                $destDir = __DIR__ . "/../assets/images/uploads/posts/";
+                if (!is_dir($destDir)) @mkdir($destDir, 0777, true);
+                $fname = 'gallery-' . time() . '-' . mt_rand(1000,9999) . '.' . $ext;
+                $dest = $destDir . $fname;
+                if (is_writable($destDir) && move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
+                    $caption = trim($_POST['caption'] ?? '');
+                    $edition = trim($_POST['edition'] ?? '');
+                    $image = "uploads/posts/" . $fname;
+                    $stmt = $conn->prepare("INSERT INTO gallery_images (image, caption, edition) VALUES (?,?,?)");
+                    $stmt->bind_param("sss", $image, $caption, $edition);
+                    $stmt->execute();
+                    header("Location: gallery.php?added=1");
+                    exit;
+                } else {
+                    $error = "Could not save the file — check that assets/images/uploads/posts/ is writable on the server.";
+                }
             }
         }
-        $error = "Please upload a JPG, PNG or WEBP image.";
     } else {
         $error = "Please choose an image to upload.";
     }

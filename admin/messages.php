@@ -37,7 +37,7 @@ include __DIR__ . "/includes/admin-header.php";
         <td>
           <div class="admin-row-actions">
             <?php if (!$m['is_read']): ?><a href="messages.php?read=<?php echo $m['id']; ?>" class="admin-btn admin-btn-line admin-btn-sm">Mark Read</a><?php endif; ?>
-            <a href="mailto:<?php echo htmlspecialchars($m['email']); ?>" class="admin-btn admin-btn-brand admin-btn-sm">Reply</a>
+            <a href="reply.php?id=<?php echo $m['id']; ?>" class="admin-btn admin-btn-brand admin-btn-sm">Reply</a>
             <a href="messages.php?delete=<?php echo $m['id']; ?>" class="admin-btn admin-btn-danger admin-btn-sm" data-confirm="Delete this message?">Delete</a>
           </div>
         </td>
