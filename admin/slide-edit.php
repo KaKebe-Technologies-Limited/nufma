@@ -1,6 +1,7 @@
 <?php
 $adminNav = "sliders";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/image-advice.php";
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $slide = $conn->query("SELECT * FROM hero_slides WHERE id=$id")->fetch_assoc();
@@ -21,6 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!in_array($ext, ['jpg','jpeg','png','webp'])) {
                 $error = "Please upload a JPG, PNG or WEBP image.";
             } else {
+                [$advErr, $advWarn] = hero_image_advice($_FILES['image']['tmp_name'], $_FILES['image']['size']);
+                if ($advErr) $error = $advErr;
+                else {
                 $destDir = __DIR__ . "/../assets/images/uploads/posts/";
                 if (!is_dir($destDir)) @mkdir($destDir, 0777, true);
                 $fname = 'slide-' . time() . '-' . mt_rand(1000,9999) . '.' . $ext;
@@ -28,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $image = "uploads/posts/" . $fname;
                 } else {
                     $error = "Could not save the new image — keeping the existing one.";
+                }
                 }
             }
         }
@@ -37,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare("UPDATE hero_slides SET alt_text=?, image=?, is_active=? WHERE id=?");
         $stmt->bind_param("ssii", $alt, $image, $isActive, $id);
         $stmt->execute();
+        if (!empty($advWarn)) $_SESSION['hero_warn'] = $advWarn;
         header("Location: sliders.php?updated=1");
         exit;
     }
@@ -60,7 +66,7 @@ include __DIR__ . "/includes/admin-header.php";
     <div class="field">
       <label>Replace image (optional)</label>
       <input type="file" name="image" accept="image/*">
-      <p class="admin-help">Leave empty to keep the current photo.</p>
+      <p class="admin-help">Leave empty to keep the current photo. Best: 16:9, about 1920 × 1080 px, under 400 KB (WebP or JPG).</p>
     </div>
     <div class="field">
       <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" name="is_active" style="width:auto" <?php echo $slide['is_active']?'checked':''; ?>> Active (shown in the homepage collage)</label>

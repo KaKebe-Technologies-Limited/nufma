@@ -18,7 +18,7 @@ function ui_img($rel, $alt, $opts = []) {
 function ui_page_hero($eyebrow, $title, $lede, $imageRel, array $crumbs = [], $actionsHtml = '') {
     ob_start(); ?>
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/<?php echo ui_e($imageRel); ?>" alt="" fetchpriority="high"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo ui_e($imageRel); ?>" alt="" width="1920" height="1080" fetchpriority="high" decoding="async"></div>
   <div class="container">
     <?php if ($crumbs): ?>
     <nav class="breadcrumb" aria-label="Breadcrumb">

@@ -167,3 +167,46 @@
     el.textContent = new Date().getFullYear();
   });
 })();
+
+/* ---------- homepage hero: lazy-load extra photos after the page, then crossfade ---------- */
+(function(){
+  var media = document.querySelector(".hero-media");
+  if(!media) return;
+  var imgs = [].slice.call(media.querySelectorAll("img"));
+  var dots = [].slice.call(document.querySelectorAll(".hero-dots button"));
+  if(imgs.length < 2) return;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var current = 0, timer = null, loaded = false;
+
+  function show(n){
+    n = (n + imgs.length) % imgs.length;
+    if(n === current) return;
+    imgs[current].classList.remove("is-active");
+    imgs[n].classList.add("is-active");
+    if(dots[current]){ dots[current].classList.remove("is-active"); dots[current].setAttribute("aria-pressed", "false"); }
+    if(dots[n]){ dots[n].classList.add("is-active"); dots[n].setAttribute("aria-pressed", "true"); }
+    current = n;
+  }
+  function ensure(i, cb){
+    var im = imgs[i];
+    if(!im.getAttribute("data-src")){ cb(); return; }
+    im.onload = im.onerror = cb;
+    im.src = im.getAttribute("data-src"); im.removeAttribute("data-src");
+  }
+  function next(){ var n = (current + 1) % imgs.length; ensure(n, function(){ show(n); }); }
+  function start(){ if(reduce || timer || document.hidden) return; timer = setInterval(next, 6500); }
+  function stop(){ if(timer){ clearInterval(timer); timer = null; } }
+
+  function init(){
+    if(loaded) return; loaded = true;
+    dots.forEach(function(d, i){ d.addEventListener("click", function(){ stop(); ensure(i, function(){ show(i); start(); }); }); });
+    var hero = media.closest(".hero");
+    if(hero){ hero.addEventListener("mouseenter", stop); hero.addEventListener("mouseleave", start); hero.addEventListener("focusin", stop); hero.addEventListener("focusout", start); }
+    document.addEventListener("visibilitychange", function(){ document.hidden ? stop() : start(); });
+    // warm the second photo so the first crossfade is smooth, then begin
+    ensure(1, start);
+  }
+  // wait until the first photo and page have loaded so the extra photos never compete with them
+  if(document.readyState === "complete") setTimeout(init, 800);
+  else window.addEventListener("load", function(){ setTimeout(init, 800); });
+})();

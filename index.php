@@ -5,6 +5,12 @@ $pageTitle = cms_value('seo', 'home_title');
 $pageDesc  = cms_value('seo', 'home_desc');
 $activeNav = "home";
 $canonicalPath = "index.php";
+// hero data comes first so the first photo can be preloaded in the page head
+$heroSlides = array_values(array_filter($conn->query("SELECT image FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC, id ASC LIMIT 4")->fetch_all(MYSQLI_ASSOC), fn($s) => is_file(__DIR__ . '/assets/images/' . $s['image'])));
+if (!$heroSlides) $heroSlides = [['image' => 'production/karamoja-shoot-1.webp']];
+$preloadImages = ['assets/images/' . $heroSlides[0]['image']];   // the first slide is the page's largest paint: fetch it early
+$heroBtns = [];
+foreach ([1, 2, 3] as $n) if (trim(cms_value('home', "hero_btn{$n}_label")) !== '' && trim(cms_value('home', "hero_btn{$n}_url")) !== '') $heroBtns[$n] = ['label' => cms_value('home', "hero_btn{$n}_label"), 'url' => cms_value('home', "hero_btn{$n}_url")];
 include __DIR__ . "/includes/header.php";
 
 // programme cards: the five programme areas come from the database, in the order set by NUFA
@@ -16,8 +22,6 @@ foreach (['capacity-building', 'awards', 'mentorship', 'screenings-outreach', 'c
     elseif ($slug === 'sacco')   $cards[] = ['title' => cms_value('home', 'sacco_card_title'), 'text' => cms_value('home', 'sacco_card_text'), 'img' => 'front1.webp', 'url' => 'sacco.php', 'status' => 'proposed'];
     elseif (isset($progs[$slug])) $cards[] = ['title' => $progs[$slug]['title'], 'text' => $progs[$slug]['summary'], 'img' => $progs[$slug]['image'] ?: 'nufa2.webp', 'url' => 'programme.php?slug=' . $slug, 'status' => $progs[$slug]['status']];
 }
-$heroSlides = array_values(array_filter($conn->query("SELECT image FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC, id ASC LIMIT 4")->fetch_all(MYSQLI_ASSOC), fn($s) => is_file(__DIR__ . '/assets/images/' . $s['image'])));
-if (!$heroSlides) $heroSlides = [['image' => 'production/karamoja-shoot-1.webp']];
 $news = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 ORDER BY is_featured DESC, published_at DESC LIMIT " . max(1, min(6, (int)nufa_fn('home', 'news_count'))))->fetch_all(MYSQLI_ASSOC);
 usort($news, fn($a, $b) => strtotime($b['published_at']) <=> strtotime($a['published_at']));
 $indicators = [];
@@ -26,21 +30,20 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
 
 <!-- HERO -->
 <section class="hero" aria-label="Introduction">
-  <div class="hero-media" aria-hidden="true">
-    <?php foreach ($heroSlides as $i => $hs): ?><img src="assets/images/<?php echo ui_e($hs['image']); ?>" alt=""<?php echo $i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'; ?>><?php endforeach; ?>
+  <div class="hero-media" aria-hidden="true" data-hero-slides="<?php echo count($heroSlides); ?>">
+    <?php foreach ($heroSlides as $i => $hs): ?><?php if ($i === 0): ?><img class="is-active" src="assets/images/<?php echo ui_e($hs['image']); ?>" alt="" width="1920" height="1080" fetchpriority="high" decoding="async"><?php else: ?><img data-src="assets/images/<?php echo ui_e($hs['image']); ?>" alt="" width="1920" height="1080" decoding="async"><?php endif; ?><?php endforeach; ?>
   </div>
   <div class="container-wide">
     <div class="hero-inner">
       <div class="eyebrow"><?php echo cms_t('home', 'hero_eyebrow'); ?></div>
       <h1><?php echo cms_t('home', 'hero_line1'); ?> <?php echo cms_t('home', 'hero_line2'); ?> <span><?php echo cms_t('home', 'hero_line3'); ?></span></h1>
       <p class="lead"><?php echo cms_t('home', 'hero_lead'); ?></p>
-      <div class="actions">
-        <a href="<?php echo ui_e(cms_value('home', 'hero_btn1_url')); ?>" class="btn btn-gold"><?php echo cms_t('home', 'hero_btn1_label'); ?></a>
-        <a href="<?php echo ui_e(cms_value('home', 'hero_btn2_url')); ?>" class="btn btn-gold"><?php echo cms_t('home', 'hero_btn2_label'); ?></a>
-        <a href="<?php echo ui_e(cms_value('home', 'hero_btn3_url')); ?>" class="btn btn-outline"><?php echo cms_t('home', 'hero_btn3_label'); ?></a>
-      </div>
+      <?php if ($heroBtns): ?><div class="actions hero-actions">
+        <?php foreach ($heroBtns as $n => $b): ?><a href="<?php echo ui_e($b['url']); ?>" class="btn <?php echo $n === 1 ? 'btn-gold' : ($n === 2 ? 'btn-outline' : 'btn-ghost'); ?>"><?php echo ui_e($b['label']); ?></a><?php endforeach; ?>
+      </div><?php endif; ?>
     </div>
   </div>
+  <?php if (count($heroSlides) > 1): ?><div class="hero-dots" role="group" aria-label="Choose a photo"><?php foreach ($heroSlides as $i => $hs): ?><button type="button" class="<?php echo $i === 0 ? 'is-active' : ''; ?>" aria-label="Show photo <?php echo $i + 1; ?>" aria-pressed="<?php echo $i === 0 ? 'true' : 'false'; ?>"></button><?php endforeach; ?></div><?php endif; ?>
 </section>
 
 <!-- WHO WE ARE -->

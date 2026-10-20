@@ -2,6 +2,7 @@
 $adminTitle = "Hero Images";
 $adminNav = "sliders";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/image-advice.php";
 
 if (isset($_GET['delete'])) {
     $conn->query("DELETE FROM hero_slides WHERE id=" . (int)$_GET['delete']);
@@ -24,6 +25,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!in_array($ext, ['jpg','jpeg','png','webp'])) {
                 $error = "Please upload a JPG, PNG or WEBP image.";
             } else {
+                [$advErr, $advWarn] = hero_image_advice($_FILES['image']['tmp_name'], $_FILES['image']['size']);
+                if ($advErr) $error = $advErr;
+                else {
                 $destDir = __DIR__ . "/../assets/images/uploads/posts/";
                 if (!is_dir($destDir)) @mkdir($destDir, 0777, true);
                 $fname = 'slide-' . time() . '-' . mt_rand(1000,9999) . '.' . $ext;
@@ -34,10 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $conn->prepare("INSERT INTO hero_slides (image, alt_text, sort_order) VALUES (?,?,(SELECT m FROM (SELECT COALESCE(MAX(sort_order),0)+1 m FROM hero_slides) t))");
                     $stmt->bind_param("ss", $image, $alt);
                     $stmt->execute();
+                    if ($advWarn) $_SESSION['hero_warn'] = $advWarn;
                     header("Location: sliders.php?added=1");
                     exit;
                 } else {
                     $error = "Could not save the file — check that assets/images/uploads/posts/ is writable on the server.";
+                }
                 }
             }
         }
@@ -53,10 +59,12 @@ include __DIR__ . "/includes/admin-header.php";
 <?php if (isset($_GET['added'])): ?><div class="admin-alert ok">Slide added.</div><?php endif; ?>
 <?php if (isset($_GET['updated'])): ?><div class="admin-alert ok">Slide updated.</div><?php endif; ?>
 <?php if (isset($_GET['deleted'])): ?><div class="admin-alert ok">Slide removed.</div><?php endif; ?>
+<?php if (!empty($_SESSION['hero_warn'])): ?><div class="admin-alert err" style="background:#fff8e6;border-color:#ecd9a3;color:#6b4e0a"><?php echo htmlspecialchars($_SESSION['hero_warn']); unset($_SESSION['hero_warn']); ?></div><?php endif; ?>
 <?php if ($error): ?><div class="admin-alert err"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
 <div class="admin-card">
   <div class="admin-card-head"><h2>Add a Slide</h2></div>
+  <p class="admin-help" style="margin:0 0 14px"><b>For a fast, sharp homepage:</b> use wide photos (16:9), about <b>1920 × 1080 px</b>, saved as WebP or JPG and <b>under 400 KB</b>. The first active slide shows immediately; up to four active slides are used, in this order.</p>
   <form class="admin-form" method="post" enctype="multipart/form-data">
     <div class="admin-form-grid">
       <div class="field">

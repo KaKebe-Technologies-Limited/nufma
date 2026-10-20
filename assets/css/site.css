@@ -553,3 +553,20 @@ table.data td{padding:14px;border-bottom:1px solid var(--line);vertical-align:to
 .attach-card{display:flex;align-items:center;gap:16px;background:#fff8e6;border:1px solid #ecd9a3;border-left:5px solid var(--gold);border-radius:14px;padding:16px 18px;flex-wrap:wrap}.attach-card b{display:block}.attach-card span{font-size:.85rem;color:var(--ink-500)}.attach-card .btn{margin-left:auto}
 .article-body figure{margin:1.6em 0}.article-body figure img,.article-body img{max-width:100%;height:auto;border-radius:12px}.article-body blockquote{border-left:4px solid var(--gold);margin:1.4em 0;padding:.4em 1.2em;background:rgba(200,160,60,.08);border-radius:0 10px 10px 0}
 @media(max-width:860px){.nl-feature,.subscribe-box{grid-template-columns:1fr}.nl-feature__cover{min-height:220px}}
+
+/* Homepage hero: crossfade driven by main.js (first photo shows instantly; the rest load after the page) */
+.hero-media img{opacity:0;animation:none;transition:opacity 1.3s ease;transform:scale(1.02);will-change:opacity}
+.hero-media img.is-active{opacity:1;animation:heroZoom 9s ease-out both}
+@keyframes heroZoom{from{transform:scale(1.02)}to{transform:scale(1.08)}}
+.hero-actions{align-items:center}
+.btn-ghost{background:transparent;color:#fff;padding-inline:6px;border:0;border-bottom:2px solid transparent;border-radius:0;font-weight:700}.btn-ghost:hover{color:var(--gold);border-color:var(--gold)}
+.hero-dots{position:absolute;left:0;right:0;bottom:22px;display:flex;justify-content:center;gap:10px;z-index:2}
+.hero-dots button{width:34px;height:5px;border:0;border-radius:99px;background:rgba(255,255,255,.35);padding:0;cursor:pointer;transition:background .25s,width .25s}.hero-dots button:hover{background:rgba(255,255,255,.65)}.hero-dots button.is-active{background:var(--gold);width:50px}
+.hero-dots button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+@media(max-width:700px){
+  .hero{min-height:min(82svh,700px)}
+  .hero::before{background:linear-gradient(0deg,rgba(8,8,8,.88) 0%,rgba(8,8,8,.62) 55%,rgba(8,8,8,.45) 100%)}
+  .hero-inner{padding-block:clamp(56px,14vw,90px) 70px}
+  .hero-actions .btn{flex:1 1 100%;justify-content:center}.hero-actions .btn-ghost{flex:0 0 auto;margin:0 auto}
+}
+@media(prefers-reduced-motion:reduce){.hero-media img,.hero-media img.is-active{animation:none;transition:none;transform:none}}

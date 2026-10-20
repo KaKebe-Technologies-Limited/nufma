@@ -83,6 +83,8 @@ $dropdownToggle = function ($label) { return '<button type="button" class="caret
 <?php if (!empty($schemaExtra)) echo '<script type="application/ld+json">' . json_encode($schemaExtra, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>' . "\n"; ?>
 
 <link rel="icon" href="<?php echo $base . $hx($faviconHref); ?>">
+<?php foreach ($preloadImages ?? [] as $__pi): ?><link rel="preload" as="image" href="<?php echo $base . $hx($__pi); ?>" fetchpriority="high">
+<?php endforeach; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?<?php echo $font['google']; ?>&display=swap">
