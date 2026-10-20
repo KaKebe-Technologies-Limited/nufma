@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
-$pageTitle = "About NUFA — Northern Uganda Filmmakers Association";
-$pageDesc  = "Learn about the Northern Uganda Filmmakers Association: our story, vision and mission, core values, leadership and membership.";
+$pageTitle = cms_value('seo', 'about_title');
+$pageDesc  = cms_value('seo', 'about_desc');
 $activeNav = "about";
 $canonicalPath = "about.php";
 $ogImage = "assets/images/og/og-about.jpg";
@@ -12,7 +12,7 @@ $team = $conn->query("SELECT * FROM team_members WHERE is_active=1 ORDER BY sort
 $valueIcons = ['shield', 'star', 'handshake', 'users', 'compass', 'bulb', 'heart'];
 $draft = $cfg['vm_approved'] !== '1';
 
-echo ui_page_hero('About NUFA', 'Northern Uganda Filmmakers Association', cms_value('about', 'hero_lede'), cms_img_raw('about', 'hero_image'), [['About NUFA']],
+echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('about', 'hero_lede'), cms_img_raw('about', 'hero_image'), [['About NUFA']],
     '<a href="membership.php" class="btn btn-gold">Become a Member</a><a href="programmes.php" class="btn btn-outline">Our Programmes</a>');
 ?>
 
@@ -81,22 +81,17 @@ echo ui_page_hero('About NUFA', 'Northern Uganda Filmmakers Association', cms_va
   <div class="container split">
     <div data-reveal>
       <div class="eyebrow">Membership</div>
-      <h2>Belong to a connected film community</h2>
+      <h2><?php echo cms_t('about', 'membership_heading'); ?></h2>
       <p class="lede"><?php echo cms_t('about', 'membership_intro'); ?></p>
       <div class="notice mt-2"><span><?php echo nufa_icon('shield', 22); ?></span><div><b>Please note</b><br><?php echo cms_t('about', 'membership_criteria'); ?></div></div>
       <div class="actions mt-2"><a href="membership.php" class="btn btn-gold">Apply for Membership</a><a href="contact.php?topic=Membership" class="btn btn-outline-dark">Ask a membership question</a></div>
     </div>
     <div data-reveal>
-      <ol class="steps">
-        <li><b>Complete the application</b>Share your details, area of creative practice and a short profile.</li>
-        <li><b>Submit proof of payment</b>Upload your payment receipt as instructed on the membership page.</li>
-        <li><b>Review and confirmation</b>NUFA reviews each application against its membership criteria and confirms the outcome by email.</li>
-        <li><b>Your membership card</b>Confirmed members receive a NUFA registration number and membership card.</li>
-      </ol>
+      <?php echo ui_steps(cms_value('about', 'membership_steps')); ?>
     </div>
   </div>
 </section>
 
-<section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band('Explore what NUFA is building', 'From capacity building to the NUFA Awards, discover the programmes shaping the region’s film industry.', 'View Programmes', 'programmes.php', 'NUFA Awards', 'awards.php'); ?></div></section>
+<section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('about', 'cta_title'), cms_value('about', 'cta_text'), cms_value('about', 'cta_btn1_label'), cms_value('about', 'cta_btn1_url'), cms_value('about', 'cta_btn2_label'), cms_value('about', 'cta_btn2_url')); ?></div></section>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>

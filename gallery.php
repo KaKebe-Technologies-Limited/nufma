@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
-$pageTitle = "Gallery & Video Library — NUFA Awards, Productions and Screenings";
-$pageDesc  = "Photographs and video from NUFA Awards ceremonies, film productions, screenings and community storytelling in Northern Uganda.";
+$pageTitle = cms_value('seo', 'gallery_title');
+$pageDesc  = cms_value('seo', 'gallery_desc');
 $activeNav = "gallery";
 $canonicalPath = "gallery.php";
 $ogImage = "assets/images/og/og-gallery.jpg";
@@ -21,7 +21,7 @@ foreach ($conn->query("SELECT image, caption, edition FROM gallery_images WHERE 
 }
 $videos = $conn->query("SELECT * FROM videos WHERE is_active=1 ORDER BY sort_order ASC, id DESC")->fetch_all(MYSQLI_ASSOC);
 
-echo ui_page_hero('Gallery & Video Library', 'The moments behind the stories', cms_value('gallery', 'hero_lede'), cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Gallery & Video']],
+echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'), cms_value('gallery', 'hero_lede'), cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Gallery & Video']],
     '<a href="#photos" class="btn btn-gold">Photo gallery</a><a href="#videos" class="btn btn-outline">Video library</a>');
 ?>
 <section class="section" id="photos">

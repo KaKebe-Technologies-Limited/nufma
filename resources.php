@@ -2,11 +2,11 @@
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 $cat = trim($_GET['cat'] ?? '');
-if (!in_array($cat, NUFA_RESOURCE_CATEGORIES, true)) $cat = '';
+if (!in_array($cat, nufa_resource_categories($conn), true)) $cat = '';
 $q = trim(mb_substr($_GET['q'] ?? '', 0, 80));
 
-$pageTitle = "Resource Library — Guides, Reports and Opportunities | NUFA";
-$pageDesc  = "Approved film production guides, training materials, reports, calls for submissions and funding opportunities for filmmakers in Northern Uganda.";
+$pageTitle = cms_value('seo', 'resources_title');
+$pageDesc  = cms_value('seo', 'resources_desc');
 $activeNav = "resources";
 $canonicalPath = "resources.php";
 if ($cat || $q) $noindex = true;
@@ -21,7 +21,7 @@ $st->execute();
 $items = $st->get_result()->fetch_all(MYSQLI_ASSOC);
 $total = (int)$conn->query("SELECT COUNT(*) FROM resources WHERE is_active=1")->fetch_row()[0];
 
-echo ui_page_hero('Resources', 'Resource Library', cms_value('resources', 'hero_lede'), cms_img_raw('resources', 'hero_image'), [['Resources']]);
+echo ui_page_hero('Resources', cms_value('resources', 'hero_title'), cms_value('resources', 'hero_lede'), cms_img_raw('resources', 'hero_image'), [['Resources']]);
 ?>
 <section class="section">
   <div class="container">
@@ -31,7 +31,7 @@ echo ui_page_hero('Resources', 'Resource Library', cms_value('resources', 'hero_
     <?php else: ?>
     <div class="filter-bar">
       <a href="resources.php" class="<?php echo !$cat ? 'active' : ''; ?>">All</a>
-      <?php foreach (NUFA_RESOURCE_CATEGORIES as $c): ?><a href="resources.php?cat=<?php echo urlencode($c); ?>" class="<?php echo $cat === $c ? 'active' : ''; ?>"><?php echo ui_e($c); ?></a><?php endforeach; ?>
+      <?php foreach (nufa_resource_categories($conn) as $c): ?><a href="resources.php?cat=<?php echo urlencode($c); ?>" class="<?php echo $cat === $c ? 'active' : ''; ?>"><?php echo ui_e($c); ?></a><?php endforeach; ?>
     </div>
     <form class="search-form" method="get" action="resources.php" role="search" style="margin-bottom:30px">
       <?php if ($cat): ?><input type="hidden" name="cat" value="<?php echo ui_e($cat); ?>"><?php endif; ?>

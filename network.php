@@ -1,10 +1,10 @@
 <?php
 require_once __DIR__ . "/includes/forms.php";
+require_once __DIR__ . "/includes/settings.php";
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 
-$roles = ['Film production company', 'Director or producer', 'Screenwriter', 'Actor or casting professional', 'Cinematographer', 'Editor or post-production specialist', 'Sound professional',
-          'Production designer', 'Film trainer or mentor', 'Industry partner', 'Other'];
+$roles = nufa_list(nufa_site_settings($conn), 'list_network_roles');
 $errors = []; $sent = isset($_GET['sent']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($g = form_guard($conn, 'network')) $errors[] = $g;
@@ -23,26 +23,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = "Industry Network — Connecting Filmmakers in Northern Uganda | NUFA";
-$pageDesc  = "A planned filmmaker directory and industry network connecting directors, producers, writers, actors, crews and partners across Northern Uganda. Register your interest.";
+$pageTitle = cms_value('seo', 'network_title');
+$pageDesc  = cms_value('seo', 'network_desc');
 $activeNav = "network";
 $canonicalPath = "network.php";
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('Industry Network', 'Connect with the people behind Northern Uganda’s film industry', cms_value('network', 'hero_lede'), cms_img_raw('network', 'hero_image'), [['Industry Network']],
+echo ui_page_hero('Industry Network', cms_value('network', 'hero_title'), cms_value('network', 'hero_lede'), cms_img_raw('network', 'hero_image'), [['Industry Network']],
     '<a href="#interest" class="btn btn-gold">Register your interest</a><a href="membership.php" class="btn btn-outline">Become a Member</a>');
-$cats = [['film', 'Film production companies'], ['compass', 'Directors and producers'], ['pen', 'Screenwriters'], ['users', 'Actors and casting professionals'], ['camera', 'Cinematographers'],
-         ['star', 'Editors and post-production specialists'], ['mic', 'Sound professionals'], ['bulb', 'Production designers'], ['book', 'Film trainers and mentors'], ['handshake', 'Industry partners']];
+$catIcons = ['film', 'compass', 'pen', 'users', 'camera', 'star', 'mic', 'bulb', 'book', 'handshake'];
+$cats = [];
+foreach (nufa_list(['x' => cms_value('network', 'cats_list')], 'x') as $i => $label) $cats[] = [$catIcons[$i % count($catIcons)], $label];
 ?>
 <section class="section--tight"><div class="container"><div class="status-banner" role="note"><?php echo nufa_icon('compass', 26); ?><div><b>Planned feature:</b> <?php echo cms_t('network', 'status_text'); ?></div></div></div></section>
 
 <section class="section">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Who will be listed</div><h2>Professionals across the film value chain</h2><p><?php echo cms_t('network', 'privacy_note'); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow">Who will be listed</div><h2><?php echo cms_t('network', 'who_heading'); ?></h2><p><?php echo cms_t('network', 'privacy_note'); ?></p></div>
     <div class="grid grid-4" data-reveal-stagger>
       <?php foreach ($cats as [$ic, $l]): ?><div class="value"><span class="icon-circle"><?php echo nufa_icon($ic, 24); ?></span><h3><?php echo ui_e($l); ?></h3></div><?php endforeach; ?>
     </div>
     <div class="grid grid-2 mt-2" style="gap:32px;margin-top:56px">
-      <div data-reveal><h3>What each profile will include</h3><ul class="check-list"><li>Name and professional role</li><li>Biography</li><li>Location</li><li>Portfolio or showreel</li><li>Contact preferences</li><li>An approved photograph</li></ul></div>
+      <div data-reveal><h3>What each profile will include</h3><?php echo ui_list(cms_value('network', 'profile_fields')); ?></div>
       <div data-reveal><h3>How it will work</h3><ol class="steps"><li><b>Register your interest</b>Tell us about your craft and how you would like to be listed.</li><li><b>Verification</b>NUFA verifies each profile before anything is published.</li><li><b>You stay in control</b>Private contact details are shown only with your explicit consent.</li></ol></div>
     </div>
   </div>

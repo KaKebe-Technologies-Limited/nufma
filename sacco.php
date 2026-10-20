@@ -19,8 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = "NUFA SACCO (Proposed) — Financial Resilience for Filmmakers | NUFA";
-$pageDesc  = "The proposed NUFA SACCO is an initiative under development to explore financial inclusion and resilience for filmmakers in Northern Uganda. It is not yet operational.";
+$pageTitle = cms_value('seo', 'sacco_title');
+$pageDesc  = cms_value('seo', 'sacco_desc');
 $activeNav = "sacco";
 $canonicalPath = "sacco.php";
 include __DIR__ . "/includes/header.php";

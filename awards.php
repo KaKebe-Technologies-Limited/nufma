@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
-$pageTitle = "NUFA Awards — Recognising Excellence. Celebrating Our Stories.";
-$pageDesc  = "NUFA Awards celebrates the talent, creativity and technical skill of filmmakers and audiovisual creatives in Northern Uganda. Explore the awards, past editions and how to take part.";
+$pageTitle = cms_value('seo', 'awards_title');
+$pageDesc  = cms_value('seo', 'awards_desc');
 $activeNav = "awards";
 $canonicalPath = "awards.php";
 $ogImage = "assets/images/og/og-awards.jpg";
@@ -27,11 +27,7 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
     </div>
     <div data-reveal>
       <h3>On this platform</h3>
-      <ul class="check-list">
-        <li>Awards overview and purpose</li><li>Previous editions and the awards archive</li><li>Approved award categories</li>
-        <li>Nominees and winners, where verified</li><li>Photographs and video highlights</li><li>Sponsors and partners</li>
-        <li>News and announcements</li><li>Participation information and awards enquiries</li>
-      </ul>
+      <?php echo ui_list(cms_value('awards', 'platform_list')); ?>
     </div>
   </div>
 </section>
@@ -115,6 +111,6 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
 </section>
 <?php endif; ?>
 
-<section class="section--tight"><div class="container"><?php echo ui_cta_band('Support the NUFA Awards', 'Sponsor the awards, support emerging filmmakers or partner on film training and audience development.', 'Partner With NUFA', 'partners.php', 'Become a Member', 'membership.php'); ?></div></section>
+<section class="section--tight"><div class="container"><?php echo ui_cta_band(cms_value('awards', 'cta_title'), cms_value('awards', 'cta_text'), cms_value('awards', 'cta_btn1_label'), cms_value('awards', 'cta_btn1_url'), cms_value('awards', 'cta_btn2_label'), cms_value('awards', 'cta_btn2_url')); ?></div></section>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>

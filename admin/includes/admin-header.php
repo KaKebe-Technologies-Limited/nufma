@@ -31,6 +31,10 @@ if (isset($conn)) {
     $__q = $conn->query("SELECT COUNT(*) c FROM messages"); if ($__q) $__msgs = (int)$__q->fetch_assoc()['c'];
 }
 $__ico += [
+    'map'        => '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2V6Z"/><path d="M9 4v14M15 6v14"/>',
+    'menus'      => '<path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/>',
+    'appearance' => '<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="15.5" cy="10" r="1.2"/><path d="M12 21c-1.500 0-2-1-2-2s1-2 2-2h2c1.500 0 3-1 3-3"/>',
+    'lists'      => '<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" stroke-linecap="round"/>',
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
     'enquiries'  => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>',
@@ -44,8 +48,12 @@ $__nav = [
         $__subs > 0 ? ['subscribers', 'subscribers.php', 'Subscribers (earlier)'] : null,
     ])),
     'Website content' => [
-        ['posts', 'posts.php', 'News & Stories'],
+        ['map', 'website-map.php', 'Website Map'],
         ['content', 'content.php', 'Page Content'],
+        ['menus', 'menus.php', 'Menus & Footer'],
+        ['appearance', 'appearance.php', 'Appearance & Branding'],
+        ['lists', 'lists.php', 'Form options'],
+        ['posts', 'posts.php', 'News & Stories'],
         ['programmes', 'programmes.php', 'Programmes'],
         ['resources', 'resources.php', 'Resources'],
         ['gallery', 'gallery.php', 'Gallery & Videos'],

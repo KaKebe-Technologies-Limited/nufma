@@ -2,55 +2,44 @@
 <?php
 if (!isset($base)) $base = "";
 if (!isset($cfg)) { require_once __DIR__ . "/settings.php"; require_once __DIR__ . "/icons.php"; $cfg = nufa_site_settings($conn); }
-$fe = fn($s) => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+require_once __DIR__ . "/menu.php";
+require_once __DIR__ . "/content.php";
+$fe = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+$logoRel = ($cfg['site_logo'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_logo'])) ? $cfg['site_logo'] : 'logo/nufa-logo.png';
+$footer1 = nufa_menu($conn, 'footer1'); $footer2 = nufa_menu($conn, 'footer2'); $footerLegal = nufa_menu($conn, 'footer_legal');
+$mobileCta2Label = cms_value('site', 'mobile_cta2_label');
 ?>
 <footer class="site-footer">
   <div class="container-wide footer-top">
     <div class="footer-brand">
       <a href="<?php echo $base; ?>index.php" class="brand">
-        <span class="mark"><img src="<?php echo $base; ?>assets/images/logo/nufa-logo.png" alt="" width="46" height="46" loading="lazy"></span>
-        <span class="word">NUFA<small>Northern Uganda Filmmakers Association</small></span>
+        <span class="mark"><img src="<?php echo $base; ?>assets/images/<?php echo $fe($logoRel); ?>" alt="" width="46" height="46" loading="lazy"></span>
+        <span class="word">NUFA<small><?php echo $fe($cfg['site_name']); ?></small></span>
       </a>
-      <p class="footer-tag">Our Stories. Our Culture. Our Future.</p>
-      <p>NUFA brings filmmakers together, strengthens their craft, celebrates their achievements, and helps ensure that Northern Uganda's stories are created, preserved and shared with the world.</p>
+      <p class="footer-tag"><?php echo cms_t('site', 'footer_tagline'); ?></p>
+      <p><?php echo cms_t('site', 'footer_description'); ?></p>
       <div class="social-row">
-        <?php foreach (['x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram'], 'linkedin_url' => ['LinkedIn', 'linkedin'], 'youtube_url' => ['YouTube', 'youtube']] as $k => [$label, $ic]):
-          if ($cfg[$k] === '') continue; ?>
-          <a href="<?php echo $fe($cfg[$k]); ?>" target="_blank" rel="noopener" aria-label="<?php echo $label; ?>"><?php echo nufa_icon($ic, 16); ?></a>
+        <?php foreach (['x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram'], 'linkedin_url' => ['LinkedIn', 'linkedin'], 'youtube_url' => ['YouTube', 'youtube']] as $fk => [$flabel, $fic]):
+          if ($cfg[$fk] === '') continue; ?>
+          <a href="<?php echo $fe($cfg[$fk]); ?>" target="_blank" rel="noopener" aria-label="<?php echo $flabel; ?>"><?php echo nufa_icon($fic, 16); ?></a>
         <?php endforeach; ?>
       </div>
     </div>
 
     <div class="footer-col">
-      <h4>Explore</h4>
-      <ul>
-        <li><a href="<?php echo $base; ?>about.php">About NUFA</a></li>
-        <li><a href="<?php echo $base; ?>programmes.php">Programmes</a></li>
-        <li><a href="<?php echo $base; ?>sacco.php">NUFA SACCO (proposed)</a></li>
-        <li><a href="<?php echo $base; ?>network.php">Industry Network</a></li>
-        <li><a href="<?php echo $base; ?>news.php">News &amp; Stories</a></li>
-        <li><a href="<?php echo $base; ?>resources.php">Resources</a></li>
-        <li><a href="<?php echo $base; ?>gallery.php">Gallery &amp; Video</a></li>
-      </ul>
+      <h4><?php echo cms_t('site', 'footer_col1_title'); ?></h4>
+      <ul><?php foreach ($footer1 as $it): ?><li><a href="<?php echo nufa_href($it['url']); ?>"<?php echo nufa_link_attrs($it); ?>><?php echo $fe($it['label']); ?></a></li><?php endforeach; ?></ul>
     </div>
 
     <div class="footer-col">
-      <h4>Get Involved</h4>
-      <ul>
-        <li><a href="<?php echo $base; ?>awards.php">NUFA Awards</a></li>
-        <li><a href="<?php echo $base; ?>membership.php">Membership</a></li>
-        <li><a href="<?php echo $base; ?>partners.php#enquiry">Partnership enquiries</a></li>
-        <li><a href="<?php echo $base; ?>contact.php">Contact us</a></li>
-        <li><a href="<?php echo $base; ?>policy.php?p=privacy">Privacy Policy</a></li>
-        <li><a href="<?php echo $base; ?>policy.php?p=terms">Terms of Use</a></li>
-        <li><a href="<?php echo $base; ?>policy.php?p=accessibility">Accessibility</a></li>
-      </ul>
+      <h4><?php echo cms_t('site', 'footer_col2_title'); ?></h4>
+      <ul><?php foreach ($footer2 as $it): ?><li><a href="<?php echo nufa_href($it['url']); ?>"<?php echo nufa_link_attrs($it); ?>><?php echo $fe($it['label']); ?></a></li><?php endforeach; ?></ul>
     </div>
 
     <div class="footer-col">
-      <h4>Contact</h4>
+      <h4><?php echo cms_t('site', 'footer_col3_title'); ?></h4>
       <address>
-        <strong style="color:var(--white)">Northern Uganda Filmmakers Association</strong>
+        <strong style="color:var(--white)"><?php echo $fe($cfg['site_name']); ?></strong>
         <span><?php echo $fe($cfg['site_address']); ?></span>
         <a href="mailto:<?php echo $fe($cfg['site_email']); ?>"><?php echo $fe($cfg['site_email']); ?></a>
         <a href="tel:<?php echo nufa_tel_href($cfg['site_phone']); ?>"><?php echo $fe($cfg['site_phone']); ?></a>
@@ -61,13 +50,8 @@ $fe = fn($s) => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
   </div>
 
   <div class="container-wide footer-bottom">
-    <span>© <span data-year>2026</span> Northern Uganda Filmmakers Association (NUFA). All rights reserved.</span>
-    <div class="legal">
-      <a href="<?php echo $base; ?>policy.php?p=privacy">Privacy</a>
-      <a href="<?php echo $base; ?>policy.php?p=cookies">Cookies</a>
-      <a href="<?php echo $base; ?>policy.php?p=permissions">Image &amp; content permissions</a>
-      <a href="<?php echo $base; ?>sitemap.php">Sitemap</a>
-    </div>
+    <span>© <span data-year>2026</span> <?php echo cms_t('site', 'footer_copyright'); ?></span>
+    <div class="legal"><?php foreach ($footerLegal as $it): ?><a href="<?php echo nufa_href($it['url']); ?>"<?php echo nufa_link_attrs($it); ?>><?php echo $fe($it['label']); ?></a><?php endforeach; ?></div>
   </div>
 </footer>
 

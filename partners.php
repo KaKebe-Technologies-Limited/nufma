@@ -1,11 +1,11 @@
 <?php
 require_once __DIR__ . "/includes/forms.php";
+require_once __DIR__ . "/includes/settings.php";
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 
-$orgTypes = ['Government institution', 'Development partner or donor', 'Cultural organisation', 'Educational institution', 'Media company', 'Private company', 'Non-profit organisation', 'Individual'];
-$interests = ['Sponsorship of NUFA Awards', 'Film training and mentorship', 'Equipment and technical support', 'Film screenings and audience development', 'Youth and emerging filmmaker initiatives',
-              'Cultural preservation projects', 'Creative enterprise development', 'Digital innovation and industry infrastructure', 'Research, advocacy and industry engagement', 'Other'];
+$orgTypes = nufa_list($cfg0 = nufa_site_settings($conn), 'list_org_types');
+$interests = nufa_list($cfg0, 'list_partner_interests');
 $errors = []; $sent = isset($_GET['sent']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($g = form_guard($conn, 'partner')) $errors[] = $g;
@@ -26,8 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = "Partner With NUFA — Invest in the Power of Storytelling";
-$pageDesc  = "Partner with the Northern Uganda Filmmakers Association to support film training, awards, audience development and creative enterprise in Northern Uganda.";
+$pageTitle = cms_value('seo', 'partners_title');
+$pageDesc  = cms_value('seo', 'partners_desc');
 $activeNav = "partner";
 $canonicalPath = "partners.php";
 $ogImage = "assets/images/og/og-partners.jpg";
@@ -40,8 +40,9 @@ $tile = function ($p) {
     $inner = $has ? '<img src="assets/images/' . ui_e($p['logo']) . '" alt="' . ui_e($p['name']) . '" loading="lazy">' : '<div><b>' . ui_e($p['name']) . '</b><span>' . ui_e($p['tier']) . '</span></div>';
     return '<div class="partner-tile" title="' . ui_e($p['name'] . ' — ' . $p['tier']) . '">' . ($p['website'] ? '<a href="' . ui_e($p['website']) . '" target="_blank" rel="noopener">' . $inner . '</a>' : $inner) . '</div>';
 };
-$opps = [['trophy', 'Sponsorship of NUFA Awards'], ['book', 'Film training and mentorship'], ['camera', 'Equipment and technical support'], ['film', 'Film screenings and audience development'], ['users', 'Youth and emerging filmmaker initiatives'],
-         ['heart', 'Cultural preservation projects'], ['coins', 'Creative enterprise development'], ['bulb', 'Digital innovation and industry infrastructure'], ['compass', 'Research, advocacy and industry engagement']];
+$oppIcons = ['trophy', 'book', 'camera', 'film', 'users', 'heart', 'coins', 'bulb', 'compass'];
+$opps = [];
+foreach (nufa_list(['x' => cms_value('partners', 'opps_list')], 'x') as $i => $label) $opps[] = [$oppIcons[$i % count($oppIcons)], $label];
 
 echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cms_value('partners', 'hero_lede'), cms_img_raw('partners', 'hero_image'), [['Partner With Us']],
     '<a href="#enquiry" class="btn btn-gold">Partnership enquiry</a><a href="#enquiry" class="btn btn-outline">Request a sponsorship proposal</a>');
@@ -49,7 +50,7 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
 
 <section class="section">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Partnership opportunities</div><h2>Where your support makes a difference</h2><p><?php echo cms_t('partners', 'why_body'); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow">Partnership opportunities</div><h2><?php echo cms_t('partners', 'opps_heading'); ?></h2><p><?php echo cms_t('partners', 'why_body'); ?></p></div>
     <div class="grid grid-3" data-reveal-stagger>
       <?php foreach ($opps as [$ic, $label]): ?><div class="value"><span class="icon-circle"><?php echo nufa_icon($ic, 24); ?></span><h3><?php echo ui_e($label); ?></h3></div><?php endforeach; ?>
     </div>
@@ -59,7 +60,7 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
 
 <section class="section section--soft">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Our partners</div><h2>Organisations standing with NUFA</h2></div>
+    <div class="section-head center" data-reveal><div class="eyebrow">Our partners</div><h2><?php echo cms_t('partners', 'partners_heading'); ?></h2></div>
     <?php if ($current): ?><div class="partner-wall" data-reveal-stagger><?php foreach ($current as $p) echo $tile($p); ?></div>
     <?php else: ?><div class="empty-state"><h3>Current partners will be listed here</h3><p>Approved partner names and logos are published once confirmed. Interested in joining them? Use the form below.</p></div><?php endif; ?>
     <?php if ($previous): ?>

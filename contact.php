@@ -1,9 +1,10 @@
 <?php
 require_once __DIR__ . "/includes/forms.php";
+require_once __DIR__ . "/includes/settings.php";
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 
-$topics = ['General enquiry', 'Membership', 'Awards', 'Programmes', 'Partnership and sponsorship'];
+$topics = nufa_list(nufa_site_settings($conn), 'list_contact_topics');
 $errors = []; $sent = isset($_GET['sent']);
 if (!isset($_POST['topic']) && isset($_GET['topic'])) {
     foreach ($topics as $t) if (stripos($t, (string)$_GET['topic']) === 0) $_POST['topic_prefill'] = $t;
@@ -26,12 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$pageTitle = "Contact NUFA — Northern Uganda Filmmakers Association, Gulu";
-$pageDesc  = "Contact the Northern Uganda Filmmakers Association in Gulu City for membership, awards, programme and partnership enquiries.";
+$pageTitle = cms_value('seo', 'contact_title');
+$pageDesc  = cms_value('seo', 'contact_desc');
 $activeNav = "contact";
 $canonicalPath = "contact.php";
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('Contact', "Let's talk film", cms_value('contact', 'hero_lede'), cms_img_raw('contact', 'hero_image'), [['Contact']]);
+echo ui_page_hero('Contact', cms_value('contact', 'hero_title'), cms_value('contact', 'hero_lede'), cms_img_raw('contact', 'hero_image'), [['Contact']]);
 $defaultTopic = $_POST['topic'] ?? ($_POST['topic_prefill'] ?? '');
 ?>
 <section class="section">

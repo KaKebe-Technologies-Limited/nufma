@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v3` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v4` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -65,7 +65,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v3'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v4'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -128,6 +128,21 @@ function nufa_migrate($conn) {
         KEY idx_type (type), KEY idx_status (status), KEY idx_ip (ip, created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS nav_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        location VARCHAR(20) NOT NULL,
+        parent_id INT NULL,
+        label VARCHAR(120) NOT NULL,
+        url VARCHAR(255) NOT NULL,
+        nav_key VARCHAR(60) NOT NULL DEFAULT '',
+        new_tab TINYINT(1) NOT NULL DEFAULT 0,
+        sort_order INT NOT NULL DEFAULT 0,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        KEY idx_loc (location, sort_order)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    require_once __DIR__ . "/menu.php";
+    nufa_menu_seed($conn);
+
     // column additions on existing tables
     nufa_add_col($conn, 'posts', 'image_caption', "VARCHAR(255) NOT NULL DEFAULT ''");
     nufa_add_col($conn, 'posts', 'image_credit', "VARCHAR(150) NOT NULL DEFAULT ''");
@@ -187,7 +202,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v3', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v4', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

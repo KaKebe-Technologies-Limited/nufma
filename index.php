@@ -1,8 +1,8 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
-$pageTitle = "NUFA — Northern Uganda Filmmakers Association | Our Stories. Our Culture. Our Future.";
-$pageDesc  = "The Northern Uganda Filmmakers Association (NUFA) brings filmmakers together to strengthen the craft of storytelling, celebrate creative excellence and build a stronger future for the film industry in Northern Uganda.";
+$pageTitle = cms_value('seo', 'home_title');
+$pageDesc  = cms_value('seo', 'home_desc');
 $activeNav = "home";
 $canonicalPath = "index.php";
 include __DIR__ . "/includes/header.php";
@@ -12,8 +12,8 @@ $progs = [];
 foreach ($conn->query("SELECT * FROM programmes WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC) as $p) $progs[$p['slug']] = $p;
 $cards = [];
 foreach (['capacity-building', 'awards', 'mentorship', 'screenings-outreach', 'creative-enterprise', 'sacco'] as $slug) {
-    if ($slug === 'awards')      $cards[] = ['title' => 'NUFA Awards', 'text' => 'Recognising outstanding work and celebrating the stories and storytellers of Northern Uganda.', 'img' => 'slider/slide1-1.webp', 'url' => 'awards.php', 'status' => ''];
-    elseif ($slug === 'sacco')   $cards[] = ['title' => 'NUFA SACCO — Proposed Initiative', 'text' => 'An initiative being explored to strengthen financial resilience for filmmakers. Not yet operational.', 'img' => 'front1.webp', 'url' => 'sacco.php', 'status' => 'proposed'];
+    if ($slug === 'awards')      $cards[] = ['title' => cms_value('home', 'awards_card_title'), 'text' => cms_value('home', 'awards_card_text'), 'img' => 'slider/slide1-1.webp', 'url' => 'awards.php', 'status' => ''];
+    elseif ($slug === 'sacco')   $cards[] = ['title' => cms_value('home', 'sacco_card_title'), 'text' => cms_value('home', 'sacco_card_text'), 'img' => 'front1.webp', 'url' => 'sacco.php', 'status' => 'proposed'];
     elseif (isset($progs[$slug])) $cards[] = ['title' => $progs[$slug]['title'], 'text' => $progs[$slug]['summary'], 'img' => $progs[$slug]['image'] ?: 'nufa2.webp', 'url' => 'programme.php?slug=' . $slug, 'status' => $progs[$slug]['status']];
 }
 $heroSlides = array_values(array_filter($conn->query("SELECT image FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC, id ASC LIMIT 4")->fetch_all(MYSQLI_ASSOC), fn($s) => is_file(__DIR__ . '/assets/images/' . $s['image'])));
@@ -31,13 +31,13 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
   </div>
   <div class="container-wide">
     <div class="hero-inner">
-      <div class="eyebrow">Northern Uganda Filmmakers Association</div>
+      <div class="eyebrow"><?php echo cms_t('home', 'hero_eyebrow'); ?></div>
       <h1><?php echo cms_t('home', 'hero_line1'); ?> <?php echo cms_t('home', 'hero_line2'); ?> <span><?php echo cms_t('home', 'hero_line3'); ?></span></h1>
       <p class="lead"><?php echo cms_t('home', 'hero_lead'); ?></p>
       <div class="actions">
-        <a href="awards.php" class="btn btn-gold">Explore NUFA Awards</a>
-        <a href="membership.php" class="btn btn-gold">Become a Member</a>
-        <a href="partners.php" class="btn btn-outline">Partner With NUFA</a>
+        <a href="<?php echo ui_e(cms_value('home', 'hero_btn1_url')); ?>" class="btn btn-gold"><?php echo cms_t('home', 'hero_btn1_label'); ?></a>
+        <a href="<?php echo ui_e(cms_value('home', 'hero_btn2_url')); ?>" class="btn btn-gold"><?php echo cms_t('home', 'hero_btn2_label'); ?></a>
+        <a href="<?php echo ui_e(cms_value('home', 'hero_btn3_url')); ?>" class="btn btn-outline"><?php echo cms_t('home', 'hero_btn3_label'); ?></a>
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
       <div class="eyebrow"><?php echo cms_t('home', 'who_eyebrow'); ?></div>
       <h2><?php echo cms_t('home', 'who_heading'); ?></h2>
       <div class="lede stack"><?php echo ui_paragraphs(cms_value('home', 'who_body')); ?></div>
-      <p class="mt-2"><a href="about.php" class="btn btn-dark">Discover NUFA</a></p>
+      <p class="mt-2"><a href="about.php" class="btn btn-dark"><?php echo cms_t('home', 'who_button'); ?></a></p>
     </div>
     <div class="media-frame" data-reveal>
       <img src="assets/images/<?php echo cms_img('home', 'who_image'); ?>" alt="Filmmakers on location in Northern Uganda working with a camera crew" width="1200" height="900" loading="lazy">
@@ -134,7 +134,7 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
 <section class="section" id="news">
   <div class="container">
     <div class="section-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;max-width:none" data-reveal>
-      <div><div class="eyebrow">News &amp; Stories</div><h2 class="mb-0">Latest from the film community</h2></div>
+      <div><div class="eyebrow">News &amp; Stories</div><h2 class="mb-0"><?php echo cms_t('home', 'news_heading'); ?></h2></div>
       <a href="news.php" class="link-arrow">View the full news archive</a>
     </div>
     <?php if (!$news): ?>
@@ -161,7 +161,7 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
 
 <!-- MEMBERSHIP CTA -->
 <section class="section--tight section--soft">
-  <div class="container"><?php echo ui_cta_band('Are you a filmmaker in Northern Uganda?', 'Learn about NUFA membership and how to apply. Applications are subject to NUFA’s membership criteria and confirmation process.', 'Become a Member', 'membership.php', 'Contact NUFA', 'contact.php'); ?></div>
+  <div class="container"><?php echo ui_cta_band(cms_value('home', 'cta_title'), cms_value('home', 'cta_text'), cms_value('home', 'cta_btn1_label'), cms_value('home', 'cta_btn1_url'), cms_value('home', 'cta_btn2_label'), cms_value('home', 'cta_btn2_url')); ?></div>
 </section>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>

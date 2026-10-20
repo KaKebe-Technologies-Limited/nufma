@@ -1,14 +1,14 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
-$pageTitle = "Programmes & Projects — NUFA | Film Training and Development in Northern Uganda";
-$pageDesc  = "NUFA's programme areas: film capacity building, mentorship and emerging talent, screenings and outreach, creative enterprise, and cultural preservation in Northern Uganda.";
+$pageTitle = cms_value('seo', 'programmes_title');
+$pageDesc  = cms_value('seo', 'programmes_desc');
 $activeNav = "programmes";
 $canonicalPath = "programmes.php";
 include __DIR__ . "/includes/header.php";
 
 $progs = $conn->query("SELECT * FROM programmes WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
-echo ui_page_hero('Programmes & Projects', 'Building skills, pathways and opportunity', cms_value('programmes', 'hero_lede'), cms_img_raw('programmes', 'hero_image'), [['Programmes']],
+echo ui_page_hero('Programmes & Projects', cms_value('programmes', 'hero_title'), cms_value('programmes', 'hero_lede'), cms_img_raw('programmes', 'hero_image'), [['Programmes']],
     '<a href="contact.php?topic=Programmes" class="btn btn-gold">Programme enquiries</a><a href="membership.php" class="btn btn-outline">Become a Member</a>');
 ?>
 <section class="section">
@@ -38,5 +38,5 @@ echo ui_page_hero('Programmes & Projects', 'Building skills, pathways and opport
     <?php endif; ?>
   </div>
 </section>
-<section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band('Want to take part in a NUFA programme?', 'Tell us about your interest and the NUFA team will share participation information as it is confirmed.', 'Programme enquiries', 'contact.php?topic=Programmes', 'Partner with NUFA', 'partners.php'); ?></div></section>
+<section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('programmes', 'cta_title'), cms_value('programmes', 'cta_text'), cms_value('programmes', 'cta_btn1_label'), cms_value('programmes', 'cta_btn1_url'), cms_value('programmes', 'cta_btn2_label'), cms_value('programmes', 'cta_btn2_url')); ?></div></section>
 <?php include __DIR__ . "/includes/footer.php"; ?>

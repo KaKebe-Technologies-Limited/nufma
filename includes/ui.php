@@ -82,3 +82,22 @@ function ui_excerpt($text, $len = 160) {
 /** The editorial categories defined in the master brief. */
 const NUFA_NEWS_CATEGORIES = ['NUFA News', 'NUFA Awards', 'Filmmaker Profiles', 'Film Industry Updates', 'Training and Workshops', 'Opportunities and Calls', 'Events and Screenings', 'Culture and Storytelling', 'Partner News'];
 const NUFA_RESOURCE_CATEGORIES = ['Film production guides', 'Training materials', 'Industry reports', 'Calls for submissions', 'Funding and grant opportunities', 'Filmmaking opportunities', 'Policies and guidelines', 'Annual reports', 'Event reports', 'Publications'];
+
+/** Numbered "Title | description" lines → <ol class="steps">. */
+function ui_steps($text) {
+    $out = '<ol class="steps">';
+    foreach (array_filter(array_map('trim', preg_split('/\R/', (string)$text))) as $line) {
+        [$t, $d] = array_pad(array_map('trim', explode('|', $line, 2)), 2, '');
+        $out .= '<li><b>' . ui_e($t) . '</b>' . ui_e($d) . '</li>';
+    }
+    return $out . '</ol>';
+}
+/** Admin-editable category lists (Site Settings → Lists), falling back to the brief's defaults. */
+function nufa_news_categories($conn) {
+    require_once __DIR__ . "/settings.php";
+    return nufa_list(nufa_site_settings($conn), 'list_news_categories') ?: NUFA_NEWS_CATEGORIES;
+}
+function nufa_resource_categories($conn) {
+    require_once __DIR__ . "/settings.php";
+    return nufa_list(nufa_site_settings($conn), 'list_resource_categories') ?: NUFA_RESOURCE_CATEGORIES;
+}

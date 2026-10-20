@@ -276,3 +276,12 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 .login-form .btn-brand{width:100%;padding:15px 24px;border-radius:999px;font-weight:700}
 .mem-regbox b{color:var(--brand-500)}
 .notice-inline{background:var(--brand-100);color:#4a3a10;border-left:4px solid var(--brand-500);padding:12px 16px;font-size:.86rem;margin-bottom:20px}
+
+/* menus, appearance */
+.menu-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:9px 0;border-bottom:1px solid var(--line)}
+.menu-row.is-child{padding-left:34px;background:var(--cream);border-left:3px solid var(--brand-500);margin-left:6px}
+.menu-row input:not([type=checkbox]){padding:8px 10px;border:1px solid var(--line);font:inherit;font-size:.84rem;background:#fff;flex:1;min-width:130px}
+.brand-preview{display:inline-flex;align-items:center;justify-content:center;background:var(--cream);padding:10px;margin-bottom:8px;border:1px solid var(--line)}
+.brand-preview img{max-height:60px;max-width:200px;object-fit:contain}
+.palette-preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.palette-preview span{padding:14px 22px;font-weight:700;font-size:.84rem}

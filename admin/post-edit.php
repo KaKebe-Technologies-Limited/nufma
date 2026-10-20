@@ -12,7 +12,7 @@ if ($id) {
     $post['published_at'] = date('Y-m-d\TH:i', strtotime($post['published_at']));
 }
 $adminTitle = $id ? "Edit Story" : "New Story";
-$categories = NUFA_NEWS_CATEGORIES;
+$categories = nufa_news_categories($conn);
 if ($post['category'] !== '' && !in_array($post['category'], $categories, true)) $categories[] = $post['category'];
 
 $error = '';

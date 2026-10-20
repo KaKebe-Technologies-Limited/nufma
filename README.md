@@ -53,6 +53,12 @@ Sign in to `/admin/`. Everything a staff member needs is in the sidebar:
 
 | Need to change… | Go to |
 |---|---|
+| **Not sure where something is?** | **Website Map** — lists every page, what is on it and a link to edit each part |
+| Logo, favicon, share image, brand colours, contact bar | **Appearance & Branding** |
+| Header/footer menus and footer links | **Menus & Footer** |
+| Drop-down choices and category lists on forms | **Form options** |
+| Page titles and search descriptions | **Page Content → SEO** |
+| Header button, footer text, copyright | **Page Content → Site-wide** |
 | Headings and paragraphs on any page, policies, SACCO FAQ | **Page Content** |
 | News articles (categories, captions, credits, featured story) | **News & Stories** |
 | Programme pages and status labels | **Programmes** |

@@ -3,13 +3,13 @@ require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 
 $cat = trim($_GET['cat'] ?? '');
-if (!in_array($cat, NUFA_NEWS_CATEGORIES, true)) $cat = '';
+if (!in_array($cat, nufa_news_categories($conn), true)) $cat = '';
 $q = trim(mb_substr($_GET['q'] ?? '', 0, 80));
 $page = max(1, (int)($_GET['page'] ?? 1));
 $per = 9;
 
-$pageTitle = "News & Stories — NUFA | Film Industry News from Northern Uganda";
-$pageDesc  = "News, announcements, filmmaker profiles, training updates, opportunities and stories from the film community of Northern Uganda.";
+$pageTitle = cms_value('seo', 'news_title');
+$pageDesc  = cms_value('seo', 'news_desc');
 $activeNav = "news";
 $canonicalPath = "news.php";
 $ogImage = "assets/images/og/og-news.jpg";
@@ -42,7 +42,7 @@ $cr = $conn->query("SELECT category, COUNT(*) c FROM posts WHERE is_published=1 
 while ($r = $cr->fetch_assoc()) $counts[$r['category']] = (int)$r['c'];
 $link = fn($extra) => 'news.php?' . http_build_query(array_filter(array_merge(['cat' => $cat, 'q' => $q], $extra), fn($v) => $v !== '' && $v !== null && $v !== 1));
 
-echo ui_page_hero('News & Stories', "What's happening at NUFA", cms_value('news', 'hero_lede'), cms_img_raw('news', 'hero_image'), [['News & Stories']]);
+echo ui_page_hero('News & Stories', cms_value('news', 'hero_title'), cms_value('news', 'hero_lede'), cms_img_raw('news', 'hero_image'), [['News & Stories']]);
 ?>
 <section class="section">
   <div class="container">
@@ -61,7 +61,7 @@ echo ui_page_hero('News & Stories', "What's happening at NUFA", cms_value('news'
 
     <div class="filter-bar" role="navigation" aria-label="News categories">
       <a href="news.php" class="<?php echo !$cat ? 'active' : ''; ?>">All</a>
-      <?php foreach (NUFA_NEWS_CATEGORIES as $c): ?><a href="news.php?cat=<?php echo urlencode($c); ?>" class="<?php echo $cat === $c ? 'active' : ''; ?>"><?php echo ui_e($c); ?><?php echo isset($counts[$c]) ? ' (' . $counts[$c] . ')' : ''; ?></a><?php endforeach; ?>
+      <?php foreach (nufa_news_categories($conn) as $c): ?><a href="news.php?cat=<?php echo urlencode($c); ?>" class="<?php echo $cat === $c ? 'active' : ''; ?>"><?php echo ui_e($c); ?><?php echo isset($counts[$c]) ? ' (' . $counts[$c] . ')' : ''; ?></a><?php endforeach; ?>
     </div>
     <form class="search-form" method="get" action="news.php" role="search" style="margin-bottom:34px">
       <?php if ($cat): ?><input type="hidden" name="cat" value="<?php echo ui_e($cat); ?>"><?php endif; ?>

@@ -88,14 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
-$pageTitle = "Become a Member — NUFA | Northern Uganda Filmmakers Association";
-$pageDesc  = "Apply to join the Northern Uganda Filmmakers Association: complete the application, submit proof of payment and receive your NUFA registration number and membership card on approval.";
+$pageTitle = cms_value('seo', 'membership_title');
+$pageDesc  = cms_value('seo', 'membership_desc');
 $activeNav = "membership";
 $canonicalPath = "membership.php";
 include __DIR__ . "/includes/header.php";
 $val = fn($k, $d = '') => htmlspecialchars($old[$k] ?? $d);
 $cur = htmlspecialchars($S['membership_currency']);
-echo ui_page_hero('Membership', 'Become a NUFA member', "Connect with a community of filmmakers and audiovisual creatives. Apply online, submit your proof of payment and receive your NUFA registration number and card once approved.", 'production/karamoja-shoot-2.webp', [['About NUFA', 'about.php#membership'], ['Membership']]);
+echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value('membership', 'hero_lede'), 'production/karamoja-shoot-2.webp', [['About NUFA', 'about.php#membership'], ['Membership']]);
 ?>
 <section class="section">
   <div class="container member-grid">

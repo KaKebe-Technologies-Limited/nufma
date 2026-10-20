@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $existing = $rid ? $conn->query("SELECT * FROM resources WHERE id=$rid")->fetch_assoc() : null;
     $file = $existing['file_path'] ?? '';
     if ($title === '') $error = "Enter a title.";
-    elseif (!in_array($cat, NUFA_RESOURCE_CATEGORIES, true)) $error = "Choose a category.";
+    elseif (!in_array($cat, nufa_resource_categories($conn), true)) $error = "Choose a category.";
     elseif ($url !== '' && !preg_match('#^https?://#i', $url)) $error = "The external link must start with https://";
     if (!$error && !empty($_FILES['file']['name'])) {
         [$fn, $e] = mem_store_upload($_FILES['file'], $docTypes, 20 * 1048576, 'resource', $dir);
@@ -64,7 +64,7 @@ $ev = fn($k) => htmlspecialchars((string)($edit[$k] ?? ''));
     <input type="hidden" name="id" value="<?php echo (int)($edit['id'] ?? 0); ?>">
     <div class="admin-form-grid">
       <div class="field"><label>Title</label><input name="title" value="<?php echo $ev('title'); ?>" required></div>
-      <div class="field"><label>Category</label><select name="category" required><option value="">Select…</option><?php foreach (NUFA_RESOURCE_CATEGORIES as $c): ?><option <?php echo ($edit['category'] ?? '') === $c ? 'selected' : ''; ?>><?php echo htmlspecialchars($c); ?></option><?php endforeach; ?></select></div>
+      <div class="field"><label>Category</label><select name="category" required><option value="">Select…</option><?php foreach (nufa_resource_categories($conn) as $c): ?><option <?php echo ($edit['category'] ?? '') === $c ? 'selected' : ''; ?>><?php echo htmlspecialchars($c); ?></option><?php endforeach; ?></select></div>
       <div class="field"><label>File (PDF, Word, Excel, PowerPoint or ZIP — max 20 MB)</label><input type="file" name="file"><?php if (!empty($edit['file_path'])): ?><span class="admin-help">Current: <?php echo $ev('file_path'); ?> (upload a new file to replace)</span><?php endif; ?></div>
       <div class="field"><label>…or external link</label><input type="url" name="external_url" value="<?php echo $ev('external_url'); ?>" placeholder="https://"></div>
       <div class="field"><label>Publication date</label><input type="date" name="published_on" value="<?php echo $ev('published_on'); ?>"></div>

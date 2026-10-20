@@ -186,3 +186,124 @@ HTML],
 <p>If you have a complaint or feedback about NUFA or this website, please write to nuf.association@gmail.com with the subject "Feedback". A formal complaints process will be published here once approved.</p>
 HTML],
 ]];
+
+/* ====================================================================
+   Site-wide text, SEO, calls-to-action and list content
+   ==================================================================== */
+$CMS_SCHEMAS['site'] = ['label' => 'Site-wide (header, footer, brand)', 'fields' => [
+    'brand_subtitle'     => ['label' => 'Header — small text under the NUFA name', 'type' => 'text', 'default' => 'Filmmakers Association'],
+    'header_cta_label'   => ['label' => 'Header button — label (leave blank to hide)', 'type' => 'text', 'default' => 'Become a Member'],
+    'header_cta_url'     => ['label' => 'Header button — link', 'type' => 'text', 'default' => 'membership.php'],
+    'footer_tagline'     => ['label' => 'Footer — tagline', 'type' => 'text', 'default' => 'Our Stories. Our Culture. Our Future.'],
+    'footer_description' => ['label' => 'Footer — organisation description', 'type' => 'textarea', 'default' => "NUFA brings filmmakers together, strengthens their craft, celebrates their achievements, and helps ensure that Northern Uganda's stories are created, preserved and shared with the world."],
+    'footer_col1_title'  => ['label' => 'Footer — first link column title', 'type' => 'text', 'default' => 'Explore'],
+    'footer_col2_title'  => ['label' => 'Footer — second link column title', 'type' => 'text', 'default' => 'Get Involved'],
+    'footer_col3_title'  => ['label' => 'Footer — contact column title', 'type' => 'text', 'default' => 'Contact'],
+    'footer_copyright'   => ['label' => 'Footer — copyright line (the year is added automatically)', 'type' => 'text', 'default' => 'Northern Uganda Filmmakers Association (NUFA). All rights reserved.'],
+    'mobile_cta2_label'  => ['label' => 'Mobile menu — second button label (blank to hide)', 'type' => 'text', 'default' => 'Partner With NUFA'],
+    'mobile_cta2_url'    => ['label' => 'Mobile menu — second button link', 'type' => 'text', 'default' => 'partners.php'],
+]];
+
+$CMS_SCHEMAS['seo'] = ['label' => 'SEO — page titles & descriptions', 'fields' => [
+    'home_title' => ['label' => 'Home — browser/search title', 'type' => 'text', 'default' => 'NUFA — Northern Uganda Filmmakers Association | Our Stories. Our Culture. Our Future.'],
+    'home_desc'  => ['label' => 'Home — search description (about 155 characters)', 'type' => 'textarea', 'default' => 'The Northern Uganda Filmmakers Association (NUFA) brings filmmakers together to strengthen the craft of storytelling, celebrate creative excellence and build a stronger future for the film industry in Northern Uganda.'],
+    'about_title' => ['label' => 'About — title', 'type' => 'text', 'default' => 'About NUFA — Northern Uganda Filmmakers Association'],
+    'about_desc'  => ['label' => 'About — description', 'type' => 'textarea', 'default' => 'Learn about the Northern Uganda Filmmakers Association: our story, vision and mission, core values, leadership and membership.'],
+    'membership_title' => ['label' => 'Membership — title', 'type' => 'text', 'default' => 'Become a Member — NUFA | Northern Uganda Filmmakers Association'],
+    'membership_desc'  => ['label' => 'Membership — description', 'type' => 'textarea', 'default' => 'Apply to join the Northern Uganda Filmmakers Association: complete the application, submit proof of payment and receive your NUFA registration number and membership card on approval.'],
+    'awards_title' => ['label' => 'NUFA Awards — title', 'type' => 'text', 'default' => 'NUFA Awards — Recognising Excellence. Celebrating Our Stories.'],
+    'awards_desc'  => ['label' => 'NUFA Awards — description', 'type' => 'textarea', 'default' => 'NUFA Awards celebrates the talent, creativity and technical skill of filmmakers and audiovisual creatives in Northern Uganda. Explore the awards, past editions and how to take part.'],
+    'programmes_title' => ['label' => 'Programmes — title', 'type' => 'text', 'default' => 'Programmes & Projects — NUFA | Film Training and Development in Northern Uganda'],
+    'programmes_desc'  => ['label' => 'Programmes — description', 'type' => 'textarea', 'default' => "NUFA's programme areas: film capacity building, mentorship and emerging talent, screenings and outreach, creative enterprise, and cultural preservation in Northern Uganda."],
+    'sacco_title' => ['label' => 'NUFA SACCO — title', 'type' => 'text', 'default' => 'NUFA SACCO (Proposed) — Financial Resilience for Filmmakers | NUFA'],
+    'sacco_desc'  => ['label' => 'NUFA SACCO — description', 'type' => 'textarea', 'default' => 'The proposed NUFA SACCO is an initiative under development to explore financial inclusion and resilience for filmmakers in Northern Uganda. It is not yet operational.'],
+    'network_title' => ['label' => 'Industry Network — title', 'type' => 'text', 'default' => 'Industry Network — Connecting Filmmakers in Northern Uganda | NUFA'],
+    'network_desc'  => ['label' => 'Industry Network — description', 'type' => 'textarea', 'default' => 'A planned filmmaker directory and industry network connecting directors, producers, writers, actors, crews and partners across Northern Uganda. Register your interest.'],
+    'news_title' => ['label' => 'News & Stories — title', 'type' => 'text', 'default' => 'News & Stories — NUFA | Film Industry News from Northern Uganda'],
+    'news_desc'  => ['label' => 'News & Stories — description', 'type' => 'textarea', 'default' => 'News, announcements, filmmaker profiles, training updates, opportunities and stories from the film community of Northern Uganda.'],
+    'resources_title' => ['label' => 'Resources — title', 'type' => 'text', 'default' => 'Resource Library — Guides, Reports and Opportunities | NUFA'],
+    'resources_desc'  => ['label' => 'Resources — description', 'type' => 'textarea', 'default' => 'Approved film production guides, training materials, reports, calls for submissions and funding opportunities for filmmakers in Northern Uganda.'],
+    'gallery_title' => ['label' => 'Gallery — title', 'type' => 'text', 'default' => 'Gallery & Video Library — NUFA Awards, Productions and Screenings'],
+    'gallery_desc'  => ['label' => 'Gallery — description', 'type' => 'textarea', 'default' => 'Photographs and video from NUFA Awards ceremonies, film productions, screenings and community storytelling in Northern Uganda.'],
+    'partners_title' => ['label' => 'Partner With NUFA — title', 'type' => 'text', 'default' => 'Partner With NUFA — Invest in the Power of Storytelling'],
+    'partners_desc'  => ['label' => 'Partner With NUFA — description', 'type' => 'textarea', 'default' => 'Partner with the Northern Uganda Filmmakers Association to support film training, awards, audience development and creative enterprise in Northern Uganda.'],
+    'contact_title' => ['label' => 'Contact — title', 'type' => 'text', 'default' => 'Contact NUFA — Northern Uganda Filmmakers Association, Gulu'],
+    'contact_desc'  => ['label' => 'Contact — description', 'type' => 'textarea', 'default' => 'Contact the Northern Uganda Filmmakers Association in Gulu City for membership, awards, programme and partnership enquiries.'],
+]];
+
+// extra editable text on existing pages
+$CMS_SCHEMAS['home']['fields'] += [
+    'who_button'       => ['label' => 'Who We Are — button label', 'type' => 'text', 'default' => 'Discover NUFA'],
+    'hero_btn1_label'  => ['label' => 'Hero button 1 — label', 'type' => 'text', 'default' => 'Explore NUFA Awards'],
+    'hero_btn1_url'    => ['label' => 'Hero button 1 — link', 'type' => 'text', 'default' => 'awards.php'],
+    'hero_btn2_label'  => ['label' => 'Hero button 2 — label', 'type' => 'text', 'default' => 'Become a Member'],
+    'hero_btn2_url'    => ['label' => 'Hero button 2 — link', 'type' => 'text', 'default' => 'membership.php'],
+    'hero_btn3_label'  => ['label' => 'Hero button 3 (outline) — label', 'type' => 'text', 'default' => 'Partner With NUFA'],
+    'hero_btn3_url'    => ['label' => 'Hero button 3 (outline) — link', 'type' => 'text', 'default' => 'partners.php'],
+    'news_heading'     => ['label' => 'News section — heading', 'type' => 'text', 'default' => 'Latest from the film community'],
+    'cta_title'        => ['label' => 'Bottom call-to-action — title', 'type' => 'text', 'default' => 'Are you a filmmaker in Northern Uganda?'],
+    'cta_text'         => ['label' => 'Bottom call-to-action — text', 'type' => 'textarea', 'default' => "Learn about NUFA membership and how to apply. Applications are subject to NUFA's membership criteria and confirmation process."],
+    'cta_btn1_label'   => ['label' => 'Call-to-action button 1 — label', 'type' => 'text', 'default' => 'Become a Member'],
+    'cta_btn1_url'     => ['label' => 'Call-to-action button 1 — link', 'type' => 'text', 'default' => 'membership.php'],
+    'cta_btn2_label'   => ['label' => 'Call-to-action button 2 — label (blank to hide)', 'type' => 'text', 'default' => 'Contact NUFA'],
+    'cta_btn2_url'     => ['label' => 'Call-to-action button 2 — link', 'type' => 'text', 'default' => 'contact.php'],
+];
+$CMS_SCHEMAS['about']['fields'] += [
+    'cta_title'      => ['label' => 'Bottom call-to-action — title', 'type' => 'text', 'default' => 'Explore what NUFA is building'],
+    'cta_text'       => ['label' => 'Bottom call-to-action — text', 'type' => 'textarea', 'default' => "From capacity building to the NUFA Awards, discover the programmes shaping the region's film industry."],
+    'cta_btn1_label' => ['label' => 'Call-to-action button 1 — label', 'type' => 'text', 'default' => 'View Programmes'],
+    'cta_btn1_url'   => ['label' => 'Call-to-action button 1 — link', 'type' => 'text', 'default' => 'programmes.php'],
+    'cta_btn2_label' => ['label' => 'Call-to-action button 2 — label (blank to hide)', 'type' => 'text', 'default' => 'NUFA Awards'],
+    'cta_btn2_url'   => ['label' => 'Call-to-action button 2 — link', 'type' => 'text', 'default' => 'awards.php'],
+    'membership_heading' => ['label' => 'Membership section — heading', 'type' => 'text', 'default' => 'Belong to a connected film community'],
+    'membership_steps' => ['label' => 'Membership — how it works (one step per line: Title | description)', 'type' => 'textarea', 'default' => "Complete the application | Share your details, area of creative practice and a short profile.\nSubmit proof of payment | Upload your payment receipt as instructed on the membership page.\nReview and confirmation | NUFA reviews each application against its membership criteria and confirms the outcome by email.\nYour membership card | Confirmed members receive a NUFA registration number and membership card."],
+];
+$CMS_SCHEMAS['awards']['fields'] += [
+    'cta_title'      => ['label' => 'Bottom call-to-action — title', 'type' => 'text', 'default' => 'Support the NUFA Awards'],
+    'cta_text'       => ['label' => 'Bottom call-to-action — text', 'type' => 'textarea', 'default' => 'Sponsor the awards, support emerging filmmakers or partner on film training and audience development.'],
+    'cta_btn1_label' => ['label' => 'Call-to-action button 1 — label', 'type' => 'text', 'default' => 'Partner With NUFA'],
+    'cta_btn1_url'   => ['label' => 'Call-to-action button 1 — link', 'type' => 'text', 'default' => 'partners.php'],
+    'cta_btn2_label' => ['label' => 'Call-to-action button 2 — label (blank to hide)', 'type' => 'text', 'default' => 'Become a Member'],
+    'cta_btn2_url'   => ['label' => 'Call-to-action button 2 — link', 'type' => 'text', 'default' => 'membership.php'],
+    'platform_list'  => ['label' => 'On this platform — list (one item per line)', 'type' => 'textarea', 'default' => "Awards overview and purpose\nPrevious editions and the awards archive\nApproved award categories\nNominees and winners, where verified\nPhotographs and video highlights\nSponsors and partners\nNews and announcements\nParticipation information and awards enquiries"],
+];
+$CMS_SCHEMAS['programmes']['fields'] += [
+    'cta_title'      => ['label' => 'Bottom call-to-action — title', 'type' => 'text', 'default' => 'Want to take part in a NUFA programme?'],
+    'cta_text'       => ['label' => 'Bottom call-to-action — text', 'type' => 'textarea', 'default' => 'Tell us about your interest and the NUFA team will share participation information as it is confirmed.'],
+    'cta_btn1_label' => ['label' => 'Call-to-action button 1 — label', 'type' => 'text', 'default' => 'Programme enquiries'],
+    'cta_btn1_url'   => ['label' => 'Call-to-action button 1 — link', 'type' => 'text', 'default' => 'contact.php?topic=Programmes'],
+    'cta_btn2_label' => ['label' => 'Call-to-action button 2 — label (blank to hide)', 'type' => 'text', 'default' => 'Partner with NUFA'],
+    'cta_btn2_url'   => ['label' => 'Call-to-action button 2 — link', 'type' => 'text', 'default' => 'partners.php'],
+];
+$CMS_SCHEMAS['partners']['fields'] += [
+    'opps_heading' => ['label' => 'Opportunities — heading', 'type' => 'text', 'default' => 'Where your support makes a difference'],
+    'opps_list'    => ['label' => 'Partnership opportunities (one per line)', 'type' => 'textarea', 'default' => "Sponsorship of NUFA Awards\nFilm training and mentorship\nEquipment and technical support\nFilm screenings and audience development\nYouth and emerging filmmaker initiatives\nCultural preservation projects\nCreative enterprise development\nDigital innovation and industry infrastructure\nResearch, advocacy and industry engagement"],
+    'partners_heading' => ['label' => 'Partner wall — heading', 'type' => 'text', 'default' => 'Organisations standing with NUFA'],
+];
+$CMS_SCHEMAS['network']['fields'] += [
+    'who_heading' => ['label' => 'Who will be listed — heading', 'type' => 'text', 'default' => 'Professionals across the film value chain'],
+    'cats_list'   => ['label' => 'Professional categories (one per line)', 'type' => 'textarea', 'default' => "Film production companies\nDirectors and producers\nScreenwriters\nActors and casting professionals\nCinematographers\nEditors and post-production specialists\nSound professionals\nProduction designers\nFilm trainers and mentors\nIndustry partners"],
+    'profile_fields' => ['label' => 'What each profile will include (one per line)', 'type' => 'textarea', 'default' => "Name and professional role\nBiography\nLocation\nPortfolio or showreel\nContact preferences\nAn approved photograph"],
+];
+
+$CMS_SCHEMAS['membership'] = ['label' => 'Membership page', 'fields' => [
+    'hero_lede' => ['label' => 'Page banner — paragraph', 'type' => 'textarea', 'default' => 'Connect with a community of filmmakers and audiovisual creatives. Apply online, submit your proof of payment and receive your NUFA registration number and card once approved.'],
+]];
+
+// editable page-banner headings
+$CMS_SCHEMAS['about']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'Northern Uganda Filmmakers Association']];
+$CMS_SCHEMAS['programmes']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'Building skills, pathways and opportunity']];
+$CMS_SCHEMAS['network']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'Connect with the people behind Northern Uganda’s film industry']];
+$CMS_SCHEMAS['news']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'What\'s happening at NUFA']];
+$CMS_SCHEMAS['resources']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'Resource Library']];
+$CMS_SCHEMAS['gallery']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'The moments behind the stories']];
+$CMS_SCHEMAS['contact']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'Let\'s talk film']];
+$CMS_SCHEMAS['membership']['fields'] += ['hero_title' => ['label' => 'Page banner — heading', 'type' => 'text', 'default' => 'Become a NUFA member']];
+
+$CMS_SCHEMAS['home']['fields'] += [
+    'hero_eyebrow'     => ['label' => 'Hero — small line above the heading', 'type' => 'text', 'default' => 'Northern Uganda Filmmakers Association'],
+    'awards_card_title' => ['label' => 'Programme card — NUFA Awards — title', 'type' => 'text', 'default' => 'NUFA Awards'],
+    'awards_card_text'  => ['label' => 'Programme card — NUFA Awards — text', 'type' => 'textarea', 'default' => 'Recognising outstanding work and celebrating the stories and storytellers of Northern Uganda.'],
+    'sacco_card_title'  => ['label' => 'Programme card — SACCO — title', 'type' => 'text', 'default' => 'NUFA SACCO — Proposed Initiative'],
+    'sacco_card_text'   => ['label' => 'Programme card — SACCO — text', 'type' => 'textarea', 'default' => 'An initiative being explored to strengthen financial resilience for filmmakers. Not yet operational.'],
+];
