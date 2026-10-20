@@ -10,15 +10,18 @@ $schema = $CMS_SCHEMAS[$page]['fields'];
 $adminTitle = $CMS_SCHEMAS[$page]['label'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    cms_save($conn, $page, $schema, $_POST, $_FILES);
-    header("Location: content-edit.php?page=" . urlencode($page) . "&saved=1");
-    exit;
+    $saveErrors = cms_save($conn, $page, $schema, $_POST, $_FILES);
+    if (!$saveErrors) {
+        header("Location: content-edit.php?page=" . urlencode($page) . "&saved=1");
+        exit;
+    }
 }
 
 $values = cms_load($conn, $page, $schema);
 include __DIR__ . "/includes/admin-header.php";
 ?>
 
+<?php if (!empty($saveErrors)): ?><div class="admin-alert err"><?php echo htmlspecialchars(implode(" ", $saveErrors)); ?></div><?php endif; ?>
 <?php if (isset($_GET['saved'])): ?><div class="admin-alert ok">Saved — the page reflects your changes immediately.</div><?php endif; ?>
 
 <div class="admin-card">

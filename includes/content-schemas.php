@@ -17,7 +17,7 @@ $CMS_SCHEMAS['home'] = [
     'label' => 'Home Page',
     'fields' => [
         'hero_eyebrow'     => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'Northern Uganda Filmmakers Association'],
-        'hero_heading'     => ['label' => 'Hero — heading (HTML allowed, e.g. <em>word</em>)', 'type' => 'html', 'default' => 'Celebrating the <em>spirit</em> of Northern Cinema'],
+        'hero_heading'     => ['label' => 'Hero — heading (HTML allowed, e.g. <em>word</em>)', 'type' => 'html', 'default' => '<span class="h1-lead">Celebrating the</span> <em>spirit</em> of Northern Cinema'],
         'hero_stat_number' => ['label' => 'Hero — stat number', 'type' => 'text', 'default' => '1,000+'],
         'hero_stat_label'  => ['label' => 'Hero — stat label', 'type' => 'text', 'default' => 'NUFA26 gala attendees'],
 

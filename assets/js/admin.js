@@ -21,3 +21,11 @@
   }
   if(overlay) overlay.addEventListener("click", closeSidebar);
 })();
+
+(function(){
+  var u = document.getElementById("adminUser");
+  if(!u) return;
+  var b = u.querySelector(".admin-user-btn");
+  b.addEventListener("click", function(e){ e.stopPropagation(); var o = u.classList.toggle("is-open"); b.setAttribute("aria-expanded", o); });
+  document.addEventListener("click", function(){ u.classList.remove("is-open"); b.setAttribute("aria-expanded", "false"); });
+})();

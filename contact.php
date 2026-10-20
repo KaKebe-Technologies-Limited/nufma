@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/includes/content.php";
 $pageTitle = "Contact — NUFA | Northern Uganda Filmmakers Association";
 $pageDesc  = "Get in touch with NUFA — membership, training, press and partnership enquiries welcome.";
 $activeNav = "contact";
@@ -15,13 +16,13 @@ include __DIR__ . "/includes/header.php";
 </script>
 
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-20.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo cms_img('contact','hero_image'); ?>" alt="" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Contact</span></div>
-    <div class="eyebrow">Get In Touch</div>
-    <h1 style="margin-top:18px">Let's talk film</h1>
-    <p>Membership, training, press or partnership — reach out and the NUFA team will get back to you.</p>
+    <div class="eyebrow"><?php echo cms_t('contact','hero_eyebrow'); ?></div>
+    <h1 style="margin-top:18px"><?php echo cms_t('contact','hero_heading'); ?></h1>
+    <p><?php echo cms_t('contact','hero_lede'); ?></p>
   </div>
 </section>
 
@@ -42,7 +43,7 @@ include __DIR__ . "/includes/header.php";
       </div>
       <div class="contact-row">
         <span class="ico"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 10h18M7 3v4M17 3v4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/></svg></span>
-        <div><b>Office hours</b><span>Mon – Fri, 9am – 5pm EAT</span></div>
+        <div><b>Office hours</b><span><?php echo cms_t('contact','office_hours'); ?></span></div>
       </div>
       <div class="social-row">
         <a href="https://x.com/NUFA_OFFICIAL1" target="_blank" rel="noopener" aria-label="X / Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.2-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 4h-1.8l12.1 16Z"/></svg></a>

@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/includes/content.php";
 $pageTitle = "Partners & Sponsors — NUFA | Northern Uganda Filmmakers Association";
 $pageDesc  = "Meet the organisations backing NUFA and the NUFA Awards, and find out how your brand can partner with Northern Uganda's film industry.";
 $activeNav = "partners";
@@ -24,13 +25,13 @@ while ($row = $res->fetch_assoc()) {
 <a id="top"></a>
 
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-19.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo cms_img('partners','hero_image'); ?>" alt="" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Partners</span></div>
-    <div class="eyebrow">Partners &amp; Sponsors</div>
-    <h1 style="margin-top:18px">Backed by organisations who believe in Northern storytelling</h1>
-    <p>From media houses to technology firms, these partners make NUFA's training and the NUFA Awards possible.</p>
+    <div class="eyebrow"><?php echo cms_t('partners','hero_eyebrow'); ?></div>
+    <h1 style="margin-top:18px"><?php echo cms_t('partners','hero_heading'); ?></h1>
+    <p><?php echo cms_t('partners','hero_lede'); ?></p>
   </div>
 </section>
 

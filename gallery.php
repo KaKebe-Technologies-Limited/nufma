@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/includes/content.php";
 $pageTitle = "Gallery — NUFA Awards Pictorials | NUFA";
 $pageDesc  = "Pictorials from the NUFA Awards — relive the red carpet, the gala and the community behind Northern Uganda's film industry.";
 $activeNav = "gallery";
@@ -38,13 +39,13 @@ for($i=1;$i<=21;$i++){
 <a id="top"></a>
 
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-12.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo cms_img('gallery','hero_image'); ?>" alt="" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Gallery</span></div>
-    <div class="eyebrow">Pictorials</div>
-    <h1 style="margin-top:18px">The moments behind the red carpet</h1>
-    <p>A running record of every NUFA Awards edition — from the inaugural 2025 gala to NUFA26 at Acholi Inn.</p>
+    <div class="eyebrow"><?php echo cms_t('gallery','hero_eyebrow'); ?></div>
+    <h1 style="margin-top:18px"><?php echo cms_t('gallery','hero_heading'); ?></h1>
+    <p><?php echo cms_t('gallery','hero_lede'); ?></p>
   </div>
 </section>
 
@@ -79,6 +80,21 @@ for($i=1;$i<=21;$i++){
         <div class="m-overlay"><span>NUFA25 · Gulu</span></div>
       </div>
       <?php endforeach; ?>
+      <?php
+      // photos uploaded from admin → Gallery (the built-in sets above are static)
+      $extra = $conn->query("SELECT image, caption, edition FROM gallery_images WHERE image LIKE 'uploads/%' ORDER BY created_at DESC");
+      while ($g = $extra->fetch_assoc()):
+        $yr = (substr($g['edition'], -2) === '25') ? '2025' : '2026';
+        $cap = $g['caption'] !== '' ? $g['caption'] : 'NUFA' . substr($yr, -2) . ' moment';
+      ?>
+      <div class="m-item" data-gallery-item="<?php echo $yr; ?>">
+        <img src="assets/images/<?php echo htmlspecialchars($g['image']); ?>"
+             data-lightbox="assets/images/<?php echo htmlspecialchars($g['image']); ?>"
+             data-caption="<?php echo htmlspecialchars($cap); ?>"
+             alt="<?php echo htmlspecialchars($cap); ?>" loading="lazy">
+        <div class="m-overlay"><span>NUFA<?php echo substr($yr, -2); ?></span></div>
+      </div>
+      <?php endwhile; ?>
     </div>
   </div>
 </section>

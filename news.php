@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/includes/content.php";
 $pageTitle = "News — NUFA | Northern Uganda Filmmakers Association";
 $pageDesc  = "Award recaps, training programmes, partnerships and the road to the NUFA Awards 2027 — the latest from NUFA.";
 $activeNav = "news";
@@ -34,11 +35,11 @@ function newsDate($d){ return date("d M Y", strtotime($d)); }
 <a id="top"></a>
 
 <section class="page-hero" style="min-height:220px">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2025/nufa25-16.webp" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo cms_img('news','hero_image'); ?>" alt="" aria-hidden="true"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>News</span></div>
-    <div class="eyebrow">Newsroom</div>
-    <h1 style="margin-top:12px">What's happening at NUFA</h1>
+    <div class="eyebrow"><?php echo cms_t('news','hero_eyebrow'); ?></div>
+    <h1 style="margin-top:12px"><?php echo cms_t('news','hero_heading'); ?></h1>
   </div>
 </section>
 

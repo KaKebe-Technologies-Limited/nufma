@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/includes/content.php";
 $pageTitle = "NUFA Awards 2026 Winners & 2027 Tickets — Northern Uganda Film Awards";
 $pageDesc  = "NUFA26 \"Stories That Redefine Us\": 92 submissions, 64 nominations, 1,000+ guests and the full winners list. Relive 2025 & 2026, and get tickets for NUFA Awards 2027.";
 $activeNav = "awards";
@@ -39,13 +40,13 @@ include __DIR__ . "/includes/header.php";
 </script>
 
 <section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2026/nufa26-09.jpg" alt="" aria-hidden="true"></div>
+  <div class="page-hero-bg"><img src="assets/images/<?php echo cms_img('awards','hero_image'); ?>" alt="" aria-hidden="true"></div>
   <div class="hero-glow g1"></div>
   <div class="container">
     <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Awards</span></div>
-    <div class="eyebrow">The NUFA Awards</div>
-    <h1 style="margin-top:18px">Two editions of history. <span style="color:var(--brand-300)">One big night ahead.</span></h1>
-    <p>The Northern Uganda Film Awards is the region's premier platform for celebrating filmmaking talent — hosted annually at Acholi Inn, Gulu.</p>
+    <div class="eyebrow"><?php echo cms_t('awards','hero_eyebrow'); ?></div>
+    <h1 style="margin-top:18px"><?php echo cms_h('awards','hero_heading'); ?></h1>
+    <p><?php echo cms_t('awards','hero_lede'); ?></p>
   </div>
 </section>
 
@@ -78,8 +79,8 @@ include __DIR__ . "/includes/header.php";
         <div class="ticket-card">
           <div class="ticket-price"><span>UGX</span><b>30,000</b></div>
           <div class="ticket-info">
-            <b>General Admission</b>
-            <span>Secure your seat for the NUFA Awards 2027 gala night</span>
+            <b><?php echo cms_t('awards','n27_ticket_title'); ?></b>
+            <span><?php echo cms_t('awards','n27_ticket_desc'); ?></span>
           </div>
           <a href="contact.php" class="btn btn-brand btn-sm">Get Tickets</a>
         </div>
@@ -247,8 +248,8 @@ include __DIR__ . "/includes/header.php";
   <div class="container">
     <div class="cta-band" data-reveal>
       <div>
-        <div class="eyebrow">Get Involved</div>
-        <h2 style="margin-top:16px">Help us make <span class="serif">NUFA27</span> the biggest edition yet</h2>
+        <div class="eyebrow"><?php echo cms_t('awards','cta_eyebrow'); ?></div>
+        <h2 style="margin-top:16px"><?php echo cms_h('awards','cta_heading'); ?></h2>
       </div>
       <a href="partners.php#become" class="btn btn-brand">Become a Partner</a>
     </div>

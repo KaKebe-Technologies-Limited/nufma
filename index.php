@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/includes/content.php";
 $pageTitle = "NUFA — Northern Uganda Filmmakers Association | Home of Northern Storytellers";
 $pageDesc  = "NUFA unites, trains and celebrates filmmakers across Acholi, Lango, West Nile and Karamoja. Discover the NUFA Awards, our community, and how to partner with us.";
 $activeNav = "home";
@@ -35,8 +36,8 @@ function hc_col($imgs){
 
   <div class="container-wide hero-grid hero-grid-center">
     <div class="hero-copy hero-copy-center">
-      <div class="eyebrow hero-eyebrow">Northern Uganda Filmmakers Association</div>
-      <h1><span class="h1-lead">Celebrating the</span> <em>spirit</em> of Northern Cinema</h1>
+      <div class="eyebrow hero-eyebrow"><?php echo cms_t('home','hero_eyebrow'); ?></div>
+      <h1><?php echo cms_h('home','hero_heading'); ?></h1>
       <div class="hero-actions">
         <a href="awards.php#nufa27" class="btn btn-brand">Get Tickets</a>
         <a href="membership.php" class="btn btn-line-light">Join NUFA</a>
@@ -48,7 +49,7 @@ function hc_col($imgs){
           <img src="assets/images/team/team-guild-leader.webp" alt="">
           <img src="assets/images/team/team-publicity.webp" alt="">
         </div>
-        <div class="stat"><b>1,000+</b><span>NUFA26 gala attendees</span></div>
+        <div class="stat"><b><?php echo cms_t('home','hero_stat_number'); ?></b><span><?php echo cms_t('home','hero_stat_label'); ?></span></div>
       </div>
     </div>
   </div>
@@ -116,21 +117,21 @@ function hc_col($imgs){
       <div class="chip"><b>02 May</b><span>NUFA26 Awards Day, Acholi Inn, Gulu</span></div>
     </div>
     <div class="assoc-body" data-reveal>
-      <div class="eyebrow">The Association</div>
-      <h2 style="margin-block:18px 20px">A regional home for the people telling <span class="serif">Northern Uganda's</span> stories</h2>
-      <p class="lede">NUFA is a registered collective of filmmakers — camera operators, editors, actors, writers, costume and set designers — building a film industry where local stories are made, owned and celebrated by the people who live them.</p>
+      <div class="eyebrow"><?php echo cms_t('home','assoc_eyebrow'); ?></div>
+      <h2 style="margin-block:18px 20px"><?php echo cms_h('home','assoc_heading'); ?></h2>
+      <p class="lede"><?php echo cms_t('home','assoc_lede'); ?></p>
       <ul class="assoc-list">
         <li>
           <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v5c0 5-3.4 8.4-7 9-3.6-.6-7-4-7-9V7l7-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-          <div><b>Training &amp; capacity building</b><span>Screenwriting, directing and technical masterclasses reaching thousands of creatives.</span></div>
+          <div><b><?php echo cms_t('home','assoc1_title'); ?></b><span><?php echo cms_t('home','assoc1_desc'); ?></span></div>
         </li>
         <li>
           <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-          <div><b>Recognition &amp; platform</b><span>The NUFA Awards give technical and creative achievement a regional stage.</span></div>
+          <div><b><?php echo cms_t('home','assoc2_title'); ?></b><span><?php echo cms_t('home','assoc2_desc'); ?></span></div>
         </li>
         <li>
           <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 20v-1a5 5 0 0 1 5-5h1a5 5 0 0 1 5 5v1M15 4.2a3.5 3.5 0 0 1 0 6.6M17 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/></svg></span>
-          <div><b>Advocacy &amp; policy</b><span>Championing the policies and market access that make film a viable career.</span></div>
+          <div><b><?php echo cms_t('home','assoc3_title'); ?></b><span><?php echo cms_t('home','assoc3_desc'); ?></span></div>
         </li>
       </ul>
       <div style="margin-top:32px"><a href="about.php" class="btn-ghost">Read our full story <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
@@ -142,19 +143,19 @@ function hc_col($imgs){
   <div class="container stat-grid" data-reveal-stagger>
     <div class="stat-cell">
       <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17 20v-1a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v1M15.5 4.2a3.5 3.5 0 0 1 0 6.6M19 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="9.5" cy="8" r="3.3" stroke="currentColor" stroke-width="1.7"/></svg></span>
-      <b>6,700+</b><span>People reached through NUFA programmes</span>
+      <b><?php echo cms_t('home','stat1_number'); ?></b><span><?php echo cms_t('home','stat1_label'); ?></span>
     </div>
     <div class="stat-cell">
       <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h13l3 3v11H4V5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-      <b>92</b><span>Film submissions to NUFA26 — up 31% on 2025</span>
+      <b><?php echo cms_t('home','stat2_number'); ?></b><span><?php echo cms_t('home','stat2_label'); ?></span>
     </div>
     <div class="stat-cell">
       <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M3 12h18" stroke="currentColor" stroke-width="1.4"/></svg></span>
-      <b>4</b><span>Regions united — Acholi, Lango, West Nile, Karamoja</span>
+      <b><?php echo cms_t('home','stat3_number'); ?></b><span><?php echo cms_t('home','stat3_label'); ?></span>
     </div>
     <div class="stat-cell">
       <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 10l-5 4.3L17.4 21 12 17.3 6.6 21 8 14.3 3 10l6.4-1.4L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-      <b>2027</b><span>Next edition of the NUFA Awards</span>
+      <b><?php echo cms_t('home','stat4_number'); ?></b><span><?php echo cms_t('home','stat4_label'); ?></span>
     </div>
   </div>
 </section>
@@ -162,9 +163,9 @@ function hc_col($imgs){
 <section class="section bg-paper">
   <div class="container">
     <div class="section-head center">
-      <div class="eyebrow">The NUFA Awards</div>
-      <h2>Two editions strong. <span class="serif">One big stage ahead.</span></h2>
-      <p class="lede">2025 and 2026 are history — 2027 is where we're headed. Every edition brings Northern Uganda's finest storytellers to Acholi Inn, Gulu.</p>
+      <div class="eyebrow"><?php echo cms_t('home','awards_eyebrow'); ?></div>
+      <h2><?php echo cms_h('home','awards_heading'); ?></h2>
+      <p class="lede"><?php echo cms_t('home','awards_lede'); ?></p>
     </div>
 
     <div class="timeline" data-reveal-stagger>
@@ -242,24 +243,24 @@ function hc_col($imgs){
 <section class="section bg-paper">
   <div class="container">
     <div class="section-head center">
-      <div class="eyebrow">Why NUFA</div>
-      <h2>Built for filmmakers, <span class="serif">by filmmakers</span></h2>
+      <div class="eyebrow"><?php echo cms_t('home','why_eyebrow'); ?></div>
+      <h2><?php echo cms_h('home','why_heading'); ?></h2>
     </div>
     <div class="grid-3" data-reveal-stagger>
       <div class="value-card">
         <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5h13l3 3v11H4V5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <h3>Mentorship that shows up</h3>
-        <p>Guilds and workshops led by working professionals, in camera, editing, sound, writing and design.</p>
+        <h3><?php echo cms_t('home','why1_title'); ?></h3>
+        <p><?php echo cms_t('home','why1_desc'); ?></p>
       </div>
       <div class="value-card">
         <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 10l-5 4.3L17.4 21 12 17.3 6.6 21 8 14.3 3 10l6.4-1.4L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
-        <h3>A stage that recognises you</h3>
-        <p>The NUFA Awards put technical craft — not just star power — in the spotlight every edition.</p>
+        <h3><?php echo cms_t('home','why2_title'); ?></h3>
+        <p><?php echo cms_t('home','why2_desc'); ?></p>
       </div>
       <div class="value-card">
         <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M3 12h18" stroke="currentColor" stroke-width="1.4"/></svg></div>
-        <h3>A network across the North</h3>
-        <p>One collective spanning Acholi, Lango, West Nile and Karamoja — production support included.</p>
+        <h3><?php echo cms_t('home','why3_title'); ?></h3>
+        <p><?php echo cms_t('home','why3_desc'); ?></p>
       </div>
     </div>
   </div>
@@ -328,9 +329,9 @@ function hc_col($imgs){
   <div class="container">
     <div class="cta-band" data-reveal>
       <div>
-        <div class="eyebrow">Accelerate Our Impact</div>
-        <h2 style="margin-top:16px">Become a sponsor of the <span class="serif">NUFA Awards 2027</span></h2>
-        <p class="lede" style="margin-top:14px">Put your brand behind the region's biggest night in film — and the training that happens all year round.</p>
+        <div class="eyebrow"><?php echo cms_t('home','cta_eyebrow'); ?></div>
+        <h2 style="margin-top:16px"><?php echo cms_h('home','cta_heading'); ?></h2>
+        <p class="lede" style="margin-top:14px"><?php echo cms_t('home','cta_lede'); ?></p>
       </div>
       <a href="partners.php#become" class="btn btn-brand">Partner With Us</a>
     </div>
