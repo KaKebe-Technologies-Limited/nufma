@@ -972,3 +972,72 @@ h1,h2,h3{font-weight:800}
 .values-band,.vm-band{background:var(--brand-500)}
 .contact-card,.form-card{border-radius:0;box-shadow:0 10px 34px rgba(20,17,12,.09);border:0}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--brand-500);outline-offset:0;border-color:var(--brand-500)}
+
+/* =====================================================================
+   Membership — public form + card
+   ===================================================================== */
+.member-grid{display:grid;grid-template-columns:.8fr 1.4fr;gap:clamp(28px,4vw,56px);align-items:start}
+.member-side{background:var(--ink);color:var(--text-on-ink);padding:clamp(26px,3vw,38px);position:sticky;top:130px}
+.member-side h3{color:#fff;margin-bottom:20px}
+.member-steps{list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:18px;margin-bottom:26px}
+.member-steps li{counter-increment:s;position:relative;padding-left:46px}
+.member-steps li::before{content:counter(s);position:absolute;left:0;top:0;width:32px;height:32px;border-radius:50%;background:var(--brand-500);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--font-heading)}
+.member-steps b{display:block;color:#fff;font-family:var(--font-heading);font-size:.95rem}
+.member-steps span{font-size:.84rem;color:var(--text-on-ink-muted)}
+.member-fee{background:var(--brand-500);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.member-fee span{font-size:.8rem;opacity:.95}.member-fee b{font-family:var(--font-heading);font-size:1.3rem}
+.member-pay h4{color:#fff;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+.member-pay p{font-size:.86rem;color:var(--text-on-ink-muted)}
+.member-sec{font-family:var(--font-heading);font-size:1rem;color:var(--brand-600);margin:26px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--brand-100)}
+.member-sec:first-of-type{margin-top:0}
+.member-errors{background:#FDEBEC;color:var(--red-600);padding:14px 18px;margin-bottom:22px;font-size:.9rem}
+.member-errors ul{margin:8px 0 0 18px;list-style:disc}
+.member-agree{display:flex;gap:10px;align-items:flex-start;font-size:.86rem;color:var(--text-muted);margin:18px 0}
+.member-agree input{margin-top:3px;accent-color:var(--brand-500)}
+.field input[type=file]{padding:10px;background:var(--cream)}
+.member-done{text-align:center;padding:28px 10px}
+.member-done-ico{width:64px;height:64px;border-radius:50%;background:var(--brand-500);color:#fff;font-size:2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.member-done p{color:var(--text-muted);max-width:46ch;margin:12px auto 0}
+@media (max-width:980px){.member-grid{grid-template-columns:1fr}.member-side{position:static}}
+
+.card-actions{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.mcard{position:relative;width:100%;max-width:560px;aspect-ratio:1.586;margin:0 auto;background:#fff;box-shadow:0 20px 50px rgba(20,17,12,.22);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;border:1px solid #e7e4dc}
+.mcard-top{background:var(--brand-500);color:#fff;display:flex;align-items:center;gap:12px;padding:3.2% 4.5%}
+.mcard-logo{width:9%;min-width:34px;aspect-ratio:1;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
+.mcard-top div{flex:1;line-height:1.15}
+.mcard-top b{display:block;font-family:var(--font-heading);font-size:clamp(.9rem,3vw,1.25rem);letter-spacing:.04em}
+.mcard-top span{font-size:clamp(.5rem,1.6vw,.68rem);letter-spacing:.08em;text-transform:uppercase;opacity:.95}
+.mcard-top em{font-style:normal;font-weight:800;font-size:clamp(.55rem,1.8vw,.75rem);letter-spacing:.18em;background:var(--ink);padding:4px 10px;border-radius:20px}
+.mcard-body{display:flex;gap:4.5%;padding:3.5% 4.5% 1.5%;flex:1;min-height:0}
+.mcard-photo{width:26%;aspect-ratio:3/4;background:var(--cream-2);border:3px solid var(--brand-500);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.mcard-photo img{width:100%;height:100%;object-fit:cover}
+.mcard-photo span{font-size:2rem;font-weight:800;color:var(--brand-500)}
+.mcard-info{flex:1;min-width:0}
+.mcard-info h3{font-size:clamp(.95rem,3.2vw,1.35rem);line-height:1.15;color:var(--ink)}
+.mcard-guild{font-size:clamp(.6rem,1.9vw,.8rem);color:var(--brand-600);font-weight:700;margin:3px 0 8px}
+.mcard-info dl{display:grid;gap:4px}
+.mcard-info dl div{display:flex;gap:8px;font-size:clamp(.58rem,1.8vw,.78rem)}
+.mcard-info dt{width:30%;color:var(--text-muted)}
+.mcard-info dd{font-weight:700;color:var(--ink)}
+.mcard-reg{color:var(--brand-600)!important;letter-spacing:.03em}
+.mcard-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:4%;padding:1% 4.5% 3%;}
+.mcard-foot p{font-size:clamp(.42rem,1.25vw,.58rem);color:var(--text-muted);max-width:44%;line-height:1.35}
+.mcard-sign{text-align:center;min-width:38%;display:flex;flex-direction:column;align-items:center;line-height:1.15}
+.mcard-sign img{max-height:clamp(26px,7vw,46px);max-width:100%;object-fit:contain;margin-bottom:-4px}
+.mcard-nosig{height:clamp(22px,6vw,38px)}
+.mcard-sign i{display:block;width:100%;border-top:1px solid var(--ink)}
+.mcard-sign b{font-size:clamp(.55rem,1.7vw,.74rem);color:var(--ink);margin-top:3px}
+.mcard-sign small{font-size:clamp(.45rem,1.3vw,.6rem);color:var(--text-muted)}
+.mcard::after{content:'';position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--ink)}
+.mcard-stamp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:3rem;font-weight:900;color:rgba(193,39,45,.55);transform:rotate(-14deg);letter-spacing:.1em;pointer-events:none}
+.mcard.is-expired{filter:grayscale(.7)}
+.card-verify{max-width:560px;margin:22px auto 0;padding:14px 18px;font-size:.9rem}
+.card-verify.good{background:var(--brand-100);color:var(--brand-700)}
+.card-verify.bad{background:#FDEBEC;color:var(--red-600)}
+@media print{
+  body *{visibility:hidden}
+  .mcard,.mcard *{visibility:visible}
+  .mcard{position:fixed;left:0;top:0;width:100%;max-width:none;box-shadow:none;border-radius:0}
+  .no-print{display:none!important}
+  .mcard,.mcard-top,.mcard-top em,.mcard-photo{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}

@@ -30,7 +30,7 @@
       <ul>
         <li><a href="<?php echo $base; ?>partners.php">Partners &amp; Sponsors</a></li>
         <li><a href="<?php echo $base; ?>partners.php#become">Become a Partner</a></li>
-        <li><a href="<?php echo $base; ?>contact.php">Membership</a></li>
+        <li><a href="<?php echo $base; ?>membership.php">Membership</a></li>
         <li><a href="<?php echo $base; ?>contact.php">Contact Us</a></li>
       </ul>
     </div>

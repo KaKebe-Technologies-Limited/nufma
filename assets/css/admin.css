@@ -120,3 +120,26 @@
   .admin-grid{grid-template-columns:1fr}
   .admin-topbar-user{display:none}
 }
+
+/* membership admin */
+.mem-tabs{display:flex;gap:6px;margin-bottom:22px;flex-wrap:wrap}
+.mem-tabs a{padding:9px 16px;font-family:var(--font-heading);font-weight:700;font-size:.82rem;color:var(--text-muted);border-bottom:3px solid transparent}
+.mem-tabs a.active,.mem-tabs a:hover{color:var(--brand-600);border-bottom-color:var(--brand-500)}
+.mem-filter{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.mem-filter input,.mem-filter select{padding:9px 12px;border:1px solid var(--line);background:#fff;font:inherit;font-size:.88rem}
+.mem-filter input{flex:1;min-width:220px}
+.mem-view{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:start}
+@media(max-width:1000px){.mem-view{grid-template-columns:1fr}}
+.mem-profile{display:flex;gap:18px;align-items:flex-start}
+.mem-profile img{width:120px;aspect-ratio:3/4;object-fit:cover;border:3px solid var(--brand-500)}
+.mem-row{display:flex;gap:12px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.88rem}
+.mem-row span{width:38%;color:var(--text-muted)}.mem-row b{flex:1;word-break:break-word}
+.mem-regbox{background:var(--ink);color:#fff;padding:16px 18px}
+.mem-regbox span{display:block;font-size:.75rem;opacity:.8}.mem-regbox b{font-family:var(--font-heading);font-size:1.4rem;color:var(--brand-300);letter-spacing:.04em}
+.mem-check{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.85rem;margin-bottom:8px}
+.mem-check input{width:auto!important}
+.mem-guild-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+.mem-guild-row input[name=name]{flex:1.2;min-width:180px}.mem-guild-row input[name=description]{flex:2;min-width:200px}
+.mem-guild-row input:not([type=checkbox]){padding:8px 10px;border:1px solid var(--line);font:inherit;font-size:.85rem}
+.mem-h3{font-size:.95rem;margin:22px 0 10px;color:var(--brand-600)}
+.mem-sig{background:var(--cream);padding:12px;display:inline-block;margin-bottom:8px}.mem-sig img{max-height:80px}

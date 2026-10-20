@@ -1,1 +1,5 @@
 includes/db.config.php
+
+storage/members/*
+!storage/members/.htaccess
+assets/images/uploads/signature/*

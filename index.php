@@ -39,7 +39,7 @@ function hc_col($imgs){
       <h1><span class="h1-lead">Celebrating the</span> <em>spirit</em> of Northern Cinema</h1>
       <div class="hero-actions">
         <a href="awards.php#nufa27" class="btn btn-brand">Get Tickets</a>
-        <a href="about.php" class="btn btn-line-light">Our Story</a>
+        <a href="membership.php" class="btn btn-line-light">Join NUFA</a>
       </div>
       <div class="hero-stats">
         <div class="hero-avatars">

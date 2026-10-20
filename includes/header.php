@@ -76,20 +76,20 @@ $activeFont = nufa_get_font_preset($conn);
 </head>
 <body>
 
-<?php require_once __DIR__ . "/settings.php"; $S = nufa_site_settings($conn); ?>
+<?php require_once __DIR__ . "/settings.php"; $siteCfg = nufa_site_settings($conn); ?>
 <header class="site-header">
   <div class="topbar">
     <div class="container-wide topbar-in">
       <div class="topbar-info">
-        <a href="tel:<?php echo nufa_tel_href($S["site_phone"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><?php echo htmlspecialchars($S["site_phone"]); ?></a>
-        <a href="mailto:<?php echo htmlspecialchars($S["site_email"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="m3 7 9 6 9-6" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($S["site_email"]); ?></a>
-        <span class="topbar-addr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($S["site_address"]); ?></span>
+        <a href="tel:<?php echo nufa_tel_href($siteCfg["site_phone"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><?php echo htmlspecialchars($siteCfg["site_phone"]); ?></a>
+        <a href="mailto:<?php echo htmlspecialchars($siteCfg["site_email"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="m3 7 9 6 9-6" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($siteCfg["site_email"]); ?></a>
+        <span class="topbar-addr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($siteCfg["site_address"]); ?></span>
       </div>
       <div class="topbar-social">
-        <a href="<?php echo htmlspecialchars($S["x_url"]); ?>" target="_blank" rel="noopener" aria-label="X">X</a>
-        <a href="<?php echo htmlspecialchars($S["facebook_url"]); ?>" target="_blank" rel="noopener" aria-label="Facebook">f</a>
-        <a href="<?php echo htmlspecialchars($S["instagram_url"]); ?>" target="_blank" rel="noopener" aria-label="Instagram">ig</a>
-        <a href="<?php echo htmlspecialchars($S["linkedin_url"]); ?>" target="_blank" rel="noopener" aria-label="LinkedIn">in</a>
+        <a href="<?php echo htmlspecialchars($siteCfg["x_url"]); ?>" target="_blank" rel="noopener" aria-label="X">X</a>
+        <a href="<?php echo htmlspecialchars($siteCfg["facebook_url"]); ?>" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a href="<?php echo htmlspecialchars($siteCfg["instagram_url"]); ?>" target="_blank" rel="noopener" aria-label="Instagram">ig</a>
+        <a href="<?php echo htmlspecialchars($siteCfg["linkedin_url"]); ?>" target="_blank" rel="noopener" aria-label="LinkedIn">in</a>
       </div>
       <a href="<?php echo $base; ?>awards.php#nufa27" class="topbar-cta">Get Tickets · NUFA 2027</a>
     </div>
@@ -118,12 +118,13 @@ $activeFont = nufa_get_font_preset($conn);
         <li class="<?php echo $activeNav==='gallery'?'active':''; ?>"><a href="<?php echo $base; ?>gallery.php">Gallery</a></li>
         <li class="<?php echo $activeNav==='news'?'active':''; ?>"><a href="<?php echo $base; ?>news.php">News</a></li>
         <li class="<?php echo $activeNav==='partners'?'active':''; ?>"><a href="<?php echo $base; ?>partners.php">Partners</a></li>
+        <li class="<?php echo $activeNav==='membership'?'active':''; ?>"><a href="<?php echo $base; ?>membership.php">Membership</a></li>
         <li class="<?php echo $activeNav==='contact'?'active':''; ?>"><a href="<?php echo $base; ?>contact.php">Contact</a></li>
       </ul>
     </nav>
 
     <div class="header-cta">
-      <a href="<?php echo $base; ?>partners.php#become" class="btn btn-brand btn-sm">Become a Partner</a>
+      <a href="<?php echo $base; ?>membership.php" class="btn btn-brand btn-sm">Join NUFA</a>
       <button class="nav-toggle" aria-label="Open menu">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </button>
@@ -158,11 +159,12 @@ $activeFont = nufa_get_font_preset($conn);
     <li><a href="<?php echo $base; ?>gallery.php">Gallery</a></li>
     <li><a href="<?php echo $base; ?>news.php">News</a></li>
     <li><a href="<?php echo $base; ?>partners.php">Partners</a></li>
+    <li><a href="<?php echo $base; ?>membership.php">Membership</a></li>
     <li><a href="<?php echo $base; ?>contact.php">Contact</a></li>
   </ul>
 
   <div class="mobile-nav-foot">
-    <a href="<?php echo $base; ?>partners.php#become" class="btn btn-brand">Become a Partner</a>
+    <a href="<?php echo $base; ?>membership.php" class="btn btn-brand">Join NUFA</a>
     <div class="mobile-social social-row">
       <a href="https://x.com/NUFA_OFFICIAL1" target="_blank" rel="noopener" aria-label="X / Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.2-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 4h-1.8l12.1 16Z"/></svg></a>
       <a href="https://www.facebook.com/nufa2026" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.1c0-.95.27-1.6 1.63-1.6H17V3.5c-.3-.04-1.3-.13-2.5-.13-2.47 0-4.16 1.5-4.16 4.27v2.6H7.5v3.3h2.84V22h3.16Z"/></svg></a>
