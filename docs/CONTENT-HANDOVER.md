@@ -60,3 +60,9 @@ See `docs/DEPLOYMENT.md`.
 - **Winners**: Award Winners now takes an optional note and picture per winner. The page shows the last two past editions.
 - **Technical team**: add people in Team with the category “Awards Technical Team” (they appear on the Awards page, not on About).
 - Teaser video, take-part ways, FAQ, eligibility/judging text and every placeholder message are editable in Page Editor → NUFA Awards.
+
+## News, stories & newsletters (Admin → News & Stories / Newsletters / Subscribers)
+- **Stories**: write with the editor (headings, lists, links, quotes, inline picture upload), add a featured image, optional video link and PDF attachment; save as Draft or Published.
+- **Newsletters**: either *write one here* (editor, cover, “In this issue” story picks, optional PDF version) or *upload a PDF*. Published issues appear on the Newsletter page (archive + online reader + PDF download).
+- **E-mailing**: open a published newsletter → send a test, then “Send to subscribers” (40 per click, nobody gets the same issue twice; failed addresses can be retried).
+- **Subscribers**: visitors join on the Newsletter page; add addresses (only people who agreed), pause, delete or export CSV. Every email carries an unsubscribe link.

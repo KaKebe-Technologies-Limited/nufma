@@ -326,6 +326,8 @@ $CMS_SCHEMAS['support'] = ['label' => 'Support a Programme', 'fields' => [
 $CMS_SCHEMAS['seo']['fields'] += [
     'schedule_title' => ['label' => 'Schedule — title', 'type' => 'text', 'default' => 'Programme Schedule & Calendar | NUFA'],
     'schedule_desc'  => ['label' => 'Schedule — description', 'type' => 'textarea', 'default' => 'Dates, venues and meeting links for NUFA programmes, plus a calendar of important days and public holidays in Uganda.'],
+    'newsletters_title' => ['label' => 'Newsletter — title', 'type' => 'text', 'default' => 'NUFA Newsletter — News from Northern Uganda\'s Filmmakers | NUFA'],
+    'newsletters_desc'  => ['label' => 'Newsletter — description', 'type' => 'textarea', 'default' => 'Read and download NUFA newsletters, and subscribe to get news about awards, programmes and the film community in Northern Uganda.'],
     'support_title' => ['label' => 'Support a Programme — title', 'type' => 'text', 'default' => 'Support a Programme — Donate, Sponsor, Volunteer or Partner | NUFA'],
     'support_desc'  => ['label' => 'Support a Programme — description', 'type' => 'textarea', 'default' => "Support NUFA's programmes in Northern Uganda: donate, sponsor, volunteer or partner to help filmmakers develop their craft and tell their stories."],
 ];
@@ -402,3 +404,13 @@ $CMS_SCHEMAS['awards']['fields'] += [
     'faq_heading' => ['label' => 'FAQ — heading', 'type' => 'text', 'default' => 'Frequently asked questions'],
     'faq_html'    => ['label' => 'FAQ (HTML: <details><summary>Question</summary><div class="ans">Answer</div></details>)', 'type' => 'html', 'default' => '<details><summary>When is the next NUFA Awards?</summary><div class="ans">The date and venue are published in the road map and the upcoming-edition section as soon as they are confirmed.</div></details><details><summary>Who can submit a film?</summary><div class="ans">Eligibility rules are published with the submission details once the call for entries opens.</div></details><details><summary>How do I get tickets?</summary><div class="ans">Use the tickets and booking section on this page when sales open, or contact the awards team.</div></details><details><summary>Can my organisation sponsor the awards?</summary><div class="ans">Yes. Use the sponsor option on this page or the partnership enquiry form.</div></details>'],
 ];
+
+$CMS_SCHEMAS['newsletters'] = ['label' => 'Newsletter', 'fields' => [
+    'hero_image' => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2026/nufa26-08.jpg'],
+    'hero_title' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => 'The NUFA Newsletter'],
+    'hero_lede'  => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => 'News, updates and stories from NUFA and the film community in Northern Uganda — to read online, download or receive in your inbox.'],
+    'empty_text' => ['label' => 'Placeholder when no issue is published', 'type' => 'text', 'default' => 'The first NUFA newsletter will be published here. Subscribe below to receive it when it is ready.'],
+    'archive_heading' => ['label' => 'Archive — heading', 'type' => 'text', 'default' => 'Previous issues'],
+    'subscribe_heading' => ['label' => 'Subscribe — heading', 'type' => 'text', 'default' => 'Get the newsletter in your inbox'],
+    'subscribe_text' => ['label' => 'Subscribe — text', 'type' => 'textarea', 'default' => 'News about NUFA Awards, programmes, trainings and opportunities for filmmakers. No spam — unsubscribe whenever you like.'],
+]];

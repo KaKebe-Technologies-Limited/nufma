@@ -17,7 +17,7 @@ function nufa_menu_defaults() {
             ['Programmes', 'programmes.php', 'programmes', [['All Programmes', 'programmes.php'], ['auto:programmes', 'auto:programmes']]],
             ['NUFA SACCO', 'sacco.php', 'sacco', []],
             ['Industry Network', 'network.php', 'network', []],
-            ['News & Stories', 'news.php', 'news', []],
+            ['News & Stories', 'news.php', 'news,newsletters', [['News & Stories', 'news.php'], ['Newsletter', 'newsletters.php']]],
             ['Resources', 'resources.php', 'resources,gallery', [['Resource Library', 'resources.php'], ['Gallery & Video Library', 'gallery.php']]],
             ['Partner With Us', 'partners.php', 'partner', []],
             ['Contact', 'contact.php', 'contact,schedule', [['Contact us', 'contact.php'], ['Calendar', 'schedule.php']]],

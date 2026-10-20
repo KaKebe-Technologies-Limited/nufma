@@ -94,4 +94,5 @@ echo ui_page_hero('News & Stories', cms_value('news', 'hero_title'), cms_value('
     <?php endif; ?>
   </div>
 </section>
+<section class="section--tight"><div class="container"><div class="status-banner" role="note" style="align-items:center"><div style="flex:1"><b>NUFA Newsletter.</b> Read or download past issues, or get the next one in your inbox.</div><a class="btn btn-outline-dark btn-sm" href="newsletters.php">Read newsletters</a> <a class="btn btn-gold btn-sm" href="newsletters.php#subscribe">Subscribe</a></div></div></section>
 <?php include __DIR__ . "/includes/footer.php"; ?>

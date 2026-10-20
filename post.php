@@ -48,6 +48,15 @@ $shareText = urlencode($post['title']);
       <?php if (!empty($post['image_caption']) || !empty($post['image_credit'])): ?><figcaption><?php echo ui_e($post['image_caption'] ?? ''); ?><?php echo !empty($post['image_credit']) ? ' <em>Photo: ' . ui_e($post['image_credit']) . '</em>' : ''; ?></figcaption><?php endif; ?>
     </figure>
     <div class="article-body"><?php echo $post['body']; ?></div>
+<?php
+$pv = ui_video_embed($post['video_url'] ?? ''); $pa = trim($post['attachment'] ?? '');
+$paOk = $pa !== '' && is_file(__DIR__ . '/assets/downloads/' . $pa);
+if ($pv || $paOk): ?>
+    <div class="story-extras">
+      <?php if ($pv): ?><div class="video-card"><div class="frame"><iframe src="<?php echo ui_e($pv); ?>" title="Video: <?php echo ui_e($post['title']); ?>" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div></div><?php endif; ?>
+      <?php if ($paOk): ?><div class="attach-card"><div><b><?php echo ui_e($post['attachment_title'] ?: 'Download the PDF'); ?></b><span>PDF document</span></div><a class="btn btn-gold btn-sm" href="assets/downloads/<?php echo ui_e(rawurlencode($pa)); ?>" target="_blank" rel="noopener" download>Download</a></div><?php endif; ?>
+    </div>
+<?php endif; ?>
 
     <div class="share-row" aria-label="Share this article">
       <span>Share:</span>
@@ -74,4 +83,5 @@ $shareText = urlencode($post['title']);
   </div>
 </section>
 <?php endif; ?>
+<section class="section--tight"><div class="container"><div class="status-banner" role="note" style="align-items:center"><div style="flex:1"><b>Enjoyed this story?</b> Get NUFA news in your inbox.</div><a class="btn btn-gold btn-sm" href="newsletters.php#subscribe">Subscribe to the newsletter</a></div></div></section>
 <?php include __DIR__ . "/includes/footer.php"; ?>

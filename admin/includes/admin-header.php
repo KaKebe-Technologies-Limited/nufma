@@ -40,6 +40,7 @@ $__ico += [
     'support'    => '<path d="M12 20s-7-4.500-7-10a4 4 0 0 1 7-2.500A4 4 0 0 1 19 10c0 5.500-7 10-7 10Z"/>',
     'schedule'   => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     'awardsetup' => '<path d="M12 3l2.600 5.300 5.800.800-4.200 4.100 1 5.800L12 16.300 6.800 19l1-5.800L3.600 9.100l5.800-.800L12 3Z"/>',
+    'newsletters' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6" stroke-linecap="round"/>',
     'saccoadm'   => '<ellipse cx="9" cy="7" rx="6" ry="3"/><path d="M3 7v5c0 1.700 2.700 3 6 3s6-1.300 6-3V7M15 11.500c3 0 6 1 6 2.500v3c0 1.700-3 3-6.500 3"/>',
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
@@ -54,7 +55,6 @@ $__nav = [
         ['saccoadm', 'sacco-manager.php', 'NUFA SACCO'],
         ['schedule', 'schedule.php', 'Schedule & reminders'],
         $__msgs > 0 ? ['messages', 'messages.php', 'Messages (earlier)', $__unread] : null,
-        $__subs > 0 ? ['subscribers', 'subscribers.php', 'Subscribers (earlier)'] : null,
     ])),
     'Website content' => [
         ['pages', 'pages.php', 'Page Editor'],
@@ -64,6 +64,7 @@ $__nav = [
         ['appearance', 'appearance.php', 'Appearance & Branding'],
         ['lists', 'lists.php', 'Form options'],
         ['posts', 'posts.php', 'News & Stories'],
+        ['newsletters', 'newsletters.php', 'Newsletters'],
         ['programmes', 'programmes.php', 'Programmes'],
         ['resources', 'resources.php', 'Resources'],
         ['gallery', 'gallery.php', 'Gallery & Videos'],

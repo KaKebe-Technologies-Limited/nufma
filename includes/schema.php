@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v11` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v12` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -108,7 +108,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v11'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v12'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -317,6 +317,21 @@ function nufa_migrate($conn) {
     if ($tc && trim($tc['setting_value']) !== '' && stripos($tc['setting_value'], AWD_TEAM_CATEGORY) === false) { $nv = rtrim($tc['setting_value']) . "
 " . AWD_TEAM_CATEGORY; $us = $conn->prepare("UPDATE settings SET setting_value=? WHERE setting_key='list_team_categories'"); $us->bind_param('s', $nv); $us->execute(); }
 
+    // ---- Newsletters (issues, PDF uploads, mailing list) and extra story fields ----
+    require_once __DIR__ . "/newsletter.php";
+    nl_install($conn);
+    if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'newsletters.php%'")->fetch_row()[0]) {
+        $nm = $conn->query("SELECT id FROM nav_items WHERE location='header' AND parent_id IS NULL AND url='news.php' LIMIT 1")->fetch_assoc();
+        if ($nm) {
+            $nid = (int)$nm['id'];
+            if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE parent_id=$nid")->fetch_row()[0]) nufa_exec($conn, "INSERT INTO nav_items (location, parent_id, label, url, sort_order) VALUES ('header', $nid, 'News & Stories', 'news.php', 1)");
+            nufa_exec($conn, "INSERT INTO nav_items (location, parent_id, label, url, sort_order) VALUES ('header', $nid, 'Newsletter', 'newsletters.php', 2)");
+            $conn->query("UPDATE nav_items SET nav_key=CONCAT(nav_key, ',newsletters') WHERE id=$nid AND nav_key NOT LIKE '%newsletters%'");
+        }
+        $fo = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer1'")->fetch_row()[0];
+        nufa_exec($conn, "INSERT INTO nav_items (location, label, url, sort_order) VALUES ('footer1', 'Newsletter', 'newsletters.php', $fo)");
+    }
+
     // footer link to the support page (once)
     if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'support.php%'")->fetch_row()[0]) {
         $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer2'")->fetch_row()[0];
@@ -381,7 +396,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v11', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v12', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

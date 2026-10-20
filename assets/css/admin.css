@@ -307,3 +307,31 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 .admin-cal .cal-d{min-height:92px;padding:5px;border-top:1px solid #e4e0d6;border-left:1px solid #e4e0d6;display:flex;flex-direction:column;gap:3px;overflow:hidden}.admin-cal .cal-d--empty{background:#faf8f3}.admin-cal .cal-d--today{background:#fff8e6;box-shadow:inset 0 0 0 2px #c8a03c}
 .admin-cal .cal-n{font-weight:700;font-size:.8rem;color:#161616;text-decoration:none;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}.admin-cal .cal-n:hover{background:#c8a03c}
 .admin-cal .cal-ev{display:block;font-size:.7rem;padding:2px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#161616;text-decoration:none;background:rgba(200,160,60,.25);border-left:3px solid #c8a03c}.admin-cal .cal-ev--imp{background:rgba(47,111,143,.15);border-color:#2f6f8f}.admin-cal .cal-ev--hol{background:rgba(179,67,47,.14);border-color:#b3432f;color:#7a2616}
+
+/* rich-text editor + news & newsletter admin */
+.rte{border:1px solid var(--line,#e4e0d6);border-radius:12px;background:#fff;overflow:hidden}
+.rte-bar{display:flex;flex-wrap:wrap;gap:4px;padding:8px;background:#faf8f3;border-bottom:1px solid var(--line,#e4e0d6);position:sticky;top:0;z-index:5}
+.rte-bar.rte-busy{opacity:.55;pointer-events:none}
+.rte-btn{border:1px solid #e1ddd2;background:#fff;border-radius:8px;padding:6px 10px;font-size:.78rem;font-weight:700;cursor:pointer;color:#161616;line-height:1}
+.rte-btn:hover{background:#161616;color:#fff;border-color:#161616}.rte-b{font-weight:900}.rte-i{font-style:italic}.rte-u{text-decoration:underline}
+.rte-area{min-height:340px;max-height:640px;overflow:auto;padding:18px 20px;line-height:1.7;font-size:1rem;outline:none}
+.rte-area:focus{box-shadow:inset 0 0 0 2px rgba(200,160,60,.45)}
+.rte-area h2{font-size:1.5rem;margin:1em 0 .4em}.rte-area h3{font-size:1.2rem;margin:1em 0 .4em}.rte-area p{margin:0 0 1em}.rte-area img{max-width:100%;height:auto;border-radius:8px}.rte-area figure{margin:1em 0}
+.rte-area blockquote{border-left:4px solid #c8a03c;margin:1em 0;padding:.2em 1em;color:#4a443a;background:#faf8f3}.rte-area a{color:#8a6a1c;text-decoration:underline}
+.admin-form .rte-src{width:100%;min-height:340px;border:0;border-radius:0;font-family:Consolas,monospace;font-size:.85rem;background:#161616;color:#e8e4da;padding:16px;display:block}
+.news-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--line,#e4e0d6);padding-bottom:12px}
+.news-tabs a{padding:9px 16px;border-radius:99px;font-weight:700;font-size:.85rem;color:#4a443a;background:#faf8f3;border:1px solid #e4e0d6;text-decoration:none}
+.news-tabs a.active,.news-tabs a:hover{background:#161616;color:#fff;border-color:#161616}
+.edit-grid{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px;align-items:start}
+.edit-side .admin-card{margin-bottom:16px}
+.edit-side .admin-card-head h2{font-size:.95rem}
+.type-switch{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.type-switch label{border:2px solid #e4e0d6;border-radius:12px;padding:14px;cursor:pointer;display:block;background:#fff}
+.type-switch input{position:absolute;opacity:0}.type-switch label:has(input:checked){border-color:#c8a03c;background:#fff8e6}
+.type-switch b{display:block;margin-bottom:2px}.type-switch span{font-size:.8rem;color:#6b6459}
+.post-pick{max-height:260px;overflow:auto;border:1px solid #e4e0d6;border-radius:10px;padding:6px}
+.post-pick label{display:flex;gap:8px;align-items:flex-start;padding:7px 8px;border-radius:8px;font-size:.85rem;cursor:pointer}.post-pick label:hover{background:#faf8f3}.post-pick input{width:auto;margin-top:3px}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
+.stat-row div{background:#fff;border:1px solid #e4e0d6;border-radius:12px;padding:14px 16px}.stat-row b{display:block;font-size:1.6rem;line-height:1.1}.stat-row span{font-size:.78rem;color:#6b6459;text-transform:uppercase;letter-spacing:.05em}
+.progress{height:10px;background:#eee9dc;border-radius:99px;overflow:hidden;margin:8px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,#c8a03c,#8a6a1c)}
+@media(max-width:1000px){.edit-grid{grid-template-columns:1fr}}
