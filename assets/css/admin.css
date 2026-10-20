@@ -301,3 +301,9 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 .pe-section input{width:auto!important}.pe-section .admin-badge{margin-left:auto}
 .pe-num{width:28px;height:28px;border-radius:50%;background:var(--cream-2);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem}
 .serp{border:1px solid var(--line);padding:16px 18px;background:#fff;max-width:640px}.serp-url{font-size:.78rem;color:#4d5156}.serp-title{font-size:1.15rem;color:#1a0dab;margin:3px 0}.serp-desc{font-size:.86rem;color:#4d5156}
+
+/* schedule admin calendar */
+.admin-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid #e4e0d6;border-radius:10px;overflow:hidden;background:#fff}.admin-cal .cal-h{background:#161616;color:#fff;font-size:.72rem;font-weight:700;text-transform:uppercase;padding:8px 4px;text-align:center}
+.admin-cal .cal-d{min-height:92px;padding:5px;border-top:1px solid #e4e0d6;border-left:1px solid #e4e0d6;display:flex;flex-direction:column;gap:3px;overflow:hidden}.admin-cal .cal-d--empty{background:#faf8f3}.admin-cal .cal-d--today{background:#fff8e6;box-shadow:inset 0 0 0 2px #c8a03c}
+.admin-cal .cal-n{font-weight:700;font-size:.8rem;color:#161616;text-decoration:none;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}.admin-cal .cal-n:hover{background:#c8a03c}
+.admin-cal .cal-ev{display:block;font-size:.7rem;padding:2px 6px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#161616;text-decoration:none;background:rgba(200,160,60,.25);border-left:3px solid #c8a03c}.admin-cal .cal-ev--imp{background:rgba(47,111,143,.15);border-color:#2f6f8f}.admin-cal .cal-ev--hol{background:rgba(179,67,47,.14);border-color:#b3432f;color:#7a2616}

@@ -9,7 +9,7 @@ sch_install($conn);
 // unsubscribe link from a reminder
 $unsubDone = false;
 if (preg_match('/^[a-f0-9]{32}$/', $_GET['unsub'] ?? '')) {
-    $s = $conn->prepare("UPDATE event_subscribers SET unsubscribed=1 WHERE token=?"); $s->bind_param("s", $_GET['unsub']); $s->execute(); $unsubDone = $s->affected_rows > 0;
+    $s = $conn->prepare("UPDATE cal_subscribers SET unsubscribed=1 WHERE token=?"); $s->bind_param("s", $_GET['unsub']); $s->execute(); $unsubDone = $s->affected_rows > 0;
 }
 
 $progs = $conn->query("SELECT id, title, slug FROM programmes WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
@@ -17,7 +17,7 @@ $fc = nufa_form_cfg('schedule');
 if (!$fc['enabled'] && $_SERVER['REQUEST_METHOD'] === 'POST') $_SERVER['REQUEST_METHOD'] = 'GET';
 $errors = []; $sent = isset($_GET['sent']);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($g = form_guard($conn, 'schedule', 'event_subscribers')) $errors[] = $g;
+    if ($g = form_guard($conn, 'schedule', 'cal_subscribers')) $errors[] = $g;
     $name = form_clean($_POST['name'] ?? '', 150); $email = strtolower(form_clean($_POST['email'] ?? '', 190)); $phone = form_clean($_POST['phone'] ?? '', 40);
     $pid = (int)($_POST['programme_id'] ?? 0); $wantE = !empty($_POST['want_email']) ? 1 : 0; $wantS = !empty($_POST['want_sms']) ? 1 : 0;
     if ($pid && !in_array($pid, array_column($progs, 'id'))) $pid = 0;
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($_POST['consent'])) $errors[] = "Please consent to receiving reminders.";
     if (!$errors) {
         $tok = bin2hex(random_bytes(16)); $ip = substr($_SERVER['REMOTE_ADDR'] ?? '', 0, 45);
-        $s = $conn->prepare("INSERT INTO event_subscribers (programme_id, name, email, phone, want_email, want_sms, token, ip) VALUES (?,?,?,?,?,?,?,?)");
+        $s = $conn->prepare("INSERT INTO cal_subscribers (programme_id, name, email, phone, want_email, want_sms, token, ip) VALUES (?,?,?,?,?,?,?,?)");
         $s->bind_param("isssiiss", $pid, $name, $email, $phone, $wantE, $wantS, $tok, $ip);
         if ($s->execute()) { header("Location: schedule.php?sent=1#remind"); exit; }
         $errors[] = "We couldn't save your request just now. Please try again.";

@@ -33,20 +33,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         elseif ($st && $et && $et < $st) $err = "The end time must be after the start time.";
         else {
             $v = [$title, $kind, $pid, $sd, $ed, $st, $et, $p('venue'), $link, isset($_POST['show_link']) ? 1 : 0, mb_substr(trim($_POST['description'] ?? ''), 0, 3000), $rule, $until, $remind, isset($_POST['is_active']) ? 1 : 0];
-            if ($act === 'event_add') { $s = $conn->prepare("INSERT INTO events (title, kind, programme_id, start_date, end_date, start_time, end_time, venue, meeting_link, show_link, description, repeat_rule, repeat_until, auto_remind_days, is_active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"); $s->bind_param("ssissssssisssii", ...$v); }
-            else { $s = $conn->prepare("UPDATE events SET title=?, kind=?, programme_id=?, start_date=?, end_date=?, start_time=?, end_time=?, venue=?, meeting_link=?, show_link=?, description=?, repeat_rule=?, repeat_until=?, auto_remind_days=?, is_active=? WHERE id=?"); $v[] = $id; $s->bind_param("ssissssssisssiii", ...$v); }
+            if ($act === 'event_add') { $s = $conn->prepare("INSERT INTO cal_events (title, kind, programme_id, start_date, end_date, start_time, end_time, venue, meeting_link, show_link, description, repeat_rule, repeat_until, auto_remind_days, is_active) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"); $s->bind_param("ssissssssisssii", ...$v); }
+            else { $s = $conn->prepare("UPDATE cal_events SET title=?, kind=?, programme_id=?, start_date=?, end_date=?, start_time=?, end_time=?, venue=?, meeting_link=?, show_link=?, description=?, repeat_rule=?, repeat_until=?, auto_remind_days=?, is_active=? WHERE id=?"); $v[] = $id; $s->bind_param("ssissssssisssiii", ...$v); }
             $s->execute(); $msg = $act === 'event_add' ? "Event added." : "Event saved."; $_GET['edit'] = 0;
         }
         if ($err) $_GET['edit'] = $act === 'event_save' ? $id : 0;
-    } elseif ($act === 'event_delete') { $tab = 'events'; $conn->query("DELETE FROM events WHERE id=$id"); $conn->query("DELETE FROM event_reminders WHERE event_id=$id"); $msg = "Event deleted."; }
+    } elseif ($act === 'holidays_year') {
+        $tab = 'events'; $y = (int)($_POST['year'] ?? 0); $added = 0;
+        if ($y < 2024 || $y > 2060) $err = "Choose a year between 2024 and 2060.";
+        else {
+            $easter = sch_easter($y);
+            foreach ([['Good Friday', '-2 days'], ['Easter Monday', '+1 day']] as [$t, $off]) {
+                $dt = (clone $easter)->modify($off)->format('Y-m-d');
+                $ex = $conn->prepare("SELECT 1 FROM cal_events WHERE title=? AND start_date=?"); $ex->bind_param('ss', $t, $dt); $ex->execute();
+                if (!$ex->get_result()->num_rows) { $s = $conn->prepare("INSERT INTO cal_events (title, kind, start_date, description) VALUES (?, 'holiday', ?, 'Public holiday in Uganda. Date moves each year.')"); $s->bind_param('ss', $t, $dt); $s->execute(); $added++; }
+            }
+            $msg = "Good Friday and Easter Monday for $y: $added added. Add the Eid holidays as the dates are announced.";
+        }
+    } elseif ($act === 'event_delete') { $tab = 'events'; $conn->query("DELETE FROM cal_events WHERE id=$id"); $conn->query("DELETE FROM cal_reminders WHERE event_id=$id"); $msg = "Event deleted."; }
     elseif ($act === 'sub_add') {
         $tab = 'subscribers'; $name = $p('name', 150); $email = strtolower($p('email', 190)); $phone = $p('phone', 40); $pid = (int)($_POST['programme_id'] ?? 0); $wE = isset($_POST['want_email']) ? 1 : 0; $wS = isset($_POST['want_sms']) ? 1 : 0;
         if ($name === '' || (!$wE && !$wS)) $err = "Enter a name and choose email and/or SMS.";
         elseif ($wE && !filter_var($email, FILTER_VALIDATE_EMAIL)) $err = "Enter a valid email address.";
         elseif ($wS && strlen(preg_replace('/\D/', '', $phone)) < 9) $err = "Enter a valid phone number for SMS.";
-        else { $tok = bin2hex(random_bytes(16)); $s = $conn->prepare("INSERT INTO event_subscribers (programme_id, name, email, phone, want_email, want_sms, source, token) VALUES (?,?,?,?,?,?,'admin',?)"); $s->bind_param("isssiis", $pid, $name, $email, $phone, $wE, $wS, $tok); $s->execute(); $msg = "Recipient added."; }
-    } elseif ($act === 'sub_delete') { $tab = 'subscribers'; $conn->query("DELETE FROM event_subscribers WHERE id=$id"); $msg = "Recipient removed."; }
-    elseif ($act === 'sub_toggle') { $tab = 'subscribers'; $conn->query("UPDATE event_subscribers SET unsubscribed = 1 - unsubscribed WHERE id=$id"); }
+        else { $tok = bin2hex(random_bytes(16)); $s = $conn->prepare("INSERT INTO cal_subscribers (programme_id, name, email, phone, want_email, want_sms, source, token) VALUES (?,?,?,?,?,?,'admin',?)"); $s->bind_param("isssiis", $pid, $name, $email, $phone, $wE, $wS, $tok); $s->execute(); $msg = "Recipient added."; }
+    } elseif ($act === 'sub_delete') { $tab = 'subscribers'; $conn->query("DELETE FROM cal_subscribers WHERE id=$id"); $msg = "Recipient removed."; }
+    elseif ($act === 'sub_toggle') { $tab = 'subscribers'; $conn->query("UPDATE cal_subscribers SET unsubscribed = 1 - unsubscribed WHERE id=$id"); }
     elseif ($act === 'settings') {
         $tab = 'settings';
         foreach (['sch_country_code', 'sch_sms_url', 'sch_sms_body', 'sch_sms_header', 'sch_sms_sender', 'sch_email_subject', 'sch_email_body', 'sch_sms_text'] as $k) $save($k, mb_substr(trim($_POST[$k] ?? ''), 0, 3000));
@@ -87,14 +99,37 @@ $tabs = ['events' => 'Events & holidays', 'remind' => 'Send a reminder', 'subscr
 <?php if ($err): ?><div class="admin-alert err"><?php echo $e($err); ?></div><?php endif; ?>
 
 <?php if ($tab === 'events'):
-    $edit = (int)($_GET['edit'] ?? 0); $cur = $edit ? $conn->query("SELECT * FROM events WHERE id=$edit")->fetch_assoc() : null;
-    $f = $_SERVER['REQUEST_METHOD'] === 'POST' && $err ? $_POST : ($cur ?: []);
+    $edit = (int)($_GET['edit'] ?? 0); $cur = $edit ? $conn->query("SELECT * FROM cal_events WHERE id=$edit")->fetch_assoc() : null;
+    $f = $_SERVER['REQUEST_METHOD'] === 'POST' && $err ? $_POST : ($cur ?: (preg_match('/^\d{4}-\d{2}-\d{2}$/', $_GET['date'] ?? '') ? ['start_date' => $_GET['date']] : []));
     $v = fn($k, $d = '') => $e($f[$k] ?? $d);
     $filter = in_array($_GET['kind'] ?? '', array_keys($kinds), true) ? $_GET['kind'] : '';
     $yr = (int)($_GET['year'] ?? date('Y'));
     $occ = sch_occurrences($conn, "$yr-01-01", "$yr-12-31");
-    $all = $conn->query("SELECT e.*, p.title ptitle FROM events e LEFT JOIN programmes p ON p.id=e.programme_id " . ($filter ? "WHERE e.kind='$filter'" : '') . " ORDER BY e.start_date DESC, e.id DESC LIMIT 300")->fetch_all(MYSQLI_ASSOC);
+    $all = $conn->query("SELECT e.*, p.title ptitle FROM cal_events e LEFT JOIN programmes p ON p.id=e.programme_id " . ($filter ? "WHERE e.kind='$filter'" : '') . " ORDER BY e.start_date DESC, e.id DESC LIMIT 300")->fetch_all(MYSQLI_ASSOC);
 ?>
+<?php
+    $am = preg_match('/^\d{4}-\d{2}$/', $_GET['am'] ?? '') ? $_GET['am'] : date('Y-m');
+    $af = new DateTime("$am-01"); $al = (clone $af)->modify('last day of this month'); $am = $af->format('Y-m');
+    $aby = []; foreach (sch_occurrences($conn, $af->format('Y-m-d'), $al->format('Y-m-d')) as $o) $aby[$o['date']][] = $o;
+    $acls = ['programme' => 'cal-ev--prog', 'important' => 'cal-ev--imp', 'holiday' => 'cal-ev--hol'];
+?>
+  <div class="admin-card">
+    <div class="admin-card-head"><h2><?php echo $af->format('F Y'); ?></h2><span>
+      <a class="admin-btn admin-btn-sm" href="schedule.php?am=<?php echo (clone $af)->modify('-1 month')->format('Y-m'); ?>">‹ Prev</a>
+      <a class="admin-btn admin-btn-sm" href="schedule.php">Today</a>
+      <a class="admin-btn admin-btn-sm" href="schedule.php?am=<?php echo (clone $af)->modify('+1 month')->format('Y-m'); ?>">Next ›</a></span></div>
+    <p class="admin-help" style="margin-bottom:10px">Click a day to add an activity on it, or click an item to edit it. This is the same calendar visitors see on the website.</p>
+    <div class="cal admin-cal">
+      <?php foreach (['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] as $dn) echo '<div class="cal-h">' . $dn . '</div>';
+      for ($i = 0, $lead = (int)$af->format('N') - 1; $i < $lead; $i++) echo '<div class="cal-d cal-d--empty"></div>';
+      for ($d = 1, $n = (int)$al->format('j'); $d <= $n; $d++): $ds = sprintf('%s-%02d', $am, $d); ?>
+        <div class="cal-d<?php echo $ds === date('Y-m-d') ? ' cal-d--today' : ''; ?>">
+          <a class="cal-n" href="schedule.php?am=<?php echo $am; ?>&date=<?php echo $ds; ?>#event-form" title="Add an activity on <?php echo $ds; ?>"><?php echo $d; ?></a>
+          <?php foreach (($aby[$ds] ?? []) as $o): ?><a class="cal-ev <?php echo $acls[$o['kind']] ?? ''; ?>" href="schedule.php?edit=<?php echo $o['id']; ?>&am=<?php echo $am; ?>#event-form" title="<?php echo $e($o['title']); ?>"><?php echo $e($o['title']); ?></a><?php endforeach; ?>
+        </div>
+      <?php endfor; ?>
+    </div>
+  </div>
   <form method="post" class="admin-card admin-form" id="event-form">
     <div class="admin-card-head"><h2><?php echo $cur ? 'Edit event' : 'Add an event'; ?></h2><span class="admin-help">Programme sessions, important days and public holidays — one-off or repeating for the coming years.</span></div>
     <input type="hidden" name="action" value="<?php echo $cur ? 'event_save' : 'event_add'; ?>"><input type="hidden" name="id" value="<?php echo (int)($cur['id'] ?? 0); ?>">
@@ -108,10 +143,12 @@ $tabs = ['events' => 'Events & holidays', 'remind' => 'Send a reminder', 'subscr
       <div class="field"><label>Start time</label><input type="time" name="start_time" value="<?php echo $e(substr((string)($f['start_time'] ?? ''), 0, 5)); ?>"></div>
       <div class="field"><label>End time</label><input type="time" name="end_time" value="<?php echo $e(substr((string)($f['end_time'] ?? ''), 0, 5)); ?>"></div>
       <div class="field"><label>Meeting link (Zoom, Meet, Teams…)</label><input type="url" name="meeting_link" value="<?php echo $v('meeting_link'); ?>" placeholder="https://"></div>
+    </div>
+    <details style="margin:6px 0 14px"><summary style="cursor:pointer;font-weight:700">Repeat &amp; automatic reminder options</summary><div class="admin-form-grid" style="margin-top:10px">
       <div class="field"><label>Repeats</label><select name="repeat_rule"><?php foreach (['none' => 'Does not repeat', 'weekly' => 'Every week', 'monthly' => 'Every month', 'yearly' => 'Every year'] as $k => $l) echo '<option value="' . $k . '"' . (($f['repeat_rule'] ?? 'none') === $k ? ' selected' : '') . '>' . $l . '</option>'; ?></select></div>
       <div class="field"><label>Repeat until (blank = keeps going)</label><input type="date" name="repeat_until" value="<?php echo $v('repeat_until'); ?>"></div>
       <div class="field"><label>Auto-reminder (days before; blank = none)</label><input type="number" min="0" max="60" name="auto_remind_days" value="<?php echo $v('auto_remind_days'); ?>"><span class="admin-help">Sent daily by the scheduled task (see Email &amp; SMS settings).</span></div>
-    </div>
+    </div></details>
     <div class="field"><label>Details (shown on the calendar and in reminders)</label><textarea name="description" style="min-height:80px"><?php echo $v('description'); ?></textarea></div>
     <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
       <label class="mem-check" style="margin:0"><input type="checkbox" name="show_link" value="1" <?php echo (!isset($f['show_link']) || !empty($f['show_link'])) ? 'checked' : ''; ?>> Show the meeting link on the public calendar</label>
@@ -132,13 +169,14 @@ $tabs = ['events' => 'Events & holidays', 'remind' => 'Send a reminder', 'subscr
       <td><?php echo $x['meeting_link'] ? '✔' : ''; ?></td>
       <td><a class="admin-btn admin-btn-sm" href="schedule.php?edit=<?php echo $x['id']; ?>#event-form">Edit</a></td></tr>
     <?php endforeach; if (!$all): ?><tr><td colspan="7">No events yet.</td></tr><?php endif; ?></tbody></table></div>
+    <form method="post" style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><input type="hidden" name="action" value="holidays_year"><b>Add Easter holidays for a year:</b><input type="number" name="year" min="2024" max="2060" value="<?php echo date('Y') + 8; ?>" style="width:100px"><button class="admin-btn admin-btn-sm">Add Good Friday &amp; Easter Monday</button></form>
     <p class="admin-help" style="margin-top:12px">Fixed-date Ugandan public holidays repeat yearly and Good Friday / Easter Monday are pre-filled for 2026–2032. Add the Eid holidays and any holiday the government announces or moves, and edit or delete anything that is wrong.</p>
   </div>
 
 <?php elseif ($tab === 'remind'):
     $evs = sch_occurrences($conn, date('Y-m-d'), date('Y-m-d', strtotime('+365 day')));
     $evs = array_values(array_filter($evs, fn($o) => $o['kind'] !== 'holiday'));
-    $log = $conn->query("SELECT r.*, e.title FROM event_reminders r LEFT JOIN events e ON e.id=r.event_id ORDER BY r.id DESC LIMIT 40")->fetch_all(MYSQLI_ASSOC);
+    $log = $conn->query("SELECT r.*, e.title FROM cal_reminders r LEFT JOIN cal_events e ON e.id=r.event_id ORDER BY r.id DESC LIMIT 40")->fetch_all(MYSQLI_ASSOC);
     $smsOn = trim($S['sch_sms_url']) !== '';
 ?>
   <form method="post" class="admin-card admin-form">
@@ -166,7 +204,7 @@ $tabs = ['events' => 'Events & holidays', 'remind' => 'Send a reminder', 'subscr
     <p class="admin-help" style="margin-top:10px">“Sent” for email means it was handed to the server’s mail system — delivery cannot be confirmed. On a local XAMPP install mail is not delivered.</p></div>
 
 <?php elseif ($tab === 'subscribers'):
-    $subs = $conn->query("SELECT s.*, p.title ptitle FROM event_subscribers s LEFT JOIN programmes p ON p.id=s.programme_id ORDER BY s.id DESC LIMIT 500")->fetch_all(MYSQLI_ASSOC); ?>
+    $subs = $conn->query("SELECT s.*, p.title ptitle FROM cal_subscribers s LEFT JOIN programmes p ON p.id=s.programme_id ORDER BY s.id DESC LIMIT 500")->fetch_all(MYSQLI_ASSOC); ?>
   <form method="post" class="admin-card admin-form">
     <input type="hidden" name="action" value="sub_add">
     <div class="admin-card-head"><h2>Add a recipient</h2><span class="admin-help">People who sign up on the website appear here automatically. Add anyone you have consent to remind.</span></div>

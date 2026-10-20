@@ -3,9 +3,9 @@
  * Programme schedule & calendar, managed in admin → Schedule & reminders.
  *
  * `events` holds programme sessions, public holidays and important days (one-off or repeating
- * weekly / monthly / yearly). `event_subscribers` are people who asked for reminders (or were
+ * weekly / monthly / yearly). `cal_subscribers` are people who asked for reminders (or were
  * added by an admin). Reminders go out by e-mail (PHP mail via mem_send) and by SMS through a
- * generic HTTP gateway configured in admin; every attempt is logged in `event_reminders`.
+ * generic HTTP gateway configured in admin; every attempt is logged in `cal_reminders`.
  */
 require_once __DIR__ . "/membership.php";
 
@@ -27,7 +27,11 @@ function sch_defaults() {
 function sch_install($conn) {
     static $done = false;
     if ($done) return; $done = true;
-    $conn->query("CREATE TABLE IF NOT EXISTS events (
+    // first version used generic table names; carry any data over
+    foreach (['events' => ['cal_events', 'repeat_rule'], 'event_subscribers' => ['cal_subscribers', 'unsubscribed'], 'event_reminders' => ['cal_reminders', 'occ_date']] as $old => [$new, $marker]) {
+        if ($conn->query("SHOW TABLES LIKE '$new'")->num_rows === 0 && $conn->query("SHOW TABLES LIKE '$old'")->num_rows > 0 && $conn->query("SHOW COLUMNS FROM $old LIKE '$marker'")->num_rows > 0) $conn->query("RENAME TABLE $old TO $new");
+    }
+    $conn->query("CREATE TABLE IF NOT EXISTS cal_events (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(190) NOT NULL,
         kind VARCHAR(20) NOT NULL DEFAULT 'programme',
@@ -47,7 +51,7 @@ function sch_install($conn) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         KEY idx_start (start_date), KEY idx_prog (programme_id)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-    $conn->query("CREATE TABLE IF NOT EXISTS event_subscribers (
+    $conn->query("CREATE TABLE IF NOT EXISTS cal_subscribers (
         id INT AUTO_INCREMENT PRIMARY KEY,
         programme_id INT NOT NULL DEFAULT 0,
         event_id INT NOT NULL DEFAULT 0,
@@ -63,7 +67,7 @@ function sch_install($conn) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE KEY uq_token (token), KEY idx_scope (programme_id, event_id), KEY idx_ip (ip, created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-    $conn->query("CREATE TABLE IF NOT EXISTS event_reminders (
+    $conn->query("CREATE TABLE IF NOT EXISTS cal_reminders (
         id INT AUTO_INCREMENT PRIMARY KEY,
         event_id INT NOT NULL,
         occ_date DATE NOT NULL,
@@ -75,18 +79,29 @@ function sch_install($conn) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         KEY idx_ev (event_id, occ_date, channel, recipient)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    // make sure every column exists even if a table was created by an older version
+    $need = ['cal_events' => ['kind' => "VARCHAR(20) NOT NULL DEFAULT 'programme'", 'programme_id' => 'INT NULL', 'end_date' => 'DATE NULL', 'start_time' => 'TIME NULL', 'end_time' => 'TIME NULL', 'venue' => "VARCHAR(255) NOT NULL DEFAULT ''", 'meeting_link' => "VARCHAR(500) NOT NULL DEFAULT ''", 'show_link' => 'TINYINT(1) NOT NULL DEFAULT 1', 'description' => 'TEXT', 'repeat_rule' => "VARCHAR(10) NOT NULL DEFAULT 'none'", 'repeat_until' => 'DATE NULL', 'auto_remind_days' => 'INT NULL', 'is_active' => 'TINYINT(1) NOT NULL DEFAULT 1']];
+    foreach ($need as $t => $cols) foreach ($cols as $col => $def) if ($conn->query("SHOW COLUMNS FROM $t LIKE '$col'")->num_rows === 0) $conn->query("ALTER TABLE $t ADD COLUMN $col $def");
     sch_seed($conn);
 }
 
 /** Seeds Uganda's fixed-date public holidays (yearly) and Good Friday / Easter Monday once; admins edit freely. */
+/** Easter Sunday for a year (Gregorian computus). */
+function sch_easter($y) {
+    $a = $y % 19; $b = intdiv($y, 100); $c = $y % 100; $d = intdiv($b, 4); $e = $b % 4; $f = intdiv($b + 8, 25); $g = intdiv($b - $f + 1, 3);
+    $h = (19 * $a + $b - $d - $g + 15) % 30; $i = intdiv($c, 4); $k = $c % 4; $l = (32 + 2 * $e + 2 * $i - $h - $k) % 7; $m = intdiv($a + 11 * $h + 22 * $l, 451);
+    $n = $h + $l - 7 * $m + 114;
+    return new DateTime(sprintf('%04d-%02d-%02d', $y, intdiv($n, 31), ($n % 31) + 1));
+}
+
 function sch_seed($conn) {
     $r = $conn->query("SELECT setting_value FROM settings WHERE setting_key='sch_seeded'");
     if ($r && $r->num_rows) return;
     $fixed = [['New Year’s Day', '01-01'], ['NRM Liberation Day', '01-26'], ['Archbishop Janani Luwum Day', '02-16'], ['International Women’s Day', '03-08'], ['Labour Day', '05-01'],
               ['Uganda Martyrs’ Day', '06-03'], ['National Heroes’ Day', '06-09'], ['Independence Day', '10-09'], ['Christmas Day', '12-25'], ['Boxing Day', '12-26']];
-    $s = $conn->prepare("INSERT INTO events (title, kind, start_date, repeat_rule, description) VALUES (?, 'holiday', ?, 'yearly', 'Public holiday in Uganda.')");
+    $s = $conn->prepare("INSERT INTO cal_events (title, kind, start_date, repeat_rule, description) VALUES (?, 'holiday', ?, 'yearly', 'Public holiday in Uganda.')");
     foreach ($fixed as [$t, $md]) { $d = "2024-$md"; $s->bind_param("ss", $t, $d); $s->execute(); }
-    $s2 = $conn->prepare("INSERT INTO events (title, kind, start_date, description) VALUES (?, 'holiday', ?, 'Public holiday in Uganda. Date moves each year.')");
+    $s2 = $conn->prepare("INSERT INTO cal_events (title, kind, start_date, description) VALUES (?, 'holiday', ?, 'Public holiday in Uganda. Date moves each year.')");
     for ($y = 2026; $y <= 2032; $y++) {   // Easter (Gregorian computus)
         $a = $y % 19; $b = intdiv($y, 100); $c = $y % 100; $d = intdiv($b, 4); $e = $b % 4; $f = intdiv($b + 8, 25); $g = intdiv($b - $f + 1, 3);
         $h = (19 * $a + $b - $d - $g + 15) % 30; $i = intdiv($c, 4); $k = $c % 4; $l = (32 + 2 * $e + 2 * $i - $h - $k) % 7; $m = intdiv($a + 11 * $h + 22 * $l, 451);
@@ -116,7 +131,7 @@ function sch_occurrences($conn, $from, $to, $programmeId = 0, $onlyEvent = 0) {
     $where = "e.is_active=1 AND e.start_date <= '" . $conn->real_escape_string($to) . "'";
     if ($onlyEvent) $where .= " AND e.id=" . (int)$onlyEvent;
     if ($programmeId) $where .= " AND (e.programme_id=" . (int)$programmeId . " OR e.programme_id IS NULL)";
-    $rows = $conn->query("SELECT e.*, p.title AS programme_title, p.slug AS programme_slug FROM events e LEFT JOIN programmes p ON p.id=e.programme_id WHERE $where")->fetch_all(MYSQLI_ASSOC);
+    $rows = $conn->query("SELECT e.*, p.title AS programme_title, p.slug AS programme_slug FROM cal_events e LEFT JOIN programmes p ON p.id=e.programme_id WHERE $where")->fetch_all(MYSQLI_ASSOC);
     $out = [];
     foreach ($rows as $e) {
         $rule = $e['repeat_rule']; $start = new DateTime($e['start_date']);
@@ -182,13 +197,13 @@ function sch_send_sms($conn, $to, $message) {
 /** Subscribers who should hear about this event (all-programmes, this programme, or this event only). */
 function sch_audience($conn, $o) {
     $pid = (int)($o['programme_id'] ?? 0); $eid = (int)$o['id'];
-    $r = $conn->query("SELECT * FROM event_subscribers WHERE unsubscribed=0 AND (event_id=$eid OR (event_id=0 AND programme_id=0)" . ($pid ? " OR (event_id=0 AND programme_id=$pid)" : '') . ")");
+    $r = $conn->query("SELECT * FROM cal_subscribers WHERE unsubscribed=0 AND (event_id=$eid OR (event_id=0 AND programme_id=0)" . ($pid ? " OR (event_id=0 AND programme_id=$pid)" : '') . ")");
     return $r ? $r->fetch_all(MYSQLI_ASSOC) : [];
 }
 
 function sch_log($conn, $eid, $date, $channel, $to, $ok, $detail, $mode) {
     $st = $ok ? 'sent' : 'failed';
-    $s = $conn->prepare("INSERT INTO event_reminders (event_id, occ_date, channel, recipient, status, detail, mode) VALUES (?,?,?,?,?,?,?)");
+    $s = $conn->prepare("INSERT INTO cal_reminders (event_id, occ_date, channel, recipient, status, detail, mode) VALUES (?,?,?,?,?,?,?)");
     $d = mb_substr($detail, 0, 250); $s->bind_param("issssss", $eid, $date, $channel, $to, $st, $d, $mode); $s->execute();
 }
 
@@ -199,7 +214,7 @@ function sch_log($conn, $eid, $date, $channel, $to, $ok, $detail, $mode) {
 function sch_send($conn, $o, array $people, $viaEmail, $viaSms, $mode = 'manual') {
     $S = sch_settings($conn); $res = ['email' => [0, 0], 'sms' => [0, 0]];
     $already = function ($ch, $to) use ($conn, $o) {
-        $s = $conn->prepare("SELECT 1 FROM event_reminders WHERE event_id=? AND occ_date=? AND channel=? AND recipient=? AND status='sent' LIMIT 1");
+        $s = $conn->prepare("SELECT 1 FROM cal_reminders WHERE event_id=? AND occ_date=? AND channel=? AND recipient=? AND status='sent' LIMIT 1");
         $s->bind_param("isss", $o['id'], $o['date'], $ch, $to); $s->execute(); return $s->get_result()->num_rows > 0;
     };
     $seen = [];
@@ -227,7 +242,7 @@ function sch_send($conn, $o, array $people, $viaEmail, $viaSms, $mode = 'manual'
 /** Cron: sends reminders for events whose auto-reminder lead time (days before) is today. */
 function sch_run_auto($conn) {
     $tot = ['events' => 0, 'email' => 0, 'sms' => 0];
-    $evs = $conn->query("SELECT DISTINCT auto_remind_days d FROM events WHERE is_active=1 AND auto_remind_days IS NOT NULL")->fetch_all(MYSQLI_ASSOC);
+    $evs = $conn->query("SELECT DISTINCT auto_remind_days d FROM cal_events WHERE is_active=1 AND auto_remind_days IS NOT NULL")->fetch_all(MYSQLI_ASSOC);
     foreach ($evs as $x) {
         $day = date('Y-m-d', strtotime('+' . (int)$x['d'] . ' day'));
         foreach (sch_occurrences($conn, $day, $day) as $o) {
