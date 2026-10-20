@@ -3,7 +3,14 @@ require_once __DIR__ . "/includes/forms.php";
 require_once __DIR__ . "/includes/settings.php";
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
+require_once __DIR__ . "/includes/membership.php";
 
+
+// Registered (approved) members per guild — counts only, no personal data.
+mem_install($conn);
+$guildStats = $conn->query("SELECT g.id, g.name, g.description, COUNT(m.id) AS total FROM guilds g LEFT JOIN members m ON m.guild_id = g.id AND m.status = 'approved' WHERE g.is_active = 1 GROUP BY g.id ORDER BY g.sort_order, g.name")->fetch_all(MYSQLI_ASSOC);
+$memberTotal = (int)$conn->query("SELECT COUNT(*) FROM members WHERE status = 'approved'")->fetch_row()[0];
+$guildMax = max(1, ...array_map(fn($g) => (int)$g['total'], $guildStats ?: [['total' => 1]]));
 $roles = nufa_list(nufa_site_settings($conn), 'list_network_roles');
 $errors = []; $sent = isset($_GET['sent']);
 $fc = nufa_form_cfg('network');
@@ -38,6 +45,23 @@ foreach (nufa_list(['x' => cms_value('network', 'cats_list')], 'x') as $i => $la
 ?>
 <?php if (nufa_show('network', 'status')): ?><section class="section--tight"><div class="container"><div class="status-banner" role="note"><?php echo nufa_icon('compass', 26); ?><div><b>Planned feature:</b> <?php echo cms_t('network', 'status_text'); ?></div></div></div></section><?php endif; ?>
 
+<?php if (nufa_show('network', 'numbers') && $guildStats): ?><section class="section guild-numbers" id="numbers">
+  <div class="container">
+    <div class="section-head center" data-reveal><div class="eyebrow">The network in numbers</div><h2>Registered members by guild</h2><p>Figures come straight from NUFA's membership register and count approved members only.</p></div>
+    <div class="guild-total" data-reveal><b data-count="<?php echo $memberTotal; ?>"><?php echo number_format($memberTotal); ?></b><span>registered NUFA members</span></div>
+    <div class="guild-grid" data-reveal-stagger>
+      <?php foreach ($guildStats as $i => $g): $pct = $memberTotal ? round($g['total'] / $memberTotal * 100) : 0; ?>
+      <div class="guild-card">
+        <div class="guild-card__top"><span class="guild-card__n"><?php echo number_format((int)$g['total']); ?></span><span class="guild-card__pct"><?php echo $pct; ?>%</span></div>
+        <h3><?php echo ui_e($g['name']); ?></h3>
+        <?php if ($g['description'] !== ''): ?><p><?php echo ui_e($g['description']); ?></p><?php endif; ?>
+        <div class="guild-bar" role="img" aria-label="<?php echo ui_e($g['name'] . ': ' . $g['total'] . ' of ' . $memberTotal . ' members'); ?>"><i style="width:<?php echo $g['total'] ? max(4, round($g['total'] / $guildMax * 100)) : 0; ?>%"></i></div>
+      </div>
+      <?php endforeach; ?>
+    </div>
+    <p class="center muted" style="margin-top:28px"><a href="membership.php" class="link-arrow">Join a guild</a></p>
+  </div>
+</section><?php endif; ?>
 <?php if (nufa_show('network', 'categories')): ?><section class="section">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Who will be listed</div><h2><?php echo cms_t('network', 'who_heading'); ?></h2><p><?php echo cms_t('network', 'privacy_note'); ?></p></div>

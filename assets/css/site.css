@@ -471,3 +471,12 @@ table.data td{padding:14px;border-bottom:1px solid var(--line);vertical-align:to
 .sacco-nav{display:flex;gap:6px 16px;flex-wrap:wrap}.sacco-nav a{font-family:var(--font-heading);font-weight:700;font-size:.8rem;color:var(--ink-500);padding:4px 0;border-bottom:2px solid transparent}.sacco-nav a:hover{color:var(--gold-700);border-color:var(--gold)}
 .announce{border-left:4px solid var(--gold);padding:6px 0 6px 22px;margin-bottom:28px}.announce h3{margin:4px 0 8px}
 .chip--operational{background:var(--ok-bg);color:var(--ok)}
+
+/* Network: members by guild */
+.guild-numbers{background:linear-gradient(180deg,var(--bg-soft,#f6f3ec),transparent)}
+.guild-total{text-align:center;margin:0 auto 40px}.guild-total b{display:block;font-family:var(--font-heading);font-size:clamp(3.2rem,9vw,5.5rem);line-height:1;color:var(--gold-700,#8a6a1c)}.guild-total span{font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.8rem;color:var(--ink-500)}
+.guild-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}
+.guild-card{background:#fff;border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:14px;padding:22px;box-shadow:0 6px 22px rgba(20,20,20,.06);transition:transform .2s,box-shadow .2s}.guild-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(20,20,20,.1)}
+.guild-card__top{display:flex;justify-content:space-between;align-items:baseline}.guild-card__n{font-family:var(--font-heading);font-size:2.4rem;font-weight:800;line-height:1}.guild-card__pct{font-size:.8rem;font-weight:700;color:var(--gold-700,#8a6a1c);background:rgba(200,160,60,.14);padding:3px 10px;border-radius:99px}
+.guild-card h3{margin:12px 0 4px;font-size:1.05rem}.guild-card p{font-size:.88rem;color:var(--ink-500);margin:0 0 10px}
+.guild-bar{height:8px;background:rgba(0,0,0,.07);border-radius:99px;overflow:hidden;margin-top:12px}.guild-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-700,#8a6a1c));border-radius:99px}
