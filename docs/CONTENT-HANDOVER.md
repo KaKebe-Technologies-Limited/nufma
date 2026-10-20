@@ -30,6 +30,13 @@ Privacy Policy, Cookie Policy, Terms of Use, Image & Content Permissions, Access
 11. **Membership payment details** — real mobile-money/bank details, fee, validity period, president's name and signature (Membership → Membership settings).
 12. **Sending e-mail address** — an address on the hosting domain (Membership settings → Emails) for reliable delivery.
 
+## C1. Programme support (donate · sponsor · volunteer · partner)
+* Each programme page now has a **Get involved** section and a request form (`support.php`). Requests are reviewed in **admin → Support requests**.
+* **Payment methods are empty by design.** Add the real mobile-money/bank details NUFA controls in **Payment & giving setup** — until then supporters are told payment details will be e-mailed.
+* Sponsorship levels, suggested amounts and minimum gift are **not preset** (no invented packages or figures). Add them in Giving settings if NUFA has confirmed them.
+* The five programmes were marked **Ongoing** and visible on the instruction that they are active; change a status in Programmes if that is not accurate.
+* Have the declaration text and any refund/gift terms reviewed by a qualified professional.
+
 ## C2. Removed or replaced
 * Testimonial stock photographs and a stock ticket illustration were removed (unrelated to NUFA).
 * Fabricated-looking testimonials, hard-coded statistics (people reached, submissions, etc.), the "Registration Open"/"nominations open soon" claims for 2027, and the newsletter sign-up (no delivery service is configured) were removed.

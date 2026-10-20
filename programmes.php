@@ -38,5 +38,6 @@ echo ui_page_hero('Programmes & Projects', cms_value('programmes', 'hero_title')
     <?php endif; ?>
   </div>
 </section><?php endif; ?>
-<?php if (nufa_show('programmes', 'cta')): ?><section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('programmes', 'cta_title'), cms_value('programmes', 'cta_text'), cms_value('programmes', 'cta_btn1_label'), cms_value('programmes', 'cta_btn1_url'), cms_value('programmes', 'cta_btn2_label'), cms_value('programmes', 'cta_btn2_url')); ?></div></section><?php endif; ?>
+<?php if (nufa_show('programmes', 'cta')): ?><section class="section--tight"><div class="container"><?php echo ui_cta_band('Support our programmes', 'Donate, sponsor, volunteer or partner — choose a programme and a way to help. Every request is reviewed by the NUFA team.', 'Support a programme', 'support.php', 'Programme enquiries', 'contact.php?topic=Programmes'); ?></div></section>
+<section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('programmes', 'cta_title'), cms_value('programmes', 'cta_text'), cms_value('programmes', 'cta_btn1_label'), cms_value('programmes', 'cta_btn1_url'), cms_value('programmes', 'cta_btn2_label'), cms_value('programmes', 'cta_btn2_url')); ?></div></section><?php endif; ?>
 <?php include __DIR__ . "/includes/footer.php"; ?>

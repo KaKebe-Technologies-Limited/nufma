@@ -28,7 +28,7 @@ $others = $conn->query("SELECT slug, title FROM programmes WHERE is_active=1 AND
 $sections = [
     ['Overview', 'overview', 'p'], ['Context and need', 'context', 'p'], ['Objectives', 'objectives', 'list'], ['Intended beneficiaries', 'beneficiaries', 'list'],
     ['Key activities', 'activities', 'list'], ['Expected outputs and outcomes', 'outputs', 'list'], ['Geographic focus', 'geography', 'inline'],
-    ['Partners and supporters', 'partners_text', 'p'], ['Progress updates and reports', 'progress', 'p'],
+    ['Partners and supporters', 'partners_text', 'p'], ['Progress updates and reports', 'progress', 'p'], ['How your support helps', 'support_text', 'p'],
 ];
 
 echo ui_page_hero('Programme', $p['title'], $p['summary'], $p['image'] ?: 'nufa2.webp', [['Programmes', 'programmes.php'], [$p['title']]],
@@ -58,10 +58,30 @@ echo ui_page_hero('Programme', $p['title'], $p['summary'], $p['image'] ?: 'nufa2
     <aside class="member-side" style="top:calc(var(--header-h) + 24px)">
       <h3>Take part</h3>
       <p style="color:var(--muted-on-dark);font-size:.93rem">Interested in this programme as a participant, mentor or partner? Send us a message and we will share participation information as it is confirmed.</p>
-      <div class="actions"><a href="contact.php?topic=Programmes&amp;ref=<?php echo ui_e($p['slug']); ?>" class="btn btn-gold btn-block">Express interest</a><a href="partners.php" class="btn btn-outline btn-block">Partner on this programme</a></div>
+      <div class="actions"><a href="contact.php?topic=Programmes&amp;ref=<?php echo ui_e($p['slug']); ?>" class="btn btn-gold btn-block">Express interest</a><a href="#get-involved" class="btn btn-outline btn-block">Sponsor, donate, volunteer or partner</a></div>
       <h4 style="color:var(--gold);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;margin:26px 0 10px">Other programmes</h4>
       <ul style="font-size:.9rem;display:grid;gap:8px"><?php foreach ($others as $o): ?><li><a href="programme.php?slug=<?php echo ui_e($o['slug']); ?>" style="color:var(--white)"><?php echo ui_e($o['title']); ?></a></li><?php endforeach; ?><li><a href="awards.php" style="color:var(--white)">NUFA Awards</a></li><li><a href="sacco.php" style="color:var(--white)">NUFA SACCO (proposed)</a></li></ul>
     </aside>
   </div>
 </section>
+<?php
+require_once __DIR__ . "/includes/support.php";
+$supS = sup_settings($conn); $supKinds = sup_kinds();
+$openKinds = array_filter($supKinds, fn($kd, $k) => ($supS["sup_enable_$k"] ?? '1') === '1' && (int)($p["allow_$k"] ?? 1) === 1, ARRAY_FILTER_USE_BOTH);
+?>
+<?php if ($openKinds): ?>
+<section class="section section--dark" id="get-involved">
+  <div class="container">
+    <div class="section-head center" data-reveal><div class="eyebrow">Get involved</div><h2><?php echo cms_t('support', 'involved_heading'); ?></h2><p><?php echo cms_t('support', 'involved_intro'); ?></p></div>
+    <div class="involve-grid" data-reveal-stagger>
+      <?php foreach ($openKinds as $k => $kd): ?>
+      <a class="support-type" href="support.php?type=<?php echo $k; ?>&amp;programme=<?php echo ui_e($p['slug']); ?>">
+        <span class="icon-circle"><?php echo nufa_icon($kd['icon'], 22); ?></span><b><?php echo ui_e($kd['label']); ?></b><span><?php echo cms_t('support', $k . '_blurb'); ?></span>
+        <span class="link-arrow" style="margin-top:6px;color:var(--ink)"><?php echo ui_e($kd['label']); ?> now</span>
+      </a>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
 <?php include __DIR__ . "/includes/footer.php"; ?>

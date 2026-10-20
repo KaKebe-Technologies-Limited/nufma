@@ -53,6 +53,7 @@ Sign in to `/admin/`. Everything a staff member needs is in the sidebar:
 
 | Need to change… | Go to |
 |---|---|
+| Donations, sponsorship, volunteers and partner requests; payment methods, currencies, sponsorship levels, e-mail wording | **Support requests** and **Payment & giving setup** |
 | **Change anything on one page** (text, images, sections, forms, search/share) | **Page Editor** — pick a page, then use its tabs |
 | **Not sure where something is?** | **Website Map** — lists every page, what is on it and a link to edit each part |
 | Logo, favicon, share image, brand colours, contact bar | **Appearance & Branding** |

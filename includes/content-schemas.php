@@ -307,3 +307,23 @@ $CMS_SCHEMAS['home']['fields'] += [
     'sacco_card_title'  => ['label' => 'Programme card — SACCO — title', 'type' => 'text', 'default' => 'NUFA SACCO — Proposed Initiative'],
     'sacco_card_text'   => ['label' => 'Programme card — SACCO — text', 'type' => 'textarea', 'default' => 'An initiative being explored to strengthen financial resilience for filmmakers. Not yet operational.'],
 ];
+/* ---------------------------------------------------------- SUPPORT A PROGRAMME */
+$CMS_SCHEMAS['support'] = ['label' => 'Support a Programme', 'fields' => [
+    'hero_image'  => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'production/karamoja-shoot-2.webp'],
+    'hero_title'  => ['label' => 'Hero — heading', 'type' => 'text', 'default' => 'Stand behind Northern Uganda’s storytellers'],
+    'hero_lede'   => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "Choose a programme and a way to help — donate, sponsor, volunteer or partner. Every request is reviewed by the NUFA team."],
+    'choose_programme' => ['label' => 'Form — programme selector label', 'type' => 'text', 'default' => 'Programme you would like to support'],
+    'general_option'   => ['label' => 'Form — "no specific programme" option', 'type' => 'text', 'default' => 'Where it is needed most'],
+    'donate_blurb'    => ['label' => 'Option — Donate — description', 'type' => 'textarea', 'default' => 'Give a one-off or recurring gift to help this programme reach more filmmakers.'],
+    'sponsor_blurb'   => ['label' => 'Option — Sponsor — description', 'type' => 'textarea', 'default' => 'Back a programme as an organisation or individual sponsor, with recognition where agreed.'],
+    'volunteer_blurb' => ['label' => 'Option — Volunteer — description', 'type' => 'textarea', 'default' => 'Give your time and skills — mentoring, production support, events or outreach.'],
+    'partner_blurb'   => ['label' => 'Option — Partner — description', 'type' => 'textarea', 'default' => 'Collaborate with NUFA on training, equipment, screenings or other joint work.'],
+    'thanks_title' => ['label' => 'Thank-you page — heading', 'type' => 'text', 'default' => 'Thank you — we have your request'],
+    'thanks_text'  => ['label' => 'Thank-you page — message', 'type' => 'textarea', 'default' => "Your request has been recorded and the NUFA team will review it. We have sent a confirmation to your email address. Keep your reference number — you will need it if you contact us."],
+    'involved_heading' => ['label' => 'Programme pages — "Get involved" heading', 'type' => 'text', 'default' => 'Support this programme'],
+    'involved_intro'   => ['label' => 'Programme pages — "Get involved" intro', 'type' => 'textarea', 'default' => 'Choose how you would like to help. Every request is reviewed by the NUFA team and confirmed by email.'],
+]];
+$CMS_SCHEMAS['seo']['fields'] += [
+    'support_title' => ['label' => 'Support a Programme — title', 'type' => 'text', 'default' => 'Support a Programme — Donate, Sponsor, Volunteer or Partner | NUFA'],
+    'support_desc'  => ['label' => 'Support a Programme — description', 'type' => 'textarea', 'default' => "Support NUFA's programmes in Northern Uganda: donate, sponsor, volunteer or partner to help filmmakers develop their craft and tell their stories."],
+];

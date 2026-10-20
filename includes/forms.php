@@ -25,7 +25,7 @@ function form_open_fields() {
 }
 
 /** Returns an error message, or '' when the submission looks legitimate. */
-function form_guard($conn, $type) {
+function form_guard($conn, $type, $table = 'enquiries') {
     if (!mem_csrf_ok()) return "Your session expired. Please reload the page and try again.";
     if (trim($_POST['url_confirm'] ?? '') !== '') return "Submission rejected.";
     $t = (int)($_POST['_t'] ?? 0);
@@ -34,7 +34,8 @@ function form_guard($conn, $type) {
     if (time() - $t < 3) return "That was very quick — please check your details and submit again.";
     if (time() - $t > 7200) return "This form has expired. Please reload the page and try again.";
     $ip = substr($_SERVER['REMOTE_ADDR'] ?? '', 0, 45);
-    $s = $conn->prepare("SELECT COUNT(*) c FROM enquiries WHERE ip=? AND created_at > (NOW() - INTERVAL 1 HOUR)");
+    $table = in_array($table, ['enquiries', 'engagements'], true) ? $table : 'enquiries';
+    $s = $conn->prepare("SELECT COUNT(*) c FROM $table WHERE ip=? AND created_at > (NOW() - INTERVAL 1 HOUR)");
     $s->bind_param("s", $ip);
     $s->execute();
     if ((int)$s->get_result()->fetch_assoc()['c'] >= 5) return "Too many submissions from your connection. Please try again later.";

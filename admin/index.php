@@ -22,6 +22,7 @@ $postDraft = $one("SELECT COUNT(*) FROM posts WHERE is_published=0");
 $views     = $one("SELECT COALESCE(SUM(views),0) FROM posts");
 $partners  = $one("SELECT COUNT(*) FROM partners WHERE is_active=1");
 $enqNew    = $one("SELECT COUNT(*) FROM enquiries WHERE status='new'");
+$supNew    = $one("SELECT COUNT(*) FROM engagements WHERE status='pending'");
 $enqTotal  = $one("SELECT COUNT(*) FROM enquiries");
 $progNoDetail = $one("SELECT COUNT(*) FROM programmes WHERE is_active=1 AND (TRIM(COALESCE(context,''))='' OR TRIM(COALESCE(objectives,''))='')");
 $bioMissing = $one("SELECT COUNT(*) FROM team_members WHERE is_active=1 AND TRIM(COALESCE(bio,''))=''");
@@ -151,6 +152,7 @@ $first = explode(' ', trim($_SESSION['admin_name'] ?? 'Admin'))[0];
       <div class="todo">
         <a href="members.php?status=pending"><span class="n <?php echo $mPending ? 'red' : 'ok'; ?>"><?php echo $mPending; ?></span> Membership applications to review<i>&rarr;</i></a>
         <a href="enquiries.php?status=new"><span class="n <?php echo $enqNew ? 'red' : 'ok'; ?>"><?php echo $enqNew; ?></span> New enquiries (contact, partnership, SACCO, network)<i>&rarr;</i></a>
+        <a href="support-requests.php?status=pending"><span class="n <?php echo $supNew ? 'red' : 'ok'; ?>"><?php echo $supNew; ?></span> Support requests (donate, sponsor, volunteer, partner)<i>&rarr;</i></a>
         <a href="members.php?status=approved"><span class="n <?php echo $mExpiring ? '' : 'ok'; ?>"><?php echo $mExpiring; ?></span> Memberships expiring within 30 days<i>&rarr;</i></a>
         <a href="posts.php"><span class="n <?php echo $postDraft ? '' : 'ok'; ?>"><?php echo $postDraft; ?></span> Draft posts not yet published<i>&rarr;</i></a>
       </div>
