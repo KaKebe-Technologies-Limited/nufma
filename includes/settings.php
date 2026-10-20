@@ -87,7 +87,7 @@ Publications",
         // NUFA SACCO (status must reflect verified reality)
         'sacco_status' => 'ongoing',              // proposed | in_development | ongoing | operational
         'sacco_applications_open' => '0',         // membership application form on the SACCO page
-        'sacco_vm_approved' => '0',               // SACCO vision/mission approved
+        'sacco_vm_approved' => '1',               // SACCO vision/mission approved
         'sacco_reg_number' => '', 'sacco_regulator' => '', 'sacco_licence_status' => '', 'sacco_reg_date' => '',
         // verified impact figures — the Impact section stays qualitative until these are filled
         'impact1_value' => '', 'impact1_label' => '',
