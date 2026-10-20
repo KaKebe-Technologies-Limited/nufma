@@ -55,6 +55,10 @@ $mobileCta2Label = cms_value('site', 'mobile_cta2_label');
   </div>
 </footer>
 
+<?php if (($cfg['pwa_enabled'] ?? '1') === '1'): ?>
+<div class="install-banner" data-install-banner hidden role="dialog" aria-label="Install the NUFA app"><img src="<?php echo $base; ?>assets/images/pwa/icon-192.png" alt="" width="44" height="44"><div><b>Install the NUFA app</b><span>Open NUFA from your home screen — fast, full-screen, works offline.</span></div><button type="button" class="btn btn-gold btn-sm" data-install-go>Install</button><button type="button" class="install-x" data-install-dismiss aria-label="Not now">&times;</button></div>
+<div class="ios-help" data-ios-help hidden role="dialog" aria-label="Add NUFA to your home screen"><div class="ios-help__box"><button type="button" class="install-x" data-ios-close aria-label="Close">&times;</button><h3>Add NUFA to your home screen</h3><ol><li>Tap the <b>Share</b> button in Safari (the square with an arrow).</li><li>Scroll down and choose <b>Add to Home Screen</b>.</li><li>Tap <b>Add</b> — NUFA now opens like an app.</li></ol></div></div>
+<?php endif; ?>
 <a href="#top" class="to-top" aria-label="Back to top"><?php echo nufa_icon('up', 18); ?></a>
 
 <div class="lightbox" role="dialog" aria-label="Image viewer" aria-hidden="true">
@@ -65,6 +69,8 @@ $mobileCta2Label = cms_value('site', 'mobile_cta2_label');
   <div class="lightbox-caption"></div>
 </div>
 
+<?php if (($cfg['pwa_enabled'] ?? '1') === '1'): ?><script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('<?php echo $base; ?>sw.php').catch(function(){});});}</script>
+<?php endif; ?>
 <script src="<?php echo $base; ?>assets/js/main.js?v=<?php echo @filemtime(__DIR__ . '/../assets/js/main.js'); ?>" defer></script>
 </body>
 </html>

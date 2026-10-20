@@ -24,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $save($k, strtoupper($v));
         }
         $save('show_topbar', isset($_POST['show_topbar']) ? '1' : '0');
+        $save('show_clock', isset($_POST['show_clock']) ? '1' : '0');
+        $save('pwa_enabled', isset($_POST['pwa_enabled']) ? '1' : '0');
+        $tzIn = trim($_POST['clock_timezone'] ?? ''); $save('clock_timezone', in_array($tzIn, DateTimeZone::listIdentifiers(), true) ? $tzIn : 'Africa/Kampala');
         $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
         foreach (['site_logo' => ['logo', $types + ['image/svg+xml' => 'svg']], 'site_favicon' => ['favicon', $types + ['image/svg+xml' => 'svg', 'image/x-icon' => 'ico', 'image/vnd.microsoft.icon' => 'ico']], 'og_default_image' => ['share', $types]] as $key => [$pfx, $allowed]) {
             if (!empty($_POST['remove_' . $key])) { $save($key, ''); continue; }
@@ -37,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $GLOBALS['__reload'] = true;
     $cfgRows = $conn->query("SELECT setting_key, setting_value FROM settings"); $cfg2 = [];
     while ($r = $cfgRows->fetch_assoc()) $cfg2[$r['setting_key']] = $r['setting_value'];
-    $cfg = array_merge($cfg, array_filter($cfg2, fn($v, $k) => in_array($k, ['brand_gold', 'brand_ink', 'site_logo', 'site_favicon', 'og_default_image', 'show_topbar']), ARRAY_FILTER_USE_BOTH));
+    $cfg = array_merge($cfg, array_filter($cfg2, fn($v, $k) => in_array($k, ['brand_gold', 'brand_ink', 'site_logo', 'site_favicon', 'og_default_image', 'show_topbar', 'show_clock', 'clock_timezone', 'pwa_enabled']), ARRAY_FILTER_USE_BOTH));
 }
 $gold = $cfg['brand_gold']; $ink = $cfg['brand_ink'];
 $img = fn($k) => $cfg[$k] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg[$k]);
@@ -73,6 +76,9 @@ include __DIR__ . "/includes/admin-header.php";
     </div>
     <div class="palette-preview"><span style="background:<?php echo htmlspecialchars($ink); ?>;color:<?php echo htmlspecialchars($gold); ?>">Dark section</span><span style="background:<?php echo htmlspecialchars($gold); ?>;color:<?php echo htmlspecialchars($ink); ?>">Button</span><span style="background:<?php echo nufa_shade($gold, 88); ?>;color:<?php echo nufa_shade($gold, -38); ?>">Soft highlight</span></div>
     <label class="mem-check" style="margin-top:18px"><input type="checkbox" name="show_topbar" value="1" <?php echo $cfg['show_topbar'] === '1' ? 'checked' : ''; ?>> Show the contact bar above the header (phone, email, address, social icons)</label>
+    <label class="mem-check" style="margin-top:10px"><input type="checkbox" name="show_clock" value="1" <?php echo ($cfg['show_clock'] ?? '1') === '1' ? 'checked' : ''; ?>> Show a live clock (date and time) in the contact bar</label>
+    <div class="field" style="max-width:340px;margin-top:8px"><label>Clock time zone</label><select name="clock_timezone"><?php $tzNow = $cfg['clock_timezone'] ?? 'Africa/Kampala'; foreach (['Africa/Kampala' => 'Uganda (EAT)', 'Africa/Nairobi' => 'Kenya (EAT)', 'Africa/Dar_es_Salaam' => 'Tanzania (EAT)', 'Africa/Kigali' => 'Rwanda (CAT)', 'Africa/Johannesburg' => 'South Africa (SAST)', 'Africa/Lagos' => 'Nigeria (WAT)', 'Europe/London' => 'London', 'UTC' => 'UTC'] as $tzk => $tzl) echo '<option value="' . $tzk . '"' . ($tzNow === $tzk ? ' selected' : '') . '>' . $tzl . '</option>'; ?></select></div>
+    <label class="mem-check" style="margin-top:10px"><input type="checkbox" name="pwa_enabled" value="1" <?php echo ($cfg['pwa_enabled'] ?? '1') === '1' ? 'checked' : ''; ?>> Let visitors install the website as an app (phones and computers) and keep working offline</label>
   </div>
   <button class="admin-btn admin-btn-brand">Save appearance</button>
 </form>

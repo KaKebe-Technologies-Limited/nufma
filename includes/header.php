@@ -49,6 +49,13 @@ $dropdownToggle = function ($label) { return '<button type="button" class="caret
 <title><?php echo $hx($pageTitle); ?></title>
 <meta name="description" content="<?php echo $hx($pageDesc); ?>">
 <meta name="theme-color" content="<?php echo $hx($ink); ?>">
+<?php if (($cfg['pwa_enabled'] ?? '1') === '1'): ?><link rel="manifest" href="<?php echo $base; ?>manifest.php">
+<link rel="apple-touch-icon" href="<?php echo $base; ?>assets/images/pwa/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NUFA">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<?php endif; ?>
 <link rel="canonical" href="<?php echo $hx($canonical); ?>">
 <?php if (!empty($noindex)): ?><meta name="robots" content="noindex, follow"><?php endif; ?>
 
@@ -104,7 +111,10 @@ $dropdownToggle = function ($label) { return '<button type="button" class="caret
       <a href="mailto:<?php echo $hx($cfg['site_email']); ?>" class="hide-sm"><?php echo nufa_icon('mail', 13) . $hx($cfg['site_email']); ?></a>
       <span class="hide-sm"><?php echo nufa_icon('pin', 13) . $hx($cfg['site_address']); ?></span>
     </div>
+    <?php $__tz = in_array($cfg['clock_timezone'] ?? '', DateTimeZone::listIdentifiers(), true) ? $cfg['clock_timezone'] : 'Africa/Kampala'; $__now = new DateTime('now', new DateTimeZone($__tz)); ?>
+    <?php if (($cfg['show_clock'] ?? '1') === '1'): ?><div class="topbar-clock" data-clock data-tz="<?php echo $hx($__tz); ?>" title="Local time (<?php echo $hx($__tz); ?>)" role="timer" aria-label="Current time"><?php echo nufa_icon('calendar', 13); ?><span class="clock-date"><?php echo $__now->format('D j M Y'); ?></span><span class="clock-time"><?php echo $__now->format('H:i:s'); ?></span><span class="clock-zone"><?php echo $__now->format('T'); ?></span></div><?php endif; ?>
     <div class="topbar-social" aria-label="Social media">
+      <?php if (($cfg['pwa_enabled'] ?? '1') === '1'): ?><button type="button" class="install-btn" data-install hidden><?php echo nufa_icon('download', 13); ?> Install app</button><?php endif; ?>
       <?php foreach (['x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram'], 'linkedin_url' => ['LinkedIn', 'linkedin'], 'youtube_url' => ['YouTube', 'youtube']] as $sk => [$slabel, $sic]):
         if ($cfg[$sk] === '') continue; ?>
         <a href="<?php echo $hx($cfg[$sk]); ?>" target="_blank" rel="noopener" aria-label="<?php echo $slabel; ?>"><?php echo nufa_icon($sic, 12); ?></a>

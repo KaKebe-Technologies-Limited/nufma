@@ -210,3 +210,66 @@
   if(document.readyState === "complete") setTimeout(init, 800);
   else window.addEventListener("load", function(){ setTimeout(init, 800); });
 })();
+
+/* ---------- live clock in the top bar ---------- */
+(function(){
+  var el = document.querySelector("[data-clock]");
+  if(!el || !window.Intl || !Intl.DateTimeFormat) return;
+  var tz = el.getAttribute("data-tz") || "Africa/Kampala";
+  var dateEl = el.querySelector(".clock-date"), timeEl = el.querySelector(".clock-time"), zoneEl = el.querySelector(".clock-zone");
+  var fd, ft, fz;
+  try {
+    fd = new Intl.DateTimeFormat("en-GB", {timeZone: tz, weekday: "short", day: "numeric", month: "short", year: "numeric"});
+    ft = new Intl.DateTimeFormat("en-GB", {timeZone: tz, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false});
+    fz = new Intl.DateTimeFormat("en-GB", {timeZone: tz, timeZoneName: "short"});
+  } catch(e) { return; }
+  function tick(){
+    var d = new Date();
+    if(timeEl) timeEl.textContent = ft.format(d);
+    if(dateEl) dateEl.textContent = fd.format(d).replace(",", "");
+  }
+  if(zoneEl){ try { var p = fz.formatToParts(new Date()).filter(function(x){ return x.type === "timeZoneName"; })[0]; if(p) zoneEl.textContent = p.value.replace("GMT+3", "EAT"); } catch(e){} }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* ---------- install the site as an app ---------- */
+(function(){
+  var btns = [].slice.call(document.querySelectorAll("[data-install]"));
+  var banner = document.querySelector("[data-install-banner]");
+  var ios = document.querySelector("[data-ios-help]");
+  if(!btns.length) return;
+  var standalone = (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true;
+  if(standalone) return;
+  var deferred = null;
+  var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  var DISMISS = "nufa_install_dismissed";
+  function dismissed(){ try { var t = parseInt(localStorage.getItem(DISMISS) || "0", 10); return t && Date.now() - t < 14 * 864e5; } catch(e){ return false; } }
+  function setDismissed(){ try { localStorage.setItem(DISMISS, String(Date.now())); } catch(e){} }
+  function showButtons(){ btns.forEach(function(b){ b.hidden = false; }); }
+  function hideAll(){ btns.forEach(function(b){ b.hidden = true; }); if(banner) banner.hidden = true; }
+  function go(){
+    if(deferred){
+      deferred.prompt();
+      deferred.userChoice.then(function(){ deferred = null; hideAll(); });
+    } else if(isIOS && ios){ ios.hidden = false; }
+  }
+  function maybeBanner(){
+    if(!banner || dismissed() || window.innerWidth > 860) return;
+    setTimeout(function(){ if(deferred || isIOS) banner.hidden = false; }, 15000);
+  }
+  window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); deferred = e; showButtons(); maybeBanner(); });
+  window.addEventListener("appinstalled", function(){ deferred = null; hideAll(); });
+  btns.forEach(function(b){ b.addEventListener("click", go); });
+  if(banner){
+    var g = banner.querySelector("[data-install-go]"), x = banner.querySelector("[data-install-dismiss]");
+    if(g) g.addEventListener("click", function(){ banner.hidden = true; go(); });
+    if(x) x.addEventListener("click", function(){ banner.hidden = true; setDismissed(); });
+  }
+  if(ios){
+    var c = ios.querySelector("[data-ios-close]");
+    if(c) c.addEventListener("click", function(){ ios.hidden = true; });
+    ios.addEventListener("click", function(e){ if(e.target === ios) ios.hidden = true; });
+  }
+  if(isIOS){ showButtons(); maybeBanner(); }   // iOS has no install prompt event: show our own instructions
+})();

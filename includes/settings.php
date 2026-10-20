@@ -26,7 +26,7 @@ function nufa_site_settings($conn) {
         'vm_approved'       => '0',   // vision & mission approved by leadership
         'policies_approved' => '0',   // legal pages reviewed by a qualified professional
         // appearance
-        'brand_gold' => '#D4AF63', 'brand_ink' => '#111111', 'site_logo' => '', 'site_favicon' => '', 'og_default_image' => '', 'show_topbar' => '1',
+        'brand_gold' => '#D4AF63', 'brand_ink' => '#111111', 'site_logo' => '', 'site_favicon' => '', 'og_default_image' => '', 'show_topbar' => '1', 'show_clock' => '1', 'clock_timezone' => 'Africa/Kampala', 'pwa_enabled' => '1',
         // editable option lists (one entry per line)
         'list_contact_topics'      => "General enquiry
 Membership
@@ -99,7 +99,7 @@ Publications",
     if ($res) {
         while ($row = $res->fetch_assoc()) {
             $v = trim($row['setting_value'] ?? '');
-            if ($v !== '' || in_array($row['setting_key'], ['tickets_open', 'vm_approved', 'policies_approved', 'show_topbar', 'sacco_applications_open', 'sacco_vm_approved'], true)) $settings[$row['setting_key']] = $v;
+            if ($v !== '' || in_array($row['setting_key'], ['tickets_open', 'vm_approved', 'policies_approved', 'show_topbar', 'show_clock', 'pwa_enabled', 'sacco_applications_open', 'sacco_vm_approved'], true)) $settings[$row['setting_key']] = $v;
         }
     }
     return $cache = $settings;
