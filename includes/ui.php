@@ -79,6 +79,14 @@ function ui_excerpt($text, $len = 160) {
     return mb_strlen($t) > $len ? mb_substr($t, 0, $len - 1) . '…' : $t;
 }
 
+/** Privacy-friendly page counter: one anonymous row per page per day — no cookies, IPs or personal data. */
+function nufa_hit($conn, $page) {
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') return;
+    if (preg_match('/bot|crawl|spider|slurp|curl|wget|monitor/i', $_SERVER['HTTP_USER_AGENT'] ?? '')) return;
+    $p = $conn->real_escape_string($page);
+    $conn->query("INSERT INTO page_hits (page, day, hits) VALUES ('$p', CURDATE(), 1) ON DUPLICATE KEY UPDATE hits = hits + 1");
+}
+
 /** The editorial categories defined in the master brief. */
 const NUFA_NEWS_CATEGORIES = ['NUFA News', 'NUFA Awards', 'Filmmaker Profiles', 'Film Industry Updates', 'Training and Workshops', 'Opportunities and Calls', 'Events and Screenings', 'Culture and Storytelling', 'Partner News'];
 const NUFA_RESOURCE_CATEGORIES = ['Film production guides', 'Training materials', 'Industry reports', 'Calls for submissions', 'Funding and grant opportunities', 'Filmmaking opportunities', 'Policies and guidelines', 'Annual reports', 'Event reports', 'Publications'];

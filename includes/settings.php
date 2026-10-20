@@ -84,6 +84,11 @@ Publications",
         'list_team_categories'     => "Board\nManagement\nSecretariat\nGuild Leaders\nAdvisors",
         'list_partner_categories'  => "Government\nMedia\nTechnology\nIndustry bodies\nProduction\nCorporate sponsors\nCommunity & culture\nEducation",
         'list_gallery_categories'  => "Awards ceremony\nRed carpet\nProductions\nTraining & workshops\nScreenings\nCommunity\nBehind the scenes",
+        // NUFA SACCO (status must reflect verified reality)
+        'sacco_status' => 'proposed',             // proposed | in_development | operational
+        'sacco_applications_open' => '0',         // membership application form on the SACCO page
+        'sacco_vm_approved' => '0',               // SACCO vision/mission approved
+        'sacco_reg_number' => '', 'sacco_regulator' => '', 'sacco_licence_status' => '', 'sacco_reg_date' => '',
         // verified impact figures — the Impact section stays qualitative until these are filled
         'impact1_value' => '', 'impact1_label' => '',
         'impact2_value' => '', 'impact2_label' => '',
@@ -94,7 +99,7 @@ Publications",
     if ($res) {
         while ($row = $res->fetch_assoc()) {
             $v = trim($row['setting_value'] ?? '');
-            if ($v !== '' || in_array($row['setting_key'], ['tickets_open', 'vm_approved', 'policies_approved', 'show_topbar'], true)) $settings[$row['setting_key']] = $v;
+            if ($v !== '' || in_array($row['setting_key'], ['tickets_open', 'vm_approved', 'policies_approved', 'show_topbar', 'sacco_applications_open', 'sacco_vm_approved'], true)) $settings[$row['setting_key']] = $v;
         }
     }
     return $cache = $settings;

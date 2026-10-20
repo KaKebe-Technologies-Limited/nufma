@@ -45,3 +45,11 @@ Privacy Policy, Cookie Policy, Terms of Use, Image & Content Permissions, Access
 
 ## D. Go-live checklist
 See `docs/DEPLOYMENT.md`.
+
+## NUFA SACCO (Admin → NUFA SACCO)
+- **Status & regulatory**: Proposed / In Development / Operational, application switch, approved vision/mission flag, regulator, registration number, licence status and date. Keep it Proposed until registration and licensing are verified; applications only show when the switch is on.
+- **Products**: mark each as Proposed or Approved. Eligibility, terms, interest and fees are public only for Approved products.
+- **Documents**: upload PDF/Word/Excel/ZIP (stored in `assets/sacco-docs/`) or link out. Nothing is listed unless added here.
+- **Announcements**: dated official notices.
+- **Visits & enquiries**: anonymous daily visit counts (no cookies or IPs) and SACCO submissions.
+- Page wording and section visibility: Page Editor → SACCO.

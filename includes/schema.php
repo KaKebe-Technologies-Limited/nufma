@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v6` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v7` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -108,7 +108,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v6'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v7'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -254,6 +254,45 @@ function nufa_migrate($conn) {
         $u = $conn->prepare("UPDATE programmes SET status='ongoing', is_active=1 WHERE slug=? AND status=''");
         $u->bind_param("s", $slug); $u->execute();
     }
+    // ---- NUFA SACCO: products, documents, announcements; privacy-friendly page counters ----
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS sacco_products (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        category VARCHAR(40) NOT NULL DEFAULT 'savings',
+        name VARCHAR(190) NOT NULL,
+        description TEXT,
+        eligibility TEXT,
+        terms TEXT,
+        status VARCHAR(20) NOT NULL DEFAULT 'proposed',
+        sort_order INT NOT NULL DEFAULT 0,
+        is_active TINYINT(1) NOT NULL DEFAULT 1
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS sacco_documents (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        doc_type VARCHAR(60) NOT NULL DEFAULT 'Policy',
+        description VARCHAR(500) NOT NULL DEFAULT '',
+        file_path VARCHAR(255) NOT NULL DEFAULT '',
+        external_url VARCHAR(500) NOT NULL DEFAULT '',
+        published_on DATE NULL,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS sacco_announcements (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        body TEXT,
+        kind VARCHAR(40) NOT NULL DEFAULT 'Update',
+        published_on DATE NOT NULL,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS page_hits (
+        page VARCHAR(40) NOT NULL,
+        day DATE NOT NULL,
+        hits INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (page, day)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
     // footer link to the support page (once)
     if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'support.php%'")->fetch_row()[0]) {
         $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer2'")->fetch_row()[0];
@@ -318,7 +357,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v6', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v7', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

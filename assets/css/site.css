@@ -465,3 +465,9 @@ table.data td{padding:14px;border-bottom:1px solid var(--line);vertical-align:to
 @media (max-width:560px){.support-types,.involve-grid{grid-template-columns:1fr}}
 .support-type{color:var(--ink)}.support-type.active{color:var(--white)}
 .section--dark .support-type b{color:var(--ink)}.section--dark .support-type.active b{color:var(--white)}
+
+/* SACCO page */
+.sacco-tools{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:16px 0;border-bottom:1px solid var(--line)}
+.sacco-nav{display:flex;gap:6px 16px;flex-wrap:wrap}.sacco-nav a{font-family:var(--font-heading);font-weight:700;font-size:.8rem;color:var(--ink-500);padding:4px 0;border-bottom:2px solid transparent}.sacco-nav a:hover{color:var(--gold-700);border-color:var(--gold)}
+.announce{border-left:4px solid var(--gold);padding:6px 0 6px 22px;margin-bottom:28px}.announce h3{margin:4px 0 8px}
+.chip--operational{background:var(--ok-bg);color:var(--ok)}
