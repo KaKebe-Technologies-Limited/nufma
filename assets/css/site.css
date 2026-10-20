@@ -677,3 +677,73 @@ nav.policy{display:flex;flex-wrap:wrap;gap:6px 16px}nav.policy a{margin:0!import
 .to-top{bottom:84px}
 @media(max-width:860px){.wa-float{right:14px;bottom:14px;padding:13px}.wa-float span{display:none}.to-top{bottom:84px;right:18px}.topbar-wa span{display:none}.install-banner{bottom:84px}}
 @media print{.wa-float,.topbar-wa{display:none!important}}@media(max-width:860px){.topbar-social>a:not(.topbar-wa){display:none}.topbar-in{justify-content:space-between;flex-wrap:nowrap}.topbar-info{flex:1;min-width:0}.topbar-clock{margin-left:auto}.topbar-social{margin-left:12px}.topbar-wa{margin-right:0}.topbar-wa span{display:none}.topbar-wa svg{width:22px;height:22px}}
+
+/* =====================================================================
+   Header refresh — a gold contact strip, then a floating charcoal bar
+   (clearly separated, with breathing room between the two)
+   ===================================================================== */
+.topbar{background:linear-gradient(90deg,#b8902c 0%,#dcbd62 30%,#ecd48b 50%,#dcbd62 70%,#b8902c 100%);color:#1c1608;font-size:.8rem;font-weight:600;position:relative;z-index:1001}
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(0,0,0,.18)}
+.topbar-in{min-height:42px;gap:16px}
+.topbar svg{color:#4a3508}
+.topbar a{color:#1c1608}.topbar a:hover{color:#000}
+.topbar-info{gap:0;flex-wrap:nowrap}
+.topbar-info>*{padding:0 16px;position:relative}.topbar-info>*:first-child{padding-left:0}
+.topbar-info>*+*::before{content:"";position:absolute;left:0;top:50%;height:14px;width:1px;background:rgba(28,22,8,.28);transform:translateY(-50%)}
+.topbar-clock{background:#161616;color:#fff;border-radius:99px;padding:5px 16px;font-weight:600;margin-inline:auto;box-shadow:inset 0 0 0 1px rgba(212,175,99,.35)}
+.topbar-clock svg{color:var(--gold)}.topbar-clock .clock-date{color:#d9d4c7;opacity:1}.topbar-clock .clock-time{color:var(--gold)}.topbar-clock .clock-zone{color:#a8a290;opacity:1}
+.topbar-social{gap:8px;align-items:center}
+.topbar-social a{width:28px;height:28px;background:#161616;color:var(--gold);border:0}
+.topbar-social a:hover{background:#000;color:#fff}
+.topbar-social a svg{color:inherit}
+.topbar-wa{width:auto!important;height:28px!important;background:#25D366!important;color:#fff!important;border-radius:99px!important;padding:0 12px;gap:6px;font-size:.72rem!important;letter-spacing:.02em;margin:0!important;font-weight:800;box-shadow:0 2px 8px rgba(18,140,74,.4)}
+.topbar-wa svg{color:#fff!important}.topbar-wa:hover{background:#1ebe5a!important}
+.install-btn{background:#161616;color:#fff;margin:0;box-shadow:inset 0 0 0 1px rgba(212,175,99,.5)}.install-btn:hover{background:#000;filter:none}
+
+.site-header{background:linear-gradient(180deg,#080808 0%,#12110f 100%);padding:14px 0;box-shadow:none;border-bottom:1px solid rgba(212,175,99,.12);transition:padding .25s,background .25s,box-shadow .25s}
+.site-header.is-scrolled{padding:8px 0;background:rgba(10,10,10,.9);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:0 12px 34px rgba(0,0,0,.45)}
+.site-header .nav-row{background:linear-gradient(135deg,#232119 0%,#181714 55%,#1d1b15 100%);border:1px solid rgba(212,175,99,.3);border-radius:22px;padding:8px 14px 8px 22px;min-height:76px;box-shadow:0 14px 34px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);position:relative}
+.site-header .nav-row::before{content:"";position:absolute;left:28px;right:28px;top:-1px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7}
+.site-header.is-scrolled .nav-row{min-height:66px}
+.brand .mark{box-shadow:0 0 0 3px rgba(212,175,99,.35)}
+.main-nav li>a{padding:9px 12px;border-radius:12px;border-bottom:0;font-size:.8rem;position:relative;transition:background .2s,color .2s}
+.main-nav li>a:hover{background:rgba(212,175,99,.14);color:#fff}
+.main-nav li.active>a{color:var(--gold);background:rgba(212,175,99,.12)}
+.main-nav li.active>a::after{content:"";position:absolute;left:50%;bottom:3px;width:18px;height:3px;border-radius:3px;background:var(--gold);transform:translateX(-50%)}
+.main-nav li.has-dropdown>a{padding-right:6px}
+.caret-btn{margin-left:-4px;border-radius:8px}.caret-btn:hover{background:rgba(212,175,99,.14);color:#fff}
+.dropdown{top:calc(100% + 14px);border-radius:16px;border:1px solid rgba(212,175,99,.3);border-top:3px solid var(--gold);background:#1a1914;padding:10px;box-shadow:0 22px 50px rgba(0,0,0,.55)}
+.dropdown a{border-radius:10px;padding:11px 14px}.dropdown a:hover{background:rgba(212,175,99,.14);color:var(--gold)}
+.header-cta .btn-gold{background:linear-gradient(135deg,#e3c46f,#c9a23f);box-shadow:0 8px 22px rgba(200,160,60,.4);border:0;font-weight:800}
+.header-cta .btn-gold:hover{box-shadow:0 10px 28px rgba(200,160,60,.6);transform:translateY(-1px)}
+.nav-toggle{background:rgba(212,175,99,.14);border-radius:12px;color:var(--gold)}
+@media(min-width:901px) and (max-width:1320px){
+  .site-header .nav-row{padding-top:12px}
+  .main-nav{border-top:1px solid rgba(212,175,99,.2);margin-top:10px}
+  .main-nav li>a{padding:9px 9px}
+}
+@media(max-width:900px){
+  .site-header{padding:10px 0}.site-header.is-scrolled{padding:6px 0}
+  .site-header .nav-row{border-radius:18px;padding:6px 10px 6px 14px;min-height:62px}
+  .site-header .container-wide,.topbar .container-wide{width:calc(100% - 24px)}
+}
+@media(max-width:860px){
+  .topbar-in{gap:8px;min-height:40px}
+  .topbar-info>*{padding:0}.topbar-info>*::before{display:none}
+  .topbar-clock{padding:4px 12px;margin-inline:auto}
+  .topbar-wa{width:30px!important;height:30px!important;padding:0!important;justify-content:center}
+  .topbar-social>a:not(.topbar-wa):not(.install-btn){display:none}
+}
+@media(max-width:420px){.topbar-info a{font-size:.74rem}.topbar-clock{padding:4px 10px}}
+/* laptop widths: one compact row (smaller links, no logo subtitle) so the CTA is never cut off */
+@media(min-width:1321px) and (max-width:1520px){
+  .site-header .nav-row{padding-left:18px}
+  .brand .word small{display:none}
+  .main-nav li>a{padding:8px 6px;font-size:.74rem;border-radius:10px}
+  .main-nav li.has-dropdown>a{padding-right:3px}
+  .caret-btn{width:18px;margin-left:-3px}
+  .header-cta .btn-gold{padding:11px 18px;font-size:.8rem}
+}
+@media(min-width:1521px){.main-nav li>a{padding:9px 10px}}
+.aw-subnav{top:82px}.aw-subnav a{flex:none;white-space:nowrap}.aw-subnav .container>*{min-width:auto}
+@media(max-width:900px){.aw-subnav{top:72px}}
