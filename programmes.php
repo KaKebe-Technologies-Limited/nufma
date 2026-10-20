@@ -31,8 +31,8 @@ echo ui_page_hero('Programmes & Projects', cms_value('programmes', 'hero_title')
           <div class="card-body"><h3>NUFA Awards</h3><p>Recognising outstanding work and celebrating the stories and storytellers of Northern Uganda.</p><span class="link-arrow">Explore the awards</span></div></a>
       </article>
       <article class="card programme-card">
-        <a href="sacco.php" style="display:flex;flex-direction:column;height:100%"><div class="card-media"><?php echo ui_img('front1.webp', ''); ?><span class="chip chip--proposed">Proposed</span></div>
-          <div class="card-body"><h3>NUFA SACCO — Proposed Initiative</h3><p>A proposed initiative exploring financial resilience for filmmakers. Not yet operational.</p><span class="link-arrow">Read the status</span></div></a>
+        <a href="sacco.php" style="display:flex;flex-direction:column;height:100%"><div class="card-media"><?php echo ui_img('front1.webp', ''); ?><?php $__ss = nufa_site_settings($conn)['sacco_status'] ?? 'ongoing'; $__sl = ['proposed' => 'Proposed', 'in_development' => 'In development', 'ongoing' => 'Ongoing', 'operational' => 'Operational'][$__ss] ?? 'Ongoing'; ?><span class="chip chip--<?php echo in_array($__ss, ['ongoing', 'operational'], true) ? 'ongoing' : 'proposed'; ?>"><?php echo $__sl; ?></span></div>
+          <div class="card-body"><h3>NUFA SACCO</h3><p>A member-owned savings and credit initiative for filmmakers and creatives. Activities are ongoing.</p><span class="link-arrow">Read the status</span></div></a>
       </article>
     </div>
     <?php endif; ?>

@@ -106,6 +106,7 @@ include __DIR__ . "/includes/admin-header.php";
 
 <?php elseif ($app): $a = $app; ?>
 <div class="admin-card"><div class="admin-card-head"><h2><?php echo $e($a['full_name']); ?> <?php echo sac_status_badge($a['status']); ?></h2><a class="admin-btn admin-btn-line admin-btn-sm" href="sacco-applications.php">← All applications</a></div>
+  <?php require_once __DIR__ . "/../includes/whatsapp.php"; if (($wa = nufa_wa_reply_url($a['phone'], 'Hello ' . $a['full_name'] . ', this is the NUFA SACCO about your application ' . $a['reg_no'] . '. '))): ?><p><a class="admin-btn admin-btn-line admin-btn-sm" href="<?php echo $e($wa); ?>" target="_blank" rel="noopener" style="border-color:#25D366;color:#128c4a">Message on WhatsApp</a></p><?php endif; ?>
   <p><b>Registration number:</b> <span class="reg-badge-sm"><?php echo $e($a['reg_no']); ?></span> · submitted <?php echo date('d M Y H:i', strtotime($a['created_at'])); ?><?php echo $a['approved_at'] ? ' · approved ' . date('d M Y', strtotime($a['approved_at'])) : ''; ?></p>
   <div class="app-files"><?php foreach (['photo' => 'Passport photo', 'id_copy' => 'ID copy', 'pay_proof' => 'Proof of payment'] as $k => $l): if ($a[$k] === '') continue; $img = preg_match('/\.(jpg|png|webp)$/i', $a[$k]); ?>
     <a class="app-file" href="sacco-file.php?id=<?php echo $a['id']; ?>&f=<?php echo $k; ?>" target="_blank"><?php if ($img): ?><img src="sacco-file.php?id=<?php echo $a['id']; ?>&f=<?php echo $k; ?>" alt=""><?php else: ?><span>PDF</span><?php endif; ?><b><?php echo $l; ?></b></a><?php endforeach; ?></div>

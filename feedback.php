@@ -78,6 +78,7 @@ $public = $S['fb_show_public'] === '1' ? $conn->query("SELECT * FROM feedback WH
 <?php else: ?>
   <p class="lede" style="margin-bottom:22px"><?php echo ui_e($S['fb_intro']); ?></p>
   <?php if ($errors): ?><div class="alert err" role="alert"><b>Please fix the following:</b><ul><?php foreach ($errors as $er): ?><li><?php echo ui_e($er); ?></li><?php endforeach; ?></ul></div><?php endif; ?>
+  <?php require_once __DIR__ . "/includes/whatsapp.php"; if (nufa_wa_enabled($cfg0 = nufa_site_settings($conn))): ?><div class="info-card wa-card"><span class="wa-ic"><?php echo nufa_icon('whatsapp', 26); ?></span><div><b>Prefer to chat?</b><br><span class="muted">Send your feedback or a question on WhatsApp and the NUFA team will respond.</span></div><a class="btn btn-sm wa-btn" href="<?php echo ui_e(nufa_wa_url($cfg0, 'Hello NUFA, I would like to share some feedback about: ')); ?>" target="_blank" rel="noopener">Open WhatsApp</a></div><?php endif; ?>
   <p class="muted" style="margin-bottom:14px">Fields marked <span style="color:var(--err)">*</span> are required. It takes about two minutes.</p>
   <form method="post" class="apply-form" id="fbform"><?php echo form_open_fields(); ?>
     <fieldset class="apply-card"><legend><span>1</span> What is your feedback about?</legend>

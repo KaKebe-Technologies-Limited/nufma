@@ -23,7 +23,7 @@ function nufa_menu_defaults() {
             ['Contact', 'contact.php', 'contact,schedule', [['Contact us', 'contact.php'], ['Calendar', 'schedule.php'], ['Feedback', 'feedback.php']]],
         ],
         'footer1' => [
-            ['About NUFA', 'about.php', '', []], ['Programmes', 'programmes.php', '', []], ['NUFA SACCO (proposed)', 'sacco.php', '', []], ['Industry Network', 'network.php', '', []],
+            ['About NUFA', 'about.php', '', []], ['Programmes', 'programmes.php', '', []], ['NUFA SACCO', 'sacco.php', '', []], ['Industry Network', 'network.php', '', []],
             ['News & Stories', 'news.php', '', []], ['Resources', 'resources.php', '', []], ['Gallery & Video', 'gallery.php', '', []],
         ],
         'footer2' => [

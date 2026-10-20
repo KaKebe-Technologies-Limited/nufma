@@ -4,8 +4,8 @@ require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 
 $cfg0 = nufa_site_settings($conn);
-$status = in_array($cfg0['sacco_status'], ['proposed', 'in_development', 'operational'], true) ? $cfg0['sacco_status'] : 'proposed';
-$statusLabel = ['proposed' => 'Proposed', 'in_development' => 'In Development', 'operational' => 'Operational'][$status];
+$status = in_array($cfg0['sacco_status'], ['proposed', 'in_development', 'ongoing', 'operational'], true) ? $cfg0['sacco_status'] : 'ongoing';
+$statusLabel = ['proposed' => 'Proposed', 'in_development' => 'In Development', 'ongoing' => 'Ongoing', 'operational' => 'Operational'][$status];
 $appsOpen = $cfg0['sacco_applications_open'] === '1';
 $errors = []; $sent = isset($_GET['sent']); $sentKind = $_GET['k'] ?? '';
 $fc = nufa_form_cfg('sacco');
@@ -40,7 +40,7 @@ $canonicalPath = "sacco.php";
 include __DIR__ . "/includes/header.php";
 nufa_hit($conn, 'sacco');
 
-$statusText = $status === 'operational' ? cms_value('sacco', 'status_text_op') : ($status === 'in_development' ? cms_value('sacco', 'status_text_dev') : cms_value('sacco', 'status_text'));
+$statusText = ['operational' => cms_value('sacco', 'status_text_op'), 'ongoing' => cms_value('sacco', 'status_text_ongoing'), 'in_development' => cms_value('sacco', 'status_text_dev')][$status] ?? cms_value('sacco', 'status_text');
 $products = $conn->query("SELECT * FROM sacco_products WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
 $docs = $conn->query("SELECT * FROM sacco_documents WHERE is_active=1 ORDER BY COALESCE(published_on, DATE(created_at)) DESC, id DESC")->fetch_all(MYSQLI_ASSOC);
 $news = $conn->query("SELECT * FROM sacco_announcements WHERE is_active=1 ORDER BY published_on DESC, id DESC LIMIT 8")->fetch_all(MYSQLI_ASSOC);
@@ -65,7 +65,7 @@ echo ui_page_hero('NUFA SACCO · ' . $statusLabel, cms_value('sacco', 'hero_head
 </section>
 
 <?php if (nufa_show('sacco', 'status')): ?><section class="section--tight" id="status">
-  <div class="container"><div class="status-banner" role="note"><?php echo nufa_icon('shield', 26); ?><div><span class="chip chip--<?php echo $status === 'operational' ? 'ongoing' : 'proposed'; ?>" style="margin-right:8px"><?php echo ui_e($statusLabel); ?></span> <?php echo ui_e($statusText); ?></div></div></div>
+  <div class="container"><div class="status-banner" role="note"><?php echo nufa_icon('shield', 26); ?><div><span class="chip chip--<?php echo in_array($status, ['operational', 'ongoing'], true) ? 'ongoing' : 'proposed'; ?>" style="margin-right:8px"><?php echo ui_e($statusLabel); ?></span> <?php echo ui_e($statusText); ?></div></div></div>
 </section><?php endif; ?>
 
 <?php if (nufa_show('sacco', 'about')): ?><section class="section" id="about">
@@ -96,7 +96,7 @@ echo ui_page_hero('NUFA SACCO · ' . $statusLabel, cms_value('sacco', 'hero_head
     <div class="grid grid-2" style="gap:clamp(24px,4vw,56px);margin-top:48px">
       <div data-reveal><h3>Intended objectives</h3><div class="stack"><?php echo cms_h('sacco', 'objectives'); ?></div></div>
       <div data-reveal><h3>Potential areas of development</h3><div class="stack"><?php echo cms_h('sacco', 'areas'); ?></div></div>
-      <div data-reveal><h3>Proposed benefits</h3><div class="stack"><?php echo cms_h('sacco', 'benefits'); ?></div></div>
+      <div data-reveal><h3>Benefits</h3><div class="stack"><?php echo cms_h('sacco', 'benefits'); ?></div></div>
       <div data-reveal><h3>Governance and regulatory considerations</h3><div class="stack"><?php echo cms_h('sacco', 'governance'); ?></div></div>
     </div>
     <div class="notice" style="margin-top:36px" data-reveal><span><?php echo nufa_icon('star', 22); ?></span><div><?php echo cms_h('sacco', 'development_status'); ?></div></div>
@@ -120,18 +120,18 @@ echo ui_page_hero('NUFA SACCO · ' . $statusLabel, cms_value('sacco', 'hero_head
   <div class="container">
     <div class="section-head" data-reveal><div class="eyebrow">Savings &amp; credit products</div><h2>Product catalogue</h2><p><?php echo cms_t('sacco', 'products_note'); ?></p></div>
     <?php if (!$products): ?>
-      <div class="empty-state" style="background:rgba(255,255,255,.05);border-color:var(--line-dark)"><h3>No products published yet</h3><p style="color:var(--muted-on-dark)">Proposed and approved savings and credit products will be listed here. Nothing is available to apply for at this time.</p></div>
+      <div class="empty-state" style="background:rgba(255,255,255,.05);border-color:var(--line-dark)"><h3>No products published yet</h3><p style="color:var(--muted-on-dark)">Savings and credit products will be listed here with their terms once they are approved.</p></div>
     <?php else: foreach ($prodCats as $ck => $cl):
         $in = array_filter($products, fn($p) => $p['category'] === $ck); if (!$in) continue; ?>
       <h3 style="color:var(--gold);font-size:.9rem;letter-spacing:.14em;text-transform:uppercase;margin:34px 0 16px"><?php echo ui_e($cl); ?></h3>
       <div class="grid grid-2">
         <?php foreach ($in as $p): $approved = $p['status'] === 'approved'; ?>
         <article class="card card--dark" data-s style="padding:24px">
-          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><h3 style="margin:0;font-size:1.1rem"><?php echo ui_e($p['name']); ?></h3><span class="chip chip--<?php echo $approved ? 'ongoing' : 'proposed'; ?>"><?php echo $approved ? 'Approved' : 'Proposed'; ?></span></div>
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><h3 style="margin:0;font-size:1.1rem"><?php echo ui_e($p['name']); ?></h3><span class="chip chip--<?php echo $approved ? 'ongoing' : 'proposed'; ?>"><?php echo $approved ? 'Approved' : 'Terms to be announced'; ?></span></div>
           <?php if ($p['description']): ?><p><?php echo nl2br(ui_e($p['description'])); ?></p><?php endif; ?>
           <?php if ($approved && trim((string)$p['eligibility']) !== ''): ?><h4 style="color:var(--gold);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;margin:12px 0 4px">Eligibility</h4><p style="white-space:pre-wrap"><?php echo ui_e($p['eligibility']); ?></p><?php endif; ?>
           <?php if ($approved && trim((string)$p['terms']) !== ''): ?><h4 style="color:var(--gold);font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;margin:12px 0 4px">Terms, interest, fees &amp; security</h4><p style="white-space:pre-wrap"><?php echo ui_e($p['terms']); ?></p><?php endif; ?>
-          <?php if (!$approved): ?><p style="font-size:.8rem;margin-top:10px"><em>Proposed only — eligibility, repayment terms, interest, fees and security will be published if and when this product is approved.</em></p><?php endif; ?>
+          <?php if (!$approved): ?><p style="font-size:.8rem;margin-top:10px"><em>Eligibility, repayment terms, interest, fees and security are published once this product's terms are approved.</em></p><?php endif; ?>
         </article>
         <?php endforeach; ?>
       </div>

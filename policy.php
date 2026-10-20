@@ -33,7 +33,7 @@ $draft = $cfg['policies_approved'] !== '1';
     <div class="policy"><?php echo cms_h('policies', $p); ?></div>
     <nav class="policy" style="margin-top:50px;padding-top:24px;border-top:1px solid var(--line)" aria-label="Other policies">
       <strong>Other policies:</strong>
-      <?php foreach ($policies as $k => $label) if ($k !== $p): ?><a class="hl" style="margin-right:14px;text-decoration:underline;white-space:nowrap" href="policy.php?p=<?php echo $k; ?>"><?php echo ui_e($label); ?></a><?php endif; ?>
+      <?php foreach ($policies as $k => $label) if ($k !== $p): ?><a class="hl" style="margin-right:14px;text-decoration:underline" href="policy.php?p=<?php echo $k; ?>"><?php echo ui_e($label); ?></a><?php endif; ?>
     </nav>
   </div>
 </section>

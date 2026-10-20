@@ -91,3 +91,8 @@ See `docs/DEPLOYMENT.md`.
 ## Feedback (Admin → Feedback)
 - Public page `feedback.php` (Contact menu → Feedback; also “Give feedback” on each programme page): what it is about (programme, activity/event, initiative, website, general) and which one, star rating, type (praise / suggestion / concern / question), the feedback itself, optional improvements, took part?, would recommend?, and identity — **anonymous** (no name, email or phone is kept) or named.
 - Admin: inbox with filters and search, status (new/reviewed/actioned/archived), internal notes, reply by email (named senders with an email), tick “Show on the Feedback page” to publish a comment (anonymous unless the sender agreed to share their name), **Insights** (average rating, distribution, by area, most-discussed programmes) and CSV export. Wording and on/off in Settings and Page Editor → Feedback.
+
+## WhatsApp, mobile and SACCO status
+- **WhatsApp** (Admin → Appearance & Branding): a floating “Chat with us” button, a WhatsApp link in the contact bar, the Contact page and the Feedback page open a chat with the number you set (blank = the main telephone) with a pre-typed message. In the admin, “Reply on WhatsApp” appears on enquiries, feedback, SACCO and partnership applications whenever the person left a phone number.
+- **SACCO status** now has an **Ongoing** option (Admin → NUFA SACCO → Status & regulatory); the SACCO page, the Programmes card and the footer show “Ongoing” instead of “Proposed”. Registration and licence details still come only from the regulatory fields you fill in.
+- Mobile: layouts, forms, tap targets and the top bar were tuned for phones (no sideways scrolling on any public page).

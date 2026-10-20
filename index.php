@@ -19,7 +19,7 @@ foreach ($conn->query("SELECT * FROM programmes WHERE is_active=1 ORDER BY sort_
 $cards = [];
 foreach (['capacity-building', 'awards', 'mentorship', 'screenings-outreach', 'creative-enterprise', 'sacco'] as $slug) {
     if ($slug === 'awards')      $cards[] = ['title' => cms_value('home', 'awards_card_title'), 'text' => cms_value('home', 'awards_card_text'), 'img' => 'slider/slide1-1.webp', 'url' => 'awards.php', 'status' => ''];
-    elseif ($slug === 'sacco')   $cards[] = ['title' => cms_value('home', 'sacco_card_title'), 'text' => cms_value('home', 'sacco_card_text'), 'img' => 'front1.webp', 'url' => 'sacco.php', 'status' => 'proposed'];
+    elseif ($slug === 'sacco')   $cards[] = ['title' => cms_value('home', 'sacco_card_title'), 'text' => cms_value('home', 'sacco_card_text'), 'img' => 'front1.webp', 'url' => 'sacco.php', 'status' => in_array($cfg['sacco_status'] ?? 'ongoing', ['ongoing', 'operational'], true) ? 'ongoing' : 'proposed'];
     elseif (isset($progs[$slug])) $cards[] = ['title' => $progs[$slug]['title'], 'text' => $progs[$slug]['summary'], 'img' => $progs[$slug]['image'] ?: 'nufa2.webp', 'url' => 'programme.php?slug=' . $slug, 'status' => $progs[$slug]['status']];
 }
 $news = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 ORDER BY is_featured DESC, published_at DESC LIMIT " . max(1, min(6, (int)nufa_fn('home', 'news_count'))))->fetch_all(MYSQLI_ASSOC);

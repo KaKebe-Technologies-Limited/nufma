@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = (int)($_POST['id'] ?? 0);
     $f = fn($k, $m = 255) => mb_substr(trim($_POST[$k] ?? ''), 0, $m);
     if ($act === 'status') {
-        $st = in_array($_POST['sacco_status'] ?? '', ['proposed', 'in_development', 'operational'], true) ? $_POST['sacco_status'] : 'proposed';
+        $st = in_array($_POST['sacco_status'] ?? '', ['proposed', 'in_development', 'ongoing', 'operational'], true) ? $_POST['sacco_status'] : 'ongoing';
         $save('sacco_status', $st);
         $save('sacco_applications_open', isset($_POST['sacco_applications_open']) ? '1' : '0');
         $save('sacco_vm_approved', isset($_POST['sacco_vm_approved']) ? '1' : '0');
@@ -80,13 +80,13 @@ $e = fn($v) => htmlspecialchars((string)$v);
 <?php if ($msg): ?><div class="admin-alert ok"><?php echo $e($msg); ?></div><?php endif; ?>
 <?php if ($err): ?><div class="admin-alert err"><?php echo $e($err); ?></div><?php endif; ?>
 
-<?php if ($tab === 'status'): $st = $g('sacco_status', 'proposed'); ?>
+<?php if ($tab === 'status'): $st = $g('sacco_status', 'ongoing'); ?>
   <form method="post" class="admin-form">
     <input type="hidden" name="action" value="status">
     <div class="admin-card">
       <div class="admin-card-head"><h2>SACCO status</h2><span class="admin-help">Must reflect verified reality — it appears on the public page.</span></div>
       <div class="field" style="max-width:420px"><label>Current status</label>
-        <select name="sacco_status"><option value="proposed" <?php echo $st === 'proposed' ? 'selected' : ''; ?>>Proposed</option><option value="in_development" <?php echo $st === 'in_development' ? 'selected' : ''; ?>>In Development</option><option value="operational" <?php echo $st === 'operational' ? 'selected' : ''; ?>>Operational</option></select></div>
+        <select name="sacco_status"><option value="proposed" <?php echo $st === 'proposed' ? 'selected' : ''; ?>>Proposed</option><option value="in_development" <?php echo $st === 'in_development' ? 'selected' : ''; ?>>In Development</option><option value="ongoing" <?php echo $st === 'ongoing' ? 'selected' : ''; ?>>Ongoing (activities under way)</option><option value="operational" <?php echo $st === 'operational' ? 'selected' : ''; ?>>Operational</option></select></div>
       <?php if ($st === 'operational' && trim($g('sacco_reg_number')) === ''): ?><div class="admin-alert err">The status is Operational but no registration number is recorded. Only mark the SACCO Operational once its registration, licensing and readiness are verified, and publish those details below.</div><?php endif; ?>
       <label class="mem-check"><input type="checkbox" name="sacco_applications_open" value="1" <?php echo $g('sacco_applications_open') === '1' ? 'checked' : ''; ?>> Accept membership applications on the page (only when the process is approved and ready)</label>
       <?php if ($g('sacco_applications_open') === '1' && $st !== 'operational'): ?><div class="admin-alert err">Applications are open while the SACCO is not Operational. Check that this is intended.</div><?php endif; ?>
@@ -113,7 +113,7 @@ $e = fn($v) => htmlspecialchars((string)$v);
       <div class="admin-form-grid">
         <div class="field"><label>Product name</label><input name="name" value="<?php echo $e($p['name'] ?? ''); ?>" required></div>
         <div class="field"><label>Category</label><select name="category"><?php foreach ($prodCats as $k => $l) echo '<option value="' . $k . '"' . (($p['category'] ?? 'savings') === $k ? ' selected' : '') . '>' . $l . '</option>'; ?></select></div>
-        <div class="field"><label>Status</label><select name="status"><option value="proposed" <?php echo ($p['status'] ?? 'proposed') === 'proposed' ? 'selected' : ''; ?>>Proposed (idea only)</option><option value="approved" <?php echo ($p['status'] ?? '') === 'approved' ? 'selected' : ''; ?>>Approved (terms are published)</option></select></div>
+        <div class="field"><label>Status</label><select name="status"><option value="proposed" <?php echo ($p['status'] ?? 'proposed') === 'proposed' ? 'selected' : ''; ?>>Ongoing — terms not yet published</option><option value="approved" <?php echo ($p['status'] ?? '') === 'approved' ? 'selected' : ''; ?>>Approved (terms are published)</option></select></div>
         <div class="field"><label>Order</label><input type="number" name="sort_order" value="<?php echo (int)($p['sort_order'] ?? 0); ?>"></div>
       </div>
       <div class="field"><label>Description</label><textarea name="description" style="min-height:70px"><?php echo $e($p['description'] ?? ''); ?></textarea></div>
@@ -125,7 +125,7 @@ $e = fn($v) => htmlspecialchars((string)$v);
         <button class="admin-btn admin-btn-brand admin-btn-sm"><?php echo $add ? 'Add product' : 'Save'; ?></button>
         <?php if (!$add): ?><button name="action" value="product_delete" class="admin-btn admin-btn-danger admin-btn-sm" onclick="return confirm('Delete this product?')">Delete</button><?php endif; ?></div>
     </form><?php return ob_get_clean(); }; ?>
-  <p class="admin-help" style="margin-bottom:14px">Label every product <b>Proposed</b> until it is formally approved. Terms, interest, fees and eligibility stay hidden from the public until a product is marked Approved.</p>
+  <p class="admin-help" style="margin-bottom:14px">Mark a product <b>Ongoing — terms not yet published</b> until its terms are formally approved. Terms, interest, fees and eligibility stay hidden from the public until a product is marked Approved.</p>
   <?php foreach ($prods as $p) echo $pForm($p); ?>
   <h3 class="mem-h3">Add a product</h3><?php echo $pForm([], true); ?>
 

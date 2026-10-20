@@ -33,6 +33,7 @@ $subject = rawurlencode("Re: your enquiry to NUFA" . ($r['topic'] ? " — " . $r
     <div class="admin-card">
       <div class="admin-card-head"><h2>Respond</h2></div>
       <a class="admin-btn admin-btn-brand" href="mailto:<?php echo htmlspecialchars($r['email']); ?>?subject=<?php echo $subject; ?>">Reply by email</a>
+      <?php require_once __DIR__ . "/../includes/whatsapp.php"; if ($r['phone'] && ($wa = nufa_wa_reply_url($r['phone'], 'Hello ' . $r['name'] . ', thank you for contacting NUFA. '))): ?><a class="admin-btn admin-btn-line" href="<?php echo htmlspecialchars($wa); ?>" target="_blank" rel="noopener" style="border-color:#25D366;color:#128c4a">Reply on WhatsApp</a><?php endif; ?>
       <?php if ($r['phone']): ?><a class="admin-btn admin-btn-line" href="tel:<?php echo htmlspecialchars(preg_replace('/[^0-9+]/', '', $r['phone'])); ?>">Call <?php echo htmlspecialchars($r['phone']); ?></a><?php endif; ?>
     </div>
     <div class="admin-card">

@@ -10,7 +10,7 @@ sac_install($conn);
 $cfg0 = nufa_site_settings($conn);
 $S = sac_settings($conn);
 $open = ($cfg0['sacco_applications_open'] ?? '0') === '1';
-$status = in_array($cfg0['sacco_status'] ?? '', ['proposed', 'in_development', 'operational'], true) ? $cfg0['sacco_status'] : 'proposed';
+$status = in_array($cfg0['sacco_status'] ?? '', ['proposed', 'in_development', 'ongoing', 'operational'], true) ? $cfg0['sacco_status'] : 'ongoing';
 $products = $conn->query("SELECT name FROM sacco_products WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
 $incomeBands = sac_lines($S['sacapp_income_bands']); $payMethods = sac_lines($S['sacapp_pay_methods']);
 $fee = trim($S['sacapp_reg_fee']); $sharePrice = trim($S['sacapp_share_price']); $minShares = max(0, (int)$S['sacapp_min_shares']);
@@ -98,7 +98,7 @@ $file = fn($k, $label, $req, $hint) => '<div class="field full"><label for="f-' 
   <div class="placeholder-card"><span class="ph-icon"><?php echo nufa_icon('coins', 22); ?></span><h2>Applications are not open</h2><p>The NUFA SACCO is not accepting membership applications yet. You can register your interest on the SACCO page and we will contact you when the process opens.</p><div class="actions" style="justify-content:center;margin-top:16px"><a href="sacco.php#enquiry" class="btn btn-gold">Register your interest</a></div></div>
 <?php else: ?>
   <p class="lede" style="margin-bottom:20px"><?php echo ui_e($S['sacapp_intro']); ?></p>
-  <?php if ($status !== 'operational'): ?><div class="status-banner" role="note" style="margin-bottom:20px"><?php echo nufa_icon('shield', 24); ?><div>The SACCO's current status is <b><?php echo ui_e(['proposed' => 'Proposed', 'in_development' => 'In Development'][$status] ?? ''); ?></b>. Read the status and regulatory details on the <a href="sacco.php">SACCO page</a> before you apply.</div></div><?php endif; ?>
+  <?php if ($status !== 'operational'): ?><div class="status-banner" role="note" style="margin-bottom:20px"><?php echo nufa_icon('shield', 24); ?><div>The SACCO's current status is <b><?php echo ui_e(['proposed' => 'Proposed', 'in_development' => 'In Development', 'ongoing' => 'Ongoing'][$status] ?? ''); ?></b>. Read the status and regulatory details on the <a href="sacco.php">SACCO page</a> before you apply.</div></div><?php endif; ?>
   <?php if ($errors): ?><div class="alert err" role="alert"><b>Please fix the following:</b><ul><?php foreach ($errors as $e): ?><li><?php echo ui_e($e); ?></li><?php endforeach; ?></ul></div><?php endif; ?>
   <p class="muted" style="margin-bottom:14px">Fields marked <span style="color:var(--err)">*</span> are required.</p>
   <form method="post" enctype="multipart/form-data" class="apply-form"><?php echo form_open_fields(); ?>
