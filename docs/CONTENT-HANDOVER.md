@@ -66,3 +66,14 @@ See `docs/DEPLOYMENT.md`.
 - **Newsletters**: either *write one here* (editor, cover, “In this issue” story picks, optional PDF version) or *upload a PDF*. Published issues appear on the Newsletter page (archive + online reader + PDF download).
 - **E-mailing**: open a published newsletter → send a test, then “Send to subscribers” (40 per click, nobody gets the same issue twice; failed addresses can be retried).
 - **Subscribers**: visitors join on the Newsletter page; add addresses (only people who agreed), pause, delete or export CSV. Every email carries an unsubscribe link.
+
+## Roles & permissions (Admin → Admin Users / Roles & permissions)
+- Roles: Administrator, President, NUFA Event Manager, HR, Finance Manager, Technical Lead, Sacco Manager, NUFA Secretary, Head of Protocol (plus any custom role). Each role gets *No access / View only / Manage* per area (membership, team, enquiries, support & payments, SACCO, schedule, awards, invitations, news, website, settings, users).
+- Assign a role when creating an admin or change it in the Admin Users table. The sidebar hides what a role cannot open; view-only roles cannot save, delete or send anything. Existing admins stay Administrators.
+
+## Award invitations (Admin → Award invitations)
+1. Create an invitation, upload your PDF invitation, write the email (placeholders {full_name}, {event}, {date}, {venue}).
+2. Set where the name goes (mm from the top-left) and open the preview until it sits right.
+3. Add guests: paste “Title | Name | Email | Organisation” lines (or upload a CSV, or add all approved members).
+4. Send a test, then send in batches of 25. Guests get a personalised PDF and Yes/No buttons; replies show on the Send & responses tab and in the CSV export.
+- The PDF is personalised by adding the text to the template (the original is untouched). Encrypted PDFs can't be edited; they are attached unchanged.

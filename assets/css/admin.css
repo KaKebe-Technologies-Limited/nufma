@@ -335,3 +335,10 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 .stat-row div{background:#fff;border:1px solid #e4e0d6;border-radius:12px;padding:14px 16px}.stat-row b{display:block;font-size:1.6rem;line-height:1.1}.stat-row span{font-size:.78rem;color:#6b6459;text-transform:uppercase;letter-spacing:.05em}
 .progress{height:10px;background:#eee9dc;border-radius:99px;overflow:hidden;margin:8px 0}.progress i{display:block;height:100%;background:linear-gradient(90deg,#c8a03c,#8a6a1c)}
 @media(max-width:1000px){.edit-grid{grid-template-columns:1fr}}
+
+/* roles */
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:6px}
+.perm{display:flex;flex-direction:column;gap:6px;border:1px solid #e4e0d6;border-radius:12px;padding:10px 12px;background:#fff;font-size:.82rem;font-weight:700;border-left:5px solid #d9d4c7}
+.perm--1{border-left-color:#2f6f8f;background:#f3f8fb}.perm--2{border-left-color:#c8a03c;background:#fff8e6}.perm--0{opacity:.8}
+.perm select{padding:6px 8px;border:1px solid #e4e0d6;border-radius:8px;font-weight:600;font-size:.8rem}
+.role-card .admin-card-head h2 small{font-weight:500}

@@ -41,6 +41,8 @@ $__ico += [
     'schedule'   => '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     'awardsetup' => '<path d="M12 3l2.600 5.300 5.800.800-4.200 4.100 1 5.800L12 16.300 6.800 19l1-5.800L3.600 9.100l5.800-.800L12 3Z"/>',
     'newsletters' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6" stroke-linecap="round"/>',
+    'invitations' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 8l9 5 9-5M8 16h3" stroke-linecap="round"/>',
+    'roles'      => '<path d="M12 3l8 3v6c0 4.500-3.400 7.800-8 9-4.600-1.200-8-4.500-8-9V6l8-3Z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/>',
     'saccoadm'   => '<ellipse cx="9" cy="7" rx="6" ry="3"/><path d="M3 7v5c0 1.700 2.700 3 6 3s6-1.300 6-3V7M15 11.500c3 0 6 1 6 2.500v3c0 1.700-3 3-6.500 3"/>',
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
@@ -73,14 +75,21 @@ $__nav = [
     'Awards & people' => [
         ['awards', 'award-editions.php', 'Award Editions'],
         ['awardsetup', 'awards-setup.php', 'Awards setup'],
+        ['invitations', 'invitations.php', 'Award invitations'],
         ['team', 'team.php', 'Leadership'],
         ['partners', 'partners.php', 'Partners'],
     ],
     'System' => [
         ['settings', 'settings.php', 'Site Settings'],
         ['users', 'users.php', 'Admin Users'],
+        ['roles', 'roles.php', 'Roles & permissions'],
     ],
 ];
+// hide what this role cannot open
+foreach ($__nav as $__g => $__its) {
+    $__nav[$__g] = array_values(array_filter($__its, fn($i) => $i && admin_can_file($i[1])));
+    if (!$__nav[$__g]) unset($__nav[$__g]);
+}
 $__initial = strtoupper(mb_substr($_SESSION['admin_name'] ?? 'A', 0, 1));
 ?><!doctype html>
 <html lang="en">
@@ -139,7 +148,7 @@ $__initial = strtoupper(mb_substr($_SESSION['admin_name'] ?? 'A', 0, 1));
         <div class="admin-user" id="adminUser">
           <button type="button" class="admin-user-btn" aria-haspopup="true" aria-expanded="false">
             <span class="admin-avatar"><?php echo htmlspecialchars($__initial); ?></span>
-            <span class="admin-user-name"><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?></span>
+            <span class="admin-user-name"><?php echo htmlspecialchars($_SESSION['admin_name'] ?? 'Admin'); ?><small style="display:block;font-size:.68rem;opacity:.7;font-weight:600"><?php echo htmlspecialchars(admin_role_label()); ?></small></span>
           </button>
           <div class="admin-user-menu">
             <a href="account.php">My account</a>

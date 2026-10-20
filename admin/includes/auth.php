@@ -31,6 +31,19 @@ $__row = $__me->get_result()->fetch_assoc();
 if (!$__row) { session_unset(); session_destroy(); header("Location: login.php"); exit; }
 $_SESSION['admin_name'] = $__row['display_name'] ?: 'Admin';
 
+// Roles & permissions: each admin page belongs to a module; viewing needs 'view', changing anything needs 'manage'.
+require_once __DIR__ . "/../../includes/roles.php";
+roles_install($conn);
+admin_load_role($conn, $_SESSION['admin_id']);
+$__file = basename($_SERVER['SCRIPT_NAME']);
+$__mod = admin_page_modules()[$__file] ?? null;
+$__changing = $_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['delete']) || isset($_GET['toggle']) || isset($_GET['read']) || isset($_GET['remove']) || isset($_GET['activate']);
+if ($__mod !== null && !admin_can($__mod, $__changing ? ROLE_MANAGE : ROLE_VIEW)) {
+    http_response_code(403);
+    $__ml = admin_modules()[$__mod][0];
+    exit('<!doctype html><meta charset="utf-8"><title>Not allowed</title><body style="font-family:system-ui;max-width:540px;margin:80px auto;padding:0 20px"><h2>You don\'t have access to this</h2><p>Your role (<b>' . htmlspecialchars(admin_role_label()) . '</b>) ' . ($__changing && admin_can($__mod, ROLE_VIEW) ? 'can view but not change' : 'cannot open') . ' <b>' . htmlspecialchars($__ml) . '</b>. Ask an administrator if you need this permission.</p><p><a href="index.php">&larr; Back to the dashboard</a></p></body>');
+}
+
 // CSRF: every POST must carry the token; destructive GET links must carry ?t=
 $__destructive = isset($_GET['delete']) || isset($_GET['toggle']) || isset($_GET['read']) || isset($_GET['remove']) || isset($_GET['activate']);
 if (($_SERVER['REQUEST_METHOD'] === 'POST' && !admin_token_ok($_POST['csrf'] ?? null))
