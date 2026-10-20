@@ -147,9 +147,12 @@ $dropdownToggle = function ($label) { return '<button type="button" class="caret
   <ul>
     <?php foreach ($menu as $item): $has = !empty($item['children']); ?>
     <li>
-      <?php if ($has): ?>
-        <a href="#" data-toggle-sub onclick="return false;"><?php echo $hx($item['label']) . ' ' . nufa_icon('down', 16); ?></a>
-        <div class="mobile-sub"><a href="<?php echo nufa_href($item['url']); ?>"><?php echo $hx($item['label']); ?></a><?php foreach ($item['children'] as $c): ?><a href="<?php echo nufa_href($c['url']); ?>"><?php echo $hx($c['label']); ?></a><?php endforeach; ?></div>
+      <?php if ($has):
+        $kids = $item['children'];
+        $dup = nufa_href($kids[0]['url']) === nufa_href($item['url']);   // first child repeats the parent link: don't list it twice
+        $open = count($kids) + ($dup ? 0 : 1) <= 3;                      // short sub-menus (e.g. Contact → Calendar) start open so nothing is hidden ?>
+        <a href="<?php echo nufa_href($item['url']); ?>" data-toggle-sub class="<?php echo $open ? 'is-open' : ''; ?>" onclick="return false;"><?php echo $hx($item['label']) . ' ' . nufa_icon('down', 16); ?></a>
+        <div class="mobile-sub<?php echo $open ? ' is-open' : ''; ?>"><?php if (!$dup): ?><a href="<?php echo nufa_href($item['url']); ?>"><?php echo $hx($item['label']); ?></a><?php endif; foreach ($kids as $c): ?><a href="<?php echo nufa_href($c['url']); ?>"><?php echo $hx($c['label']); ?></a><?php endforeach; ?></div>
       <?php else: ?><a href="<?php echo nufa_href($item['url']); ?>"<?php echo nufa_link_attrs($item); ?>><?php echo $hx($item['label']); ?></a><?php endif; ?>
     </li>
     <?php endforeach; ?>
