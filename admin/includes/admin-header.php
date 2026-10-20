@@ -31,6 +31,7 @@ if (isset($conn)) {
     $__q = $conn->query("SELECT COUNT(*) c FROM messages"); if ($__q) $__msgs = (int)$__q->fetch_assoc()['c'];
 }
 $__ico += [
+    'pages'      => '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5" stroke-linecap="round"/>',
     'map'        => '<path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2V6Z"/><path d="M9 4v14M15 6v14"/>',
     'menus'      => '<path d="M4 6h16M4 12h16M4 18h10" stroke-linecap="round"/>',
     'appearance' => '<circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="15.5" cy="10" r="1.2"/><path d="M12 21c-1.500 0-2-1-2-2s1-2 2-2h2c1.500 0 3-1 3-3"/>',
@@ -48,6 +49,7 @@ $__nav = [
         $__subs > 0 ? ['subscribers', 'subscribers.php', 'Subscribers (earlier)'] : null,
     ])),
     'Website content' => [
+        ['pages', 'pages.php', 'Page Editor'],
         ['map', 'website-map.php', 'Website Map'],
         ['content', 'content.php', 'Page Content'],
         ['menus', 'menus.php', 'Menus & Footer'],

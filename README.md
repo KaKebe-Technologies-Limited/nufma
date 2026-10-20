@@ -53,6 +53,7 @@ Sign in to `/admin/`. Everything a staff member needs is in the sidebar:
 
 | Need to change… | Go to |
 |---|---|
+| **Change anything on one page** (text, images, sections, forms, search/share) | **Page Editor** — pick a page, then use its tabs |
 | **Not sure where something is?** | **Website Map** — lists every page, what is on it and a link to edit each part |
 | Logo, favicon, share image, brand colours, contact bar | **Appearance & Branding** |
 | Header/footer menus and footer links | **Menus & Footer** |

@@ -10,6 +10,7 @@ require_once __DIR__ . "/settings.php";
 require_once __DIR__ . "/icons.php";
 require_once __DIR__ . "/fonts.php";
 require_once __DIR__ . "/menu.php";
+require_once __DIR__ . "/sections.php";
 require_once __DIR__ . "/content.php";
 
 $cfg = nufa_site_settings($conn);
@@ -29,6 +30,9 @@ $font = nufa_get_font_preset($conn);
 $menu = nufa_menu($conn, 'header');
 $sameAs = array_values(array_filter([$cfg['facebook_url'], $cfg['instagram_url'], $cfg['x_url'], $cfg['linkedin_url'], $cfg['youtube_url']]));
 $cssVer = @filemtime(__DIR__ . '/../assets/css/site.css');
+$__pgKey = nufa_registry_key_by_file(basename($_SERVER['SCRIPT_NAME']));
+if ($__pgKey !== '' && ($cfg["noindex_$__pgKey"] ?? '0') === '1') $noindex = true;
+if ($__pgKey !== '' && !empty($cfg["seo_image_$__pgKey"]) && is_file(__DIR__ . '/../assets/images/' . $cfg["seo_image_$__pgKey"])) $ogImage = 'assets/images/' . $cfg["seo_image_$__pgKey"];
 $logoRel = ($cfg['site_logo'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_logo'])) ? $cfg['site_logo'] : 'logo/nufa-logo.png';
 $faviconHref = ($cfg['site_favicon'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_favicon'])) ? 'assets/images/' . $cfg['site_favicon'] : 'assets/images/logo/favicon.svg';
 $gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold']) ? $cfg['brand_gold'] : '#D4AF63';

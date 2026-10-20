@@ -18,7 +18,7 @@ foreach (['capacity-building', 'awards', 'mentorship', 'screenings-outreach', 'c
 }
 $heroSlides = array_values(array_filter($conn->query("SELECT image FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC, id ASC LIMIT 4")->fetch_all(MYSQLI_ASSOC), fn($s) => is_file(__DIR__ . '/assets/images/' . $s['image'])));
 if (!$heroSlides) $heroSlides = [['image' => 'production/karamoja-shoot-1.webp']];
-$news = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 ORDER BY is_featured DESC, published_at DESC LIMIT 3")->fetch_all(MYSQLI_ASSOC);
+$news = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 ORDER BY is_featured DESC, published_at DESC LIMIT " . max(1, min(6, (int)nufa_fn('home', 'news_count'))))->fetch_all(MYSQLI_ASSOC);
 usort($news, fn($a, $b) => strtotime($b['published_at']) <=> strtotime($a['published_at']));
 $indicators = [];
 for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{$i}_label"] !== '') $indicators[] = [$cfg["impact{$i}_value"], $cfg["impact{$i}_label"]];
@@ -44,7 +44,7 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
 </section>
 
 <!-- WHO WE ARE -->
-<section class="section" id="who-we-are">
+<?php if (nufa_show('home', 'who')): ?><section class="section" id="who-we-are">
   <div class="container split">
     <div data-reveal>
       <div class="eyebrow"><?php echo cms_t('home', 'who_eyebrow'); ?></div>
@@ -56,10 +56,10 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
       <img src="assets/images/<?php echo cms_img('home', 'who_image'); ?>" alt="Filmmakers on location in Northern Uganda working with a camera crew" width="1200" height="900" loading="lazy">
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
 <!-- NUFA AWARDS FEATURE -->
-<section class="section feature-band section--black" aria-labelledby="awards-feature">
+<?php if (nufa_show('home', 'awards')): ?><section class="section feature-band section--black" aria-labelledby="awards-feature">
   <div class="bg"><img src="assets/images/<?php echo cms_img('home', 'awards_image'); ?>" alt="" loading="lazy"></div>
   <div class="container">
     <div style="max-width:680px" data-reveal>
@@ -73,10 +73,10 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
       </div>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
 <!-- PROGRAMMES -->
-<section class="section section--soft" id="programmes">
+<?php if (nufa_show('home', 'programmes')): ?><section class="section section--soft" id="programmes">
   <div class="container">
     <div class="section-head center" data-reveal>
       <div class="eyebrow"><?php echo ui_e('What we do'); ?></div>
@@ -95,10 +95,10 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
     </div>
     <p class="center mt-2"><a href="programmes.php" class="btn btn-outline-dark">View all programmes</a></p>
   </div>
-</section>
+</section><?php endif; ?>
 
 <!-- OUR IMPACT -->
-<section class="section section--dark" id="impact">
+<?php if (nufa_show('home', 'impact')): ?><section class="section section--dark" id="impact">
   <div class="container">
     <div class="section-head" data-reveal>
       <div class="eyebrow">Our Impact</div>
@@ -115,10 +115,10 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
     <div class="indicator-row" data-reveal><?php foreach ($indicators as [$v, $l]): ?><div class="indicator"><b><?php echo ui_e($v); ?></b><span><?php echo ui_e($l); ?></span></div><?php endforeach; ?></div>
     <?php endif; ?>
   </div>
-</section>
+</section><?php endif; ?>
 
 <!-- PARTNERSHIP -->
-<section class="section feature-band section--black" aria-labelledby="partner-feature">
+<?php if (nufa_show('home', 'partnership')): ?><section class="section feature-band section--black" aria-labelledby="partner-feature">
   <div class="bg"><img src="assets/images/<?php echo cms_img('home', 'partner_image'); ?>" alt="" loading="lazy"></div>
   <div class="container">
     <div style="max-width:700px" data-reveal>
@@ -128,10 +128,10 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
       <p class="mt-2"><a href="partners.php" class="btn btn-gold">Partner With NUFA</a></p>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
 <!-- NEWS -->
-<section class="section" id="news">
+<?php if (nufa_show('home', 'news')): ?><section class="section" id="news">
   <div class="container">
     <div class="section-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;max-width:none" data-reveal>
       <div><div class="eyebrow">News &amp; Stories</div><h2 class="mb-0"><?php echo cms_t('home', 'news_heading'); ?></h2></div>
@@ -157,11 +157,11 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
     </div>
     <?php endif; ?>
   </div>
-</section>
+</section><?php endif; ?>
 
 <!-- MEMBERSHIP CTA -->
-<section class="section--tight section--soft">
+<?php if (nufa_show('home', 'cta')): ?><section class="section--tight section--soft">
   <div class="container"><?php echo ui_cta_band(cms_value('home', 'cta_title'), cms_value('home', 'cta_text'), cms_value('home', 'cta_btn1_label'), cms_value('home', 'cta_btn1_url'), cms_value('home', 'cta_btn2_label'), cms_value('home', 'cta_btn2_url')); ?></div>
-</section>
+</section><?php endif; ?>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>

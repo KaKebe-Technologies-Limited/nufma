@@ -7,6 +7,8 @@ require_once __DIR__ . "/includes/ui.php";
 $orgTypes = nufa_list($cfg0 = nufa_site_settings($conn), 'list_org_types');
 $interests = nufa_list($cfg0, 'list_partner_interests');
 $errors = []; $sent = isset($_GET['sent']);
+$fc = nufa_form_cfg('partners');
+if (!$fc['enabled'] && $_SERVER['REQUEST_METHOD'] === 'POST') $_SERVER['REQUEST_METHOD'] = 'GET';   // form switched off in the Page Editor
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($g = form_guard($conn, 'partner')) $errors[] = $g;
     $org = form_clean($_POST['organisation'] ?? '', 190); $person = form_clean($_POST['name'] ?? '', 150); $email = strtolower(form_clean($_POST['email'] ?? '', 190));
@@ -48,7 +50,7 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
     '<a href="#enquiry" class="btn btn-gold">Partnership enquiry</a><a href="#enquiry" class="btn btn-outline">Request a sponsorship proposal</a>');
 ?>
 
-<section class="section">
+<?php if (nufa_show('partners', 'opportunities')): ?><section class="section">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Partnership opportunities</div><h2><?php echo cms_t('partners', 'opps_heading'); ?></h2><p><?php echo cms_t('partners', 'why_body'); ?></p></div>
     <div class="grid grid-3" data-reveal-stagger>
@@ -56,9 +58,9 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
     </div>
     <p class="center muted mt-2"><?php echo cms_t('partners', 'formats_note'); ?></p>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section section--soft">
+<?php if (nufa_show('partners', 'wall')): ?><section class="section section--soft">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Our partners</div><h2><?php echo cms_t('partners', 'partners_heading'); ?></h2></div>
     <?php if ($current):
@@ -75,9 +77,9 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
       <div class="partner-wall"><?php foreach ($previous as $p) echo $tile($p); ?></div>
     <?php endif; ?>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section" id="enquiry">
+<?php if (nufa_show('partners', 'enquiry')): ?><section class="section" id="enquiry">
   <div class="container member-grid" style="grid-template-columns:.8fr 1.3fr">
     <aside class="member-side" data-reveal>
       <h3>Start a conversation</h3>
@@ -87,8 +89,9 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
     </aside>
     <div class="form-card" data-reveal>
       <h2 style="font-size:1.6rem">Partnership enquiry</h2>
-      <?php echo form_banner($sent, $errors, "Your partnership enquiry has been received. The NUFA team will be in touch."); ?>
-      <?php if (!$sent): ?>
+      <?php if ($fc['intro'] !== ''): ?><p class="muted" style="margin-bottom:18px"><?php echo ui_e($fc['intro']); ?></p><?php endif; ?>
+      <?php echo form_banner($sent, $errors, $fc['success']); ?>
+      <?php if (!$fc['enabled']): ?><div class="alert err" role="status"><?php echo ui_e($fc['closed']); ?></div><?php elseif (!$sent): ?>
       <form method="post" action="partners.php#enquiry">
         <?php echo form_open_fields(); ?>
         <div class="form-grid">
@@ -103,10 +106,10 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
         <?php echo f_textarea('message', 'Message', ['maxlength' => 3000]); ?>
         <?php echo f_check('want_proposal', 'Please send me a sponsorship proposal.', false); ?>
         <?php echo f_check('consent', 'I consent to NUFA contacting me about this enquiry and have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a>.'); ?>
-        <button class="btn btn-gold btn-block" type="submit">Send enquiry</button>
+        <button class="btn btn-gold btn-block" type="submit"><?php echo ui_e($fc['button']); ?></button>
       </form>
       <?php endif; ?>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 <?php include __DIR__ . "/includes/footer.php"; ?>

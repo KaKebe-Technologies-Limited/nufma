@@ -6,6 +6,8 @@ require_once __DIR__ . "/includes/ui.php";
 
 $roles = nufa_list(nufa_site_settings($conn), 'list_network_roles');
 $errors = []; $sent = isset($_GET['sent']);
+$fc = nufa_form_cfg('network');
+if (!$fc['enabled'] && $_SERVER['REQUEST_METHOD'] === 'POST') $_SERVER['REQUEST_METHOD'] = 'GET';   // form switched off in the Page Editor
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($g = form_guard($conn, 'network')) $errors[] = $g;
     $name = form_clean($_POST['name'] ?? '', 150); $email = strtolower(form_clean($_POST['email'] ?? '', 190)); $phone = form_clean($_POST['phone'] ?? '', 40);
@@ -34,9 +36,9 @@ $catIcons = ['film', 'compass', 'pen', 'users', 'camera', 'star', 'mic', 'bulb',
 $cats = [];
 foreach (nufa_list(['x' => cms_value('network', 'cats_list')], 'x') as $i => $label) $cats[] = [$catIcons[$i % count($catIcons)], $label];
 ?>
-<section class="section--tight"><div class="container"><div class="status-banner" role="note"><?php echo nufa_icon('compass', 26); ?><div><b>Planned feature:</b> <?php echo cms_t('network', 'status_text'); ?></div></div></div></section>
+<?php if (nufa_show('network', 'status')): ?><section class="section--tight"><div class="container"><div class="status-banner" role="note"><?php echo nufa_icon('compass', 26); ?><div><b>Planned feature:</b> <?php echo cms_t('network', 'status_text'); ?></div></div></div></section><?php endif; ?>
 
-<section class="section">
+<?php if (nufa_show('network', 'categories')): ?><section class="section">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Who will be listed</div><h2><?php echo cms_t('network', 'who_heading'); ?></h2><p><?php echo cms_t('network', 'privacy_note'); ?></p></div>
     <div class="grid grid-4" data-reveal-stagger>
@@ -47,15 +49,16 @@ foreach (nufa_list(['x' => cms_value('network', 'cats_list')], 'x') as $i => $la
       <div data-reveal><h3>How it will work</h3><ol class="steps"><li><b>Register your interest</b>Tell us about your craft and how you would like to be listed.</li><li><b>Verification</b>NUFA verifies each profile before anything is published.</li><li><b>You stay in control</b>Private contact details are shown only with your explicit consent.</li></ol></div>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section section--soft" id="interest">
+<?php if (nufa_show('network', 'interest')): ?><section class="section section--soft" id="interest">
   <div class="container member-grid" style="grid-template-columns:.8fr 1.3fr">
     <div data-reveal><div class="eyebrow">Registration of interest</div><h2>Be part of the network</h2><p class="lede">Registering interest does not publish a profile and does not make you a NUFA member. We will contact you when the directory is ready to onboard profiles.</p>
       <a href="membership.php" class="link-arrow">Looking for membership instead?</a></div>
     <div class="form-card" data-reveal>
-      <?php echo form_banner($sent, $errors, "Your interest has been recorded. We will contact you when the network opens."); ?>
-      <?php if (!$sent): ?>
+      <?php if ($fc['intro'] !== ''): ?><p class="muted" style="margin-bottom:18px"><?php echo ui_e($fc['intro']); ?></p><?php endif; ?>
+      <?php echo form_banner($sent, $errors, $fc['success']); ?>
+      <?php if (!$fc['enabled']): ?><div class="alert err" role="status"><?php echo ui_e($fc['closed']); ?></div><?php elseif (!$sent): ?>
       <form method="post" action="network.php#interest">
         <?php echo form_open_fields(); ?>
         <div class="form-grid">
@@ -69,10 +72,10 @@ foreach (nufa_list(['x' => cms_value('network', 'cats_list')], 'x') as $i => $la
         </div>
         <?php echo f_textarea('message', 'Short professional profile', ['placeholder' => 'Tell us about your work in film.', 'maxlength' => 2000]); ?>
         <?php echo f_check('consent', 'I consent to NUFA contacting me about the industry network and have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a>.'); ?>
-        <button class="btn btn-gold btn-block" type="submit">Register interest</button>
+        <button class="btn btn-gold btn-block" type="submit"><?php echo ui_e($fc['button']); ?></button>
       </form>
       <?php endif; ?>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 <?php include __DIR__ . "/includes/footer.php"; ?>

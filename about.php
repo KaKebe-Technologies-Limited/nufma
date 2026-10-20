@@ -20,7 +20,7 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
     '<a href="membership.php" class="btn btn-gold">Become a Member</a><a href="programmes.php" class="btn btn-outline">Our Programmes</a>');
 ?>
 
-<section class="section" id="story">
+<?php if (nufa_show('about', 'story')): ?><section class="section" id="story">
   <div class="container split">
     <div data-reveal>
       <div class="eyebrow">Our Story</div>
@@ -31,9 +31,9 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
       <img src="assets/images/<?php echo cms_img('about', 'story_image'); ?>" alt="A woman from Northern Uganda in traditional dress" width="1200" height="1500" loading="lazy">
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section section--soft" id="vision">
+<?php if (nufa_show('about', 'vision')): ?><section class="section section--soft" id="vision">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Direction</div><h2>Vision &amp; Mission</h2></div>
     <div class="vm-grid" data-reveal-stagger>
@@ -41,9 +41,9 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
       <div class="vm-card"><h3>Our Mission</h3><p><?php echo cms_t('about', 'mission_text'); ?></p><?php if ($draft): ?><span class="draft-flag">Draft — pending leadership approval</span><?php endif; ?></div>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section" id="values">
+<?php if (nufa_show('about', 'values')): ?><section class="section" id="values">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">What guides us</div><h2>Our Core Values</h2></div>
     <div class="grid grid-4" data-reveal-stagger>
@@ -52,9 +52,9 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
       <?php endfor; ?>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section section--dark" id="leadership">
+<?php if (nufa_show('about', 'leadership')): ?><section class="section section--dark" id="leadership">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Leadership &amp; Governance</div><h2>The people guiding NUFA</h2><p><?php echo cms_t('about', 'leadership_note'); ?></p></div>
     <?php if (!$team): ?>
@@ -82,9 +82,9 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
     <?php endforeach; ?>
     <?php endif; ?>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section" id="membership">
+<?php if (nufa_show('about', 'membership')): ?><section class="section" id="membership">
   <div class="container split">
     <div data-reveal>
       <div class="eyebrow">Membership</div>
@@ -97,8 +97,8 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
       <?php echo ui_steps(cms_value('about', 'membership_steps')); ?>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('about', 'cta_title'), cms_value('about', 'cta_text'), cms_value('about', 'cta_btn1_label'), cms_value('about', 'cta_btn1_url'), cms_value('about', 'cta_btn2_label'), cms_value('about', 'cta_btn2_url')); ?></div></section>
+<?php if (nufa_show('about', 'cta')): ?><section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('about', 'cta_title'), cms_value('about', 'cta_text'), cms_value('about', 'cta_btn1_label'), cms_value('about', 'cta_btn1_url'), cms_value('about', 'cta_btn2_label'), cms_value('about', 'cta_btn2_url')); ?></div></section><?php endif; ?>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>

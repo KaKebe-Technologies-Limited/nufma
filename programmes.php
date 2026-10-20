@@ -11,7 +11,7 @@ $progs = $conn->query("SELECT * FROM programmes WHERE is_active=1 ORDER BY sort_
 echo ui_page_hero('Programmes & Projects', cms_value('programmes', 'hero_title'), cms_value('programmes', 'hero_lede'), cms_img_raw('programmes', 'hero_image'), [['Programmes']],
     '<a href="contact.php?topic=Programmes" class="btn btn-gold">Programme enquiries</a><a href="membership.php" class="btn btn-outline">Become a Member</a>');
 ?>
-<section class="section">
+<?php if (nufa_show('programmes', 'list')): ?><section class="section">
   <div class="container">
     <div class="notice" data-reveal style="margin-bottom:44px"><span><?php echo nufa_icon('shield', 22); ?></span><div><b>About programme status</b><br><?php echo cms_t('programmes', 'status_note'); ?></div></div>
     <?php if (!$progs): ?>
@@ -37,6 +37,6 @@ echo ui_page_hero('Programmes & Projects', cms_value('programmes', 'hero_title')
     </div>
     <?php endif; ?>
   </div>
-</section>
-<section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('programmes', 'cta_title'), cms_value('programmes', 'cta_text'), cms_value('programmes', 'cta_btn1_label'), cms_value('programmes', 'cta_btn1_url'), cms_value('programmes', 'cta_btn2_label'), cms_value('programmes', 'cta_btn2_url')); ?></div></section>
+</section><?php endif; ?>
+<?php if (nufa_show('programmes', 'cta')): ?><section class="section--tight section--soft"><div class="container"><?php echo ui_cta_band(cms_value('programmes', 'cta_title'), cms_value('programmes', 'cta_text'), cms_value('programmes', 'cta_btn1_label'), cms_value('programmes', 'cta_btn1_url'), cms_value('programmes', 'cta_btn2_label'), cms_value('programmes', 'cta_btn2_url')); ?></div></section><?php endif; ?>
 <?php include __DIR__ . "/includes/footer.php"; ?>

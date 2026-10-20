@@ -285,3 +285,19 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 .brand-preview img{max-height:60px;max-width:200px;object-fit:contain}
 .palette-preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .palette-preview span{padding:14px 22px;font-weight:700;font-size:.84rem}
+
+/* page editor */
+.pe-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:14px}.pe-head h2{font-size:1.5rem;margin-top:4px}
+.pe-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.pe-card .admin-card-head{margin-bottom:10px}.pe-card{margin-bottom:0}
+.pe-facts{list-style:none;margin:0 0 16px;display:grid;gap:7px;font-size:.86rem;color:var(--text-muted)}.pe-facts b{color:var(--ink)}
+.pe-group{background:#fff;border-radius:6px;box-shadow:0 2px 14px rgba(20,17,12,.06);margin-bottom:12px}
+.pe-group summary{padding:16px 22px;cursor:pointer;font-family:var(--font-heading);font-weight:800;font-size:.98rem;display:flex;align-items:center;gap:10px;list-style:none}
+.pe-group summary::-webkit-details-marker{display:none}.pe-group summary::before{content:"▸";color:var(--brand-600);transition:transform .2s}
+.pe-group[open] summary::before{transform:rotate(90deg)}.pe-group-body{padding:4px 22px 10px;border-top:1px solid var(--line)}
+.pe-group-body .field{margin-top:16px}
+.pe-image{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.pe-image img{height:70px;max-width:200px;object-fit:cover;border:1px solid var(--line)}
+.pe-section{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}.pe-section:last-child{border-bottom:0}
+.pe-section input{width:auto!important}.pe-section .admin-badge{margin-left:auto}
+.pe-num{width:28px;height:28px;border-radius:50%;background:var(--cream-2);display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.8rem}
+.serp{border:1px solid var(--line);padding:16px 18px;background:#fff;max-width:640px}.serp-url{font-size:.78rem;color:#4d5156}.serp-title{font-size:1.15rem;color:#1a0dab;margin:3px 0}.serp-desc{font-size:.86rem;color:#4d5156}

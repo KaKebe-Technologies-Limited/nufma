@@ -29,7 +29,7 @@ $videos = $conn->query("SELECT * FROM videos WHERE is_active=1 ORDER BY sort_ord
 echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'), cms_value('gallery', 'hero_lede'), cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Gallery & Video']],
     '<a href="#photos" class="btn btn-gold">Photo gallery</a><a href="#videos" class="btn btn-outline">Video library</a>');
 ?>
-<section class="section" id="photos">
+<?php if (nufa_show('gallery', 'photos')): ?><section class="section" id="photos">
   <div class="container-wide">
     <div class="section-head" style="margin-inline:var(--gutter)"><div class="eyebrow">Photographs</div><h2>Photo gallery</h2><p><?php echo cms_t('gallery', 'credit_note'); ?></p></div>
     <div class="filter-bar" style="margin-inline:var(--gutter)" role="tablist" aria-label="Filter photographs">
@@ -45,9 +45,9 @@ echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'),
       <?php endforeach; ?>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section section--dark" id="videos">
+<?php if (nufa_show('gallery', 'videos')): ?><section class="section section--dark" id="videos">
   <div class="container">
     <div class="section-head"><div class="eyebrow">Video library</div><h2>Video highlights</h2><p>Videos are embedded from NUFA's official channels once approved for publication.</p></div>
     <?php if (!$videos): ?>
@@ -61,5 +61,5 @@ echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'),
     </div>
     <?php endif; ?>
   </div>
-</section>
+</section><?php endif; ?>
 <?php include __DIR__ . "/includes/footer.php"; ?>

@@ -9,7 +9,9 @@
  * Submissions are stored in the `enquiries` table (admin → Enquiries) and the
  * NUFA inbox is notified by email where the host can send mail.
  */
-require_once __DIR__ . "/membership.php";   // mem_csrf(), mem_send(), mem_settings()
+require_once __DIR__ . "/membership.php";
+require_once __DIR__ . "/sections.php";
+require_once __DIR__ . "/settings.php";   // mem_csrf(), mem_send(), mem_settings()
 require_once __DIR__ . "/schema.php";
 
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
@@ -59,11 +61,14 @@ function form_save($conn, $type, $topic, $name, $org, $email, $phone, $message, 
     $id = $conn->insert_id;
 
     $S = mem_settings($conn);
-    if ($S['notify_admin'] === '1' && $S['admin_notify_email']) {
+    $pageOf = ['contact' => 'contact', 'partner' => 'partners', 'sacco' => 'sacco', 'network' => 'network'][$type] ?? $type;
+    $fcfg = nufa_form_cfg($pageOf);
+    $notifyTo = filter_var($fcfg['notify'], FILTER_VALIDATE_EMAIL) ? $fcfg['notify'] : $S['admin_notify_email'];
+    if ($S['notify_admin'] === '1' && $notifyTo) {
         $label = ['contact' => 'Contact enquiry', 'partner' => 'Partnership enquiry', 'sacco' => 'SACCO expression of interest', 'network' => 'Industry network interest'][$type] ?? 'Enquiry';
         $url = mem_site_url() . '/admin/enquiry-view.php?id=' . $id;
         $body = "$label from $name <$email>" . ($org ? " ($org)" : '') . "\n\n" . ($topic ? "Topic: $topic\n" : '') . ($message ? "\n$message\n" : '') . ($detailText ? "\n$detailText\n" : '') . "\nView in the dashboard: $url";
-        mem_send($conn, null, 'enquiry', $S['admin_notify_email'], "$label — $name", $body, $url, $email);
+        mem_send($conn, null, 'enquiry', $notifyTo, "$label — $name", $body, $url, $email);
     }
     return $id;
 }

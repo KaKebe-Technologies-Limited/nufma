@@ -6,6 +6,8 @@ require_once __DIR__ . "/includes/ui.php";
 
 $topics = nufa_list(nufa_site_settings($conn), 'list_contact_topics');
 $errors = []; $sent = isset($_GET['sent']);
+$fc = nufa_form_cfg('contact');
+if (!$fc['enabled'] && $_SERVER['REQUEST_METHOD'] === 'POST') $_SERVER['REQUEST_METHOD'] = 'GET';   // form switched off in the Page Editor
 if (!isset($_POST['topic']) && isset($_GET['topic'])) {
     foreach ($topics as $t) if (stripos($t, (string)$_GET['topic']) === 0) $_POST['topic_prefill'] = $t;
 }
@@ -36,8 +38,8 @@ echo ui_page_hero('Contact', cms_value('contact', 'hero_title'), cms_value('cont
 $defaultTopic = $_POST['topic'] ?? ($_POST['topic_prefill'] ?? '');
 ?>
 <section class="section">
-  <div class="container member-grid" style="grid-template-columns:.8fr 1.3fr">
-    <aside class="member-side" data-reveal>
+  <div class="container member-grid" style="<?php echo nufa_fn_on('contact', 'show_details') ? 'grid-template-columns:.8fr 1.3fr' : 'grid-template-columns:1fr;max-width:760px'; ?>">
+    <?php if (nufa_fn_on('contact', 'show_details')): ?><aside class="member-side" data-reveal>
       <h3>Northern Uganda Filmmakers Association (NUFA)</h3>
       <ul style="display:grid;gap:20px;margin-top:24px">
         <li style="display:flex;gap:14px"><span class="icon-circle"><?php echo nufa_icon('pin', 22); ?></span><span><b style="display:block">Visit</b><?php echo ui_e($cfg['site_address']); ?></span></li>
@@ -51,13 +53,14 @@ $defaultTopic = $_POST['topic'] ?? ($_POST['topic_prefill'] ?? '');
         <?php foreach (['x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram'], 'linkedin_url' => ['LinkedIn', 'linkedin'], 'youtube_url' => ['YouTube', 'youtube']] as $k => [$l, $ic]) if ($cfg[$k] !== ''): ?>
           <a href="<?php echo ui_e($cfg[$k]); ?>" target="_blank" rel="noopener" aria-label="<?php echo $l; ?>"><?php echo nufa_icon($ic, 16); ?></a><?php endif; ?>
       </div>
-    </aside>
+    </aside><?php endif; ?>
 
     <div class="form-card" id="form" data-reveal>
       <h2 style="font-size:1.6rem">Send us a message</h2>
       <p class="muted">We aim to respond as soon as we can. Fields marked <span class="req" style="color:var(--err)">*</span> are required.</p>
-      <?php echo form_banner($sent, $errors, "Your message has been sent. The NUFA team will get back to you."); ?>
-      <?php if (!$sent): ?>
+      <?php if ($fc['intro'] !== ''): ?><p class="muted" style="margin-bottom:18px"><?php echo ui_e($fc['intro']); ?></p><?php endif; ?>
+      <?php echo form_banner($sent, $errors, $fc['success']); ?>
+      <?php if (!$fc['enabled']): ?><div class="alert err" role="status"><?php echo ui_e($fc['closed']); ?></div><?php elseif (!$sent): ?>
       <form method="post" action="contact.php<?php echo isset($_GET['ref']) ? '?ref=' . urlencode($_GET['ref']) : ''; ?>#form">
         <?php echo form_open_fields(); ?>
         <div class="form-grid">
@@ -68,7 +71,7 @@ $defaultTopic = $_POST['topic'] ?? ($_POST['topic_prefill'] ?? '');
         </div>
         <?php echo f_textarea('message', 'Message', ['required' => true, 'placeholder' => 'How can NUFA help?']); ?>
         <?php echo f_check('consent', 'I have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a> and agree to NUFA contacting me about this enquiry.'); ?>
-        <button class="btn btn-gold btn-block" type="submit">Send message</button>
+        <button class="btn btn-gold btn-block" type="submit"><?php echo ui_e($fc['button']); ?></button>
       </form>
       <?php endif; ?>
     </div>

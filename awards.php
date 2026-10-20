@@ -18,7 +18,7 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
     '<a href="#archive" class="btn btn-gold">Explore the Archive</a><a href="contact.php?topic=Awards" class="btn btn-outline">Awards enquiries</a>');
 ?>
 
-<section class="section">
+<?php if (nufa_show('awards', 'purpose')): ?><section class="section">
   <div class="container split">
     <div data-reveal>
       <div class="eyebrow">Purpose &amp; significance</div>
@@ -30,10 +30,10 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
       <?php echo ui_list(cms_value('awards', 'platform_list')); ?>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 
 <?php foreach ($upcoming as $u): ?>
-<section class="section feature-band section--black" id="upcoming">
+<?php if (nufa_show('awards', 'upcoming')): ?><section class="section feature-band section--black" id="upcoming">
   <div class="bg"><img src="assets/images/<?php echo ui_e($u['image'] ?: 'slider/hero/hero-slide-3.webp'); ?>" alt="" loading="lazy"></div>
   <div class="container">
     <div style="max-width:720px" data-reveal>
@@ -50,10 +50,10 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
       <div class="actions"><a href="award.php?e=<?php echo ui_e($u['slug']); ?>" class="btn btn-gold">Edition details</a><a href="partners.php#enquiry" class="btn btn-outline">Sponsorship opportunities</a></div>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 <?php endforeach; ?>
 
-<section class="section section--soft" id="archive">
+<?php if (nufa_show('awards', 'archive')): ?><section class="section section--soft" id="archive">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Awards archive</div><h2>Previous editions</h2><p>Verified records of each edition. Information that has not been confirmed is not published.</p></div>
     <?php if (!$past): ?>
@@ -79,9 +79,9 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
     </div>
     <?php endif; ?>
   </div>
-</section>
+</section><?php endif; ?>
 
-<section class="section" id="participate">
+<?php if (nufa_show('awards', 'participate')): ?><section class="section" id="participate">
   <div class="container split">
     <div data-reveal>
       <div class="eyebrow">Take part</div>
@@ -94,10 +94,10 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
     </div>
     <div class="media-frame" data-reveal><img src="assets/images/slider/slide1-1.webp" alt="Guests and winners on stage at a NUFA Awards ceremony" width="1920" height="1280" loading="lazy"></div>
   </div>
-</section>
+</section><?php endif; ?>
 
 <?php if ($awardNews): ?>
-<section class="section section--soft">
+<?php if (nufa_show('awards', 'news')): ?><section class="section section--soft">
   <div class="container">
     <div class="section-head" style="max-width:none;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap"><div><div class="eyebrow">Awards news</div><h2 class="mb-0">News &amp; announcements</h2></div><a class="link-arrow" href="news.php?cat=NUFA+Awards">All awards news</a></div>
     <div class="grid grid-3" data-reveal-stagger>
@@ -108,9 +108,9 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
       <?php endforeach; ?>
     </div>
   </div>
-</section>
+</section><?php endif; ?>
 <?php endif; ?>
 
-<section class="section--tight"><div class="container"><?php echo ui_cta_band(cms_value('awards', 'cta_title'), cms_value('awards', 'cta_text'), cms_value('awards', 'cta_btn1_label'), cms_value('awards', 'cta_btn1_url'), cms_value('awards', 'cta_btn2_label'), cms_value('awards', 'cta_btn2_url')); ?></div></section>
+<?php if (nufa_show('awards', 'cta')): ?><section class="section--tight"><div class="container"><?php echo ui_cta_band(cms_value('awards', 'cta_title'), cms_value('awards', 'cta_text'), cms_value('awards', 'cta_btn1_label'), cms_value('awards', 'cta_btn1_url'), cms_value('awards', 'cta_btn2_label'), cms_value('awards', 'cta_btn2_url')); ?></div></section><?php endif; ?>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>

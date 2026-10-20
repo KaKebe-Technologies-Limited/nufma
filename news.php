@@ -1,12 +1,14 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
+require_once __DIR__ . "/includes/settings.php";
+require_once __DIR__ . "/includes/sections.php";
 
 $cat = trim($_GET['cat'] ?? '');
 if (!in_array($cat, nufa_news_categories($conn), true)) $cat = '';
 $q = trim(mb_substr($_GET['q'] ?? '', 0, 80));
 $page = max(1, (int)($_GET['page'] ?? 1));
-$per = 9;
+$per = max(3, min(30, (int)nufa_fn('news', 'per_page')));
 
 $pageTitle = cms_value('seo', 'news_title');
 $pageDesc  = cms_value('seo', 'news_desc');
@@ -29,7 +31,7 @@ $pages = max(1, (int)ceil($total / $per));
 $page = min($page, $pages);
 
 $featured = null;
-if (!$cat && $q === '' && $page === 1) $featured = $conn->query("SELECT * FROM posts WHERE is_published=1 ORDER BY is_featured DESC, published_at DESC LIMIT 1")->fetch_assoc();
+if (!$cat && $q === '' && $page === 1 && nufa_fn_on('news', 'show_featured')) $featured = $conn->query("SELECT * FROM posts WHERE is_published=1 ORDER BY is_featured DESC, published_at DESC LIMIT 1")->fetch_assoc();
 
 $sql = "SELECT id, title, slug, category, excerpt, image, published_at FROM posts WHERE $wsql" . ($featured ? " AND id<>" . (int)$featured['id'] : '') . " ORDER BY published_at DESC LIMIT $per OFFSET " . (($page - 1) * $per);
 $ps = $conn->prepare($sql);
@@ -59,15 +61,15 @@ echo ui_page_hero('News & Stories', cms_value('news', 'hero_title'), cms_value('
     </article>
     <?php endif; ?>
 
-    <div class="filter-bar" role="navigation" aria-label="News categories">
+    <?php if (nufa_fn_on('news', 'show_categories')): ?><div class="filter-bar" role="navigation" aria-label="News categories">
       <a href="news.php" class="<?php echo !$cat ? 'active' : ''; ?>">All</a>
       <?php foreach (nufa_news_categories($conn) as $c): ?><a href="news.php?cat=<?php echo urlencode($c); ?>" class="<?php echo $cat === $c ? 'active' : ''; ?>"><?php echo ui_e($c); ?><?php echo isset($counts[$c]) ? ' (' . $counts[$c] . ')' : ''; ?></a><?php endforeach; ?>
-    </div>
-    <form class="search-form" method="get" action="news.php" role="search" style="margin-bottom:34px">
+    </div><?php endif; ?>
+    <?php if (nufa_fn_on('news', 'show_search')): ?><form class="search-form" method="get" action="news.php" role="search" style="margin-bottom:34px">
       <?php if ($cat): ?><input type="hidden" name="cat" value="<?php echo ui_e($cat); ?>"><?php endif; ?>
       <label class="sr-only" for="news-q">Search news</label><input id="news-q" type="search" name="q" value="<?php echo ui_e($q); ?>" placeholder="Search news and stories">
       <button type="submit">Search</button>
-    </form>
+    </form><?php endif; ?>
 
     <?php if ($q !== '' || $cat): ?><p class="muted" style="margin-bottom:22px"><?php echo $total; ?> result<?php echo $total === 1 ? '' : 's'; ?><?php echo $cat ? ' in ' . ui_e($cat) : ''; ?><?php echo $q !== '' ? ' for “' . ui_e($q) . '”' : ''; ?> — <a class="hl" style="text-decoration:underline" href="news.php">clear</a></p><?php endif; ?>
 

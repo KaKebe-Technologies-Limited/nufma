@@ -29,14 +29,14 @@ echo ui_page_hero('Resources', cms_value('resources', 'hero_title'), cms_value('
       <div class="empty-state" data-reveal><h3>The library is being prepared</h3><p>Approved guides, reports, calls for submissions and funding opportunities will be added here as NUFA supplies them. No documents are listed until they exist.</p>
         <p style="margin-top:18px"><a href="news.php?cat=Opportunities+and+Calls" class="btn btn-outline-dark">See opportunities in the news</a></p></div>
     <?php else: ?>
-    <div class="filter-bar">
+    <?php if (nufa_fn_on('resources', 'show_categories')): ?><div class="filter-bar">
       <a href="resources.php" class="<?php echo !$cat ? 'active' : ''; ?>">All</a>
       <?php foreach (nufa_resource_categories($conn) as $c): ?><a href="resources.php?cat=<?php echo urlencode($c); ?>" class="<?php echo $cat === $c ? 'active' : ''; ?>"><?php echo ui_e($c); ?></a><?php endforeach; ?>
-    </div>
-    <form class="search-form" method="get" action="resources.php" role="search" style="margin-bottom:30px">
+    </div><?php endif; ?>
+    <?php if (nufa_fn_on('resources', 'show_search')): ?><form class="search-form" method="get" action="resources.php" role="search" style="margin-bottom:30px">
       <?php if ($cat): ?><input type="hidden" name="cat" value="<?php echo ui_e($cat); ?>"><?php endif; ?>
       <label class="sr-only" for="res-q">Search resources</label><input id="res-q" type="search" name="q" value="<?php echo ui_e($q); ?>" placeholder="Search resources"><button type="submit">Search</button>
-    </form>
+    </form><?php endif; ?>
     <?php if (!$items): ?><div class="empty-state"><h3>No resources match</h3><p>Try a different category or search term.</p></div>
     <?php else: foreach ($items as $r):
         $href = $r['file_path'] ? 'assets/resources/' . rawurlencode($r['file_path']) : $r['external_url'];

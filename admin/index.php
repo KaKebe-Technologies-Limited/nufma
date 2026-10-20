@@ -78,7 +78,8 @@ $first = explode(' ', trim($_SESSION['admin_name'] ?? 'Admin'))[0];
     <a class="admin-btn admin-btn-brand" href="post-edit.php">+ New post</a>
     <a class="admin-btn admin-btn-line" href="members.php?status=pending">Review applications</a>
     <a class="admin-btn admin-btn-line" href="enquiries.php">Inbox</a>
-    <a class="admin-btn admin-btn-line" href="website-map.php">Configure the website</a>
+    <a class="admin-btn admin-btn-line" href="pages.php">Edit pages</a>
+    <a class="admin-btn admin-btn-line" href="website-map.php">Website map</a>
   </div>
 </div>
 
