@@ -52,7 +52,7 @@ $kindCls = ['programme' => 'cal-ev--prog', 'important' => 'cal-ev--imp', 'holida
 
 $pageTitle = cms_value('seo', 'schedule_title');
 $pageDesc  = cms_value('seo', 'schedule_desc');
-$activeNav = "programmes";
+$activeNav = "schedule";
 $canonicalPath = "schedule.php";
 include __DIR__ . "/includes/header.php";
 echo ui_page_hero('Schedule & Calendar', cms_value('schedule', 'hero_title'), cms_value('schedule', 'hero_lede'), cms_img_raw('schedule', 'hero_image'), [['Programmes', 'programmes.php'], ['Schedule']],
