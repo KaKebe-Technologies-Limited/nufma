@@ -503,3 +503,6 @@ table.data td{padding:14px;border-bottom:1px solid var(--line);vertical-align:to
 .next-ev__date{background:#161616;color:#fff;border-radius:12px;padding:10px 14px;text-align:center;min-width:68px}.next-ev__date b{display:block;font-family:var(--font-heading);font-size:1.8rem;line-height:1;color:var(--gold)}.next-ev__date span{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em}
 .next-ev h3{margin:0 0 4px;font-size:1.02rem}
 @media(max-width:700px){.cal-d{min-height:64px;padding:3px}.cal-ev{font-size:0;padding:0;height:6px;border-radius:3px;border:0}.cal-more{display:none}.cal-n{width:20px;height:20px;font-size:.72rem}.cal-legend{margin-left:0}}
+
+/* the last menu item's dropdown opens leftwards so it is never cut off at the screen edge */
+.main-nav>ul>li:last-child .dropdown,.main-nav>ul>li:nth-last-child(2) .dropdown{left:auto;right:0}
