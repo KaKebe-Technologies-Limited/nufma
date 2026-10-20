@@ -747,3 +747,8 @@ nav.policy{display:flex;flex-wrap:wrap;gap:6px 16px}nav.policy a{margin:0!import
 @media(min-width:1521px){.main-nav li>a{padding:9px 10px}}
 .aw-subnav{top:82px}.aw-subnav a{flex:none;white-space:nowrap}.aw-subnav .container>*{min-width:auto}
 @media(max-width:900px){.aw-subnav{top:72px}}
+
+/* SACCO membership card variant */
+.mcard--sacco .mcard-top{background:linear-gradient(135deg,#161616 0%,#2b2417 100%)}
+.mcard--sacco{border-top:4px solid var(--gold)}
+.pay-summary #pay-total{font-size:1.05rem;margin-top:6px}

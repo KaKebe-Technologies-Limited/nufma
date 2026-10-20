@@ -30,13 +30,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['action'] ?? ''; $id = (int)($_POST['id'] ?? 0);
     $app = $id ? $conn->query("SELECT * FROM sacco_applications WHERE id=$id")->fetch_assoc() : null;
     $S0 = sac_settings($conn);
-    if ($app && in_array($act, ['approve', 'reject'], true)) {
-        if ($act === 'approve') {
-            $conn->query("UPDATE sacco_applications SET status='approved', approved_at=NOW(), reject_reason='' WHERE id=$id");
-            $app = $conn->query("SELECT * FROM sacco_applications WHERE id=$id")->fetch_assoc();
+    if ($app && in_array($act, ['approve', 'reject', 'resend_card'], true)) {
+        if ($act === 'resend_card' && $app['status'] === 'approved') {
             $v = sac_vars($app, ['{next_steps}' => $S0['sacapp_approved_next_steps']]);
             $ok = mem_send($conn, null, 'sacco-approved', $app['email'], strtr($S0['sacapp_email_approved_subject'], $v), strtr($S0['sacapp_email_approved_body'], $v));
-            $msg = "Application approved" . ($ok ? " and the approval email was sent." : " (the email could not be sent from this server — it is saved in the email log).");
+            $conn->query("UPDATE sacco_applications SET card_sent_at=NOW() WHERE id=$id");
+            $msg = $ok ? "The approval email with the card link was sent again." : "The mail system refused it (normal on a local XAMPP install). The card link is: " . sac_card_url($app);
+        } elseif ($act === 'approve') {
+            $minSh = max(2, (int)$S0['sacapp_min_shares']); $sh = (int)($_POST['shares_confirmed'] ?? 0); $feeC = mb_substr(trim($_POST['fee_confirmed'] ?? ''), 0, 40); $shv = mb_substr(trim($_POST['shares_value'] ?? ''), 0, 40);
+            if (empty($_POST['pay_ok'])) $err = "Confirm that you have verified the membership fee and share payment before approving.";
+            elseif ($sh < $minSh) $err = "A member must hold at least $minSh shares. Enter the number of shares paid for ($minSh or more).";
+            else {
+                $until = sac_valid_until($S0);
+                $u = $conn->prepare("UPDATE sacco_applications SET status='approved', approved_at=COALESCE(approved_at, NOW()), reject_reason='', pay_received=1, pay_verified=1, shares_confirmed=?, fee_confirmed=?, shares_value=?, card_issued_at=COALESCE(card_issued_at, NOW()), card_valid_until=COALESCE(card_valid_until, ?), card_sent_at=NOW() WHERE id=?");
+                $u->bind_param("isssi", $sh, $feeC, $shv, $until, $id); $u->execute();
+                $app = $conn->query("SELECT * FROM sacco_applications WHERE id=$id")->fetch_assoc();
+                $v = sac_vars($app, ['{next_steps}' => $S0['sacapp_approved_next_steps']]);
+                $ok = mem_send($conn, null, 'sacco-approved', $app['email'], strtr($S0['sacapp_email_approved_subject'], $v), strtr($S0['sacapp_email_approved_body'], $v));
+                $msg = "Application approved and the membership card was issued" . ($ok ? " — the approval email with the card link was sent." : " (the email could not be sent from this server — it is saved in the email log).");
+            }
         } else {
             $reason = mb_substr(trim($_POST['reason'] ?? ''), 0, 500);
             if ($reason === '') $err = "Enter a reason for rejecting the application.";
@@ -53,8 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($act === 'settings') {
         $tab = 'settings';
         foreach (['sacapp_reg_prefix', 'sacapp_reg_format', 'sacapp_reg_fee', 'sacapp_share_price', 'sacapp_pay_instructions', 'sacapp_intro', 'sacapp_declaration', 'sacapp_income_bands', 'sacapp_pay_methods', 'sacapp_notify_email',
-                  'sacapp_email_received_subject', 'sacapp_email_received_body', 'sacapp_email_approved_subject', 'sacapp_email_approved_body', 'sacapp_approved_next_steps', 'sacapp_email_rejected_subject', 'sacapp_email_rejected_body'] as $k) $save($k, mb_substr(trim($_POST[$k] ?? ''), 0, 4000));
-        $save('sacapp_reg_pad', (string)max(1, min(8, (int)($_POST['sacapp_reg_pad'] ?? 4)))); $save('sacapp_min_shares', (string)max(0, (int)($_POST['sacapp_min_shares'] ?? 1)));
+                  'sacapp_email_received_subject', 'sacapp_email_received_body', 'sacapp_email_approved_subject', 'sacapp_email_approved_body', 'sacapp_approved_next_steps', 'sacapp_signer_name', 'sacapp_signer_title', 'sacapp_card_note', 'sacapp_email_rejected_subject', 'sacapp_email_rejected_body'] as $k) $save($k, mb_substr(trim($_POST[$k] ?? ''), 0, 4000));
+        $save('sacapp_card_validity_months', (string)max(0, (int)($_POST['sacapp_card_validity_months'] ?? 0)));
+        $save('sacapp_reg_pad', (string)max(1, min(8, (int)($_POST['sacapp_reg_pad'] ?? 4)))); $save('sacapp_min_shares', (string)max(2, (int)($_POST['sacapp_min_shares'] ?? 2)));
         foreach (['sacapp_require_photo', 'sacapp_require_id', 'sacapp_require_proof'] as $k) $save($k, isset($_POST[$k]) ? '1' : '0');
         $next = max(1, (int)($_POST['sacapp_reg_next'] ?? 1)); $maxSeq = (int)$conn->query("SELECT COUNT(*) FROM sacco_applications")->fetch_row()[0]; $save('sacapp_reg_next', (string)$next);
         if (!filter_var(trim($_POST['sacapp_notify_email'] ?? ''), FILTER_VALIDATE_EMAIL) && trim($_POST['sacapp_notify_email'] ?? '') !== '') $err = "The notification email is not valid.";
@@ -86,17 +99,22 @@ include __DIR__ . "/includes/admin-header.php";
   <div class="admin-card"><div class="admin-card-head"><h2>Fees &amp; shares (shown on the form)</h2><span class="admin-help">Leave blank if there is no fee yet — the payment section is then hidden.</span></div>
     <div class="admin-form-grid"><div class="field"><label>Registration fee</label><input name="sacapp_reg_fee" value="<?php echo $e($S['sacapp_reg_fee']); ?>" placeholder="e.g. UGX 20,000"></div>
       <div class="field"><label>Price of one share</label><input name="sacapp_share_price" value="<?php echo $e($S['sacapp_share_price']); ?>" placeholder="e.g. UGX 10,000"></div>
-      <div class="field"><label>Minimum shares</label><input type="number" min="0" name="sacapp_min_shares" value="<?php echo $e($S['sacapp_min_shares']); ?>"></div></div>
+      <div class="field"><label>Minimum shares per member</label><input type="number" min="2" name="sacapp_min_shares" value="<?php echo $e($S['sacapp_min_shares']); ?>"><span class="admin-help">Never below 2.</span></div></div>
     <div class="field"><label>How to pay the fee (account / mobile money details, shown to applicants)</label><textarea name="sacapp_pay_instructions" style="min-height:90px"><?php echo $e($S['sacapp_pay_instructions']); ?></textarea></div>
     <div class="field"><label>Payment methods (one per line)</label><textarea name="sacapp_pay_methods" style="min-height:70px"><?php echo $e($S['sacapp_pay_methods']); ?></textarea></div>
+    <p class="admin-help" style="margin-top:10px"><b>The membership fee and shares are always paid with the application</b> — the form requires the payment method, reference, date, amount (checked against fee + shares when both are numbers) and proof of payment.</p>
     <label class="mem-check"><input type="checkbox" name="sacapp_require_photo" value="1" <?php echo $S['sacapp_require_photo'] === '1' ? 'checked' : ''; ?>> Passport photo is required</label>
     <label class="mem-check"><input type="checkbox" name="sacapp_require_id" value="1" <?php echo $S['sacapp_require_id'] === '1' ? 'checked' : ''; ?>> A copy of the ID is required</label>
     <label class="mem-check"><input type="checkbox" name="sacapp_require_proof" value="1" <?php echo $S['sacapp_require_proof'] === '1' ? 'checked' : ''; ?>> Proof of payment is required (only when a fee is set)</label></div>
+  <div class="admin-card"><div class="admin-card-head"><h2>Membership card</h2><span class="admin-help">Issued automatically when you approve an application. The signature image comes from Membership settings (president's signature).</span></div>
+    <div class="admin-form-grid"><div class="field"><label>Signed by (name) — blank uses the president's name</label><input name="sacapp_signer_name" value="<?php echo $e($S['sacapp_signer_name']); ?>"></div><div class="field"><label>Signer's title on the card</label><input name="sacapp_signer_title" value="<?php echo $e($S['sacapp_signer_title']); ?>"></div>
+      <div class="field"><label>Card valid for (months; 0 = no expiry)</label><input type="number" min="0" name="sacapp_card_validity_months" value="<?php echo $e($S['sacapp_card_validity_months']); ?>"></div></div>
+    <div class="field"><label>Note printed on the card</label><textarea name="sacapp_card_note" style="min-height:60px"><?php echo $e($S['sacapp_card_note']); ?></textarea></div></div>
   <div class="admin-card"><div class="admin-card-head"><h2>Form text</h2></div>
     <div class="field"><label>Introduction above the form</label><textarea name="sacapp_intro" style="min-height:80px"><?php echo $e($S['sacapp_intro']); ?></textarea></div>
     <div class="field"><label>Declaration shown before the tick-boxes (one point per line)</label><textarea name="sacapp_declaration" style="min-height:80px"><?php echo $e($S['sacapp_declaration']); ?></textarea></div>
     <div class="field"><label>Income bands (one per line; leave empty to hide the question)</label><textarea name="sacapp_income_bands" style="min-height:90px"><?php echo $e($S['sacapp_income_bands']); ?></textarea></div></div>
-  <div class="admin-card"><div class="admin-card-head"><h2>Emails</h2><span class="admin-help">Placeholders: {name} {reg_no} {reason} {next_steps}</span></div>
+  <div class="admin-card"><div class="admin-card-head"><h2>Emails</h2><span class="admin-help">Placeholders: {name} {reg_no} {reason} {next_steps} {shares} {card_link} {valid_line}</span></div>
     <div class="field"><label>Send new-application alerts to</label><input type="email" name="sacapp_notify_email" value="<?php echo $e($S['sacapp_notify_email']); ?>" placeholder="Defaults to the membership alert address"></div>
     <?php foreach (['received' => 'Application received (sent immediately, with the registration number)', 'approved' => 'Approved', 'rejected' => 'Rejected'] as $k => $l): ?>
     <h3 class="mem-h3"><?php echo $l; ?></h3><div class="field"><label>Subject</label><input name="sacapp_email_<?php echo $k; ?>_subject" value="<?php echo $e($S["sacapp_email_{$k}_subject"]); ?>"></div><div class="field"><label>Message</label><textarea name="sacapp_email_<?php echo $k; ?>_body" style="min-height:110px"><?php echo $e($S["sacapp_email_{$k}_body"]); ?></textarea></div>
@@ -118,7 +136,17 @@ include __DIR__ . "/includes/admin-header.php";
 </div>
 <div class="edit-grid"><div class="admin-card"><div class="admin-card-head"><h2>Decision</h2></div>
   <?php if ($a['reject_reason']): ?><div class="admin-alert err">Rejected: <?php echo $e($a['reject_reason']); ?></div><?php endif; ?>
-  <div style="display:flex;gap:10px;flex-wrap:wrap"><form method="post" onsubmit="return confirm('Approve this application and email the applicant?')"><input type="hidden" name="action" value="approve"><input type="hidden" name="id" value="<?php echo $a['id']; ?>"><button class="admin-btn admin-btn-brand" <?php echo $a['status'] === 'approved' ? 'disabled' : ''; ?>>Approve &amp; email</button></form></div>
+  <?php $due = sac_total_due($S, (int)$a['shares_applied']); $minSh = max(2, (int)$S['sacapp_min_shares']); ?>
+  <div class="admin-alert" style="background:#fff8e6;border:1px solid #ecd9a3;color:#6b4e0a"><b>Payment to verify:</b> applicant says they paid <b><?php echo $e($a['pay_amount'] ?: '—'); ?></b> by <?php echo $e($a['pay_method'] ?: '—'); ?> (ref <?php echo $e($a['pay_ref'] ?: '—'); ?><?php echo $a['pay_date'] ? ', ' . date('d M Y', strtotime($a['pay_date'])) : ''; ?>). <?php if ($due): ?><br>Expected: fee <?php echo number_format($due[0]); ?> + <?php echo (int)$a['shares_applied']; ?> share(s) × <?php echo number_format($due[1]); ?> = <b><?php echo number_format($due[2]); ?></b>.<?php endif; ?> <?php echo $a['pay_proof'] ? 'Check the uploaded proof above.' : '<b>No proof was uploaded.</b>'; ?></div>
+  <?php if ($a['status'] === 'approved'): ?><div class="admin-alert ok">Approved — card issued <?php echo $a['card_issued_at'] ? date('d M Y', strtotime($a['card_issued_at'])) : ''; ?>. Shares confirmed: <b><?php echo (int)$a['shares_confirmed']; ?></b>.</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px"><a class="admin-btn admin-btn-brand" href="<?php echo $e(sac_card_url($a)); ?>" target="_blank">Open the member's card</a><form method="post"><input type="hidden" name="action" value="resend_card"><input type="hidden" name="id" value="<?php echo $a['id']; ?>"><button class="admin-btn admin-btn-line">Email the card link again</button></form></div><?php endif; ?>
+  <form method="post" class="admin-form" onsubmit="return confirm('Approve this member and issue the membership card?')"><input type="hidden" name="action" value="approve"><input type="hidden" name="id" value="<?php echo $a['id']; ?>">
+    <h3 class="mem-h3" style="margin-top:0"><?php echo $a['status'] === 'approved' ? 'Update what was verified' : 'Verify payment & approve'; ?></h3>
+    <div class="admin-form-grid"><div class="field"><label>Shares paid for (minimum <?php echo $minSh; ?>)</label><input type="number" min="<?php echo $minSh; ?>" name="shares_confirmed" value="<?php echo (int)($a['shares_confirmed'] ?: $a['shares_applied']); ?>"></div>
+      <div class="field"><label>Membership fee received</label><input name="fee_confirmed" value="<?php echo $e($a['fee_confirmed'] ?: $S['sacapp_reg_fee']); ?>"></div>
+      <div class="field"><label>Value of shares received</label><input name="shares_value" value="<?php echo $e($a['shares_value']); ?>" placeholder="e.g. UGX 20,000"></div></div>
+    <label class="mem-check"><input type="checkbox" name="pay_ok" value="1" <?php echo $a['pay_verified'] ? 'checked' : ''; ?>> I have checked the proof of payment and confirm the membership fee and at least <?php echo $minSh; ?> shares have been paid</label>
+    <button class="admin-btn admin-btn-brand"><?php echo $a['status'] === 'approved' ? 'Save' : 'Approve, issue card &amp; email'; ?></button></form>
   <form method="post" class="admin-form" style="margin-top:14px"><input type="hidden" name="action" value="reject"><input type="hidden" name="id" value="<?php echo $a['id']; ?>"><div class="field"><label>Reason for rejecting (sent to the applicant)</label><input name="reason" value="<?php echo $e($a['reject_reason']); ?>"></div><button class="admin-btn admin-btn-danger" onclick="return confirm('Reject this application and email the applicant?')">Reject &amp; email</button></form>
   <p class="admin-help" style="margin-top:10px">Emails are sent through the server's mail system; failed or local sends are kept in the email log.</p></div>
 <div class="admin-card"><div class="admin-card-head"><h2>Internal notes</h2></div><form method="post" class="admin-form"><input type="hidden" name="action" value="note"><input type="hidden" name="id" value="<?php echo $a['id']; ?>">
