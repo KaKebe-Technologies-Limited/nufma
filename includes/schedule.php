@@ -21,6 +21,17 @@ function sch_defaults() {
         'sch_email_body' => "Hello {name},\n\nThis is a reminder about {event}{programme_line}.\n\nDate: {date}\nTime: {time}\nVenue: {venue}\n{link_line}\n{details}\n\nTo stop receiving reminders, use this link: {unsubscribe}\n\n— NUFA",
         'sch_sms_text' => 'NUFA reminder: {event}, {date} {time}, {venue}. {link}',
         'sch_cron_key' => '',
+        // holiday & special-day greetings to registered members
+        'sch_greet_holidays' => '1', 'sch_greet_audience' => 'members',
+        'sch_greet_subject' => 'Happy {holiday} from NUFA',
+        'sch_greet_body' => "Dear {name},
+
+On behalf of the Northern Uganda Filmmakers Association, we wish you a happy {holiday}.
+
+May it be a time of rest, joy and creativity for you and your loved ones.
+
+With warm regards,
+The NUFA Team",
     ];
 }
 
@@ -80,7 +91,7 @@ function sch_install($conn) {
         KEY idx_ev (event_id, occ_date, channel, recipient)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     // make sure every column exists even if a table was created by an older version
-    $need = ['cal_events' => ['kind' => "VARCHAR(20) NOT NULL DEFAULT 'programme'", 'programme_id' => 'INT NULL', 'end_date' => 'DATE NULL', 'start_time' => 'TIME NULL', 'end_time' => 'TIME NULL', 'venue' => "VARCHAR(255) NOT NULL DEFAULT ''", 'meeting_link' => "VARCHAR(500) NOT NULL DEFAULT ''", 'show_link' => 'TINYINT(1) NOT NULL DEFAULT 1', 'description' => 'TEXT', 'repeat_rule' => "VARCHAR(10) NOT NULL DEFAULT 'none'", 'repeat_until' => 'DATE NULL', 'auto_remind_days' => 'INT NULL', 'is_active' => 'TINYINT(1) NOT NULL DEFAULT 1']];
+    $need = ['cal_events' => ['kind' => "VARCHAR(20) NOT NULL DEFAULT 'programme'", 'programme_id' => 'INT NULL', 'end_date' => 'DATE NULL', 'start_time' => 'TIME NULL', 'end_time' => 'TIME NULL', 'venue' => "VARCHAR(255) NOT NULL DEFAULT ''", 'meeting_link' => "VARCHAR(500) NOT NULL DEFAULT ''", 'show_link' => 'TINYINT(1) NOT NULL DEFAULT 1', 'description' => 'TEXT', 'repeat_rule' => "VARCHAR(10) NOT NULL DEFAULT 'none'", 'repeat_until' => 'DATE NULL', 'auto_remind_days' => 'INT NULL', 'is_active' => 'TINYINT(1) NOT NULL DEFAULT 1', 'greet_mode' => 'TINYINT NOT NULL DEFAULT 0', 'greet_subject' => "VARCHAR(255) NOT NULL DEFAULT ''", 'greet_body' => 'TEXT']];
     foreach ($need as $t => $cols) foreach ($cols as $col => $def) if ($conn->query("SHOW COLUMNS FROM $t LIKE '$col'")->num_rows === 0) $conn->query("ALTER TABLE $t ADD COLUMN $col $def");
     sch_seed($conn);
 }
@@ -251,5 +262,59 @@ function sch_run_auto($conn) {
             $tot['events']++; $tot['email'] += $r['email'][0]; $tot['sms'] += $r['sms'][0];
         }
     }
+    return $tot;
+}
+
+/* ------------------------------------------------------------------ holiday & special-day greetings */
+
+/** People who receive greetings: approved members, newsletter subscribers or both (one email each). */
+function sch_greet_audience($conn, $aud = null) {
+    $S = sch_settings($conn); $aud = $aud ?: $S['sch_greet_audience']; $out = [];
+    if (in_array($aud, ['members', 'both'], true)) { $r = $conn->query("SELECT full_name AS name, email FROM members WHERE status='approved' AND email<>''"); while ($r && ($x = $r->fetch_assoc())) $out[strtolower($x['email'])] = $x; }
+    if (in_array($aud, ['subscribers', 'both'], true)) { try { $r = $conn->query("SELECT name, email FROM subscribers WHERE unsubscribed=0 AND email<>''"); while ($r && ($x = $r->fetch_assoc())) if (!isset($out[strtolower($x['email'])])) $out[strtolower($x['email'])] = $x; } catch (Throwable $e) { } }
+    return array_values(array_filter($out, fn($x) => filter_var($x['email'], FILTER_VALIDATE_EMAIL)));
+}
+
+/** Subject + body for an occurrence: the event's own message, or the default one. */
+function sch_greet_message($conn, $o) {
+    $S = sch_settings($conn);
+    $subj = trim((string)($o['greet_subject'] ?? '')) !== '' ? $o['greet_subject'] : $S['sch_greet_subject'];
+    $body = trim((string)($o['greet_body'] ?? '')) !== '' ? $o['greet_body'] : $S['sch_greet_body'];
+    return [$subj, $body];
+}
+
+function sch_greet_enabled($conn, $o) {
+    $S = sch_settings($conn); $m = (int)($o['greet_mode'] ?? 0);
+    if ($m === 2) return false; if ($m === 1) return true;
+    return $o['kind'] === 'holiday' && $S['sch_greet_holidays'] === '1';
+}
+
+/** Sends today's greeting for one occurrence to everyone not yet greeted (up to $limit per call). Returns [sent, failed, remaining]. */
+function sch_greet_send($conn, $o, $limit = 150, $audience = null) {
+    [$subj, $body] = sch_greet_message($conn, $o); $people = $audience ?? sch_greet_audience($conn);
+    $eid = (int)$o['id']; $date = $o['date']; $sent = $failed = 0; $rem = 0;
+    $done = []; $q = $conn->prepare("SELECT recipient FROM cal_reminders WHERE event_id=? AND occ_date=? AND mode='greeting' AND status='sent'"); $q->bind_param("is", $eid, $date); $q->execute();
+    foreach ($q->get_result()->fetch_all(MYSQLI_ASSOC) as $x) $done[strtolower($x['recipient'])] = 1;
+    $name = $o['title']; $pretty = date('l, j F Y', strtotime($date));
+    foreach ($people as $p) {
+        if (isset($done[strtolower($p['email'])])) continue;
+        if ($sent + $failed >= $limit) { $rem++; continue; }
+        $v = ['{name}' => trim($p['name']) !== '' ? $p['name'] : 'friend', '{holiday}' => $name, '{event}' => $name, '{date}' => $pretty];
+        $ok = mem_send($conn, null, 'greeting', $p['email'], strtr($subj, $v), strtr($body, $v));
+        sch_log($conn, $eid, $date, 'email', $p['email'], $ok, $ok ? 'Greeting handed to mail system' : 'Mail system refused', 'greeting');
+        $ok ? $sent++ : $failed++;
+    }
+    return [$sent, $failed, $rem];
+}
+
+/** Cron / daily: checks today's calendar and greets members on holidays and special days. */
+function sch_run_greetings($conn, $limit = 200) {
+    $tot = ['events' => 0, 'sent' => 0, 'failed' => 0, 'remaining' => 0]; $today = date('Y-m-d');
+    foreach (sch_occurrences($conn, $today, $today) as $o) {
+        if (!in_array($o['kind'], ['holiday', 'important'], true) || !sch_greet_enabled($conn, $o)) continue;
+        [$s, $f, $r] = sch_greet_send($conn, $o, max(1, $limit - $tot['sent'] - $tot['failed']));
+        $tot['events']++; $tot['sent'] += $s; $tot['failed'] += $f; $tot['remaining'] += $r;
+    }
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('sch_greet_last_run', '" . $today . "') ON DUPLICATE KEY UPDATE setting_value='" . $today . "'");
     return $tot;
 }

@@ -81,7 +81,7 @@ function ui_excerpt($text, $len = 160) {
 
 /** Privacy-friendly page counter: one anonymous row per page per day — no cookies, IPs or personal data. */
 function nufa_hit($conn, $page) {
-    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET') return;
+    if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'GET' || isset($_COOKIE['nufa_admin'])) return;   // not form posts, not signed-in admins
     if (preg_match('/bot|crawl|spider|slurp|curl|wget|monitor/i', $_SERVER['HTTP_USER_AGENT'] ?? '')) return;
     $p = $conn->real_escape_string($page);
     $conn->query("INSERT INTO page_hits (page, day, hits) VALUES ('$p', CURDATE(), 1) ON DUPLICATE KEY UPDATE hits = hits + 1");

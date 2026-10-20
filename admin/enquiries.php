@@ -2,6 +2,7 @@
 $adminTitle = "Enquiries";
 $adminNav = "enquiries";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require_once __DIR__ . "/../includes/schema.php";
 
 $types = ['contact' => 'Contact', 'partner' => 'Partnership', 'sacco' => 'SACCO interest', 'network' => 'Industry network', 'tickets' => 'Ticket requests'];
@@ -21,13 +22,11 @@ if ($pr) $st->bind_param($tp, ...$pr);
 $st->execute();
 $rows = $st->get_result()->fetch_all(MYSQLI_ASSOC);
 
-if (isset($_GET['export'])) {
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="nufa-enquiries-' . date('Y-m-d') . '.csv"');
-    $out = fopen('php://output', 'w');
-    fputcsv($out, ['Received', 'Type', 'Topic', 'Name', 'Organisation', 'Email', 'Phone', 'Status', 'Message', 'Details']);
-    foreach ($rows as $r) fputcsv($out, [$r['created_at'], $r['type'], $r['topic'], $r['name'], $r['organisation'], $r['email'], $r['phone'], $r['status'], $r['message'], $r['details']]);
-    exit;
+if (nufa_export_format() !== '') {
+$__ex = [];
+    $__ex[] = ['Received', 'Type', 'Topic', 'Name', 'Organisation', 'Email', 'Phone', 'Status', 'Message', 'Details'];
+    foreach ($rows as $r) $__ex[] = [$r['created_at'], $r['type'], $r['topic'], $r['name'], $r['organisation'], $r['email'], $r['phone'], $r['status'], $r['message'], $r['details']];
+    nufa_export_send(nufa_export_format(), 'NUFA enquiries', array_shift($__ex), $__ex, 'nufa-enquiries');
 }
 $counts = array_fill_keys(array_keys($types), 0); $newTotal = 0;
 $cr = $conn->query("SELECT type, SUM(status='new') n, COUNT(*) c FROM enquiries GROUP BY type");
@@ -37,7 +36,7 @@ include __DIR__ . "/includes/admin-header.php";
 <?php if (isset($_GET['deleted'])): ?><div class="admin-alert ok">Enquiry deleted.</div><?php endif; ?>
 <div class="admin-card">
   <div class="admin-card-head"><h2>All enquiries <span class="admin-badge"><?php echo $newTotal; ?> new</span></h2>
-    <a class="admin-btn admin-btn-line admin-btn-sm" href="enquiries.php?<?php echo htmlspecialchars(http_build_query(array_filter(['type' => $type, 'status' => $status, 'q' => $q, 'export' => 1]))); ?>">Export CSV</a></div>
+    <?php echo nufa_export_menu('enquiries.php?' . http_build_query(array_filter(['type' => $type, 'status' => $status, 'q' => $q]))); ?></div>
   <p class="admin-help" style="margin-bottom:14px">Submissions from the Contact, Partner With Us, NUFA SACCO and Industry Network forms. Personal details are private — never shown on the public site.</p>
   <form method="get" class="mem-filter">
     <input type="search" name="q" placeholder="Search name, email, organisation or message" value="<?php echo htmlspecialchars($q); ?>">

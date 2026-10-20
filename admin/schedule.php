@@ -94,7 +94,7 @@ include __DIR__ . "/includes/admin-header.php";
 $tabs = ['events' => 'Events & holidays', 'remind' => 'Send a reminder', 'subscribers' => 'Reminder recipients', 'settings' => 'Email & SMS settings'];
 ?>
 <div class="mem-tabs"><?php foreach ($tabs as $t => $l): ?><a href="schedule.php?tab=<?php echo $t; ?>" class="<?php echo $tab === $t ? 'active' : ''; ?>"><?php echo $l; ?></a><?php endforeach; ?>
-  <a href="page-editor.php?page=schedule">Page text &amp; sections ↗</a><a href="../schedule.php" target="_blank">View calendar ↗</a></div>
+  <a href="page-editor.php?page=schedule">Page text &amp; sections ↗</a><a href="greetings.php">Holiday greetings</a><a href="../schedule.php" target="_blank">View calendar ↗</a></div>
 <?php if ($msg): ?><div class="admin-alert ok"><?php echo $e($msg); ?></div><?php endif; ?>
 <?php if ($err): ?><div class="admin-alert err"><?php echo $e($err); ?></div><?php endif; ?>
 

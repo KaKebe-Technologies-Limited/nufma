@@ -2,6 +2,7 @@
 $adminTitle = "Partnership applications";
 $adminNav = "partnerapps";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require_once __DIR__ . "/../includes/schema.php";
 require_once __DIR__ . "/../includes/settings.php";
 require_once __DIR__ . "/../includes/partner-apps.php";
@@ -18,10 +19,9 @@ if (isset($_GET['delete'])) {
     if ($r && $r['logo']) @unlink(pa_storage() . basename($r['logo']));
     $conn->query("DELETE FROM partner_applications WHERE id=$id"); header("Location: partner-applications.php?deleted=1"); exit;
 }
-if (isset($_GET['export'])) {
+if (nufa_export_format() !== '') {
     $rows = $conn->query("SELECT ref_no, status, applicant_type, org_name, contact_name, role_title, email, phone, website, location, activity, partnership_type, contribution, contribution_value, currency, timing, benefits, commitment_text, commitment_due, commitment_met_at, partner_id, created_at FROM partner_applications ORDER BY id")->fetch_all(MYSQLI_ASSOC);
-    header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="partnership-applications.csv"');
-    $o = fopen('php://output', 'w'); if ($rows) fputcsv($o, array_keys($rows[0])); foreach ($rows as $r) fputcsv($o, $r); fclose($o); exit;
+    nufa_export_send(nufa_export_format(), 'Partnership applications', $rows ? array_keys($rows[0]) : ['No data'], $rows, 'partnership-applications');
 }
 
 $load = fn($id) => $conn->query("SELECT * FROM partner_applications WHERE id=" . (int)$id)->fetch_assoc();
@@ -141,7 +141,7 @@ include __DIR__ . "/includes/admin-header.php";
     if ($filter) $where[] = $map[$filter]; if ($q !== '') { $qq = $conn->real_escape_string($q); $where[] = "(org_name LIKE '%$qq%' OR contact_name LIKE '%$qq%' OR ref_no LIKE '%$qq%' OR email LIKE '%$qq%' OR activity LIKE '%$qq%')"; }
     $rows = $conn->query("SELECT * FROM partner_applications" . ($where ? ' WHERE ' . implode(' AND ', $where) : '') . " ORDER BY id DESC LIMIT 300")->fetch_all(MYSQLI_ASSOC); ?>
 <div class="stat-row"><div><b><?php echo (int)$cnt['p']; ?></b><span>Pending review</span></div><div><b><?php echo (int)$cnt['w']; ?></b><span>Approved, awaiting commitment</span></div><div><b><?php echo (int)$cnt['l']; ?></b><span>Live on the website</span></div><div><b><?php echo (int)$cnt['r']; ?></b><span>Rejected</span></div></div>
-<div class="admin-card"><div class="admin-card-head"><h2>Applications</h2><span><form method="get" style="display:inline-flex;gap:8px"><select name="status" onchange="this.form.submit()" style="padding:8px 10px;border:1px solid #e4e0d6;border-radius:8px"><option value="">All</option><?php foreach (['pending' => 'Pending review', 'awaiting' => 'Awaiting commitment', 'live' => 'Live on website', 'rejected' => 'Rejected'] as $k => $l) echo '<option value="' . $k . '"' . ($filter === $k ? ' selected' : '') . '>' . $l . '</option>'; ?></select><input name="q" value="<?php echo $e($q); ?>" placeholder="Search…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Search</button></form> <a class="admin-btn admin-btn-line admin-btn-sm" href="partner-applications.php?export=1">Export CSV</a></span></div>
+<div class="admin-card"><div class="admin-card-head"><h2>Applications</h2><span><form method="get" style="display:inline-flex;gap:8px"><select name="status" onchange="this.form.submit()" style="padding:8px 10px;border:1px solid #e4e0d6;border-radius:8px"><option value="">All</option><?php foreach (['pending' => 'Pending review', 'awaiting' => 'Awaiting commitment', 'live' => 'Live on website', 'rejected' => 'Rejected'] as $k => $l) echo '<option value="' . $k . '"' . ($filter === $k ? ' selected' : '') . '>' . $l . '</option>'; ?></select><input name="q" value="<?php echo $e($q); ?>" placeholder="Search…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Search</button></form> <?php echo nufa_export_menu('partner-applications.php'); ?></span></div>
   <table class="admin-table"><thead><tr><th>Ref</th><th>Applicant</th><th>Activity</th><th>Partnership</th><th>Value</th><th>Status</th><th></th></tr></thead><tbody>
   <?php if (!$rows): ?><tr><td colspan="7" style="color:var(--text-muted)">No applications yet.</td></tr><?php endif; ?>
   <?php foreach ($rows as $r): ?><tr><td><b><?php echo $e($r['ref_no']); ?></b><br><small><?php echo date('d M Y', strtotime($r['created_at'])); ?></small></td><td><?php echo $e(pa_display($r)); ?><br><small><?php echo $e($r['email']); ?></small></td><td><?php echo $e($r['activity']); ?></td><td><?php echo $e($r['partnership_type']); ?></td><td><?php echo $r['contribution_value'] !== '' ? $e($r['currency'] . ' ' . $r['contribution_value']) : '—'; ?></td><td><?php echo pa_badge($r); ?></td><td><a class="admin-btn admin-btn-line admin-btn-sm" href="partner-applications.php?view=<?php echo $r['id']; ?>">Open</a></td></tr><?php endforeach; ?>

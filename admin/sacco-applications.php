@@ -2,6 +2,7 @@
 $adminTitle = "SACCO applications";
 $adminNav = "saccoapps";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require_once __DIR__ . "/../includes/schema.php";
 require_once __DIR__ . "/../includes/settings.php";
 require_once __DIR__ . "/../includes/sacco-members.php";
@@ -12,12 +13,12 @@ $msg = ''; $err = '';
 $tab = ($_GET['tab'] ?? '') === 'settings' ? 'settings' : 'apps';
 $save = function ($k, $v) use ($conn) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param("ss", $k, $v); $s->execute(); };
 
-if (isset($_GET['export'])) {
+if (nufa_export_format() !== '') {
     $rows = $conn->query("SELECT * FROM sacco_applications ORDER BY id")->fetch_all(MYSQLI_ASSOC);
-    header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="sacco-applications.csv"');
-    $o = fopen('php://output', 'w'); $skip = ['token', 'photo', 'id_copy', 'pay_proof', 'ip'];
-    if ($rows) fputcsv($o, array_values(array_diff(array_keys($rows[0]), $skip)));
-    foreach ($rows as $r) { foreach ($skip as $k) unset($r[$k]); fputcsv($o, array_values($r)); } fclose($o); exit;
+    $skip = ['token', 'photo', 'id_copy', 'pay_proof', 'ip', 'id', 'reject_reason'];
+    $hd = $rows ? array_values(array_diff(array_keys($rows[0]), $skip)) : ['No data']; $data = [];
+    foreach ($rows as $r) { foreach ($skip as $k) unset($r[$k]); $data[] = array_values($r); }
+    nufa_export_send(nufa_export_format(), 'SACCO applications', $hd, $data, 'sacco-applications');
 }
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete']; $r = $conn->query("SELECT photo, id_copy, pay_proof FROM sacco_applications WHERE id=$id")->fetch_assoc();
@@ -129,7 +130,7 @@ include __DIR__ . "/includes/admin-header.php";
     $where = []; if ($filter) $where[] = "status='$filter'"; if ($q !== '') { $qq = $conn->real_escape_string($q); $where[] = "(full_name LIKE '%$qq%' OR reg_no LIKE '%$qq%' OR email LIKE '%$qq%' OR phone LIKE '%$qq%' OR id_number LIKE '%$qq%')"; }
     $rows = $conn->query("SELECT id, reg_no, full_name, phone, email, shares_applied, status, created_at, pay_received FROM sacco_applications" . ($where ? ' WHERE ' . implode(' AND ', $where) : '') . " ORDER BY id DESC LIMIT 300")->fetch_all(MYSQLI_ASSOC); ?>
 <div class="stat-row"><div><b><?php echo $counts['pending']; ?></b><span>Pending</span></div><div><b><?php echo $counts['approved']; ?></b><span>Approved</span></div><div><b><?php echo $counts['rejected']; ?></b><span>Rejected</span></div></div>
-<div class="admin-card"><div class="admin-card-head"><h2>Applications</h2><span><form method="get" style="display:inline-flex;gap:8px"><select name="status" onchange="this.form.submit()" style="padding:8px 10px;border:1px solid #e4e0d6;border-radius:8px"><option value="">All</option><?php foreach (['pending', 'approved', 'rejected'] as $s) echo '<option value="' . $s . '"' . ($filter === $s ? ' selected' : '') . '>' . ucfirst($s) . '</option>'; ?></select><input name="q" value="<?php echo $e($q); ?>" placeholder="Search name, number, phone…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Search</button></form> <a class="admin-btn admin-btn-line admin-btn-sm" href="sacco-applications.php?export=1">Export CSV</a></span></div>
+<div class="admin-card"><div class="admin-card-head"><h2>Applications</h2><span><form method="get" style="display:inline-flex;gap:8px"><select name="status" onchange="this.form.submit()" style="padding:8px 10px;border:1px solid #e4e0d6;border-radius:8px"><option value="">All</option><?php foreach (['pending', 'approved', 'rejected'] as $s) echo '<option value="' . $s . '"' . ($filter === $s ? ' selected' : '') . '>' . ucfirst($s) . '</option>'; ?></select><input name="q" value="<?php echo $e($q); ?>" placeholder="Search name, number, phone…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Search</button></form> <?php echo nufa_export_menu('sacco-applications.php'); ?></span></div>
   <table class="admin-table"><thead><tr><th>Registration no.</th><th>Applicant</th><th>Phone</th><th>Shares</th><th>Fee</th><th>Status</th><th>Submitted</th><th></th></tr></thead><tbody>
   <?php if (!$rows): ?><tr><td colspan="8" style="color:var(--text-muted)">No applications yet.</td></tr><?php endif; ?>
   <?php foreach ($rows as $r): ?><tr><td><b><?php echo $e($r['reg_no']); ?></b></td><td><?php echo $e($r['full_name']); ?><br><small><?php echo $e($r['email']); ?></small></td><td><?php echo $e($r['phone']); ?></td><td><?php echo (int)$r['shares_applied']; ?></td><td><?php echo $r['pay_received'] ? '✔ received' : '<small class="muted">—</small>'; ?></td><td><?php echo sac_status_badge($r['status']); ?></td><td><?php echo date('d M Y', strtotime($r['created_at'])); ?></td><td><a class="admin-btn admin-btn-line admin-btn-sm" href="sacco-applications.php?view=<?php echo $r['id']; ?>">Open</a></td></tr><?php endforeach; ?>

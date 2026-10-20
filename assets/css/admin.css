@@ -350,3 +350,8 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 /* feedback insights */
 .bar-row{display:flex;align-items:center;gap:10px;margin:6px 0}.bar-row span{width:38px;font-weight:700;font-size:.85rem}.bar-row b{width:34px;text-align:right}.bar-track{flex:1;height:12px;background:#eee9dc;border-radius:99px;overflow:hidden}.bar-track i{display:block;height:100%;background:linear-gradient(90deg,#c8a03c,#8a6a1c);border-radius:99px}
 .admin-table .stars svg{width:14px;height:14px}
+/* export menus */
+.exp-bar{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin:0 0 10px}.exp-count{font-size:.78rem;color:#6b6459}
+.exp-menu{position:relative;display:inline-block}.exp-list{position:absolute;right:0;top:calc(100% + 6px);z-index:50;min-width:190px;background:#fff;border:1px solid #e4e0d6;border-radius:12px;box-shadow:0 14px 34px rgba(20,20,20,.18);padding:6px;display:flex;flex-direction:column}
+.exp-list[hidden]{display:none}.exp-list a{padding:9px 12px;border-radius:8px;color:#161616;text-decoration:none;font-size:.84rem;font-weight:600}.exp-list a:hover{background:#faf8f3}
+@media print{.exp-bar,.exp-menu{display:none!important}}

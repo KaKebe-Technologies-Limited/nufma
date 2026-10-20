@@ -2,6 +2,7 @@
 $adminTitle = "Support requests";
 $adminNav = "support";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require_once __DIR__ . "/../includes/support.php";
 
 $kinds = sup_kinds();
@@ -28,13 +29,11 @@ if ($pr) $st->bind_param($tp, ...$pr);
 $st->execute();
 $rows = $st->get_result()->fetch_all(MYSQLI_ASSOC);
 
-if (isset($_GET['export'])) {
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="nufa-support-requests-' . date('Y-m-d') . '.csv"');
-    $out = fopen('php://output', 'w');
-    fputcsv($out, ['Reference', 'Received', 'Type', 'Programme', 'Name', 'Organisation', 'Email', 'Phone', 'Amount', 'Currency', 'Frequency', 'Method', 'Payment ref', 'Status', 'Message', 'Details']);
-    foreach ($rows as $r) fputcsv($out, [$r['ref_no'], $r['created_at'], $r['kind'], $r['programme'] ?? 'General', $r['name'], $r['organisation'], $r['email'], $r['phone'], $r['amount'], $r['currency'], $r['frequency'], $r['method'], $r['payment_ref'], $r['status'], $r['message'], $r['details']]);
-    exit;
+if (nufa_export_format() !== '') {
+$__ex = [];
+    $__ex[] = ['Reference', 'Received', 'Type', 'Programme', 'Name', 'Organisation', 'Email', 'Phone', 'Amount', 'Currency', 'Frequency', 'Method', 'Payment ref', 'Status', 'Message', 'Details'];
+    foreach ($rows as $r) $__ex[] = [$r['ref_no'], $r['created_at'], $r['kind'], $r['programme'] ?? 'General', $r['name'], $r['organisation'], $r['email'], $r['phone'], $r['amount'], $r['currency'], $r['frequency'], $r['method'], $r['payment_ref'], $r['status'], $r['message'], $r['details']];
+    nufa_export_send(nufa_export_format(), 'Support requests', array_shift($__ex), $__ex, 'nufa-support-requests');
 }
 
 $counts = ['pending' => 0, 'approved' => 0, 'completed' => 0, 'rejected' => 0];
@@ -55,7 +54,7 @@ include __DIR__ . "/includes/admin-header.php";
 </div>
 
 <div class="admin-card">
-  <div class="admin-card-head"><h2>All requests</h2><a class="admin-btn admin-btn-line admin-btn-sm" href="support-requests.php?<?php echo htmlspecialchars(http_build_query(array_filter(['kind' => $kind, 'status' => $status, 'programme' => $progId ?: '', 'q' => $q, 'export' => 1]))); ?>">Export CSV</a></div>
+  <div class="admin-card-head"><h2>All requests</h2><?php echo nufa_export_menu('support-requests.php?' . http_build_query(array_filter(['kind' => $kind, 'status' => $status, 'programme' => $progId ?: '', 'q' => $q]))); ?></div>
   <form method="get" class="mem-filter">
     <input type="search" name="q" placeholder="Search name, organisation, email or reference" value="<?php echo htmlspecialchars($q); ?>">
     <select name="kind"><option value="">All types</option><?php foreach ($kinds as $k => $kd) echo '<option value="' . $k . '"' . ($kind === $k ? ' selected' : '') . '>' . $kd['label'] . '</option>'; ?></select>

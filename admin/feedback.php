@@ -2,6 +2,7 @@
 $adminTitle = "Feedback";
 $adminNav = "feedback";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require_once __DIR__ . "/../includes/schema.php";
 require_once __DIR__ . "/../includes/settings.php";
 require_once __DIR__ . "/../includes/feedback.php";
@@ -14,10 +15,9 @@ $cats = fb_categories(); $types = fb_types(); $statuses = fb_statuses();
 $save = function ($k, $v) use ($conn) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param("ss", $k, $v); $s->execute(); };
 
 if (isset($_GET['delete'])) { $conn->query("DELETE FROM feedback WHERE id=" . (int)$_GET['delete']); header("Location: feedback.php?deleted=1"); exit; }
-if (isset($_GET['export'])) {
+if (nufa_export_format() !== '') {
     $rows = $conn->query("SELECT ref_no, created_at, category, about, feedback_type, rating, participated, recommend, comment, suggestion, identity, name, email, phone, status, is_public FROM feedback ORDER BY id")->fetch_all(MYSQLI_ASSOC);
-    header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="feedback.csv"');
-    $o = fopen('php://output', 'w'); if ($rows) fputcsv($o, array_keys($rows[0])); foreach ($rows as $r) fputcsv($o, $r); fclose($o); exit;
+    nufa_export_send(nufa_export_format(), 'Feedback', $rows ? array_keys($rows[0]) : ['No data'], $rows, 'nufa-feedback');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -112,7 +112,7 @@ include __DIR__ . "/includes/admin-header.php";
     $q = trim($_GET['q'] ?? ''); if ($q !== '') { $qq = $conn->real_escape_string($q); $where[] = "(comment LIKE '%$qq%' OR about LIKE '%$qq%' OR ref_no LIKE '%$qq%' OR name LIKE '%$qq%')"; }
     $rows = $conn->query("SELECT * FROM feedback" . ($where ? ' WHERE ' . implode(' AND ', $where) : '') . " ORDER BY (status='new') DESC, id DESC LIMIT 300")->fetch_all(MYSQLI_ASSOC);
     $sel = fn($n, $opts, $cur) => '<select name="' . $n . '" onchange="this.form.submit()" style="padding:8px 10px;border:1px solid #e4e0d6;border-radius:8px"><option value="">' . ucfirst(str_replace('_', ' ', $n)) . ': all</option>' . implode('', array_map(fn($k, $l) => '<option value="' . $k . '"' . ($cur === (string)$k ? ' selected' : '') . '>' . htmlspecialchars($l) . '</option>', array_keys($opts), $opts)) . '</select>'; ?>
-<div class="admin-card"><div class="admin-card-head"><h2>Feedback</h2><span><form method="get" style="display:inline-flex;gap:6px;flex-wrap:wrap"><?php echo $sel('status', $statuses, $_GET['status'] ?? ''), $sel('category', $cats, $_GET['category'] ?? ''), $sel('feedback_type', $types, $_GET['feedback_type'] ?? ''), $sel('rating', [1 => '1 star', 2 => '2 stars', 3 => '3 stars', 4 => '4 stars', 5 => '5 stars'], $_GET['rating'] ?? ''), $sel('identity', ['anonymous' => 'Anonymous', 'named' => 'Named'], $_GET['identity'] ?? ''); ?><input name="q" value="<?php echo $e($q); ?>" placeholder="Search…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Go</button></form> <a class="admin-btn admin-btn-line admin-btn-sm" href="feedback.php?export=1">Export CSV</a></span></div>
+<div class="admin-card"><div class="admin-card-head"><h2>Feedback</h2><span><form method="get" style="display:inline-flex;gap:6px;flex-wrap:wrap"><?php echo $sel('status', $statuses, $_GET['status'] ?? ''), $sel('category', $cats, $_GET['category'] ?? ''), $sel('feedback_type', $types, $_GET['feedback_type'] ?? ''), $sel('rating', [1 => '1 star', 2 => '2 stars', 3 => '3 stars', 4 => '4 stars', 5 => '5 stars'], $_GET['rating'] ?? ''), $sel('identity', ['anonymous' => 'Anonymous', 'named' => 'Named'], $_GET['identity'] ?? ''); ?><input name="q" value="<?php echo $e($q); ?>" placeholder="Search…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Go</button></form> <?php echo nufa_export_menu('feedback.php'); ?></span></div>
   <form method="post"><input type="hidden" name="action" value="bulk"><table class="admin-table"><thead><tr><th></th><th>Ref</th><th>About</th><th>Type</th><th>Rating</th><th>From</th><th>Status</th><th></th></tr></thead><tbody>
   <?php if (!$rows): ?><tr><td colspan="8" style="color:var(--text-muted)">No feedback yet.</td></tr><?php endif; ?>
   <?php foreach ($rows as $r): ?><tr<?php echo $r['status'] === 'new' ? ' style="background:#fffaf0"' : ''; ?>><td><input type="checkbox" name="ids[]" value="<?php echo $r['id']; ?>"></td><td><b><?php echo $e($r['ref_no']); ?></b><br><small><?php echo date('d M Y', strtotime($r['created_at'])); ?></small></td><td><?php echo $e($r['about'] ?: ($cats[$r['category']] ?? '')); ?><br><small class="muted"><?php echo $e(mb_strimwidth($r['comment'], 0, 70, '…')); ?></small></td><td><?php echo $e($r['feedback_type']); ?></td><td><?php echo fb_stars($r['rating'], 14); ?></td><td><?php echo $r['identity'] === 'anonymous' ? '<span class="admin-badge gray">Anonymous</span>' : $e($r['name']); ?></td><td><span class="admin-badge <?php echo $r['status'] === 'new' ? '' : 'gray'; ?>"><?php echo $e($statuses[$r['status']] ?? $r['status']); ?></span><?php echo $r['is_public'] ? ' <span class="admin-badge">Public</span>' : ''; ?></td><td><a class="admin-btn admin-btn-line admin-btn-sm" href="feedback.php?view=<?php echo $r['id']; ?>">Open</a></td></tr><?php endforeach; ?>

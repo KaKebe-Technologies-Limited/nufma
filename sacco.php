@@ -38,7 +38,6 @@ $pageDesc  = cms_value('seo', 'sacco_desc');
 $activeNav = "sacco";
 $canonicalPath = "sacco.php";
 include __DIR__ . "/includes/header.php";
-nufa_hit($conn, 'sacco');
 
 $statusText = ['operational' => cms_value('sacco', 'status_text_op'), 'ongoing' => cms_value('sacco', 'status_text_ongoing'), 'in_development' => cms_value('sacco', 'status_text_dev')][$status] ?? cms_value('sacco', 'status_text');
 $products = $conn->query("SELECT * FROM sacco_products WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);

@@ -2,18 +2,17 @@
 $adminTitle = "Newsletter subscribers";
 $adminNav = "newsletters";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require_once __DIR__ . "/../includes/newsletter.php";
 nl_install($conn);
 
-if (isset($_GET['export'])) {
+if (nufa_export_format() !== '') {
     $rows = $conn->query("SELECT email, name, source, unsubscribed, created_at FROM subscribers ORDER BY created_at DESC");
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="nufa-subscribers.csv"');
-    $out = fopen('php://output', 'w');
-    fputcsv($out, ['Email', 'Name', 'Source', 'Status', 'Subscribed At']);
-    while ($r = $rows->fetch_assoc()) fputcsv($out, [$r['email'], $r['name'], $r['source'], $r['unsubscribed'] ? 'unsubscribed' : 'active', $r['created_at']]);
-    fclose($out);
-    exit;
+$__ex = [];
+    $__ex[] = ['Email', 'Name', 'Source', 'Status', 'Subscribed At'];
+    while ($r = $rows->fetch_assoc()) $__ex[] = [$r['email'], $r['name'], $r['source'], $r['unsubscribed'] ? 'unsubscribed' : 'active', $r['created_at']];
+    
+    nufa_export_send(nufa_export_format(), 'Newsletter subscribers', array_shift($__ex), $__ex, 'nufa-subscribers');
 }
 if (isset($_GET['delete'])) { $conn->query("DELETE FROM subscribers WHERE id=" . (int)$_GET['delete']); header("Location: subscribers.php?deleted=1"); exit; }
 if (isset($_GET['toggle'])) { $conn->query("UPDATE subscribers SET unsubscribed = 1 - unsubscribed WHERE id=" . (int)$_GET['toggle']); header("Location: subscribers.php"); exit; }
@@ -42,7 +41,7 @@ $newsTab = 'subscribers'; include __DIR__ . "/includes/news-tabs.php";
   <form method="post" class="admin-form"><div class="field"><textarea name="emails" style="min-height:80px" placeholder="name@example.com, another@example.com"></textarea></div><button class="admin-btn admin-btn-brand">Add to the list</button></form></div>
 
 <div class="admin-card">
-  <div class="admin-card-head"><h2>Mailing list</h2><span><form method="get" style="display:inline-flex;gap:8px"><input name="q" value="<?php echo $e($q); ?>" placeholder="Search…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Search</button></form> <a href="subscribers.php?export=1" class="admin-btn admin-btn-line">Export CSV</a></span></div>
+  <div class="admin-card-head"><h2>Mailing list</h2><span><form method="get" style="display:inline-flex;gap:8px"><input name="q" value="<?php echo $e($q); ?>" placeholder="Search…" style="padding:8px 12px;border:1px solid #e4e0d6;border-radius:8px"><button class="admin-btn admin-btn-line admin-btn-sm">Search</button></form> <?php echo nufa_export_menu('subscribers.php'); ?></span></div>
   <table class="admin-table">
     <thead><tr><th>Email</th><th>Name</th><th>Source</th><th>Status</th><th>Joined</th><th></th></tr></thead>
     <tbody>

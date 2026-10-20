@@ -2,6 +2,7 @@
 $adminTitle = "Award invitation";
 $adminNav = "invitations";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require_once __DIR__ . "/../includes/invitations.php";
 inv_install($conn);
 
@@ -13,11 +14,10 @@ if (isset($_GET['new']) && !isset($_GET['tab'])) $tab = 'setup';
 $msg = ''; $err = ''; $e = fn($v) => htmlspecialchars((string)$v);
 $editions = $conn->query("SELECT id, year FROM award_editions ORDER BY year DESC")->fetch_all(MYSQLI_ASSOC);
 
-if (isset($_GET['export'])) {
+if (nufa_export_format() !== '') {
     $rows = $conn->query("SELECT title_text, name, org, email, status, sent_at, rsvp, rsvp_at FROM invite_guests WHERE campaign_id=$id ORDER BY name")->fetch_all(MYSQLI_ASSOC);
-    header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="invitation-guests.csv"');
-    $o = fopen('php://output', 'w'); fputcsv($o, ['Title', 'Name', 'Organisation / position', 'Email', 'Invitation', 'Sent at', 'RSVP', 'RSVP at']);
-    foreach ($rows as $r) fputcsv($o, [$r['title_text'], $r['name'], $r['org'], $r['email'], $r['status'], $r['sent_at'], $r['rsvp'] ?: 'no reply', $r['rsvp_at']]); fclose($o); exit;
+    $data = []; foreach ($rows as $r) $data[] = [$r['title_text'], $r['name'], $r['org'], $r['email'], $r['status'], $r['sent_at'], $r['rsvp'] ?: 'no reply', $r['rsvp_at']];
+    nufa_export_send(nufa_export_format(), 'Invitation guest list', ['Title', 'Name', 'Organisation / position', 'Email', 'Invitation', 'Sent at', 'RSVP', 'RSVP at'], $data, 'invitation-guests');
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -151,7 +151,7 @@ $tabs = ['setup' => '1 · Template & message', 'guests' => '2 · Guests (' . cou
 <?php elseif ($tab === 'guests'): ?>
 <div class="edit-grid">
   <div class="edit-main">
-    <div class="admin-card"><div class="admin-card-head"><h2>Guests (<?php echo count($guests); ?>)</h2><span><a class="admin-btn admin-btn-line admin-btn-sm" href="invitation.php?id=<?php echo $id; ?>&export=1">Export CSV</a>
+    <div class="admin-card"><div class="admin-card-head"><h2>Guests (<?php echo count($guests); ?>)</h2><span><?php echo nufa_export_menu('invitation.php?id=' . $id); ?>
         <form method="post" style="display:inline" onsubmit="return confirm('Remove every guest who has not been sent an invitation?')"><input type="hidden" name="action" value="clear_unsent"><button class="admin-btn admin-btn-danger admin-btn-sm">Clear unsent</button></form></span></div>
       <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Title</th><th>Name</th><th>Organisation / position</th><th>Email</th><th>Invitation</th><th>RSVP</th><th></th></tr></thead><tbody>
         <?php if (!$guests): ?><tr><td colspan="7" style="color:var(--text-muted)">No guests yet — add them on the right.</td></tr><?php endif; ?>

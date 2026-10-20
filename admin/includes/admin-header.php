@@ -49,6 +49,7 @@ $__ico += [
     'saccoapps'  => '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/><circle cx="17" cy="17" r="3.500" fill="#fff"/><path d="M15.500 17l1 1 2-2" stroke-linecap="round"/>',
     'partnerapps' => '<path d="M8 12l3 3 5-6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0Z"/>',
     'feedback'   => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M12 8.500l1 2 2.200.3-1.600 1.500.4 2.200-2-1.100-2 1.100.4-2.200L8.800 10.800 11 10.500l1-2Z"/>',
+    'greetings'  => '<path d="M4 11h16v9H4v-9Z"/><path d="M12 11v9M3 7h18v4H3V7Z"/><path d="M12 7c-2-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3-2-5 1Z"/>',
     'saccoadm'   => '<ellipse cx="9" cy="7" rx="6" ry="3"/><path d="M3 7v5c0 1.700 2.700 3 6 3s6-1.300 6-3V7M15 11.500c3 0 6 1 6 2.500v3c0 1.700-3 3-6.500 3"/>',
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
@@ -56,41 +57,49 @@ $__ico += [
 ];
 $__nav = [
     'Overview' => [['dashboard', 'index.php', 'Dashboard']],
-    'Association' => array_values(array_filter([
+    'People' => [
         ['members', 'members.php', 'Membership', $__pending],
-        ['feedback', 'feedback.php', 'Feedback', $__fbNew],
-        ['enquiries', 'enquiries.php', 'Enquiries', $__enqNew],
-        ['support', 'support-requests.php', 'Support requests', $__supNew],
-        ['saccoadm', 'sacco-manager.php', 'NUFA SACCO'],
         ['saccoapps', 'sacco-applications.php', 'SACCO applications', $__sacNew],
-        ['schedule', 'schedule.php', 'Schedule & reminders'],
+        ['team', 'team.php', 'Leadership & team'],
+        ['subscribers', 'subscribers.php', 'Subscribers'],
+    ],
+    'Inbox' => array_values(array_filter([
+        ['enquiries', 'enquiries.php', 'Enquiries', $__enqNew],
+        ['feedback', 'feedback.php', 'Feedback', $__fbNew],
+        ['support', 'support-requests.php', 'Support requests', $__supNew],
+        ['partnerapps', 'partner-applications.php', 'Partnership applications', $__paNew],
         $__msgs > 0 ? ['messages', 'messages.php', 'Messages (earlier)', $__unread] : null,
     ])),
-    'Website content' => [
-        ['pages', 'pages.php', 'Page Editor'],
-        ['map', 'website-map.php', 'Website Map'],
-        ['content', 'content.php', 'Page Content'],
-        ['menus', 'menus.php', 'Menus & Footer'],
-        ['appearance', 'appearance.php', 'Appearance & Branding'],
-        ['lists', 'lists.php', 'Form options'],
-        ['posts', 'posts.php', 'News & Stories'],
-        ['newsletters', 'newsletters.php', 'Newsletters'],
-        ['programmes', 'programmes.php', 'Programmes'],
-        ['resources', 'resources.php', 'Resources'],
-        ['gallery', 'gallery.php', 'Gallery & Videos'],
-        ['sliders', 'sliders.php', 'Hero Images'],
-    ],
-    'Awards & people' => [
-        ['awards', 'award-editions.php', 'Award Editions'],
+    'Events & awards' => [
+        ['schedule', 'schedule.php', 'Calendar & reminders'],
+        ['greetings', 'greetings.php', 'Holiday greetings'],
+        ['awards', 'award-editions.php', 'Award editions'],
         ['awardsetup', 'awards-setup.php', 'Awards setup'],
         ['invitations', 'invitations.php', 'Award invitations'],
-        ['team', 'team.php', 'Leadership'],
+    ],
+    'Stories & media' => [
+        ['posts', 'posts.php', 'News & stories'],
+        ['newsletters', 'newsletters.php', 'Newsletters'],
+        ['gallery', 'gallery.php', 'Gallery & videos'],
+        ['resources', 'resources.php', 'Resources'],
+    ],
+    'Programmes & partners' => [
+        ['programmes', 'programmes.php', 'Programmes'],
         ['partners', 'partners.php', 'Partners'],
-        ['partnerapps', 'partner-applications.php', 'Partnership applications', $__paNew],
+        ['saccoadm', 'sacco-manager.php', 'NUFA SACCO'],
+    ],
+    'Website' => [
+        ['pages', 'pages.php', 'Page editor'],
+        ['content', 'content.php', 'Page content'],
+        ['sliders', 'sliders.php', 'Hero images'],
+        ['menus', 'menus.php', 'Menus & footer'],
+        ['appearance', 'appearance.php', 'Appearance & branding'],
+        ['lists', 'lists.php', 'Form options'],
+        ['map', 'website-map.php', 'Website map'],
     ],
     'System' => [
-        ['settings', 'settings.php', 'Site Settings'],
-        ['users', 'users.php', 'Admin Users'],
+        ['settings', 'settings.php', 'Site settings'],
+        ['users', 'users.php', 'Admin users'],
         ['roles', 'roles.php', 'Roles & permissions'],
     ],
 ];
@@ -99,6 +108,19 @@ foreach ($__nav as $__g => $__its) {
     $__nav[$__g] = array_values(array_filter($__its, fn($i) => $i && admin_can_file($i[1])));
     if (!$__nav[$__g]) unset($__nav[$__g]);
 }
+// command palette: every page this role can open + quick actions
+$__cmd = [];
+foreach ($__nav as $__g => $__its) foreach ($__its as $__i) $__cmd[] = [$__i[2], $__i[1], $__g];
+foreach ([['Write a story', 'post-edit.php', 'news'], ['Add a calendar event', 'schedule.php#event-form', 'events'], ['Compose a newsletter', 'newsletter-edit.php?kind=written', 'news'], ['Upload a PDF newsletter', 'newsletter-edit.php?kind=pdf', 'news'], ['Create an award invitation', 'invitations.php', 'invitations'], ['Add a team member', 'team-edit.php', 'team'], ['Add a partner', 'partner-edit.php', 'website'], ['Add a programme', 'programme-edit.php', 'website'], ['Review pending members', 'members.php?status=pending', 'members'], ['Open the website', '../index.php', null]] as [$__l, $__u, $__m]) if ($__m === null || admin_can($__m, ROLE_VIEW)) $__cmd[] = [$__l, $__u, 'Quick action'];
+$__attn = array_values(array_filter([
+    [$__pending, 'Membership applications to review', 'members.php?status=pending', 'members'],
+    [$__enqNew, 'New enquiries', 'enquiries.php?status=new', 'enquiries'],
+    [$__fbNew, 'New feedback', 'feedback.php?status=new', 'enquiries'],
+    [$__sacNew, 'SACCO applications', 'sacco-applications.php', 'sacco'],
+    [$__paNew, 'Partnership applications', 'partner-applications.php', 'support'],
+    [$__supNew, 'Support requests', 'support-requests.php', 'support'],
+], fn($x) => (int)$x[0] > 0 && admin_can($x[3], ROLE_VIEW)));
+$__attnTotal = array_sum(array_map(fn($x) => (int)$x[0], $__attn));
 $__initial = strtoupper(mb_substr($_SESSION['admin_name'] ?? 'A', 0, 1));
 ?><!doctype html>
 <html lang="en">
@@ -107,10 +129,12 @@ $__initial = strtoupper(mb_substr($_SESSION['admin_name'] ?? 'A', 0, 1));
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?php echo htmlspecialchars($adminTitle); ?> — NUFA Admin</title>
 <meta name="robots" content="noindex, nofollow">
+<meta name="admin-csrf" content="<?php echo htmlspecialchars(admin_token()); ?>">
 <link rel="icon" href="../assets/images/logo/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="../assets/css/style.css?v=<?php echo @filemtime(__DIR__ . '/../../assets/css/style.css'); ?>">
 <link rel="stylesheet" href="../assets/css/admin.css?v=<?php echo @filemtime(__DIR__ . '/../../assets/css/admin.css'); ?>">
+<link rel="stylesheet" href="../assets/css/admin-ui.css?v=<?php echo @filemtime(__DIR__ . '/../../assets/css/admin-ui.css'); ?>">
 </head>
 <body class="admin-body">
 
@@ -151,9 +175,14 @@ $__initial = strtoupper(mb_substr($_SESSION['admin_name'] ?? 'A', 0, 1));
       <button class="admin-sidebar-toggle" id="adminSidebarToggle" aria-label="Toggle menu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       </button>
-      <h1><?php echo htmlspecialchars($adminTitle); ?></h1>
+      <div style="min-width:0"><span class="crumb"><?php echo htmlspecialchars(admin_role_label()); ?></span><h1><?php echo htmlspecialchars($adminTitle); ?></h1></div>
       <div class="admin-topbar-right">
-        <a href="../index.php" target="_blank" class="admin-top-link">View site</a>
+        <button type="button" class="ax-search" id="axSearch" aria-label="Search or jump to a page"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span class="t">Search or jump to…</span><kbd>Ctrl K</kbd></button>
+        <div class="ax-wrap"><button type="button" class="ax-new" id="axNewBtn" aria-haspopup="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span>New</span></button>
+          <div class="ax-pop" id="axNew" hidden><h4>Create</h4>
+            <?php foreach ([['Write a story', 'post-edit.php', 'news'], ['Add a calendar event', 'schedule.php#event-form', 'events'], ['Compose a newsletter', 'newsletter-edit.php?kind=written', 'news'], ['Create an award invitation', 'invitations.php', 'invitations'], ['Add a team member', 'team-edit.php', 'team'], ['Add a partner', 'partner-edit.php', 'website']] as [$__l, $__u, $__m]) if (admin_can($__m, ROLE_MANAGE)): ?><a href="<?php echo $__u; ?>"><?php echo $__l; ?></a><?php endif; ?></div></div>
+        <div class="ax-wrap"><button type="button" class="ax-icon-btn" id="axBellBtn" aria-label="Things that need attention" aria-haspopup="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 1 1 12 0c0 6 2 7 2 7H4s2-1 2-7Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><?php if ($__attnTotal): ?><span class="dot"><?php echo $__attnTotal > 99 ? '99+' : $__attnTotal; ?></span><?php endif; ?></button>
+          <div class="ax-pop" id="axBell" hidden><h4>Needs your attention</h4><?php foreach ($__attn as $__x): ?><a href="<?php echo $__x[2]; ?>"><?php echo $__x[1]; ?><b><?php echo (int)$__x[0]; ?></b></a><?php endforeach; if (!$__attn) echo '<p style="padding:10px 12px;color:var(--a-mut);margin:0">You are all caught up. 🎉</p>'; ?></div></div>
         <div class="admin-user" id="adminUser">
           <button type="button" class="admin-user-btn" aria-haspopup="true" aria-expanded="false">
             <span class="admin-avatar"><?php echo htmlspecialchars($__initial); ?></span>

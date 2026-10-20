@@ -2,6 +2,7 @@
 $adminTitle = "Membership";
 $adminNav = "members";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/export.php";
 require __DIR__ . "/../includes/membership.php";
 
 $status = $_GET['status'] ?? '';
@@ -22,13 +23,11 @@ if ($params) $stmt->bind_param($types, ...$params);
 $stmt->execute();
 $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-if (isset($_GET['export'])) {
-    header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="nufa-members-' . date('Y-m-d') . '.csv"');
-    $out = fopen('php://output', 'w');
-    fputcsv($out, ['Reg No', 'Name', 'Email', 'Phone', 'Gender', 'DOB', 'District', 'Guild', 'Status', 'Valid from', 'Valid until', 'Applied']);
-    foreach ($rows as $r) fputcsv($out, [$r['reg_no'], $r['full_name'], $r['email'], $r['phone'], $r['gender'], $r['dob'], $r['district'], $r['guild_name'], $r['status'], $r['valid_from'], $r['valid_until'], $r['created_at']]);
-    exit;
+if (nufa_export_format() !== '') {
+$__ex = [];
+    $__ex[] = ['Reg No', 'Name', 'Email', 'Phone', 'Gender', 'DOB', 'District', 'Guild', 'Status', 'Valid from', 'Valid until', 'Applied'];
+    foreach ($rows as $r) $__ex[] = [$r['reg_no'], $r['full_name'], $r['email'], $r['phone'], $r['gender'], $r['dob'], $r['district'], $r['guild_name'], $r['status'], $r['valid_from'], $r['valid_until'], $r['created_at']];
+    nufa_export_send(nufa_export_format(), 'NUFA members', array_shift($__ex), $__ex, 'nufa-members');
 }
 
 $counts = ['pending' => 0, 'approved' => 0, 'rejected' => 0];
@@ -58,7 +57,7 @@ $qs = fn($extra) => '?' . http_build_query(array_merge(['q' => $q, 'guild' => $g
 <div class="admin-card">
   <div class="admin-card-head">
     <h2>Members <?php echo $status ? '— ' . ucfirst($status) : ''; ?></h2>
-    <a class="admin-btn admin-btn-line admin-btn-sm" href="<?php echo htmlspecialchars($qs(['export' => 1])); ?>">Export CSV</a>
+    <?php echo nufa_export_menu($qs([])); ?>
   </div>
   <form method="get" class="mem-filter">
     <input type="search" name="q" placeholder="Search name, email, phone or reg. no." value="<?php echo htmlspecialchars($q); ?>">

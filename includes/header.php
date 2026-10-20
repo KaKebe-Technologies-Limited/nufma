@@ -41,6 +41,10 @@ $ctaLabel = cms_value('site', 'header_cta_label');
 $ctaUrl = cms_value('site', 'header_cta_url');
 
 $dropdownToggle = function ($label) { return '<button type="button" class="caret-btn" aria-label="Open ' . htmlspecialchars($label, ENT_QUOTES) . ' menu" aria-expanded="false"><svg class="caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>'; };
+?><?php
+// privacy-friendly visit counter: one anonymous number per page per day (no cookies, no IP addresses)
+require_once __DIR__ . '/ui.php';
+if (http_response_code() === 200) nufa_hit($conn, substr(preg_replace('/\.php$/', '', basename($_SERVER['SCRIPT_NAME'])), 0, 40));
 ?><!doctype html>
 <html lang="en">
 <head>
