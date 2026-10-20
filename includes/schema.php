@@ -1,11 +1,23 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v2` setting) and is safe to run on a database
+ * Runs once (guarded by the `schema_v3` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
 require_once __DIR__ . "/db.php";
+
+/** Runs a schema statement; failures are appended to storage/migration.log and counted (never fatal). */
+function nufa_exec($conn, $sql) {
+    $ok = $conn->query($sql);
+    if (!$ok) {
+        $GLOBALS['__nufa_schema_errors'] = ($GLOBALS['__nufa_schema_errors'] ?? 0) + 1;
+        $dir = __DIR__ . "/../storage/";
+        if (!is_dir($dir)) @mkdir($dir, 0775, true);
+        @file_put_contents($dir . "migration.log", date('c') . "  " . $conn->errno . ": " . $conn->error . "\n    SQL: " . substr(preg_replace('/\s+/', ' ', $sql), 0, 220) . "\n", FILE_APPEND);
+    }
+    return $ok;
+}
 
 function nufa_col_exists($conn, $table, $col) {
     $t = $conn->real_escape_string($table); $c = $conn->real_escape_string($col);
@@ -13,7 +25,7 @@ function nufa_col_exists($conn, $table, $col) {
     return $r && $r->num_rows > 0;
 }
 function nufa_add_col($conn, $table, $col, $ddl) {
-    if (!nufa_col_exists($conn, $table, $col)) $conn->query("ALTER TABLE `$table` ADD COLUMN `$col` $ddl");
+    if (!nufa_col_exists($conn, $table, $col)) nufa_exec($conn, "ALTER TABLE `$table` ADD COLUMN `$col` $ddl");
 }
 
 function nufa_programme_seed() {
@@ -50,10 +62,18 @@ function nufa_migrate($conn) {
     static $done = false;
     if ($done) return;
     $done = true;
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v2'");
+    // 1. guarantee the settings table exists so the version flag can be read
+    $core = require __DIR__ . "/schema-core.php";
+    nufa_exec($conn, $core['create']['settings']);
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v3'");
     if ($flag && $flag->num_rows) return;
+    $GLOBALS['__nufa_schema_errors'] = 0;
 
-    $conn->query("CREATE TABLE IF NOT EXISTS programmes (
+    // 2. core tables the site depends on (created only if missing) and any columns an older database lacks
+    foreach ($core['create'] as $t => $ddl) nufa_exec($conn, $ddl);
+    foreach ($core['columns'] as $t => $cols) foreach ($cols as $c => $def) nufa_add_col($conn, $t, $c, $def);
+
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS programmes (
         id INT AUTO_INCREMENT PRIMARY KEY,
         slug VARCHAR(120) NOT NULL UNIQUE,
         title VARCHAR(255) NOT NULL,
@@ -68,7 +88,7 @@ function nufa_migrate($conn) {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-    $conn->query("CREATE TABLE IF NOT EXISTS resources (
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS resources (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         category VARCHAR(80) NOT NULL DEFAULT '',
@@ -80,7 +100,7 @@ function nufa_migrate($conn) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-    $conn->query("CREATE TABLE IF NOT EXISTS videos (
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS videos (
         id INT AUTO_INCREMENT PRIMARY KEY,
         title VARCHAR(255) NOT NULL,
         video_url VARCHAR(500) NOT NULL,
@@ -91,7 +111,7 @@ function nufa_migrate($conn) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 
-    $conn->query("CREATE TABLE IF NOT EXISTS enquiries (
+    nufa_exec($conn, "CREATE TABLE IF NOT EXISTS enquiries (
         id INT AUTO_INCREMENT PRIMARY KEY,
         type VARCHAR(30) NOT NULL,
         topic VARCHAR(80) NOT NULL DEFAULT '',
@@ -167,7 +187,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v2', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v3', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);
