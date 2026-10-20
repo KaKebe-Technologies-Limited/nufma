@@ -342,3 +342,8 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 .perm--1{border-left-color:#2f6f8f;background:#f3f8fb}.perm--2{border-left-color:#c8a03c;background:#fff8e6}.perm--0{opacity:.8}
 .perm select{padding:6px 8px;border:1px solid #e4e0d6;border-radius:8px;font-weight:600;font-size:.8rem}
 .role-card .admin-card-head h2 small{font-weight:500}
+
+/* SACCO applications (admin) */
+.reg-badge-sm{display:inline-block;background:#fff8e6;border:1px solid #ecd9a3;border-radius:8px;padding:3px 10px;font-weight:800;letter-spacing:.03em}
+.app-dl{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:6px 18px;margin:0 0 6px}.app-dl dt{color:#6b6459;font-size:.82rem;font-weight:700}.app-dl dd{margin:0}
+.app-files{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.app-file{display:flex;flex-direction:column;align-items:center;gap:6px;width:130px;text-decoration:none;color:#161616;font-size:.78rem}.app-file img,.app-file span{width:130px;height:130px;object-fit:cover;border-radius:12px;border:1px solid #e4e0d6;background:#faf8f3;display:flex;align-items:center;justify-content:center;font-weight:800}

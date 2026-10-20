@@ -77,3 +77,9 @@ See `docs/DEPLOYMENT.md`.
 3. Add guests: paste “Title | Name | Email | Organisation” lines (or upload a CSV, or add all approved members).
 4. Send a test, then send in batches of 25. Guests get a personalised PDF and Yes/No buttons; replies show on the Send & responses tab and in the CSV export.
 - The PDF is personalised by adding the text to the template (the original is untouched). Encrypted PDFs can't be edited; they are attached unchanged.
+
+## SACCO membership application (Admin → SACCO applications)
+- The public form is `sacco-apply.php`. It accepts applications **only** while “Accept membership applications” is ticked in SACCO manager → Status & regulatory (leave it off until the SACCO's registration is verified); otherwise visitors are pointed to the interest form.
+- The form collects personal details, residence, work and NUFA membership, savings plan (shares, deposit, regular savings, products of interest), next of kin, beneficiary, introducer, registration fee payment, ID/photo/proof documents and a three-part declaration with typed signature.
+- Every applicant receives a registration number automatically at submission (default `NUFA-SACCO/2026/0001`); prefix, format, digits and the next number are set under Form, fees & numbering.
+- Review applications, open the uploaded documents (private), tick “fee received”, approve or reject (the applicant is emailed), and export CSV.

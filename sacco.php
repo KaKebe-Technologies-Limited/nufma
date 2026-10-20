@@ -13,7 +13,7 @@ if (!$fc['enabled'] && $_SERVER['REQUEST_METHOD'] === 'POST') $_SERVER['REQUEST_
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($g = form_guard($conn, 'sacco')) $errors[] = $g;
-    $isApp = ($_POST['form_kind'] ?? '') === 'application' && $appsOpen;
+    $isApp = false;   // membership applications use the dedicated form (sacco-apply.php)
     $name = form_clean($_POST['name'] ?? '', 150); $email = strtolower(form_clean($_POST['email'] ?? '', 190)); $phone = form_clean($_POST['phone'] ?? '', 40);
     $district = form_clean($_POST['district'] ?? '', 100); $msg = form_clean($_POST['message'] ?? '', 2000);
     if ($name === '') $errors[] = "Please enter your name.";
@@ -210,8 +210,7 @@ echo ui_page_hero('NUFA SACCO · ' . $statusLabel, cms_value('sacco', 'hero_head
       <?php echo form_banner($sent, $errors, $sentKind === 'app' ? 'Your membership application has been received. NUFA will review it and contact you.' : $fc['success']); ?>
       <?php if (!$fc['enabled']): ?><div class="alert err" role="status"><?php echo ui_e($fc['closed']); ?></div>
       <?php elseif (!$sent): ?>
-      <?php if ($appsOpen): ?>
-        <div class="filter-bar" style="margin-bottom:18px"><a href="#enquiry" class="active" onclick="document.getElementById('formKind').value='enquiry';document.getElementById('appFields').style.display='none';this.classList.add('active');this.nextElementSibling.classList.remove('active');return false;">Enquiry</a><a href="#enquiry" onclick="document.getElementById('formKind').value='application';document.getElementById('appFields').style.display='block';this.classList.add('active');this.previousElementSibling.classList.remove('active');return false;">Membership application</a></div>
+      <?php if ($appsOpen): ?><div class="info-card" style="margin-bottom:16px"><b>Ready to join?</b> Membership applications are open. <a class="link-arrow" href="sacco-apply.php">Start your membership application</a></div>
       <?php else: ?><p class="muted" style="font-size:.88rem;margin-bottom:16px">Membership applications are <b>not open</b> yet. You can send an enquiry below.</p><?php endif; ?>
       <form method="post" action="sacco.php#enquiry">
         <?php echo form_open_fields(); ?>
@@ -222,7 +221,6 @@ echo ui_page_hero('NUFA SACCO · ' . $statusLabel, cms_value('sacco', 'hero_head
           <?php echo f_input('phone', 'Telephone', ['type' => 'tel']); ?>
           <?php echo f_input('district', 'District or location'); ?>
         </div>
-        <?php if ($appsOpen): ?><div id="appFields" style="display:none"><div class="form-grid"><?php echo f_input('craft', 'Area of creative practice'); ?><?php echo f_input('years', 'Years in the industry'); ?></div></div><?php endif; ?>
         <?php echo f_textarea('message', 'Your question or message (optional)', ['maxlength' => 2000]); ?>
         <?php echo f_check('ack', 'I understand the current status of the NUFA SACCO shown on this page, and that this form does not create any financial relationship.'); ?>
         <?php echo f_check('consent', 'I consent to NUFA contacting me and have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a>.'); ?>

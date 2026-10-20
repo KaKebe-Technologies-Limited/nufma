@@ -586,3 +586,13 @@ table.data td{padding:14px;border-bottom:1px solid var(--line);vertical-align:to
 .ios-help__box{position:relative;background:#fff;color:#161616;border-radius:18px;padding:22px 24px;max-width:440px;width:100%}.ios-help__box .install-x{position:absolute;top:10px;right:12px;color:#161616}.ios-help__box h3{margin:0 0 10px;padding-right:28px}.ios-help__box ol{margin:0;padding-left:20px;line-height:1.8}
 @media print{.install-banner,.ios-help,.install-btn,.topbar-clock{display:none!important}}.topbar-info a,.topbar-info span{white-space:nowrap}
 @media(max-width:560px){.topbar-in{flex-wrap:nowrap}.topbar-info{min-width:0}.topbar-info a{font-size:.76rem}.topbar-clock svg{display:none}}
+
+/* SACCO application form */
+.apply-form{display:grid;gap:18px}
+.apply-card{border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:#fff;margin:0;min-width:0}
+.apply-card legend{display:flex;align-items:center;gap:10px;font-family:var(--font-heading);font-weight:800;font-size:1.05rem;padding:0 8px;float:none;width:auto}
+.apply-card legend span{display:inline-flex;width:28px;height:28px;border-radius:50%;background:#161616;color:var(--gold);align-items:center;justify-content:center;font-size:.8rem}
+.apply-card legend small{font-weight:500;color:var(--ink-500)}
+.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px 16px;margin-top:6px}
+.reg-badge{display:inline-block;margin:6px 0 18px;padding:14px 28px;border:2px dashed var(--gold);border-radius:14px;font-family:var(--font-heading);font-weight:800;font-size:clamp(1.4rem,5vw,2.2rem);letter-spacing:.04em;background:#fff8e6;color:#161616}
+.apply-card input[type=file]{padding:10px;border:1px dashed var(--line);border-radius:10px;background:#faf8f3;width:100%}

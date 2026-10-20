@@ -24,11 +24,12 @@ $__ico = [
     'settings'    => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
     'users'       => '<circle cx="12" cy="8" r="4"/><path d="M4 21c.6-4 4-6 8-6s7.4 2 8 6" stroke-linecap="round"/>',
 ];
-$__enqNew = 0; $__subs = 0; $__msgs = 0; $__supNew = 0;
+$__enqNew = 0; $__subs = 0; $__msgs = 0; $__supNew = 0; $__sacNew = 0;
 if (isset($conn)) {
     $__q = $conn->query("SELECT COUNT(*) c FROM enquiries WHERE status='new'"); if ($__q) $__enqNew = (int)$__q->fetch_assoc()['c'];
     $__q = $conn->query("SELECT COUNT(*) c FROM engagements WHERE status='pending'"); if ($__q) $__supNew = (int)$__q->fetch_assoc()['c'];
     $__q = $conn->query("SELECT COUNT(*) c FROM subscribers"); if ($__q) $__subs = (int)$__q->fetch_assoc()['c'];
+    try { $__q = $conn->query("SELECT COUNT(*) c FROM sacco_applications WHERE status='pending'"); if ($__q) $__sacNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
     $__q = $conn->query("SELECT COUNT(*) c FROM messages"); if ($__q) $__msgs = (int)$__q->fetch_assoc()['c'];
 }
 $__ico += [
@@ -43,6 +44,7 @@ $__ico += [
     'newsletters' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6" stroke-linecap="round"/>',
     'invitations' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 8l9 5 9-5M8 16h3" stroke-linecap="round"/>',
     'roles'      => '<path d="M12 3l8 3v6c0 4.500-3.400 7.800-8 9-4.600-1.200-8-4.500-8-9V6l8-3Z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/>',
+    'saccoapps'  => '<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4" stroke-linecap="round"/><circle cx="17" cy="17" r="3.500" fill="#fff"/><path d="M15.500 17l1 1 2-2" stroke-linecap="round"/>',
     'saccoadm'   => '<ellipse cx="9" cy="7" rx="6" ry="3"/><path d="M3 7v5c0 1.700 2.700 3 6 3s6-1.300 6-3V7M15 11.500c3 0 6 1 6 2.500v3c0 1.700-3 3-6.500 3"/>',
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
@@ -55,6 +57,7 @@ $__nav = [
         ['enquiries', 'enquiries.php', 'Enquiries', $__enqNew],
         ['support', 'support-requests.php', 'Support requests', $__supNew],
         ['saccoadm', 'sacco-manager.php', 'NUFA SACCO'],
+        ['saccoapps', 'sacco-applications.php', 'SACCO applications', $__sacNew],
         ['schedule', 'schedule.php', 'Schedule & reminders'],
         $__msgs > 0 ? ['messages', 'messages.php', 'Messages (earlier)', $__unread] : null,
     ])),
