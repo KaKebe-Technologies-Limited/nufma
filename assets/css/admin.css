@@ -257,3 +257,22 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 @media(max-width:860px){.login-split{grid-template-columns:1fr}.login-art{display:none}}
 
 .admin-brand img{background:#fff;border-radius:50%;padding:3px;width:38px;height:38px}
+
+/* ===== Brand alignment: charcoal + warm gold (matches the public site) ===== */
+:root{--brand-100:#F7EFDC;--brand-300:#E6CD94;--brand-500:#D4AF63;--brand-600:#B8923F;--brand-700:#8A6516;--ink:#111111;--cream:#F4F4F2;--cream-2:#ECECEA}
+.admin-sidebar{background:#111}
+.admin-brand small,.admin-nav a.active .admin-count{color:var(--brand-500)}
+.admin-nav a.active{background:var(--brand-500);color:#111}
+.admin-nav a.active .admin-count{background:#111;color:var(--brand-300)}
+.admin-btn-brand,.btn-brand{background:var(--brand-500);color:#111;box-shadow:none}
+.admin-btn-brand:hover,.btn-brand:hover{background:var(--brand-300);color:#111}
+.admin-topbar{border-bottom-color:var(--brand-500)}
+.admin-avatar{background:var(--brand-500);color:#111}
+.kpi{border-left-color:var(--brand-500)}
+.bars .bar i,.hbar i::after{background:var(--brand-500)}
+.admin-badge{background:var(--brand-100);color:var(--brand-700)}
+.admin-badge.gray{background:#ECECEA;color:#555}.admin-badge.red{background:#FBEAEA;color:#a32020}
+.login-pane{border-top-color:var(--brand-500)}
+.login-form .btn-brand{width:100%;padding:15px 24px;border-radius:999px;font-weight:700}
+.mem-regbox b{color:var(--brand-500)}
+.notice-inline{background:var(--brand-100);color:#4a3a10;border-left:4px solid var(--brand-500);padding:12px 16px;font-size:.86rem;margin-bottom:20px}

@@ -18,7 +18,7 @@ if (!$m) {
     $pageTitle = "Card not found — NUFA";
     $activeNav = "membership"; $base = "";
     include __DIR__ . "/includes/header.php";
-    echo '<section class="section bg-paper" style="padding-top:200px"><div class="container" style="text-align:center;max-width:560px"><h2>Membership card not found</h2><p class="lede" style="margin:14px auto 24px">This link is invalid, or the membership has not been approved.</p><a class="btn btn-brand" href="membership.php">Apply for membership</a></div></section>';
+    echo '<section class="section"><div class="container" style="text-align:center;max-width:560px"><h2>Membership card not found</h2><p class="lede" style="margin:14px auto 24px">This link is invalid, or the membership has not been approved.</p><a class="btn btn-gold" href="membership.php">Apply for membership</a></div></section>';
     include __DIR__ . "/includes/footer.php";
     exit;
 }
@@ -39,14 +39,14 @@ $pageDesc = "NUFA member verification";
 $activeNav = "membership"; $base = "";
 include __DIR__ . "/includes/header.php";
 ?>
-<section class="section bg-cream2 card-page" style="padding-top:170px">
+<section class="section section--soft">
   <div class="container" style="max-width:720px">
     <div class="card-actions no-print">
       <div>
         <h2 style="font-size:1.4rem">Your NUFA membership card</h2>
         <p style="color:var(--text-muted);font-size:.9rem;margin-top:4px">Print it or choose “Save as PDF” in the print dialog.</p>
       </div>
-      <button type="button" class="btn btn-brand btn-sm" onclick="window.print()">Print / Save PDF</button>
+      <button type="button" class="btn btn-gold btn-sm" onclick="window.print()">Print / Save PDF</button>
     </div>
 
     <div class="mcard <?php echo $expired ? 'is-expired' : ''; ?>" id="mcard">

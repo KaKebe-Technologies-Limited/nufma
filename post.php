@@ -1,110 +1,77 @@
 <?php
-require __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/ui.php";
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/schema.php";
 
-$slug = isset($_GET['slug']) ? $_GET['slug'] : '';
-$stmt = $conn->prepare("SELECT * FROM posts WHERE slug=? AND is_published=1 LIMIT 1");
-$stmt->bind_param("s", $slug);
-$stmt->execute();
-$post = $stmt->get_result()->fetch_assoc();
-
-if (!$post) {
-    header("Location: news.php");
-    exit;
-}
-
+$slug = preg_replace('/[^a-z0-9-]/i', '', $_GET['slug'] ?? '');
+$st = $conn->prepare("SELECT * FROM posts WHERE slug=? AND is_published=1 LIMIT 1");
+$st->bind_param("s", $slug);
+$st->execute();
+$post = $st->get_result()->fetch_assoc();
+if (!$post) { http_response_code(404); include __DIR__ . "/404.php"; exit; }
 $conn->query("UPDATE posts SET views = views + 1 WHERE id = " . (int)$post['id']);
 
-$pageTitle = htmlspecialchars($post['title']) . " | NUFA News";
-$pageDesc  = htmlspecialchars($post['excerpt']);
+$rel = $conn->prepare("SELECT title, slug, category, image, published_at FROM posts WHERE is_published=1 AND id<>? ORDER BY (category=?) DESC, published_at DESC LIMIT 3");
+$rel->bind_param("is", $post['id'], $post['category']);
+$rel->execute();
+$related = $rel->get_result()->fetch_all(MYSQLI_ASSOC);
+
+$pageTitle = $post['title'] . " | NUFA News & Stories";
+$pageDesc  = ui_excerpt($post['excerpt'] ?: $post['body'], 155);
 $activeNav = "news";
-$base = "";
-$ogImage = "assets/images/" . $post['image'];
 $canonicalPath = "post.php?slug=" . $post['slug'];
+$ogImage = "assets/images/" . $post['image'];
+$ogType = "article";
+$siteForLd = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+$schemaExtra = ['@context' => 'https://schema.org', '@type' => 'NewsArticle', 'headline' => $post['title'], 'datePublished' => date('c', strtotime($post['published_at'])),
+    'image' => [$siteForLd . '/assets/images/' . $post['image']], 'author' => ['@type' => 'Organization', 'name' => $post['author'] ?: 'NUFA'],
+    'publisher' => ['@type' => 'Organization', 'name' => 'Northern Uganda Filmmakers Association']];
 include __DIR__ . "/includes/header.php";
-?>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "NewsArticle",
-  "headline": <?php echo json_encode($post['title']); ?>,
-  "description": <?php echo json_encode($post['excerpt']); ?>,
-  "image": [<?php echo json_encode($siteUrl . "/assets/images/" . $post['image']); ?>],
-  "datePublished": "<?php echo date('c', strtotime($post['published_at'])); ?>",
-  "author": {"@type": "Organization", "name": <?php echo json_encode($post['author']); ?>},
-  "publisher": {
-    "@type": "Organization",
-    "name": "NUFA — Northern Uganda Filmmakers Association",
-    "logo": {"@type": "ImageObject", "url": "<?php echo $siteUrl; ?>/assets/images/logo/nufa-logo.png"}
-  }
-}
-</script>
-<?php
 
-$related = [];
-$stmt2 = $conn->prepare("SELECT * FROM posts WHERE is_published=1 AND id != ? ORDER BY published_at DESC LIMIT 3");
-$stmt2->bind_param("i", $post['id']);
-$stmt2->execute();
-$res2 = $stmt2->get_result();
-while ($r = $res2->fetch_assoc()) $related[] = $r;
+$shareUrl = urlencode($canonical);
+$shareText = urlencode($post['title']);
 ?>
-<a id="top"></a>
-
-<section class="page-hero" style="min-height:200px">
-  <div class="page-hero-bg"><img src="assets/images/<?php echo htmlspecialchars($post['image']); ?>" alt="" aria-hidden="true"></div>
-  <div class="container">
-    <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><a href="news.php">News</a><span>/</span><span><?php echo htmlspecialchars($post['category']); ?></span></div>
+<section class="page-hero" style="padding-block:clamp(48px,7vw,84px)">
+  <div class="page-hero-bg"><img src="assets/images/<?php echo ui_e($post['image']); ?>" alt="" fetchpriority="high"></div>
+  <div class="container article-head">
+    <nav class="breadcrumb" aria-label="Breadcrumb"><a href="index.php">Home</a><span aria-hidden="true">/</span><a href="news.php">News &amp; Stories</a><span aria-hidden="true">/</span><a href="news.php?cat=<?php echo urlencode($post['category']); ?>"><?php echo ui_e($post['category']); ?></a></nav>
+    <div class="article-meta"><span class="chip chip--dark" style="border:1px solid var(--gold)"><?php echo ui_e($post['category']); ?></span><span><?php echo ui_date($post['published_at']); ?></span><span>By <?php echo ui_e($post['author'] ?: 'NUFA Team'); ?></span></div>
+    <h1 style="max-width:22ch"><?php echo ui_e($post['title']); ?></h1>
+    <?php if ($post['excerpt']): ?><p><?php echo ui_e($post['excerpt']); ?></p><?php endif; ?>
   </div>
 </section>
 
-<article class="section bg-paper">
-  <div class="container" style="max-width:900px">
-    <div class="article-meta-row" data-reveal>
-      <span class="news-tag"><?php echo htmlspecialchars($post['category']); ?></span>
-      <span class="news-date"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 10h18M7 3v4M17 3v4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/></svg> <?php echo date("d F Y", strtotime($post['published_at'])); ?></span>
-      <span class="news-date">By <?php echo htmlspecialchars($post['author']); ?></span>
-    </div>
-    <h1 style="max-width:22ch;margin-bottom:28px" data-reveal><?php echo htmlspecialchars($post['title']); ?></h1>
+<article class="section">
+  <div class="container">
+    <figure class="article-figure" data-reveal>
+      <img src="assets/images/<?php echo ui_e($post['image']); ?>" alt="<?php echo ui_e($post['image_caption'] ?: $post['title']); ?>" width="1600" height="900">
+      <?php if (!empty($post['image_caption']) || !empty($post['image_credit'])): ?><figcaption><?php echo ui_e($post['image_caption'] ?? ''); ?><?php echo !empty($post['image_credit']) ? ' <em>Photo: ' . ui_e($post['image_credit']) . '</em>' : ''; ?></figcaption><?php endif; ?>
+    </figure>
+    <div class="article-body"><?php echo $post['body']; ?></div>
 
-    <div class="article-hero-img" data-reveal>
-      <img src="assets/images/<?php echo htmlspecialchars($post['image']); ?>" alt="<?php echo htmlspecialchars($post['title']); ?>">
+    <div class="share-row" aria-label="Share this article">
+      <span>Share:</span>
+      <a href="https://wa.me/?text=<?php echo $shareText . '%20' . $shareUrl; ?>" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $shareUrl; ?>" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://twitter.com/intent/tweet?url=<?php echo $shareUrl; ?>&amp;text=<?php echo $shareText; ?>" target="_blank" rel="noopener">X</a>
+      <a href="https://www.linkedin.com/sharing/share-offsite/?url=<?php echo $shareUrl; ?>" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:?subject=<?php echo $shareText; ?>&amp;body=<?php echo $shareUrl; ?>">Email</a>
     </div>
-
-    <div class="article-body" data-reveal>
-      <?php echo $post['body']; ?>
-    </div>
-
-    <div style="max-width:74ch;margin:40px auto 0;display:flex;gap:12px;flex-wrap:wrap">
-      <a href="news.php" class="btn-ghost">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="transform:rotate(180deg)"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Back to Newsroom
-      </a>
-    </div>
+    <p style="max-width:70ch;margin:30px auto 0"><a href="news.php" class="link-arrow" style="transform:none">Back to News &amp; Stories</a></p>
   </div>
 </article>
 
-<?php if (count($related)): ?>
-<section class="section-tight bg-cream2">
+<?php if ($related): ?>
+<section class="section section--soft">
   <div class="container">
-    <div class="section-head center">
-      <div class="eyebrow">Keep Reading</div>
-      <h2 style="margin-top:12px">More from NUFA</h2>
-    </div>
-    <div class="grid-3" data-reveal-stagger>
+    <div class="section-head center"><div class="eyebrow">Keep reading</div><h2>Related stories</h2></div>
+    <div class="grid grid-3" data-reveal-stagger>
       <?php foreach ($related as $r): ?>
-      <article class="news-card">
-        <a href="post.php?slug=<?php echo urlencode($r['slug']); ?>">
-          <div class="nc-media"><img src="assets/images/<?php echo htmlspecialchars($r['image']); ?>" alt="<?php echo htmlspecialchars($r['title']); ?>" loading="lazy"></div>
-          <div class="nc-body">
-            <span class="news-tag"><?php echo htmlspecialchars($r['category']); ?></span>
-            <h3><?php echo htmlspecialchars($r['title']); ?></h3>
-            <p><?php echo htmlspecialchars($r['excerpt']); ?></p>
-          </div>
-        </a>
-      </article>
+      <article class="card"><a href="post.php?slug=<?php echo urlencode($r['slug']); ?>" style="display:flex;flex-direction:column;height:100%"><div class="card-media"><?php echo ui_img($r['image'], ''); ?></div>
+        <div class="card-body"><div class="card-meta"><b><?php echo ui_e($r['category']); ?></b><span><?php echo ui_date($r['published_at']); ?></span></div><h3><?php echo ui_e($r['title']); ?></h3><span class="link-arrow">Read story</span></div></a></article>
       <?php endforeach; ?>
     </div>
   </div>
 </section>
 <?php endif; ?>
-
 <?php include __DIR__ . "/includes/footer.php"; ?>

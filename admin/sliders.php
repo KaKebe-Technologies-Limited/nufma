@@ -1,5 +1,5 @@
 <?php
-$adminTitle = "Hero Slider";
+$adminTitle = "Hero Images";
 $adminNav = "sliders";
 require __DIR__ . "/includes/auth.php";
 

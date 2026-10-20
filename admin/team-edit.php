@@ -3,12 +3,12 @@ $adminNav = "team";
 require __DIR__ . "/includes/auth.php";
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$t = ['name'=>'', 'role'=>'', 'photo'=>'', 'facebook_url'=>'', 'x_url'=>'', 'instagram_url'=>'', 'linkedin_url'=>'', 'sort_order'=>0, 'is_active'=>1];
+$t = ['name'=>'', 'role'=>'', 'photo'=>'', 'facebook_url'=>'', 'x_url'=>'', 'instagram_url'=>'', 'linkedin_url'=>'', 'bio'=>'', 'sort_order'=>0, 'is_active'=>1];
 if ($id) {
     $r = $conn->query("SELECT * FROM team_members WHERE id=$id")->fetch_assoc();
     if ($r) $t = $r; else { header("Location: team.php"); exit; }
 }
-$adminTitle = $id ? "Edit Team Member" : "New Team Member";
+$adminTitle = $id ? "Edit Leadership Profile" : "New Leadership Profile";
 
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $x = trim($_POST['x_url'] ?? '');
     $ig = trim($_POST['instagram_url'] ?? '');
     $li = trim($_POST['linkedin_url'] ?? '');
+    $bio = trim($_POST['bio'] ?? '');
     $sortOrder = (int)($_POST['sort_order'] ?? 0);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
     $photo = $t['photo'];
@@ -40,15 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$error && $name === '') $error = "Name is required.";
-    if (!$error && $photo === '') $error = "Please upload a photo.";
+    
 
     if (!$error) {
         if ($id) {
-            $stmt = $conn->prepare("UPDATE team_members SET name=?, role=?, photo=?, facebook_url=?, x_url=?, instagram_url=?, linkedin_url=?, sort_order=?, is_active=? WHERE id=?");
-            $stmt->bind_param("sssssssiii", $name, $role, $photo, $fb, $x, $ig, $li, $sortOrder, $isActive, $id);
+            $stmt = $conn->prepare("UPDATE team_members SET name=?, role=?, photo=?, facebook_url=?, x_url=?, instagram_url=?, linkedin_url=?, bio=?, sort_order=?, is_active=? WHERE id=?");
+            $stmt->bind_param("ssssssssiii", $name, $role, $photo, $fb, $x, $ig, $li, $bio, $sortOrder, $isActive, $id);
         } else {
-            $stmt = $conn->prepare("INSERT INTO team_members (name, role, photo, facebook_url, x_url, instagram_url, linkedin_url, sort_order, is_active) VALUES (?,?,?,?,?,?,?,?,?)");
-            $stmt->bind_param("sssssssii", $name, $role, $photo, $fb, $x, $ig, $li, $sortOrder, $isActive);
+            $stmt = $conn->prepare("INSERT INTO team_members (name, role, photo, facebook_url, x_url, instagram_url, linkedin_url, bio, sort_order, is_active) VALUES (?,?,?,?,?,?,?,?,?,?)");
+            $stmt->bind_param("ssssssssii", $name, $role, $photo, $fb, $x, $ig, $li, $bio, $sortOrder, $isActive);
         }
         $stmt->execute();
         header("Location: team.php?saved=1");
@@ -115,6 +116,8 @@ include __DIR__ . "/includes/admin-header.php";
         <input type="url" name="linkedin_url" value="<?php echo htmlspecialchars($t['linkedin_url']); ?>" placeholder="https://">
       </div>
     </div>
+
+    <div class="field"><label>Professional biography (shown on the About page)</label><textarea name="bio" style="min-height:110px" maxlength="1200"><?php echo htmlspecialchars($t['bio'] ?? ''); ?></textarea><span class="admin-help">Leave blank until the biography has been approved — nothing is invented.</span></div>
 
     <div class="admin-form-grid">
       <div class="field">

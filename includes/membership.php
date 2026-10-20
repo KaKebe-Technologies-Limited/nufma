@@ -28,7 +28,7 @@ function mem_defaults() {
         'card_note'            => 'This card remains the property of NUFA. Valid only for the period shown.',
         'email_from'           => 'info@nufa.media',
         'email_from_name'      => 'NUFA',
-        'admin_notify_email'   => 'info@nufa.media',
+        'admin_notify_email'   => 'nuf.association@gmail.com',
         'send_receipt_email'   => '1',
         'notify_admin'         => '1',
         'email_received_subject' => 'We received your NUFA membership application',

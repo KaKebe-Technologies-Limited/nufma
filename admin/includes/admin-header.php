@@ -5,8 +5,8 @@ require_once __DIR__ . "/../../includes/membership.php";
 
 $__pending = 0; $__unread = 0;
 if (isset($conn)) {
-    $r = $conn->query("SELECT COUNT(*) c FROM members WHERE status='pending'");  if ($r) $__pending = (int)$r->fetch_assoc()['c'];
-    $r = $conn->query("SELECT COUNT(*) c FROM messages WHERE is_read=0");        if ($r) $__unread  = (int)$r->fetch_assoc()['c'];
+    $__q = $conn->query("SELECT COUNT(*) c FROM members WHERE status='pending'");  if ($__q) $__pending = (int)$__q->fetch_assoc()['c'];
+    $__q = $conn->query("SELECT COUNT(*) c FROM messages WHERE is_read=0");        if ($__q) $__unread = (int)$__q->fetch_assoc()['c'];
 }
 
 $__ico = [
@@ -24,22 +24,36 @@ $__ico = [
     'settings'    => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
     'users'       => '<circle cx="12" cy="8" r="4"/><path d="M4 21c.6-4 4-6 8-6s7.4 2 8 6" stroke-linecap="round"/>',
 ];
+$__enqNew = 0; $__subs = 0; $__msgs = 0;
+if (isset($conn)) {
+    $__q = $conn->query("SELECT COUNT(*) c FROM enquiries WHERE status='new'"); if ($__q) $__enqNew = (int)$__q->fetch_assoc()['c'];
+    $__q = $conn->query("SELECT COUNT(*) c FROM subscribers"); if ($__q) $__subs = (int)$__q->fetch_assoc()['c'];
+    $__q = $conn->query("SELECT COUNT(*) c FROM messages"); if ($__q) $__msgs = (int)$__q->fetch_assoc()['c'];
+}
+$__ico += [
+    'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
+    'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
+    'enquiries'  => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>',
+];
 $__nav = [
     'Overview' => [['dashboard', 'index.php', 'Dashboard']],
-    'Association' => [
+    'Association' => array_values(array_filter([
         ['members', 'members.php', 'Membership', $__pending],
-        ['messages', 'messages.php', 'Messages', $__unread],
-        ['subscribers', 'subscribers.php', 'Subscribers'],
-    ],
+        ['enquiries', 'enquiries.php', 'Enquiries', $__enqNew],
+        $__msgs > 0 ? ['messages', 'messages.php', 'Messages (earlier)', $__unread] : null,
+        $__subs > 0 ? ['subscribers', 'subscribers.php', 'Subscribers (earlier)'] : null,
+    ])),
     'Website content' => [
-        ['posts', 'posts.php', 'News & Posts'],
+        ['posts', 'posts.php', 'News & Stories'],
         ['content', 'content.php', 'Page Content'],
-        ['sliders', 'sliders.php', 'Hero Slider'],
-        ['gallery', 'gallery.php', 'Gallery'],
+        ['programmes', 'programmes.php', 'Programmes'],
+        ['resources', 'resources.php', 'Resources'],
+        ['gallery', 'gallery.php', 'Gallery & Videos'],
+        ['sliders', 'sliders.php', 'Hero Images'],
     ],
     'Awards & people' => [
         ['awards', 'award-editions.php', 'Award Editions'],
-        ['team', 'team.php', 'Team'],
+        ['team', 'team.php', 'Leadership'],
         ['partners', 'partners.php', 'Partners'],
     ],
     'System' => [

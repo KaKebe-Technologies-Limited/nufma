@@ -1,169 +1,188 @@
 <?php
 /**
- * Editable content schema per page. Each entry becomes one field in the
- * admin "Page Content" editor (admin/content-edit.php?page=<key>).
+ * Editable page content, one schema per page. Each field appears in
+ * admin → Page Content. Defaults are the approved wording from the NUFA master
+ * brief; nothing here states an unverified fact. Clearing a field in the admin
+ * restores its default.
  *
- * type: text (single line), textarea (plain paragraph), html (rich text,
- * output unescaped — may contain simple tags like <em> or <span class="serif">),
- * image (file upload, stored under assets/images/uploads/content/).
- *
- * Defaults match the copy the site shipped with, so nothing changes on the
- * public pages until an admin edits a field.
+ * type: text · textarea (plain text) · html (limited markup allowed) · image (upload)
  */
-
 $CMS_SCHEMAS = [];
 
-$CMS_SCHEMAS['home'] = [
-    'label' => 'Home Page',
-    'fields' => [
-        'hero_eyebrow'     => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'Northern Uganda Filmmakers Association'],
-        'hero_heading'     => ['label' => 'Hero — heading (HTML allowed, e.g. <em>word</em>)', 'type' => 'html', 'default' => '<span class="h1-lead">Celebrating the</span> <em>spirit</em> of Northern Cinema'],
-        'hero_stat_number' => ['label' => 'Hero — stat number', 'type' => 'text', 'default' => '1,000+'],
-        'hero_stat_label'  => ['label' => 'Hero — stat label', 'type' => 'text', 'default' => 'NUFA26 gala attendees'],
+/* ------------------------------------------------------------------ HOME */
+$CMS_SCHEMAS['home'] = ['label' => 'Home Page', 'fields' => [
+    'hero_line1'   => ['label' => 'Hero — heading line 1', 'type' => 'text', 'default' => 'Our Stories.'],
+    'hero_line2'   => ['label' => 'Hero — heading line 2', 'type' => 'text', 'default' => 'Our Culture.'],
+    'hero_line3'   => ['label' => 'Hero — heading line 3 (gold)', 'type' => 'text', 'default' => 'Our Future.'],
+    'hero_lead'    => ['label' => 'Hero — supporting copy', 'type' => 'textarea', 'default' => "The Northern Uganda Filmmakers Association brings filmmakers together to strengthen the craft of storytelling, celebrate creative excellence, and build a stronger future for the film industry in Northern Uganda."],
+    'who_eyebrow'  => ['label' => 'Who We Are — eyebrow', 'type' => 'text', 'default' => 'Who We Are'],
+    'who_heading'  => ['label' => 'Who We Are — heading', 'type' => 'text', 'default' => "A Stronger Future for Northern Uganda's Film Industry"],
+    'who_body'     => ['label' => 'Who We Are — copy', 'type' => 'textarea', 'default' => "NUFA is committed to bringing filmmakers and industry stakeholders together to develop talent, encourage collaboration, recognise achievement, and promote authentic stories from Northern Uganda.\n\nWe believe film is more than entertainment. It is a powerful medium for preserving culture, sharing experiences, inspiring communities, and connecting people across generations."],
+    'who_image'    => ['label' => 'Who We Are — image', 'type' => 'image', 'default' => 'action2.webp'],
+    'awards_heading' => ['label' => 'NUFA Awards feature — heading', 'type' => 'text', 'default' => 'Celebrating the Stories That Move Us'],
+    'awards_body'  => ['label' => 'NUFA Awards feature — copy', 'type' => 'textarea', 'default' => "NUFA Awards celebrates the creativity, dedication, and achievements of filmmakers and audiovisual creatives from Northern Uganda. It creates a platform to recognise outstanding work, encourage professional excellence, connect industry stakeholders, and inspire the next generation of storytellers."],
+    'awards_image' => ['label' => 'NUFA Awards feature — background image', 'type' => 'image', 'default' => 'slider/hero/hero-slide-2.webp'],
+    'prog_heading' => ['label' => 'Programmes — heading', 'type' => 'text', 'default' => 'Programmes and Initiatives'],
+    'prog_lede'    => ['label' => 'Programmes — intro', 'type' => 'textarea', 'default' => "The areas of work NUFA is building. Status labels appear only where an activity's status has been confirmed."],
+    'impact_heading' => ['label' => 'Our Impact — heading', 'type' => 'text', 'default' => 'Building the Foundations for Better Stories'],
+    'impact_body'  => ['label' => 'Our Impact — copy', 'type' => 'textarea', 'default' => "NUFA's long-term ambition is to strengthen the people, skills, relationships, and opportunities that make a thriving regional film industry possible."],
+    'impact1_title' => ['label' => 'Impact pillar 1 — title', 'type' => 'text', 'default' => 'People and skills'],
+    'impact1_text' => ['label' => 'Impact pillar 1 — text', 'type' => 'textarea', 'default' => 'Training, mentorship and professional development that help emerging and established filmmakers grow.'],
+    'impact2_title' => ['label' => 'Impact pillar 2 — title', 'type' => 'text', 'default' => 'Relationships and collaboration'],
+    'impact2_text' => ['label' => 'Impact pillar 2 — text', 'type' => 'textarea', 'default' => 'A connected community of filmmakers, institutions and partners working together across Northern Uganda.'],
+    'impact3_title' => ['label' => 'Impact pillar 3 — title', 'type' => 'text', 'default' => 'Recognition and opportunity'],
+    'impact3_text' => ['label' => 'Impact pillar 3 — text', 'type' => 'textarea', 'default' => 'Platforms such as NUFA Awards that celebrate achievement and open doors for the region’s storytellers.'],
+    'partner_heading' => ['label' => 'Partnership feature — heading', 'type' => 'text', 'default' => 'Help Shape the Future of Film in Northern Uganda'],
+    'partner_body' => ['label' => 'Partnership feature — copy', 'type' => 'textarea', 'default' => "A stronger film industry requires collaboration. NUFA welcomes engagement with government institutions, cultural organisations, development partners, sponsors, educational institutions, private companies, and individuals who share a commitment to creative development and authentic storytelling."],
+    'partner_image' => ['label' => 'Partnership feature — background image', 'type' => 'image', 'default' => 'production/karamoja-shoot-2.webp'],
+]];
 
-        'assoc_eyebrow' => ['label' => 'Association — eyebrow', 'type' => 'text', 'default' => 'The Association'],
-        'assoc_heading' => ['label' => 'Association — heading (HTML allowed)', 'type' => 'html', 'default' => 'A regional home for the people telling <span class="serif">Northern Uganda\'s</span> stories'],
-        'assoc_lede'    => ['label' => 'Association — paragraph', 'type' => 'textarea', 'default' => "NUFA is a registered collective of filmmakers — camera operators, editors, actors, writers, costume and set designers — building a film industry where local stories are made, owned and celebrated by the people who live them."],
-        'assoc1_title'  => ['label' => 'Association — item 1 title', 'type' => 'text', 'default' => 'Training & capacity building'],
-        'assoc1_desc'   => ['label' => 'Association — item 1 text', 'type' => 'textarea', 'default' => 'Screenwriting, directing and technical masterclasses reaching thousands of creatives.'],
-        'assoc2_title'  => ['label' => 'Association — item 2 title', 'type' => 'text', 'default' => 'Recognition & platform'],
-        'assoc2_desc'   => ['label' => 'Association — item 2 text', 'type' => 'textarea', 'default' => 'The NUFA Awards give technical and creative achievement a regional stage.'],
-        'assoc3_title'  => ['label' => 'Association — item 3 title', 'type' => 'text', 'default' => 'Advocacy & policy'],
-        'assoc3_desc'   => ['label' => 'Association — item 3 text', 'type' => 'textarea', 'default' => 'Championing the policies and market access that make film a viable career.'],
+/* ----------------------------------------------------------------- ABOUT */
+$CMS_SCHEMAS['about'] = ['label' => 'About NUFA', 'fields' => [
+    'hero_image'   => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'production/crew-monitor-check.webp'],
+    'hero_lede'    => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "A regional association bringing together filmmakers and other stakeholders in the film and audiovisual industry in Northern Uganda."],
+    'story_heading' => ['label' => 'Our Story — heading', 'type' => 'text', 'default' => 'Our Story'],
+    'story_body'   => ['label' => 'Our Story — narrative (HTML, one <p> per paragraph)', 'type' => 'html', 'default' => "<p>The Northern Uganda Filmmakers Association is a regional association that brings together filmmakers and other stakeholders in the film and audiovisual industry in Northern Uganda. NUFA seeks to strengthen the regional film ecosystem by supporting filmmakers, encouraging collaboration, improving professional capacity, recognising creative achievement, and promoting stories that reflect the region's people, culture, experiences, identity, and aspirations.</p><p>Northern Uganda has a rich cultural heritage and a powerful collection of stories shaped by its communities, traditions, history, resilience, and changing social and economic realities. The region's experience of prolonged conflict, including approximately two decades of Lord's Resistance Army insurgency, has influenced generations and shaped many of the stories that deserve to be documented and understood.</p><p>NUFA recognises the importance of developing a stronger, more professional, inclusive, and sustainable film industry that enables local creatives to tell their stories with authenticity, technical excellence, and creative freedom. Through film recognition, professional development, industry engagement, collaboration, and partnerships, NUFA aims to contribute to the growth of the creative economy while helping Northern Uganda's stories reach wider audiences.</p>"],
+    'story_image'  => ['label' => 'Our Story — image', 'type' => 'image', 'default' => 'production/cultural-portrait.webp'],
+    'vision_text'  => ['label' => 'Vision statement (DRAFT — pending leadership approval)', 'type' => 'textarea', 'default' => "To build a vibrant, inclusive, and sustainable film industry in Northern Uganda that celebrates cultural identity, promotes authentic storytelling, and competes confidently on national and international platforms."],
+    'mission_text' => ['label' => 'Mission statement (DRAFT — pending leadership approval)', 'type' => 'textarea', 'default' => "To unite and empower filmmakers through professional development, industry recognition, collaboration, resource mobilisation, and opportunities that strengthen film production, creative enterprise, and the preservation of Northern Uganda's stories."],
+    'val1_title' => ['label' => 'Value 1 — title', 'type' => 'text', 'default' => 'Authenticity'],
+    'val1_text'  => ['label' => 'Value 1 — text', 'type' => 'textarea', 'default' => 'Promoting truthful, meaningful, and culturally grounded storytelling.'],
+    'val2_title' => ['label' => 'Value 2 — title', 'type' => 'text', 'default' => 'Professionalism'],
+    'val2_text'  => ['label' => 'Value 2 — text', 'type' => 'textarea', 'default' => 'Encouraging high standards in film production, management, and industry practice.'],
+    'val3_title' => ['label' => 'Value 3 — title', 'type' => 'text', 'default' => 'Collaboration'],
+    'val3_text'  => ['label' => 'Value 3 — text', 'type' => 'textarea', 'default' => 'Building partnerships among filmmakers, institutions, communities, and creative professionals.'],
+    'val4_title' => ['label' => 'Value 4 — title', 'type' => 'text', 'default' => 'Inclusion'],
+    'val4_text'  => ['label' => 'Value 4 — text', 'type' => 'textarea', 'default' => 'Expanding opportunities for emerging filmmakers, women, young people, and underrepresented voices.'],
+    'val5_title' => ['label' => 'Value 5 — title', 'type' => 'text', 'default' => 'Cultural Identity'],
+    'val5_text'  => ['label' => 'Value 5 — text', 'type' => 'textarea', 'default' => "Preserving and promoting Northern Uganda's cultures, languages, traditions, and lived experiences."],
+    'val6_title' => ['label' => 'Value 6 — title', 'type' => 'text', 'default' => 'Innovation'],
+    'val6_text'  => ['label' => 'Value 6 — text', 'type' => 'textarea', 'default' => 'Embracing technology, new production methods, and evolving distribution opportunities.'],
+    'val7_title' => ['label' => 'Value 7 — title', 'type' => 'text', 'default' => 'Integrity'],
+    'val7_text'  => ['label' => 'Value 7 — text', 'type' => 'textarea', 'default' => 'Promoting accountability, transparency, respect, and responsible representation.'],
+    'leadership_note' => ['label' => 'Leadership — intro / note', 'type' => 'textarea', 'default' => "The people guiding NUFA. Profiles are published only once names, roles and portraits have been approved by the association."],
+    'membership_intro' => ['label' => 'Membership — intro', 'type' => 'textarea', 'default' => "NUFA membership is intended to connect filmmakers and audiovisual creatives with opportunities for collaboration, professional development, industry engagement, recognition, and information sharing."],
+    'membership_criteria' => ['label' => 'Membership — criteria note', 'type' => 'textarea', 'default' => "Applications are subject to NUFA's membership criteria and confirmation process. Submitting an application does not automatically make someone a member. Formal membership requirements are awaiting confirmation."],
+]];
 
-        'stat1_number' => ['label' => 'Stat 1 — number', 'type' => 'text', 'default' => '6,700+'],
-        'stat1_label'  => ['label' => 'Stat 1 — label', 'type' => 'text', 'default' => 'People reached through NUFA programmes'],
-        'stat2_number' => ['label' => 'Stat 2 — number', 'type' => 'text', 'default' => '92'],
-        'stat2_label'  => ['label' => 'Stat 2 — label', 'type' => 'text', 'default' => 'Film submissions to NUFA26 — up 31% on 2025'],
-        'stat3_number' => ['label' => 'Stat 3 — number', 'type' => 'text', 'default' => '4'],
-        'stat3_label'  => ['label' => 'Stat 3 — label', 'type' => 'text', 'default' => 'Regions united — Acholi, Lango, West Nile, Karamoja'],
-        'stat4_number' => ['label' => 'Stat 4 — number', 'type' => 'text', 'default' => '2027'],
-        'stat4_label'  => ['label' => 'Stat 4 — label', 'type' => 'text', 'default' => 'Next edition of the NUFA Awards'],
+/* ---------------------------------------------------------------- AWARDS */
+$CMS_SCHEMAS['awards'] = ['label' => 'NUFA Awards (landing page)', 'fields' => [
+    'hero_image'  => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'slider/hero/hero-slide-3.webp'],
+    'hero_heading' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => 'Recognising Excellence. Celebrating Our Stories.'],
+    'hero_lede'   => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "NUFA Awards celebrates the talent, creativity, technical skill, and commitment of filmmakers and audiovisual creatives contributing to Northern Uganda's film industry."],
+    'purpose_heading' => ['label' => 'Purpose — heading', 'type' => 'text', 'default' => 'Why the NUFA Awards matter'],
+    'purpose_body' => ['label' => 'Purpose — copy', 'type' => 'textarea', 'default' => "The awards platform recognises creative achievement, inspires emerging talent, strengthens industry relationships, and brings audiences closer to regional filmmaking.\n\nNUFA Awards 2025 was the association's maiden edition and recognised filmmaking in Northern Uganda."],
+    'participation_body' => ['label' => 'Participation information', 'type' => 'textarea', 'default' => "Dates, venue, eligibility, submission process, categories, rules, deadlines, nominees, winners, tickets and sponsorship opportunities are published here only when officially confirmed by NUFA. For questions about participation, please contact the awards team."],
+    'submission_url' => ['label' => 'Official submission platform link (leave blank unless officially confirmed)', 'type' => 'text', 'default' => ''],
+]];
 
-        'awards_eyebrow' => ['label' => 'Awards teaser — eyebrow', 'type' => 'text', 'default' => 'The NUFA Awards'],
-        'awards_heading' => ['label' => 'Awards teaser — heading (HTML allowed)', 'type' => 'html', 'default' => 'Two editions strong. <span class="serif">One big stage ahead.</span>'],
-        'awards_lede'    => ['label' => 'Awards teaser — paragraph', 'type' => 'textarea', 'default' => "2025 and 2026 are history — 2027 is where we're headed. Every edition brings Northern Uganda's finest storytellers to Acholi Inn, Gulu."],
+/* ------------------------------------------------------------ PROGRAMMES */
+$CMS_SCHEMAS['programmes'] = ['label' => 'Programmes (landing page)', 'fields' => [
+    'hero_image'  => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'production/on-set-action.webp'],
+    'hero_lede'   => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "NUFA's programme areas are designed to strengthen skills, create pathways for emerging talent, connect filmmakers with audiences, support creative enterprise, and protect authentic storytelling."],
+    'status_note' => ['label' => 'Status note', 'type' => 'textarea', 'default' => "Programme statuses (Planned, Ongoing, Completed, Under Development) are shown only where they have been confirmed by NUFA."],
+]];
 
-        'why_eyebrow' => ['label' => 'Why NUFA — eyebrow', 'type' => 'text', 'default' => 'Why NUFA'],
-        'why_heading' => ['label' => 'Why NUFA — heading (HTML allowed)', 'type' => 'html', 'default' => 'Built for filmmakers, <span class="serif">by filmmakers</span>'],
-        'why1_title'  => ['label' => 'Why NUFA — card 1 title', 'type' => 'text', 'default' => 'Mentorship that shows up'],
-        'why1_desc'   => ['label' => 'Why NUFA — card 1 text', 'type' => 'textarea', 'default' => 'Guilds and workshops led by working professionals, in camera, editing, sound, writing and design.'],
-        'why2_title'  => ['label' => 'Why NUFA — card 2 title', 'type' => 'text', 'default' => 'A stage that recognises you'],
-        'why2_desc'   => ['label' => 'Why NUFA — card 2 text', 'type' => 'textarea', 'default' => 'The NUFA Awards put technical craft — not just star power — in the spotlight every edition.'],
-        'why3_title'  => ['label' => 'Why NUFA — card 3 title', 'type' => 'text', 'default' => 'A network across the North'],
-        'why3_desc'   => ['label' => 'Why NUFA — card 3 text', 'type' => 'textarea', 'default' => 'One collective spanning Acholi, Lango, West Nile and Karamoja — production support included.'],
+/* ----------------------------------------------------------------- SACCO */
+$CMS_SCHEMAS['sacco'] = ['label' => 'NUFA SACCO', 'fields' => [
+    'hero_image'  => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'front1.webp'],
+    'hero_heading' => ['label' => 'Heading', 'type' => 'text', 'default' => 'Building Financial Resilience for Filmmakers'],
+    'status_text' => ['label' => 'Status banner', 'type' => 'textarea', 'default' => "The NUFA SACCO is a proposed initiative and is under development. It is not yet registered, authorised or operational. NUFA is not collecting deposits, advertising loans or accepting loan applications."],
+    'intro_body'  => ['label' => 'Introduction', 'type' => 'textarea', 'default' => "The proposed NUFA SACCO reflects an ambition to explore practical ways of strengthening financial inclusion, savings culture, access to responsible financial services, and long-term sustainability for filmmakers and creative professionals.\n\nThe initiative is intended to explore how a structured member-focused financial model could support the economic resilience of the film community while encouraging financial literacy, collective responsibility, and sustainable creative enterprise."],
+    'rationale'   => ['label' => 'Background and rationale', 'type' => 'html', 'default' => "<p>Creative careers are often project-based and income can be irregular. A well-governed, member-owned financial cooperative could help filmmakers plan, save and build resilience. Whether and how such a model can be established is still being explored.</p>"],
+    'objectives'  => ['label' => 'Intended objectives', 'type' => 'html', 'default' => "<ul><li>Explore a member-focused model for financial inclusion in the film community</li><li>Encourage a savings culture and financial literacy among creatives</li><li>Understand the governance and regulatory requirements before any launch</li></ul>"],
+    'areas'       => ['label' => 'Potential areas of development', 'type' => 'html', 'default' => "<ul><li>Savings and financial literacy</li><li>Member education</li><li>Responsible access to credit, subject to applicable approvals</li><li>Financial planning for creative professionals</li><li>Governance and member participation</li><li>Partnerships with appropriate financial institutions</li></ul>"],
+    'benefits'    => ['label' => 'Proposed benefits (no promises of returns)', 'type' => 'html', 'default' => "<p>Any benefits would depend on the final structure, member decisions and regulatory approval. NUFA makes no promises about loan amounts, interest rates, dividends, returns or guaranteed benefits.</p>"],
+    'development_status' => ['label' => 'Development status', 'type' => 'html', 'default' => "<p><strong>Status: proposed / under development.</strong> Formal progress will be published on this page once confirmed.</p>"],
+    'governance'  => ['label' => 'Governance and regulatory considerations', 'type' => 'html', 'default' => "<p>A SACCO must be formally established, registered and authorised under applicable Ugandan law before it can accept member savings or provide credit. NUFA will seek appropriate professional and regulatory guidance and will communicate any decision to members.</p>"],
+    'faq'         => ['label' => 'Frequently asked questions (HTML: repeat <details><summary>Question</summary><div class="ans">Answer</div></details>)', 'type' => 'html', 'default' => "<details><summary>Is the NUFA SACCO operational?</summary><div class=\"ans\">No. It is a proposed initiative under development. It is not registered or authorised and does not currently accept deposits or loan applications.</div></details><details><summary>Can I deposit money or apply for a loan?</summary><div class=\"ans\">No. Please do not send money to anyone claiming to represent a NUFA SACCO. NUFA will announce formally if and when services become available.</div></details><details><summary>How can I stay informed?</summary><div class=\"ans\">Submit the expression-of-interest form below. We will only use your details to share formal progress updates.</div></details><details><summary>Will members receive guaranteed returns?</summary><div class=\"ans\">No. NUFA does not promise interest, dividends, returns or any guaranteed benefit.</div></details>"],
+]];
 
-        'cta_eyebrow' => ['label' => 'Bottom CTA — eyebrow', 'type' => 'text', 'default' => 'Accelerate Our Impact'],
-        'cta_heading' => ['label' => 'Bottom CTA — heading (HTML allowed)', 'type' => 'html', 'default' => 'Become a sponsor of the <span class="serif">NUFA Awards 2027</span>'],
-        'cta_lede'    => ['label' => 'Bottom CTA — paragraph', 'type' => 'textarea', 'default' => "Put your brand behind the region's biggest night in film — and the training that happens all year round."],
-    ],
-];
+/* --------------------------------------------------------------- NETWORK */
+$CMS_SCHEMAS['network'] = ['label' => 'Industry Network', 'fields' => [
+    'hero_image'  => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'nufa2.webp'],
+    'hero_lede'   => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "A planned space to connect filmmakers, production professionals, creative organisations, and industry stakeholders across Northern Uganda."],
+    'status_text' => ['label' => 'Status note', 'type' => 'textarea', 'default' => "The public filmmaker directory is planned for a later phase. Until then you can register your interest below. No profiles are published without the owner's explicit consent, and listing in the directory does not imply NUFA membership."],
+    'privacy_note' => ['label' => 'Privacy note', 'type' => 'textarea', 'default' => "This will be a privacy-conscious directory: private contact details are never published without explicit consent."],
+]];
 
-$CMS_SCHEMAS['about'] = [
-    'label' => 'About Page',
-    'fields' => [
-        'hero_image'   => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2025/nufa25-11.webp'],
-        'hero_eyebrow' => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'Our Association'],
-        'hero_heading' => ['label' => 'Hero — heading (HTML allowed, e.g. <br>)', 'type' => 'html', 'default' => 'Empowering Storytellers.<br>Uniting Northern Uganda.'],
-        'hero_lede'    => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => 'NUFA is the regional home for filmmakers across Acholi, Lango, West Nile and Karamoja — where stories are trained, produced, and honoured on our own stage: the NUFA Awards.'],
+/* --------------------------------------------------------------- PARTNER */
+$CMS_SCHEMAS['partners'] = ['label' => 'Partner With NUFA', 'fields' => [
+    'hero_image'  => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'production/karamoja-shoot-1.webp'],
+    'hero_heading' => ['label' => 'Heading', 'type' => 'text', 'default' => 'Partner With NUFA. Invest in the Power of Storytelling.'],
+    'hero_lede'   => ['label' => 'Intro', 'type' => 'textarea', 'default' => "A stronger regional film industry requires investment in people, skills, infrastructure, visibility, and opportunity. NUFA welcomes partnerships that help filmmakers develop their craft, expand audiences, preserve cultural heritage, build creative enterprises, and bring Northern Uganda's stories to wider platforms."],
+    'why_body'    => ['label' => 'Why partner with NUFA', 'type' => 'textarea', 'default' => "Partnering with NUFA connects your organisation with a growing community of filmmakers, a regional awards platform, and a shared commitment to authentic storytelling and creative development in Northern Uganda."],
+    'formats_note' => ['label' => 'Partnership formats note', 'type' => 'textarea', 'default' => "Partnership formats are developed together with each partner. Sponsorship packages and figures are shared on request — none are published here until confirmed."],
+]];
 
-        'story_eyebrow' => ['label' => 'Our Story — eyebrow', 'type' => 'text', 'default' => 'Our Story'],
-        'story_heading' => ['label' => 'Our Story — heading', 'type' => 'text', 'default' => 'Where NUFA began'],
-        'story_intro'   => ['label' => 'Our Story — intro paragraph', 'type' => 'textarea', 'default' => "At NUFA, we are passionate about training, platforming and celebrating the filmmakers of Northern Uganda — storytellers who elevate the region's culture and enrich the wider creative economy."],
-        'story_body'    => [
-            'label' => 'Our Story — full narrative (HTML, one &lt;p&gt; per paragraph)',
-            'type'  => 'html',
-            'default' => "<p>For years, the people making films in Acholi, Lango, West Nile and Karamoja worked the way most creatives in the region did — alone. A camera operator in Gulu had no easy way to find an editor in Lira. A costume designer in Arua had no guild to trade notes with. Talent was never the problem; the region has always had storytellers. What it lacked was a shared roof to work under, and a stage to be seen from.</p>\n"
-                . "<p>NUFA — the Northern Uganda Filmmakers Association — was formed to be that roof. It is a registered, filmmaker-led body that brings camera operators, editors, actors, writers, costume and set designers, sound engineers and directors into one regional community, with training, equipment access and professional guilds built around each craft.</p>\n"
-                . "<p class=\"story-pull\">A career in film is something a young creative in Northern Uganda can actually build — not just dream about.</p>\n"
-                . "<p>That mission carries extra weight in a region that spent decades being written about by outsiders more often than it got to write its own story. Northern Uganda's recovery and resilience are real, lived history — and NUFA's members are increasingly the ones putting that history, and the region's culture, language and everyday life, on screen <strong>in their own words</strong>. Documentary work made in partnership with cultural institutions like Ker Kwaro Acholi sits alongside music videos, short films and community dramas — all evidence of a place actively authoring its own narrative.</p>\n"
-                . "<p>The NUFA Awards are where all of that comes together once a year — a red carpet at Acholi Inn that turns craft most people never see (editing, sound design, production management) into something the whole community can celebrate. Two editions in, with NUFA27 already taking shape, the goal hasn't changed: make Northern Uganda a place where a career in film is <strong>not the exception, but the expectation</strong>.</p>",
-        ],
+/* --------------------------------------------------------------- CONTACT */
+$CMS_SCHEMAS['contact'] = ['label' => 'Contact', 'fields' => [
+    'hero_image'  => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'production/crew-monitor-check.webp'],
+    'hero_lede'   => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "Membership, awards, programmes, partnerships or general questions — send us a message and the NUFA team will respond."],
+    'hours'       => ['label' => 'Office hours (leave blank to hide)', 'type' => 'text', 'default' => ''],
+]];
 
-        'vision_text'  => ['label' => 'Vision statement', 'type' => 'textarea', 'default' => 'An independent platform that celebrates excellence, preserves culture, and positions Northern Uganda as a vibrant hub for film and creative innovation.'],
-        'mission_text' => ['label' => 'Mission statement', 'type' => 'textarea', 'default' => "To celebrate excellence in filmmaking, preserve Northern Uganda's cultural heritage, and inspire innovation that empowers storytellers and amplifies indigenous voices."],
+/* ------------------------------------------------ NEWS / RESOURCES / MEDIA */
+$CMS_SCHEMAS['news'] = ['label' => 'News & Stories (landing)', 'fields' => [
+    'hero_image' => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'production/on-set-action.webp'],
+    'hero_lede'  => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "News, announcements, filmmaker profiles, opportunities and stories from the film community of Northern Uganda."],
+]];
+$CMS_SCHEMAS['resources'] = ['label' => 'Resource Library (landing)', 'fields' => [
+    'hero_image' => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'nufa4.webp'],
+    'hero_lede'  => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "Approved guides, reports, calls for submissions and opportunities for filmmakers. Documents are added here as they are supplied and approved."],
+]];
+$CMS_SCHEMAS['gallery'] = ['label' => 'Gallery & Video Library (landing)', 'fields' => [
+    'hero_image' => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'slider/hero/hero-slide-1.webp'],
+    'hero_lede'  => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "A visual archive of NUFA Awards ceremonies, productions, screenings and the people behind Northern Uganda's stories. Photographs are published with NUFA's permission."],
+    'credit_note' => ['label' => 'Image credit note', 'type' => 'text', 'default' => 'Photography: NUFA and its photographers. Please request permission before reusing any image.'],
+]];
 
-        'offer_eyebrow' => ['label' => 'What We Offer — eyebrow', 'type' => 'text', 'default' => 'The Challenge'],
-        'offer_heading' => ['label' => 'What We Offer — heading (HTML allowed, e.g. <br>)', 'type' => 'html', 'default' => 'What We<br>Offer'],
-        'offer_lede'    => ['label' => 'What We Offer — paragraph', 'type' => 'textarea', 'default' => "We specialise in transforming raw talent into real careers. Explore the training, guilds and platforms NUFA has built to support every stage of a filmmaker's journey."],
-        'offer1_title'  => ['label' => 'Offer card 1 — title', 'type' => 'text', 'default' => 'Training & workshops'],
-        'offer1_desc'   => ['label' => 'Offer card 1 — text', 'type' => 'textarea', 'default' => 'Hands-on sessions led by experienced filmmakers, delivered across five districts and counting.'],
-        'offer2_title'  => ['label' => 'Offer card 2 — title', 'type' => 'text', 'default' => 'Professional guilds'],
-        'offer2_desc'   => ['label' => 'Offer card 2 — text', 'type' => 'textarea', 'default' => 'Specialised communities for camera, editing, sound, costume, writing and set design.'],
-        'offer3_title'  => ['label' => 'Offer card 3 — title', 'type' => 'text', 'default' => 'Equipment & production support'],
-        'offer3_desc'   => ['label' => 'Offer card 3 — text', 'type' => 'textarea', 'default' => 'Access to gear and production know-how that would otherwise sit out of reach.'],
-        'offer4_title'  => ['label' => 'Offer card 4 — title', 'type' => 'text', 'default' => 'Community screenings'],
-        'offer4_desc'   => ['label' => 'Offer card 4 — text', 'type' => 'textarea', 'default' => 'Public screenings that open dialogue between filmmakers and the communities they portray.'],
-        'offer5_title'  => ['label' => 'Offer card 5 — title', 'type' => 'text', 'default' => 'The NUFA Awards'],
-        'offer5_desc'   => ['label' => 'Offer card 5 — text', 'type' => 'textarea', 'default' => 'An annual, growing platform that gives technical and creative excellence its due recognition.'],
-        'offer6_title'  => ['label' => 'Offer card 6 — title', 'type' => 'text', 'default' => 'Advocacy & policy'],
-        'offer6_desc'   => ['label' => 'Offer card 6 — text', 'type' => 'textarea', 'default' => 'Pushing for the market access and policy support that make film a viable livelihood.'],
-
-        'regions_eyebrow' => ['label' => 'Where We Work — eyebrow', 'type' => 'text', 'default' => 'Where We Work'],
-        'regions_heading' => ['label' => 'Where We Work — heading (HTML allowed)', 'type' => 'html', 'default' => 'Four regions. <span class="serif">One creative voice.</span>'],
-        'regions_lede'    => ['label' => 'Where We Work — paragraph', 'type' => 'textarea', 'default' => "NUFA's reach spans the whole of Northern Uganda — bringing training, equipment access and recognition to creatives well beyond the capital."],
-
-        'team_eyebrow' => ['label' => 'Team — eyebrow', 'type' => 'text', 'default' => 'Meet Our Team'],
-        'team_heading' => ['label' => 'Team — heading', 'type' => 'text', 'default' => 'Our Team'],
-
-        'cta_eyebrow' => ['label' => 'Bottom CTA — eyebrow', 'type' => 'text', 'default' => 'Join The Movement'],
-        'cta_heading' => ['label' => 'Bottom CTA — heading', 'type' => 'text', 'default' => 'Are you a filmmaker in Northern Uganda?'],
-        'cta_lede'    => ['label' => 'Bottom CTA — paragraph', 'type' => 'textarea', 'default' => 'Membership, training opportunities and NUFA Awards updates — all in one place.'],
-    ],
-];
-
-$CMS_SCHEMAS['awards'] = [
-    'label' => 'Awards Page',
-    'fields' => [
-        'hero_image'   => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2026/nufa26-09.jpg'],
-        'hero_eyebrow' => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'The NUFA Awards'],
-        'hero_heading' => ['label' => 'Hero — heading (HTML allowed)', 'type' => 'html', 'default' => 'Two editions of history. <span style="color:var(--brand-300)">One big night ahead.</span>'],
-        'hero_lede'    => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "The Northern Uganda Film Awards is the region's premier platform for celebrating filmmaking talent — hosted annually at Acholi Inn, Gulu."],
-
-        'n27_ticket_title' => ['label' => '2027 section — ticket card title', 'type' => 'text', 'default' => 'General Admission'],
-        'n27_ticket_desc'  => ['label' => '2027 section — ticket card text', 'type' => 'text', 'default' => 'Secure your seat for the NUFA Awards 2027 gala night'],
-
-        'cta_eyebrow' => ['label' => 'Bottom CTA — eyebrow', 'type' => 'text', 'default' => 'Get Involved'],
-        'cta_heading' => ['label' => 'Bottom CTA — heading (HTML allowed)', 'type' => 'html', 'default' => 'Help us make <span class="serif">NUFA27</span> the biggest edition yet'],
-    ],
-];
-
-$CMS_SCHEMAS['gallery'] = [
-    'label' => 'Gallery Page',
-    'fields' => [
-        'hero_image'   => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2025/nufa25-12.webp'],
-        'hero_eyebrow' => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'Pictorials'],
-        'hero_heading' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => 'The moments behind the red carpet'],
-        'hero_lede'    => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => 'A running record of every NUFA Awards edition — from the inaugural 2025 gala to NUFA26 at Acholi Inn.'],
-    ],
-];
-
-$CMS_SCHEMAS['news'] = [
-    'label' => 'News Page',
-    'fields' => [
-        'hero_image'   => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2025/nufa25-16.webp'],
-        'hero_eyebrow' => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'Newsroom'],
-        'hero_heading' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => "What's happening at NUFA"],
-    ],
-];
-
-$CMS_SCHEMAS['partners'] = [
-    'label' => 'Partners Page',
-    'fields' => [
-        'hero_image'   => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2025/nufa25-19.webp'],
-        'hero_eyebrow' => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'Partners & Sponsors'],
-        'hero_heading' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => 'Backed by organisations who believe in Northern storytelling'],
-        'hero_lede'    => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => "From media houses to technology firms, these partners make NUFA's training and the NUFA Awards possible."],
-    ],
-];
-
-$CMS_SCHEMAS['contact'] = [
-    'label' => 'Contact Page',
-    'fields' => [
-        'hero_image'   => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2025/nufa25-20.webp'],
-        'hero_eyebrow' => ['label' => 'Hero — eyebrow', 'type' => 'text', 'default' => 'Get In Touch'],
-        'hero_heading' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => "Let's talk film"],
-        'hero_lede'    => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => 'Membership, training, press or partnership — reach out and the NUFA team will get back to you.'],
-        'office_hours' => ['label' => 'Office hours', 'type' => 'text', 'default' => 'Mon – Fri, 9am – 5pm EAT'],
-    ],
-];
+/* -------------------------------------------------------------- POLICIES */
+$CMS_SCHEMAS['policies'] = ['label' => 'Policies & Transparency (draft legal text)', 'fields' => [
+    'privacy' => ['label' => 'Privacy Policy', 'type' => 'html', 'default' => <<<'HTML'
+<p>This policy explains how the Northern Uganda Filmmakers Association ("NUFA", "we") collects and uses personal information through this website. We aim to handle personal data in line with applicable Ugandan law, including the Data Protection and Privacy Act, 2019.</p>
+<h2>What we collect</h2>
+<ul><li><strong>Enquiry forms</strong> (contact, partnership, SACCO interest, industry network): name, email, telephone, organisation, your message and any details you choose to provide.</li>
+<li><strong>Membership applications:</strong> identity and contact details, date of birth, district, area of creative practice, experience, an optional portfolio link, a passport-style photograph, payment reference and proof of payment.</li></ul>
+<h2>How we use it</h2>
+<p>We use your information to respond to your enquiry, process your application, administer membership and communicate about NUFA activities you asked about. We do not sell personal data.</p>
+<h2>Who can see it</h2>
+<p>Only authorised NUFA administrators. Uploaded documents are stored privately and are never published on the website. Membership card details (name, photograph, guild, registration number and validity period) are visible to anyone holding the private card link issued to the member.</p>
+<h2>Retention and deletion</h2>
+<p>We keep information only as long as needed for the purpose it was collected. You may ask us to access, correct or delete your information by contacting nuf.association@gmail.com.</p>
+<h2>Security</h2>
+<p>Forms are protected against spam and misuse, administrative areas require authentication, and the site should be accessed over HTTPS.</p>
+<h2>Contact</h2>
+<p>Northern Uganda Filmmakers Association, Plot 75, Jomo Kenyatta Road, Gulu City, Uganda · nuf.association@gmail.com</p>
+HTML],
+    'cookies' => ['label' => 'Cookie Policy', 'type' => 'html', 'default' => <<<'HTML'
+<p>This website uses only essential cookies needed for it to work — for example a session cookie that protects forms against misuse and keeps administrators signed in. We do not use advertising or tracking cookies and do not currently run third-party analytics.</p>
+<p>If analytics or other non-essential technologies are added in future, this policy will be updated and consent will be requested where required.</p>
+<p>Fonts are loaded from Google Fonts, which may receive your IP address when a page loads.</p>
+HTML],
+    'terms' => ['label' => 'Website Terms of Use', 'type' => 'html', 'default' => <<<'HTML'
+<p>By using this website you agree to these terms.</p>
+<h2>Use of content</h2>
+<p>Website text, images and branding belong to NUFA or its contributors unless stated otherwise. You may share links to pages. Please request permission before reproducing content.</p>
+<h2>Accuracy</h2>
+<p>We work to keep information accurate and up to date but do not guarantee that every page is complete or current. Event details, programme status and awards information are published only when confirmed.</p>
+<h2>Forms and applications</h2>
+<p>Submitting a form does not create a contract. Membership applications are subject to NUFA's criteria and confirmation process.</p>
+<h2>External links</h2>
+<p>We are not responsible for the content of external websites linked from this site.</p>
+HTML],
+    'permissions' => ['label' => 'Image and Content Permissions', 'type' => 'html', 'default' => <<<'HTML'
+<p>NUFA publishes photographs, video and written stories with the consent of the people involved and the permission of the creators wherever possible. We respect the dignity of the communities we represent.</p>
+<ul><li>If you appear in a photograph or story and would like it credited differently or removed, contact us and we will respond promptly.</li><li>Please do not reuse NUFA images or footage without written permission.</li><li>Film footage from third parties is used only with authorisation.</li></ul>
+HTML],
+    'accessibility' => ['label' => 'Accessibility Statement', 'type' => 'html', 'default' => <<<'HTML'
+<p>NUFA wants everyone to be able to use this website. We aim to provide semantic page structure, keyboard navigation with visible focus, labelled forms, descriptive link text, alternative text for meaningful images, adequate colour contrast and respect for reduced-motion preferences.</p>
+<p>If you experience difficulty using any part of the site, please contact nuf.association@gmail.com and we will work to help and to fix the problem.</p>
+HTML],
+    'membership_terms' => ['label' => 'Membership Terms (pending approval)', 'type' => 'html', 'default' => <<<'HTML'
+<p><strong>Awaiting confirmation.</strong> NUFA's formal membership terms, criteria and fees are being finalised and will be published here once approved by the association's leadership.</p>
+HTML],
+    'complaints' => ['label' => 'Complaints and Feedback (pending approval)', 'type' => 'html', 'default' => <<<'HTML'
+<p>If you have a complaint or feedback about NUFA or this website, please write to nuf.association@gmail.com with the subject "Feedback". A formal complaints process will be published here once approved.</p>
+HTML],
+]];

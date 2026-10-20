@@ -1,341 +1,167 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
-$pageTitle = "NUFA — Northern Uganda Filmmakers Association | Home of Northern Storytellers";
-$pageDesc  = "NUFA unites, trains and celebrates filmmakers across Acholi, Lango, West Nile and Karamoja. Discover the NUFA Awards, our community, and how to partner with us.";
+require_once __DIR__ . "/includes/ui.php";
+$pageTitle = "NUFA — Northern Uganda Filmmakers Association | Our Stories. Our Culture. Our Future.";
+$pageDesc  = "The Northern Uganda Filmmakers Association (NUFA) brings filmmakers together to strengthen the craft of storytelling, celebrate creative excellence and build a stronger future for the film industry in Northern Uganda.";
 $activeNav = "home";
-$base = "";
-require __DIR__ . "/includes/db.php";
+$canonicalPath = "index.php";
 include __DIR__ . "/includes/header.php";
-?>
-<a id="top"></a>
 
-<?php
-$heroImages = [];
-$res = $conn->query("SELECT image, alt_text FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC");
-while ($row = $res->fetch_assoc()) $heroImages[] = $row;
-if (empty($heroImages)) {
-  $heroImages = [["image"=>"gallery/2026/nufa26-07.jpg","alt_text"=>"NUFA Awards moment"]];
+// programme cards: the five programme areas come from the database, in the order set by NUFA
+$progs = [];
+foreach ($conn->query("SELECT * FROM programmes WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC) as $p) $progs[$p['slug']] = $p;
+$cards = [];
+foreach (['capacity-building', 'awards', 'mentorship', 'screenings-outreach', 'creative-enterprise', 'sacco'] as $slug) {
+    if ($slug === 'awards')      $cards[] = ['title' => 'NUFA Awards', 'text' => 'Recognising outstanding work and celebrating the stories and storytellers of Northern Uganda.', 'img' => 'slider/slide1-1.webp', 'url' => 'awards.php', 'status' => ''];
+    elseif ($slug === 'sacco')   $cards[] = ['title' => 'NUFA SACCO — Proposed Initiative', 'text' => 'An initiative being explored to strengthen financial resilience for filmmakers. Not yet operational.', 'img' => 'front1.webp', 'url' => 'sacco.php', 'status' => 'proposed'];
+    elseif (isset($progs[$slug])) $cards[] = ['title' => $progs[$slug]['title'], 'text' => $progs[$slug]['summary'], 'img' => $progs[$slug]['image'] ?: 'nufa2.webp', 'url' => 'programme.php?slug=' . $slug, 'status' => $progs[$slug]['status']];
 }
-// Slice sequentially (not modulo) so every image appears at most once across the whole collage.
-$hcCols = array_chunk($heroImages, max(1, (int)ceil(count($heroImages) / 6)));
-function hc_col($imgs){
-  foreach(array_merge($imgs,$imgs) as $slide){
-    echo '<img src="assets/images/'.htmlspecialchars($slide['image']).'" alt="'.htmlspecialchars($slide['alt_text'] ?: 'NUFA Awards moment').'" loading="lazy">';
-  }
-}
+$heroSlides = array_values(array_filter($conn->query("SELECT image FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC, id ASC LIMIT 4")->fetch_all(MYSQLI_ASSOC), fn($s) => is_file(__DIR__ . '/assets/images/' . $s['image'])));
+if (!$heroSlides) $heroSlides = [['image' => 'production/karamoja-shoot-1.webp']];
+$news = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 ORDER BY is_featured DESC, published_at DESC LIMIT 3")->fetch_all(MYSQLI_ASSOC);
+usort($news, fn($a, $b) => strtotime($b['published_at']) <=> strtotime($a['published_at']));
+$indicators = [];
+for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{$i}_label"] !== '') $indicators[] = [$cfg["impact{$i}_value"], $cfg["impact{$i}_label"]];
 ?>
-<section class="hero">
-  <div class="hero-visual">
-    <div class="hero-collage" aria-hidden="true">
-      <?php foreach ($hcCols as $i => $col): ?>
-      <div class="hc-col <?php echo $i % 2 === 0 ? 'hc-col-up' : 'hc-col-down'; ?>"><?php hc_col($col); ?></div>
-      <?php endforeach; ?>
-    </div>
-    <div class="hero-scrim"></div>
+
+<!-- HERO -->
+<section class="hero" aria-label="Introduction">
+  <div class="hero-media" aria-hidden="true">
+    <?php foreach ($heroSlides as $i => $hs): ?><img src="assets/images/<?php echo ui_e($hs['image']); ?>" alt=""<?php echo $i === 0 ? ' fetchpriority="high"' : ' loading="lazy"'; ?>><?php endforeach; ?>
   </div>
-
-  <div class="container-wide hero-grid hero-grid-center">
-    <div class="hero-copy hero-copy-center">
-      <div class="eyebrow hero-eyebrow"><?php echo cms_t('home','hero_eyebrow'); ?></div>
-      <h1><?php echo cms_h('home','hero_heading'); ?></h1>
-      <div class="hero-actions">
-        <a href="awards.php#nufa27" class="btn btn-brand">Get Tickets</a>
-        <a href="membership.php" class="btn btn-line-light">Join NUFA</a>
-      </div>
-      <div class="hero-stats">
-        <div class="hero-avatars">
-          <img src="assets/images/team/team-president.webp" alt="">
-          <img src="assets/images/team/team-media-lead.webp" alt="">
-          <img src="assets/images/team/team-guild-leader.webp" alt="">
-          <img src="assets/images/team/team-publicity.webp" alt="">
-        </div>
-        <div class="stat"><b><?php echo cms_t('home','hero_stat_number'); ?></b><span><?php echo cms_t('home','hero_stat_label'); ?></span></div>
+  <div class="container-wide">
+    <div class="hero-inner">
+      <div class="eyebrow">Northern Uganda Filmmakers Association</div>
+      <h1><?php echo cms_t('home', 'hero_line1'); ?> <?php echo cms_t('home', 'hero_line2'); ?> <span><?php echo cms_t('home', 'hero_line3'); ?></span></h1>
+      <p class="lead"><?php echo cms_t('home', 'hero_lead'); ?></p>
+      <div class="actions">
+        <a href="awards.php" class="btn btn-gold">Explore NUFA Awards</a>
+        <a href="membership.php" class="btn btn-gold">Become a Member</a>
+        <a href="partners.php" class="btn btn-outline">Partner With NUFA</a>
       </div>
     </div>
   </div>
 </section>
 
-<div class="action-cards-wrap">
-  <div class="container action-cards" data-reveal-stagger>
-    <div class="ac ac-light">
-      <span class="ac-ico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M4 5h13l3 3v11H4V5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11l2.5 2.5L16 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-      <h3>The NUFA Awards</h3>
-      <p>Explore every edition — winners, galleries and the road to 2027.</p>
-      <a href="awards.php" class="btn btn-brand btn-sm">Explore Awards</a>
+<!-- WHO WE ARE -->
+<section class="section" id="who-we-are">
+  <div class="container split">
+    <div data-reveal>
+      <div class="eyebrow"><?php echo cms_t('home', 'who_eyebrow'); ?></div>
+      <h2><?php echo cms_t('home', 'who_heading'); ?></h2>
+      <div class="lede stack"><?php echo ui_paragraphs(cms_value('home', 'who_body')); ?></div>
+      <p class="mt-2"><a href="about.php" class="btn btn-dark">Discover NUFA</a></p>
     </div>
-    <div class="ac ac-dark">
-      <span class="ac-ico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M3 9a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v6a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2V9Z" stroke="currentColor" stroke-width="1.5"/><path d="M14 7v10" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 2"/></svg></span>
-      <h3>Get Your Tickets</h3>
-      <p>Secure a seat at Northern Uganda's biggest night in film.</p>
-      <a href="awards.php#nufa27" class="btn btn-white btn-sm">Get Tickets</a>
-    </div>
-    <div class="ac ac-brand">
-      <span class="ac-ico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M17 20v-1a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v1M15.5 4.2a3.5 3.5 0 0 1 0 6.6M19 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9.5" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg></span>
-      <h3>Become a Partner</h3>
-      <p>Put your brand behind the region's storytellers all year round.</p>
-      <a href="partners.php#become" class="btn btn-white btn-sm">Partner With Us</a>
+    <div class="media-frame" data-reveal>
+      <img src="assets/images/<?php echo cms_img('home', 'who_image'); ?>" alt="Filmmakers on location in Northern Uganda working with a camera crew" width="1200" height="900" loading="lazy">
     </div>
   </div>
-</div>
+</section>
 
-<section class="section bg-paper intro-news">
+<!-- NUFA AWARDS FEATURE -->
+<section class="section feature-band section--black" aria-labelledby="awards-feature">
+  <div class="bg"><img src="assets/images/<?php echo cms_img('home', 'awards_image'); ?>" alt="" loading="lazy"></div>
+  <div class="container">
+    <div style="max-width:680px" data-reveal>
+      <div class="eyebrow">NUFA Awards</div>
+      <h2 id="awards-feature"><?php echo cms_t('home', 'awards_heading'); ?></h2>
+      <p class="lede" style="color:var(--muted-on-dark)"><?php echo cms_t('home', 'awards_body'); ?></p>
+      <div class="actions mt-2">
+        <a href="awards.php" class="btn btn-gold">Explore the Awards</a>
+        <?php $prev = $conn->query("SELECT slug FROM award_editions WHERE is_active=1 AND status='past' ORDER BY year DESC LIMIT 1")->fetch_assoc(); ?>
+        <a href="<?php echo $prev ? 'award.php?e=' . ui_e($prev['slug']) : 'awards.php#archive'; ?>" class="btn btn-outline">View Previous Edition</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROGRAMMES -->
+<section class="section section--soft" id="programmes">
   <div class="container">
     <div class="section-head center" data-reveal>
-      <h2>Welcome to the official <span class="hl">NUFA</span> — we help Northern Uganda's storytellers <span class="hl">shine.</span></h2>
-      <p class="lede">Training, recognition and a regional stage for the people behind the camera.</p>
+      <div class="eyebrow"><?php echo ui_e('What we do'); ?></div>
+      <h2><?php echo cms_t('home', 'prog_heading'); ?></h2>
+      <p><?php echo cms_t('home', 'prog_lede'); ?></p>
     </div>
-    <div class="grid-3 cause-grid" data-reveal-stagger>
-      <?php
-      $latest = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 ORDER BY published_at DESC LIMIT 3");
-      while ($lp = $latest->fetch_assoc()):
-      ?>
-      <a class="cause-card" href="post.php?slug=<?php echo urlencode($lp['slug']); ?>">
-        <div class="cc-media"><img src="assets/images/<?php echo htmlspecialchars($lp['image']); ?>" alt="<?php echo htmlspecialchars($lp['title']); ?>" loading="lazy"></div>
-        <div class="cc-body">
-          <span class="cc-meta"><b><?php echo htmlspecialchars($lp['category']); ?></b> · <?php echo date("d M Y", strtotime($lp['published_at'])); ?></span>
-          <h3><?php echo htmlspecialchars($lp['title']); ?></h3>
-          <p><?php echo htmlspecialchars($lp['excerpt']); ?></p>
-        </div>
-        <div class="cc-foot"><span>Read story</span><i></i><b>&rarr;</b></div>
-      </a>
-      <?php endwhile; ?>
-    </div>
-    <div style="text-align:center;margin-top:40px"><a href="news.php" class="btn btn-brand">Visit the Newsroom</a></div>
-  </div>
-</section>
-<div class="marquee" aria-hidden="true">
-  <div class="marquee-track">
-    <span>Acholi</span><span>Lango</span><span>West Nile</span><span>Karamoja</span><span>NUFA Awards 2027</span>
-    <span>Acholi</span><span>Lango</span><span>West Nile</span><span>Karamoja</span><span>NUFA Awards 2027</span>
-  </div>
-</div>
-
-<section class="section bg-paper">
-  <div class="container assoc">
-    <div class="assoc-visual" data-reveal>
-      <div class="frame-main"><img src="assets/images/gallery/2026/nufa26-12.jpg" alt="A filmmaker in cultural dress with an elephant-motif pendant at the NUFA26 Awards"></div>
-      <div class="chip"><b>02 May</b><span>NUFA26 Awards Day, Acholi Inn, Gulu</span></div>
-    </div>
-    <div class="assoc-body" data-reveal>
-      <div class="eyebrow"><?php echo cms_t('home','assoc_eyebrow'); ?></div>
-      <h2 style="margin-block:18px 20px"><?php echo cms_h('home','assoc_heading'); ?></h2>
-      <p class="lede"><?php echo cms_t('home','assoc_lede'); ?></p>
-      <ul class="assoc-list">
-        <li>
-          <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 4v5c0 5-3.4 8.4-7 9-3.6-.6-7-4-7-9V7l7-4Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-          <div><b><?php echo cms_t('home','assoc1_title'); ?></b><span><?php echo cms_t('home','assoc1_desc'); ?></span></div>
-        </li>
-        <li>
-          <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3.5 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
-          <div><b><?php echo cms_t('home','assoc2_title'); ?></b><span><?php echo cms_t('home','assoc2_desc'); ?></span></div>
-        </li>
-        <li>
-          <span class="ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 20v-1a5 5 0 0 1 5-5h1a5 5 0 0 1 5 5v1M15 4.2a3.5 3.5 0 0 1 0 6.6M17 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/></svg></span>
-          <div><b><?php echo cms_t('home','assoc3_title'); ?></b><span><?php echo cms_t('home','assoc3_desc'); ?></span></div>
-        </li>
-      </ul>
-      <div style="margin-top:32px"><a href="about.php" class="btn-ghost">Read our full story <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
-    </div>
-  </div>
-</section>
-
-<section class="section-tight bg-cream2">
-  <div class="container stat-grid" data-reveal-stagger>
-    <div class="stat-cell">
-      <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17 20v-1a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v1M15.5 4.2a3.5 3.5 0 0 1 0 6.6M19 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="9.5" cy="8" r="3.3" stroke="currentColor" stroke-width="1.7"/></svg></span>
-      <b><?php echo cms_t('home','stat1_number'); ?></b><span><?php echo cms_t('home','stat1_label'); ?></span>
-    </div>
-    <div class="stat-cell">
-      <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h13l3 3v11H4V5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-      <b><?php echo cms_t('home','stat2_number'); ?></b><span><?php echo cms_t('home','stat2_label'); ?></span>
-    </div>
-    <div class="stat-cell">
-      <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.7"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M3 12h18" stroke="currentColor" stroke-width="1.4"/></svg></span>
-      <b><?php echo cms_t('home','stat3_number'); ?></b><span><?php echo cms_t('home','stat3_label'); ?></span>
-    </div>
-    <div class="stat-cell">
-      <span class="stat-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 10l-5 4.3L17.4 21 12 17.3 6.6 21 8 14.3 3 10l6.4-1.4L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span>
-      <b><?php echo cms_t('home','stat4_number'); ?></b><span><?php echo cms_t('home','stat4_label'); ?></span>
-    </div>
-  </div>
-</section>
-
-<section class="section bg-paper">
-  <div class="container">
-    <div class="section-head center">
-      <div class="eyebrow"><?php echo cms_t('home','awards_eyebrow'); ?></div>
-      <h2><?php echo cms_h('home','awards_heading'); ?></h2>
-      <p class="lede"><?php echo cms_t('home','awards_lede'); ?></p>
-    </div>
-
-    <div class="timeline" data-reveal-stagger>
-      <article class="ed-card" id="prev-2025">
-        <div class="ed-media">
-          <span class="ed-status">Past Edition</span>
-          <img src="assets/images/gallery/2026/poster.jpg" alt="NUFA Awards branding" style="filter:grayscale(40%)">
-        </div>
-        <div class="ed-body">
-          <span class="ed-year">2025</span>
-          <p>The inaugural NUFA Awards — the region's first-ever film awards platform, launched to recognise Northern Uganda's storytellers.</p>
-          <ul class="ed-meta">
-            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 10h18M7 3v4M17 3v4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/></svg> 25 April 2025</li>
-            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.5"/></svg> Acholi Inn, Gulu</li>
-          </ul>
-        </div>
+    <div class="grid grid-3" data-reveal-stagger>
+      <?php foreach ($cards as $c): ?>
+      <article class="card programme-card">
+        <a href="<?php echo ui_e($c['url']); ?>" style="display:flex;flex-direction:column;height:100%" aria-label="<?php echo ui_e($c['title']); ?>">
+          <div class="card-media"><?php echo ui_img($c['img'], ''); ?><?php echo ui_status_chip($c['status']); ?></div>
+          <div class="card-body"><h3><?php echo ui_e($c['title']); ?></h3><p><?php echo ui_e($c['text']); ?></p><span class="link-arrow">Learn more</span></div>
+        </a>
       </article>
+      <?php endforeach; ?>
+    </div>
+    <p class="center mt-2"><a href="programmes.php" class="btn btn-outline-dark">View all programmes</a></p>
+  </div>
+</section>
 
-      <article class="ed-card" id="nufa26">
-        <div class="ed-media">
-          <span class="ed-status">Past Edition</span>
-          <img src="assets/images/gallery/2026/nufa26-07.jpg" alt="Guests arriving at the NUFA26 Awards red carpet">
-        </div>
-        <div class="ed-body">
-          <span class="ed-year">2026</span>
-          <p>NUFA26 grew the celebration — a full house at Acholi Inn, more categories, and a red carpet befitting the region's finest.</p>
-          <ul class="ed-meta">
-            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 10h18M7 3v4M17 3v4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/></svg> 2 May 2026</li>
-            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.5"/></svg> Acholi Inn, Gulu</li>
-          </ul>
-        </div>
+<!-- OUR IMPACT -->
+<section class="section section--dark" id="impact">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <div class="eyebrow">Our Impact</div>
+      <h2><?php echo cms_t('home', 'impact_heading'); ?></h2>
+      <p><?php echo cms_t('home', 'impact_body'); ?></p>
+    </div>
+    <div class="impact-grid" data-reveal-stagger>
+      <?php foreach ([['users', 1], ['handshake', 2], ['trophy', 3]] as [$ic, $n]): ?>
+      <div class="impact-item"><span class="icon-circle" style="margin-bottom:16px"><?php echo nufa_icon($ic, 24); ?></span>
+        <h3><?php echo cms_t('home', "impact{$n}_title"); ?></h3><p><?php echo cms_t('home', "impact{$n}_text"); ?></p></div>
+      <?php endforeach; ?>
+    </div>
+    <?php if ($indicators): ?>
+    <div class="indicator-row" data-reveal><?php foreach ($indicators as [$v, $l]): ?><div class="indicator"><b><?php echo ui_e($v); ?></b><span><?php echo ui_e($l); ?></span></div><?php endforeach; ?></div>
+    <?php endif; ?>
+  </div>
+</section>
+
+<!-- PARTNERSHIP -->
+<section class="section feature-band section--black" aria-labelledby="partner-feature">
+  <div class="bg"><img src="assets/images/<?php echo cms_img('home', 'partner_image'); ?>" alt="" loading="lazy"></div>
+  <div class="container">
+    <div style="max-width:700px" data-reveal>
+      <div class="eyebrow">Partnerships</div>
+      <h2 id="partner-feature"><?php echo cms_t('home', 'partner_heading'); ?></h2>
+      <p class="lede" style="color:var(--muted-on-dark)"><?php echo cms_t('home', 'partner_body'); ?></p>
+      <p class="mt-2"><a href="partners.php" class="btn btn-gold">Partner With NUFA</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section class="section" id="news">
+  <div class="container">
+    <div class="section-head" style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;max-width:none" data-reveal>
+      <div><div class="eyebrow">News &amp; Stories</div><h2 class="mb-0">Latest from the film community</h2></div>
+      <a href="news.php" class="link-arrow">View the full news archive</a>
+    </div>
+    <?php if (!$news): ?>
+      <div class="empty-state"><h3>News is coming soon</h3><p>Announcements, filmmaker stories and opportunities will appear here once they are published.</p></div>
+    <?php else: ?>
+    <div class="grid grid-3" data-reveal-stagger>
+      <?php foreach ($news as $p): ?>
+      <article class="card">
+        <a href="post.php?slug=<?php echo urlencode($p['slug']); ?>" style="display:flex;flex-direction:column;height:100%">
+          <div class="card-media"><?php echo ui_img($p['image'], ''); ?></div>
+          <div class="card-body">
+            <div class="card-meta"><b><?php echo ui_e($p['category']); ?></b><span><?php echo ui_date($p['published_at']); ?></span></div>
+            <h3><?php echo ui_e($p['title']); ?></h3>
+            <p><?php echo ui_e(ui_excerpt($p['excerpt'], 130)); ?></p>
+            <span class="link-arrow">Read story</span>
+          </div>
+        </a>
       </article>
-
-      <article class="ed-card upcoming" id="nufa27">
-        <div class="ed-media">
-          <span class="ed-status">Upcoming</span>
-          <img src="assets/images/gallery/2025/nufa25-09.webp" alt="A trophy is presented on stage — looking ahead to NUFA27">
-        </div>
-        <div class="ed-body">
-          <span class="ed-year">2027</span>
-          <p>The next chapter of the NUFA Awards is being written. Save the date — nominations and partner packages open soon.</p>
-          <ul class="ed-meta">
-            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 10h18M7 3v4M17 3v4M5 6h14a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.5"/></svg> Date to be announced</li>
-            <li><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="10" r="2.4" stroke="currentColor" stroke-width="1.5"/></svg> Gulu, Northern Uganda</li>
-          </ul>
-          <a href="awards.php#nufa27" class="btn btn-brand btn-sm" style="margin-top:16px;align-self:flex-start">Get Involved</a>
-        </div>
-      </article>
+      <?php endforeach; ?>
     </div>
+    <?php endif; ?>
   </div>
 </section>
 
-<section class="section bg-cream2">
-  <div class="container" style="max-width:1440px">
-    <div class="section-head" data-reveal style="flex-direction:row;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px">
-      <div>
-        <div class="eyebrow">Pictorials</div>
-        <h2 style="margin-top:16px">Moments from <span class="serif">the Gala</span></h2>
-      </div>
-      <a href="gallery.php" class="btn-ghost">View full gallery <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-    </div>
-
-    <div class="hscroll-wrap">
-      <div class="hscroll" data-reveal-stagger>
-        <div class="h-item"><img src="assets/images/gallery/2026/nufa26-08.jpg" alt="Guests mingling at NUFA26" loading="lazy"></div>
-        <div class="h-item"><img src="assets/images/gallery/2026/nufa26-06.jpg" alt="NUFA26 guest arrival" loading="lazy"></div>
-        <div class="h-item"><img src="assets/images/gallery/2025/nufa25-01.webp" alt="NUFA25 Awards moment" loading="lazy"></div>
-        <div class="h-item"><img src="assets/images/gallery/2025/nufa25-02.webp" alt="NUFA25 Awards moment" loading="lazy"></div>
-        <div class="h-item"><img src="assets/images/gallery/2025/nufa25-04.webp" alt="NUFA25 Awards moment" loading="lazy"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section bg-paper">
-  <div class="container">
-    <div class="section-head center">
-      <div class="eyebrow"><?php echo cms_t('home','why_eyebrow'); ?></div>
-      <h2><?php echo cms_h('home','why_heading'); ?></h2>
-    </div>
-    <div class="grid-3" data-reveal-stagger>
-      <div class="value-card">
-        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5h13l3 3v11H4V5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 12h8M8 16h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
-        <h3><?php echo cms_t('home','why1_title'); ?></h3>
-        <p><?php echo cms_t('home','why1_desc'); ?></p>
-      </div>
-      <div class="value-card">
-        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 10l-5 4.3L17.4 21 12 17.3 6.6 21 8 14.3 3 10l6.4-1.4L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
-        <h3><?php echo cms_t('home','why2_title'); ?></h3>
-        <p><?php echo cms_t('home','why2_desc'); ?></p>
-      </div>
-      <div class="value-card">
-        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18M3 12h18" stroke="currentColor" stroke-width="1.4"/></svg></div>
-        <h3><?php echo cms_t('home','why3_title'); ?></h3>
-        <p><?php echo cms_t('home','why3_desc'); ?></p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section bg-cream2">
-  <div class="container">
-    <div class="section-head center">
-      <div class="eyebrow">In Their Words</div>
-      <h2>Voices from <span class="serif">NUFA26</span></h2>
-    </div>
-    <div class="grid-3" data-reveal-stagger>
-      <div class="testi-card">
-        <span class="quote-mark">"</span>
-        <p>"We'd love to see this event last forever" — on what our partners make possible each edition.</p>
-        <div class="testi-who">
-          <img src="assets/images/team/team-president.webp" alt="Ojok Odong, NUFA President">
-          <div><b>Ojok Odong</b><span>NUFA President</span></div>
-        </div>
-      </div>
-      <div class="testi-card">
-        <span class="quote-mark">"</span>
-        <p>"Your work is not just entertainment — it is a mirror to the community," a partner told our filmmakers at NUFA26.</p>
-        <div class="testi-who">
-          <img src="assets/images/gallery/2026/nufa26-02.jpg" alt="Guest at NUFA26">
-          <div><b>Leonard Amanya</b><span>Uganda Communications Commission</span></div>
-        </div>
-      </div>
-      <div class="testi-card">
-        <span class="quote-mark">"</span>
-        <p>Young creatives "showing the world that we can do it" — the kind of moment NUFA Awards was built to create.</p>
-        <div class="testi-who">
-          <img src="assets/images/gallery/2026/nufa26-03.jpg" alt="Guest at NUFA26">
-          <div><b>Hon. Betty Amongi</b><span>Minister, Gender, Labour &amp; Social Development</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section-tight bg-paper">
-  <div class="container">
-    <div class="section-head" style="margin-bottom:32px">
-      <div class="eyebrow">Partners</div>
-      <h2 style="margin-top:16px">Backed by organisations who believe in Northern storytelling</h2>
-    </div>
-    <div class="partner-wall" data-reveal-stagger>
-      <?php
-      $homePartners = $conn->query("SELECT * FROM partners WHERE is_active=1 ORDER BY sort_order ASC");
-      while ($p = $homePartners->fetch_assoc()):
-        $hasLogo = $p["logo"] !== "" && is_file(__DIR__ . "/assets/images/" . $p["logo"]);
-      ?>
-      <div class="partner-tile">
-        <?php if ($hasLogo): ?>
-          <img src="assets/images/<?php echo htmlspecialchars($p['logo']); ?>" alt="<?php echo htmlspecialchars($p['name']); ?> — NUFA <?php echo htmlspecialchars($p['tier']); ?>" loading="lazy">
-        <?php else: ?>
-          <div><b><?php echo htmlspecialchars($p['name']); ?></b><span><?php echo htmlspecialchars($p['tier']); ?></span></div>
-        <?php endif; ?>
-      </div>
-      <?php endwhile; ?>
-    </div>
-  </div>
-</section>
-
-<section class="section bg-cream2">
-  <div class="container">
-    <div class="cta-band" data-reveal>
-      <div>
-        <div class="eyebrow"><?php echo cms_t('home','cta_eyebrow'); ?></div>
-        <h2 style="margin-top:16px"><?php echo cms_h('home','cta_heading'); ?></h2>
-        <p class="lede" style="margin-top:14px"><?php echo cms_t('home','cta_lede'); ?></p>
-      </div>
-      <a href="partners.php#become" class="btn btn-brand">Partner With Us</a>
-    </div>
-  </div>
+<!-- MEMBERSHIP CTA -->
+<section class="section--tight section--soft">
+  <div class="container"><?php echo ui_cta_band('Are you a filmmaker in Northern Uganda?', 'Learn about NUFA membership and how to apply. Applications are subject to NUFA’s membership criteria and confirmation process.', 'Become a Member', 'membership.php', 'Contact NUFA', 'contact.php'); ?></div>
 </section>
 
 <?php include __DIR__ . "/includes/footer.php"; ?>

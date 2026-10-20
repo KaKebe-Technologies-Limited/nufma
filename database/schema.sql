@@ -1,3 +1,5 @@
+-- NOTE: reference only. The application creates and migrates its own tables automatically
+-- (see includes/schema.php and includes/membership.php). This file documents the original core tables.
 -- NUFA local schema (reconstructed from the application code)
 CREATE DATABASE IF NOT EXISTS nufa_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE nufa_db;

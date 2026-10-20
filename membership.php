@@ -86,122 +86,93 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+require_once __DIR__ . "/includes/content.php";
+require_once __DIR__ . "/includes/ui.php";
 $pageTitle = "Become a Member — NUFA | Northern Uganda Filmmakers Association";
-$pageDesc  = "Apply to join the Northern Uganda Filmmakers Association — register online, pay the membership fee and receive your NUFA membership card.";
+$pageDesc  = "Apply to join the Northern Uganda Filmmakers Association: complete the application, submit proof of payment and receive your NUFA registration number and membership card on approval.";
 $activeNav = "membership";
-$base = "";
 $canonicalPath = "membership.php";
 include __DIR__ . "/includes/header.php";
 $val = fn($k, $d = '') => htmlspecialchars($old[$k] ?? $d);
 $cur = htmlspecialchars($S['membership_currency']);
+echo ui_page_hero('Membership', 'Become a NUFA member', "Connect with a community of filmmakers and audiovisual creatives. Apply online, submit your proof of payment and receive your NUFA registration number and card once approved.", 'production/karamoja-shoot-2.webp', [['About NUFA', 'about.php#membership'], ['Membership']]);
 ?>
-<a id="top"></a>
-
-<section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/gallery/2026/nufa26-04.jpg" alt="" aria-hidden="true"></div>
-  <div class="container">
-    <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Membership</span></div>
-    <div class="eyebrow">Join The Association</div>
-    <h1 style="margin-top:18px">Become a <span class="serif">NUFA</span> member</h1>
-    <p>Register online, pay the membership fee and get your official NUFA registration number and membership card once approved.</p>
-  </div>
-</section>
-
-<section class="section bg-paper">
+<section class="section">
   <div class="container member-grid">
     <aside class="member-side" data-reveal>
       <h3>How it works</h3>
       <ol class="member-steps">
-        <li><b>Fill in the form</b><span>Your bio-data, the guild you belong to and a passport photo.</span></li>
+        <li><b>Complete the application</b><span>Your details, area of creative practice and a passport photo.</span></li>
         <li><b>Pay &amp; upload proof</b><span>Pay the membership fee and attach your receipt or screenshot.</span></li>
-        <li><b>Get approved</b><span>We review your application and email you your NUFA registration number.</span></li>
-        <li><b>Receive your card</b><span>Your membership card (with validity period) is issued online.</span></li>
+        <li><b>Review &amp; confirmation</b><span>NUFA reviews your application and emails you the outcome and your registration number.</span></li>
+        <li><b>Receive your card</b><span>Confirmed members get a membership card showing the validity period.</span></li>
       </ol>
-      <?php if ($S['membership_fee'] !== ''): ?>
-      <div class="member-fee"><span>Membership fee</span><b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b></div>
-      <?php endif; ?>
+      <?php if ($S['membership_fee'] !== ''): ?><div class="member-fee"><span>Membership fee</span><b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b></div><?php endif; ?>
       <div class="member-pay"><h4>How to pay</h4><p><?php echo nl2br(htmlspecialchars($S['payment_instructions'])); ?></p></div>
+      <p style="font-size:.82rem;color:var(--muted-on-dark);margin-top:20px"><?php echo cms_t('about', 'membership_criteria'); ?></p>
     </aside>
 
     <div class="form-card" data-reveal>
     <?php if (isset($_GET['done'])): ?>
       <div class="member-done">
-        <div class="member-done-ico">✓</div>
-        <h3>Application received</h3>
-        <p>Thank you for applying to join NUFA. We've emailed you a confirmation, and our team will review your payment proof shortly. You'll get another email with your registration number once you're approved.</p>
-        <a href="index.php" class="btn btn-brand" style="margin-top:18px">Back to home</a>
+        <div class="member-done-ico" aria-hidden="true">✓</div>
+        <h2 style="font-size:1.6rem">Application received</h2>
+        <p>Thank you for applying to join NUFA. We've emailed you a confirmation. Your application is now subject to NUFA's membership criteria and confirmation process — submitting it does not automatically make you a member. You'll receive another email once it has been reviewed.</p>
+        <p style="margin-top:20px"><a href="index.php" class="btn btn-gold">Back to home</a></p>
       </div>
     <?php elseif ($S['membership_open'] !== '1'): ?>
-      <div class="member-done">
-        <h3>Applications are closed</h3>
-        <p>Membership registration is not open right now. Please check back soon or <a href="contact.php" style="text-decoration:underline">contact us</a>.</p>
-      </div>
+      <div class="member-done"><h2 style="font-size:1.6rem">Applications are closed</h2><p>Membership registration is not open right now. Please check back soon or <a href="contact.php?topic=Membership" style="text-decoration:underline">contact us</a>.</p></div>
     <?php else: ?>
-      <h3 style="font-size:1.4rem;margin-bottom:6px">Membership application</h3>
-      <p style="color:var(--text-muted);font-size:.9rem;margin-bottom:24px">Fields marked * are required.</p>
-
-      <?php if ($errors): ?>
-      <div class="member-errors"><b>Please fix the following:</b><ul><?php foreach ($errors as $e) echo '<li>' . htmlspecialchars($e) . '</li>'; ?></ul></div>
-      <?php endif; ?>
+      <h2 style="font-size:1.6rem;margin-bottom:6px">Membership application</h2>
+      <p class="muted" style="margin-bottom:24px">Fields marked <span style="color:var(--err)">*</span> are required. We only collect what is needed to process your application.</p>
+      <?php if ($errors): ?><div class="alert err" role="alert"><b>Please fix the following:</b><ul><?php foreach ($errors as $e) echo '<li>' . htmlspecialchars($e) . '</li>'; ?></ul></div><?php endif; ?>
 
       <form method="post" enctype="multipart/form-data" autocomplete="on">
         <?php echo mem_csrf_field(); ?>
-        <input type="text" name="website" value="" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true">
+        <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="hp-field" aria-hidden="true">
 
-        <h4 class="member-sec">1 · Personal details</h4>
+        <h3 class="form-section">1 · Personal details</h3>
         <div class="form-grid">
-          <div class="field"><label for="m-name">Full name *</label><input id="m-name" name="full_name" required value="<?php echo $val('full_name'); ?>"></div>
-          <div class="field"><label for="m-email">Email address *</label><input id="m-email" name="email" type="email" required value="<?php echo $val('email'); ?>"></div>
-          <div class="field"><label for="m-phone">Phone number *</label><input id="m-phone" name="phone" type="tel" required placeholder="+256…" value="<?php echo $val('phone'); ?>"></div>
-          <div class="field"><label for="m-gender">Gender *</label>
-            <select id="m-gender" name="gender" required>
-              <option value="">Select…</option>
-              <?php foreach (['Female', 'Male', 'Other'] as $o) echo '<option' . (($old['gender'] ?? '') === $o ? ' selected' : '') . '>' . $o . '</option>'; ?>
-            </select></div>
-          <div class="field"><label for="m-dob">Date of birth *</label><input id="m-dob" name="dob" type="date" required max="<?php echo date('Y-m-d', strtotime('-10 years')); ?>" value="<?php echo $val('dob'); ?>"></div>
+          <div class="field"><label for="m-name">Full name <span class="req">*</span></label><input id="m-name" name="full_name" required autocomplete="name" value="<?php echo $val('full_name'); ?>"></div>
+          <div class="field"><label for="m-email">Email address <span class="req">*</span></label><input id="m-email" name="email" type="email" required autocomplete="email" value="<?php echo $val('email'); ?>"></div>
+          <div class="field"><label for="m-phone">Telephone <span class="req">*</span></label><input id="m-phone" name="phone" type="tel" required autocomplete="tel" placeholder="+256…" value="<?php echo $val('phone'); ?>"></div>
+          <div class="field"><label for="m-gender">Gender <span class="req">*</span></label>
+            <select id="m-gender" name="gender" required><option value="">Select…</option><?php foreach (['Female', 'Male', 'Other'] as $o) echo '<option' . (($old['gender'] ?? '') === $o ? ' selected' : '') . '>' . $o . '</option>'; ?></select></div>
+          <div class="field"><label for="m-dob">Date of birth <span class="req">*</span></label><input id="m-dob" name="dob" type="date" required max="<?php echo date('Y-m-d', strtotime('-10 years')); ?>" value="<?php echo $val('dob'); ?>"></div>
           <div class="field"><label for="m-id">National ID / passport no.</label><input id="m-id" name="id_number" value="<?php echo $val('id_number'); ?>"></div>
-          <div class="field"><label for="m-district">District / town *</label><input id="m-district" name="district" required value="<?php echo $val('district'); ?>"></div>
+          <div class="field"><label for="m-district">District or location <span class="req">*</span></label><input id="m-district" name="district" required value="<?php echo $val('district'); ?>"></div>
           <div class="field"><label for="m-addr">Physical address</label><input id="m-addr" name="address" value="<?php echo $val('address'); ?>"></div>
         </div>
-        <div class="field"><label for="m-photo">Passport-size photo * <small style="font-weight:400;color:var(--text-muted)">(JPG, PNG or WebP, max 3 MB — used on your card)</small></label>
-          <input id="m-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required></div>
+        <div class="field"><label for="m-photo">Passport-size photo <span class="req">*</span></label><input id="m-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required><span class="hint">JPG, PNG or WebP, max 3 MB. Used on your membership card.</span></div>
 
-        <h4 class="member-sec">2 · Your craft</h4>
+        <h3 class="form-section">2 · Your craft</h3>
         <div class="form-grid">
-          <div class="field"><label for="m-guild">Guild you belong to *</label>
-            <select id="m-guild" name="guild_id" required>
-              <option value="">Select your guild…</option>
-              <?php foreach ($guilds as $g): ?>
-              <option value="<?php echo (int)$g['id']; ?>" <?php echo ((int)($old['guild_id'] ?? 0) === (int)$g['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($g['name']); ?></option>
-              <?php endforeach; ?>
+          <div class="field"><label for="m-guild">Guild / area of creative practice <span class="req">*</span></label>
+            <select id="m-guild" name="guild_id" required><option value="">Select your guild…</option>
+              <?php foreach ($guilds as $g): ?><option value="<?php echo (int)$g['id']; ?>" <?php echo ((int)($old['guild_id'] ?? 0) === (int)$g['id']) ? 'selected' : ''; ?>><?php echo htmlspecialchars($g['name']); ?></option><?php endforeach; ?>
             </select></div>
           <div class="field"><label for="m-occ">Occupation / role</label><input id="m-occ" name="occupation" placeholder="e.g. Cinematographer" value="<?php echo $val('occupation'); ?>"></div>
-          <div class="field"><label for="m-exp">Years in film</label>
-            <select id="m-exp" name="experience"><option value="">Select…</option>
-              <?php foreach (['Less than 1 year', '1–3 years', '4–7 years', '8+ years'] as $o) echo '<option' . (($old['experience'] ?? '') === $o ? ' selected' : '') . '>' . $o . '</option>'; ?>
-            </select></div>
-          <div class="field"><label for="m-port">Portfolio / showreel link</label><input id="m-port" name="portfolio_url" type="url" placeholder="https://" value="<?php echo $val('portfolio_url'); ?>"></div>
+          <div class="field"><label for="m-exp">Experience level</label>
+            <select id="m-exp" name="experience"><option value="">Select…</option><?php foreach (['Less than 1 year', '1–3 years', '4–7 years', '8+ years'] as $o) echo '<option' . (($old['experience'] ?? '') === $o ? ' selected' : '') . '>' . $o . '</option>'; ?></select></div>
+          <div class="field"><label for="m-port">Portfolio or showreel link</label><input id="m-port" name="portfolio_url" type="url" placeholder="https://" value="<?php echo $val('portfolio_url'); ?>"><span class="hint">Optional</span></div>
         </div>
-        <div class="field full"><label for="m-bio">Short bio</label><textarea id="m-bio" name="bio" placeholder="Tell us briefly about your work in film."><?php echo $val('bio'); ?></textarea></div>
+        <div class="field full"><label for="m-bio">Short professional profile</label><textarea id="m-bio" name="bio" placeholder="Tell us briefly about your work in film."><?php echo $val('bio'); ?></textarea></div>
 
-        <h4 class="member-sec">3 · Membership payment</h4>
-        <?php if ($S['membership_fee'] !== ''): ?><p style="font-size:.88rem;color:var(--text-muted);margin-bottom:14px">Fee: <b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b> — see “How to pay” for the account details.</p><?php endif; ?>
+        <h3 class="form-section">3 · Membership payment</h3>
+        <?php if ($S['membership_fee'] !== ''): ?><p class="muted" style="font-size:.9rem;margin-bottom:14px">Fee: <b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b> — see “How to pay” for account details.</p><?php endif; ?>
         <div class="form-grid">
-          <div class="field"><label for="m-pm">Payment method</label>
-            <select id="m-pm" name="payment_method"><?php foreach (['Mobile Money', 'Bank deposit', 'Cash at office', 'Other'] as $o) echo '<option' . (($old['payment_method'] ?? '') === $o ? ' selected' : '') . '>' . $o . '</option>'; ?></select></div>
-          <div class="field"><label for="m-ref">Transaction ID / reference *</label><input id="m-ref" name="payment_ref" required value="<?php echo $val('payment_ref'); ?>"></div>
+          <div class="field"><label for="m-pm">Payment method</label><select id="m-pm" name="payment_method"><?php foreach (['Mobile Money', 'Bank deposit', 'Cash at office', 'Other'] as $o) echo '<option' . (($old['payment_method'] ?? '') === $o ? ' selected' : '') . '>' . $o . '</option>'; ?></select></div>
+          <div class="field"><label for="m-ref">Transaction ID / reference <span class="req">*</span></label><input id="m-ref" name="payment_ref" required value="<?php echo $val('payment_ref'); ?>"></div>
           <div class="field"><label for="m-amt">Amount paid (<?php echo $cur; ?>)</label><input id="m-amt" name="amount_paid" value="<?php echo $val('amount_paid', $S['membership_fee']); ?>"></div>
           <div class="field"><label for="m-pd">Date paid</label><input id="m-pd" name="payment_date" type="date" max="<?php echo date('Y-m-d'); ?>" value="<?php echo $val('payment_date'); ?>"></div>
         </div>
-        <div class="field"><label for="m-proof">Proof of payment * <small style="font-weight:400;color:var(--text-muted)">(receipt or screenshot — JPG, PNG, WebP or PDF, max 5 MB)</small></label>
-          <input id="m-proof" name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required></div>
+        <div class="field"><label for="m-proof">Proof of payment <span class="req">*</span></label><input id="m-proof" name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><span class="hint">Receipt or screenshot — JPG, PNG, WebP or PDF, max 5 MB. Stored privately.</span></div>
 
-        <label class="member-agree"><input type="checkbox" name="agree" value="1" <?php echo !empty($old['agree']) ? 'checked' : ''; ?>> I confirm the information above is correct and I agree to abide by NUFA's constitution and code of conduct.</label>
-        <button type="submit" class="btn btn-brand" style="width:100%;margin-top:8px">Submit application</button>
+        <label class="check"><input type="checkbox" name="agree" value="1" required <?php echo !empty($old['agree']) ? 'checked' : ''; ?>><span>I confirm the information above is correct, I have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a>, and I understand that my application is subject to NUFA's membership criteria and confirmation process.</span></label>
+        <button type="submit" class="btn btn-gold btn-block">Submit application</button>
       </form>
     <?php endif; ?>
     </div>
   </div>
 </section>
-
 <?php include __DIR__ . "/includes/footer.php"; ?>

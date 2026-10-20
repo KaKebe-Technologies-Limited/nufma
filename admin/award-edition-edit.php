@@ -9,7 +9,7 @@ $ed = [
     'event_date_label'=>'', 'location_label'=>'', 'chip_title'=>'', 'chip_sub'=>'',
     'stat1_value'=>'','stat1_label'=>'','stat2_value'=>'','stat2_label'=>'',
     'stat3_value'=>'','stat3_label'=>'','stat4_value'=>'','stat4_label'=>'',
-    'masonry1'=>'','masonry2'=>'','masonry3'=>'','masonry4'=>'', 'extra_html'=>'',
+    'masonry1'=>'','masonry2'=>'','masonry3'=>'','masonry4'=>'', 'extra_html'=>'', 'categories_html'=>'', 'nominees_html'=>'', 'highlights_html'=>'', 'sponsors_html'=>'', 'press_html'=>'', 'video_url'=>'',
 ];
 if ($id) {
     $r = $conn->query("SELECT * FROM award_editions WHERE id=$id")->fetch_assoc();
@@ -36,6 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'chip_title' => trim($_POST['chip_title'] ?? ''),
         'chip_sub' => trim($_POST['chip_sub'] ?? ''),
         'extra_html' => $_POST['extra_html'] ?? '',
+        'categories_html' => $_POST['categories_html'] ?? '',
+        'nominees_html' => $_POST['nominees_html'] ?? '',
+        'highlights_html' => $_POST['highlights_html'] ?? '',
+        'sponsors_html' => $_POST['sponsors_html'] ?? '',
+        'press_html' => $_POST['press_html'] ?? '',
+        'video_url' => trim($_POST['video_url'] ?? ''),
     ];
     for ($i = 1; $i <= 4; $i++) {
         $fields["stat{$i}_value"] = trim($_POST["stat{$i}_value"] ?? '');
@@ -195,6 +201,15 @@ include __DIR__ . "/includes/admin-header.php";
       <label>Extra content (advanced — raw HTML rendered after the winners grid: timeline, hosts, guest list, region breakdown, pledge quote. Leave blank if not needed.)</label>
       <textarea name="extra_html" style="min-height:160px;font-family:monospace;font-size:.85rem"><?php echo htmlspecialchars($ed['extra_html']); ?></textarea>
     </div>
+    <h3 class="mem-h3">Edition sections — published only when filled in</h3>
+    <p class="admin-help" style="margin-bottom:14px">Each section below appears on the edition's page only if it contains verified content. Leave blank to keep it hidden. HTML is allowed (&lt;p&gt;, &lt;ul&gt;, &lt;li&gt;).</p>
+    <div class="field"><label>Award categories (verified)</label><textarea name="categories_html" style="min-height:100px;font-family:monospace;font-size:.85rem"><?php echo htmlspecialchars($ed['categories_html'] ?? ''); ?></textarea></div>
+    <div class="field"><label>Nominees (verified)</label><textarea name="nominees_html" style="min-height:100px;font-family:monospace;font-size:.85rem"><?php echo htmlspecialchars($ed['nominees_html'] ?? ''); ?></textarea></div>
+    <div class="field"><label>Ceremony highlights</label><textarea name="highlights_html" style="min-height:100px;font-family:monospace;font-size:.85rem"><?php echo htmlspecialchars($ed['highlights_html'] ?? ''); ?></textarea></div>
+    <div class="field"><label>Sponsors and partners</label><textarea name="sponsors_html" style="min-height:100px;font-family:monospace;font-size:.85rem"><?php echo htmlspecialchars($ed['sponsors_html'] ?? ''); ?></textarea></div>
+    <div class="field"><label>Press coverage</label><textarea name="press_html" style="min-height:100px;font-family:monospace;font-size:.85rem"><?php echo htmlspecialchars($ed['press_html'] ?? ''); ?></textarea></div>
+    <div class="field"><label>Video highlights link (YouTube or Vimeo, from an official NUFA channel)</label><input type="url" name="video_url" value="<?php echo htmlspecialchars($ed['video_url'] ?? ''); ?>" placeholder="https://www.youtube.com/watch?v=…"></div>
+
 
     <div class="field" style="display:flex;align-items:center">
       <label style="display:flex;align-items:center;gap:8px;margin:0">

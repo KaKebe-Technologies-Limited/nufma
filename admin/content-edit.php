@@ -27,7 +27,7 @@ include __DIR__ . "/includes/admin-header.php";
 <div class="admin-card">
   <div class="admin-card-head">
     <h2><?php echo htmlspecialchars($CMS_SCHEMAS[$page]['label']); ?></h2>
-    <a href="../<?php echo htmlspecialchars($page === 'home' ? 'index' : $page); ?>.php" target="_blank" class="admin-btn admin-btn-line admin-btn-sm">View page</a>
+    <a href="../<?php echo htmlspecialchars($page === 'home' ? 'index.php' : ($page === 'policies' ? 'policy.php?p=privacy' : $page . '.php')); ?>" target="_blank" class="admin-btn admin-btn-line admin-btn-sm">View page</a>
   </div>
   <form class="admin-form" method="post" enctype="multipart/form-data">
     <?php foreach ($schema as $key => $def):

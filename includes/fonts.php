@@ -4,6 +4,14 @@
  * and can be changed from the admin dashboard (admin/settings.php).
  */
 $FONT_PRESETS = [
+  'cinematic' => [
+    'label'    => 'Cinematic (default)',
+    'sample'   => 'Manrope + Inter',
+    'google'   => "family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800",
+    'heading'  => "'Manrope',ui-sans-serif,system-ui,sans-serif",
+    'body'     => "'Inter',ui-sans-serif,system-ui,sans-serif",
+    'display'  => "'Manrope',ui-sans-serif,system-ui,sans-serif",
+  ],
   'editorial' => [
     'label'    => 'Editorial (default)',
     'sample'   => 'Manrope + Inter + Fraunces',
@@ -32,7 +40,7 @@ $FONT_PRESETS = [
 
 function nufa_get_font_preset($conn) {
     global $FONT_PRESETS;
-    $key = 'editorial';
+    $key = 'cinematic';
     $res = $conn->query("SELECT setting_value FROM settings WHERE setting_key='font_preset' LIMIT 1");
     if ($res && $row = $res->fetch_assoc()) {
         if (isset($FONT_PRESETS[$row['setting_value']])) $key = $row['setting_value'];

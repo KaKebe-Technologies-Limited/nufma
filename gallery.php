@@ -1,114 +1,60 @@
 <?php
 require_once __DIR__ . "/includes/content.php";
-$pageTitle = "Gallery — NUFA Awards Pictorials | NUFA";
-$pageDesc  = "Pictorials from the NUFA Awards — relive the red carpet, the gala and the community behind Northern Uganda's film industry.";
+require_once __DIR__ . "/includes/ui.php";
+$pageTitle = "Gallery & Video Library — NUFA Awards, Productions and Screenings";
+$pageDesc  = "Photographs and video from NUFA Awards ceremonies, film productions, screenings and community storytelling in Northern Uganda.";
 $activeNav = "gallery";
-$base = "";
 $canonicalPath = "gallery.php";
+$ogImage = "assets/images/og/og-gallery.jpg";
 include __DIR__ . "/includes/header.php";
-?>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
-  {"@type":"ListItem","position":1,"name":"Home","item":"<?php echo $siteUrl; ?>/index.php"},
-  {"@type":"ListItem","position":2,"name":"Gallery","item":"<?php echo $siteUrl; ?>/gallery.php"}
-]}
-</script>
-<?php
-$photos26 = [
-  ["nufa26-01.jpg","NUFA26 accreditation on the red carpet"],
-  ["nufa26-02.jpg","Guest arriving at NUFA26"],
-  ["nufa26-03.jpg","NUFA26 red carpet arrival"],
-  ["nufa26-04.jpg","Guest posing on the NUFA26 red carpet"],
-  ["nufa26-05.jpg","NUFA26 guests"],
-  ["nufa26-06.jpg","NUFA26 arrival"],
-  ["nufa26-07.jpg","NUFA26 red carpet moment"],
-  ["nufa26-08.jpg","Guests mingling at NUFA26"],
-  ["nufa26-09.jpg","NUFA26 red carpet"],
-  ["nufa26-10.jpg","Guest smiling at the NUFA26 gala table"],
-  ["nufa26-11.jpg","NUFA26 evening"],
-  ["nufa26-12.jpg","Cultural fashion at NUFA26"],
-  ["nufa26-13.jpg","NUFA26 red carpet moment"],
-  ["nufa26-14.jpg","Celebrating at NUFA26"],
-  ["nufa26-15.jpg","NUFA26 award night"],
-];
-$photos25 = [];
-for($i=1;$i<=21;$i++){
-  $photos25[] = ["nufa25-".sprintf('%02d',$i).".webp","NUFA25 Awards moment #$i"];
+
+$root = __DIR__ . '/assets/images/';
+$groups = ['2026' => ['label' => 'NUFA Awards 2026', 'items' => []], '2025' => ['label' => 'NUFA Awards 2025', 'items' => []], 'productions' => ['label' => 'Productions & community', 'items' => []]];
+foreach (glob($root . 'gallery/2026/nufa26-*.jpg') as $f) $groups['2026']['items'][] = ['gallery/2026/' . basename($f), 'NUFA Awards 2026 red carpet and ceremony'];
+foreach (glob($root . 'gallery/2025/nufa25-*.webp') as $f) $groups['2025']['items'][] = ['gallery/2025/' . basename($f), 'NUFA Awards 2025 ceremony moment'];
+$prodCaptions = ['crew-monitor-check' => 'Crew checking the monitor on a Northern Uganda film set', 'cultural-portrait' => 'Cultural portrait from a film production', 'karamoja-shoot-1' => 'Filming on location in Karamoja', 'karamoja-shoot-2' => 'Production crew on location in Karamoja', 'on-set-action' => 'On set during a film production'];
+foreach (glob($root . 'production/*.webp') as $f) $groups['productions']['items'][] = ['production/' . basename($f), $prodCaptions[basename($f, '.webp')] ?? 'Film production in Northern Uganda'];
+foreach (glob($root . 'gallery/2025/nufa-*.webp') as $f) if (!preg_match('/_\d\.webp$/', $f)) $groups['productions']['items'][] = ['gallery/2025/' . basename($f), 'Filmmaking and community storytelling in Northern Uganda'];
+foreach ($conn->query("SELECT image, caption, edition FROM gallery_images WHERE image LIKE 'uploads/%' ORDER BY created_at DESC")->fetch_all(MYSQLI_ASSOC) as $u) {
+    $k = substr($u['edition'], -2) === '26' ? '2026' : (substr($u['edition'], -2) === '25' ? '2025' : 'productions');
+    array_unshift($groups[$k]['items'], [$u['image'], $u['caption'] ?: $groups[$k]['label']]);
 }
+$videos = $conn->query("SELECT * FROM videos WHERE is_active=1 ORDER BY sort_order ASC, id DESC")->fetch_all(MYSQLI_ASSOC);
+
+echo ui_page_hero('Gallery & Video Library', 'The moments behind the stories', cms_value('gallery', 'hero_lede'), cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Gallery & Video']],
+    '<a href="#photos" class="btn btn-gold">Photo gallery</a><a href="#videos" class="btn btn-outline">Video library</a>');
 ?>
-<a id="top"></a>
-
-<section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/<?php echo cms_img('gallery','hero_image'); ?>" alt="" aria-hidden="true"></div>
-  <div class="hero-glow g1"></div>
-  <div class="container">
-    <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Gallery</span></div>
-    <div class="eyebrow"><?php echo cms_t('gallery','hero_eyebrow'); ?></div>
-    <h1 style="margin-top:18px"><?php echo cms_t('gallery','hero_heading'); ?></h1>
-    <p><?php echo cms_t('gallery','hero_lede'); ?></p>
-  </div>
-</section>
-
-<section class="section-tight bg-paper">
-  <div class="container">
-    <div class="gallery-tabs" data-reveal>
-      <button class="gallery-tab is-active" data-filter="all">All</button>
-      <button class="gallery-tab" data-filter="2026">NUFA26 Gala</button>
-      <button class="gallery-tab" data-filter="2025">NUFA25 Gala</button>
-    </div>
-  </div>
-</section>
-
-<section class="section-tight bg-paper" style="padding-top:24px">
+<section class="section" id="photos">
   <div class="container-wide">
-    <div class="masonry" data-reveal>
-      <?php foreach($photos26 as $p): ?>
-      <div class="m-item" data-gallery-item="2026">
-        <img src="assets/images/gallery/2026/<?php echo $p[0]; ?>"
-             data-lightbox="assets/images/gallery/2026/<?php echo $p[0]; ?>"
-             data-caption="<?php echo htmlspecialchars($p[1]); ?> — NUFA26, Acholi Inn, Gulu"
-             alt="<?php echo htmlspecialchars($p[1]); ?>" loading="lazy">
-        <div class="m-overlay"><span>NUFA26 · Acholi Inn</span></div>
+    <div class="section-head" style="margin-inline:var(--gutter)"><div class="eyebrow">Photographs</div><h2>Photo gallery</h2><p><?php echo cms_t('gallery', 'credit_note'); ?></p></div>
+    <div class="filter-bar" style="margin-inline:var(--gutter)" role="tablist" aria-label="Filter photographs">
+      <button class="gallery-tab is-active" data-filter="all" type="button">All</button>
+      <?php foreach ($groups as $k => $g) if ($g['items']): ?><button class="gallery-tab" data-filter="<?php echo ui_e($k); ?>" type="button"><?php echo ui_e($g['label']); ?></button><?php endif; ?>
+    </div>
+    <div class="masonry" style="margin-inline:var(--gutter)">
+      <?php foreach ($groups as $k => $g) foreach ($g['items'] as [$img, $cap]): ?>
+      <div class="m-item" data-gallery-item="<?php echo ui_e($k); ?>">
+        <img src="assets/images/<?php echo ui_e($img); ?>" data-lightbox="assets/images/<?php echo ui_e($img); ?>" data-caption="<?php echo ui_e($cap); ?>" alt="<?php echo ui_e($cap); ?>" loading="lazy" decoding="async">
+        <div class="m-overlay"><span><?php echo ui_e($g['label']); ?></span></div>
       </div>
       <?php endforeach; ?>
-      <?php foreach($photos25 as $p): ?>
-      <div class="m-item" data-gallery-item="2025">
-        <img src="assets/images/gallery/2025/<?php echo $p[0]; ?>"
-             data-lightbox="assets/images/gallery/2025/<?php echo $p[0]; ?>"
-             data-caption="<?php echo htmlspecialchars($p[1]); ?> — NUFA25, Gulu"
-             alt="<?php echo htmlspecialchars($p[1]); ?>" loading="lazy">
-        <div class="m-overlay"><span>NUFA25 · Gulu</span></div>
-      </div>
-      <?php endforeach; ?>
-      <?php
-      // photos uploaded from admin → Gallery (the built-in sets above are static)
-      $extra = $conn->query("SELECT image, caption, edition FROM gallery_images WHERE image LIKE 'uploads/%' ORDER BY created_at DESC");
-      while ($g = $extra->fetch_assoc()):
-        $yr = (substr($g['edition'], -2) === '25') ? '2025' : '2026';
-        $cap = $g['caption'] !== '' ? $g['caption'] : 'NUFA' . substr($yr, -2) . ' moment';
-      ?>
-      <div class="m-item" data-gallery-item="<?php echo $yr; ?>">
-        <img src="assets/images/<?php echo htmlspecialchars($g['image']); ?>"
-             data-lightbox="assets/images/<?php echo htmlspecialchars($g['image']); ?>"
-             data-caption="<?php echo htmlspecialchars($cap); ?>"
-             alt="<?php echo htmlspecialchars($cap); ?>" loading="lazy">
-        <div class="m-overlay"><span>NUFA<?php echo substr($yr, -2); ?></span></div>
-      </div>
-      <?php endwhile; ?>
     </div>
   </div>
 </section>
 
-<section class="section bg-cream2">
+<section class="section section--dark" id="videos">
   <div class="container">
-    <div class="cta-band" data-reveal>
-      <div>
-        <div class="eyebrow">Were You There?</div>
-        <h2 style="margin-top:16px">Follow us for the full NUFA27 pictorial drop</h2>
-      </div>
-      <a href="contact.php" class="btn btn-brand">Stay Updated</a>
+    <div class="section-head"><div class="eyebrow">Video library</div><h2>Video highlights</h2><p>Videos are embedded from NUFA's official channels once approved for publication.</p></div>
+    <?php if (!$videos): ?>
+      <div class="empty-state" style="background:rgba(255,255,255,.05);border-color:var(--line-dark)"><h3>Videos coming soon</h3><p style="color:var(--muted-on-dark)">Highlights from NUFA Awards, screenings and training sessions will appear here once they are added.</p></div>
+    <?php else: ?>
+    <div class="video-grid">
+      <?php foreach ($videos as $v): $embed = ui_video_embed($v['video_url']); if (!$embed) continue; ?>
+      <article class="video-card"><div class="frame"><iframe src="<?php echo ui_e($embed); ?>" title="<?php echo ui_e($v['title']); ?>" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+        <h3><?php echo ui_e($v['title']); ?></h3><?php if ($v['caption']): ?><p class="muted" style="font-size:.88rem"><?php echo ui_e($v['caption']); ?></p><?php endif; ?></article>
+      <?php endforeach; ?>
     </div>
+    <?php endif; ?>
   </div>
 </section>
-
 <?php include __DIR__ . "/includes/footer.php"; ?>

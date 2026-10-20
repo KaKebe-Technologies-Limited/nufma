@@ -22,8 +22,19 @@
   var navToggle = document.querySelector(".nav-toggle");
   var mobileNav = document.querySelector(".mobile-nav");
   var navClose = document.querySelector(".mobile-nav-close");
-  function openNav(){ mobileNav.classList.add("is-open"); document.body.classList.add("nav-locked"); }
-  function closeNav(){ mobileNav.classList.remove("is-open"); document.body.classList.remove("nav-locked"); }
+  function openNav(){
+    mobileNav.classList.add("is-open"); mobileNav.setAttribute("aria-hidden", "false");
+    document.body.classList.add("nav-locked");
+    if(navClose) navClose.focus();
+  }
+  function closeNav(){
+    mobileNav.classList.remove("is-open"); mobileNav.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("nav-locked");
+    if(navToggle) navToggle.focus();
+  }
+  document.addEventListener("keydown", function(e){
+    if(e.key === "Escape" && mobileNav && mobileNav.classList.contains("is-open")) closeNav();
+  });
   if(navToggle) navToggle.addEventListener("click", openNav);
   if(navClose) navClose.addEventListener("click", closeNav);
 
@@ -125,13 +136,13 @@
     document.querySelectorAll("[data-lightbox]").forEach(function(el, i){
       el.addEventListener("click", function(){
         show(i);
-        lightbox.classList.add("is-open");
+        lightbox.classList.add("is-open"); lightbox.setAttribute("aria-hidden", "false");
         document.body.classList.add("nav-locked");
       });
     });
 
     function close(){
-      lightbox.classList.remove("is-open");
+      lightbox.classList.remove("is-open"); lightbox.setAttribute("aria-hidden", "true");
       document.body.classList.remove("nav-locked");
     }
 

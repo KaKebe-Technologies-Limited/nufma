@@ -4,6 +4,7 @@ $adminNav = "dashboard";
 require __DIR__ . "/includes/auth.php";
 require_once __DIR__ . "/../includes/membership.php";
 require_once __DIR__ . "/../includes/settings.php";
+$cfg = nufa_site_settings($conn);
 
 $one = function ($sql) use ($conn) { $r = $conn->query($sql); return $r ? (int)($r->fetch_row()[0] ?? 0) : 0; };
 
@@ -20,6 +21,12 @@ $postLive  = $one("SELECT COUNT(*) FROM posts WHERE is_published=1");
 $postDraft = $one("SELECT COUNT(*) FROM posts WHERE is_published=0");
 $views     = $one("SELECT COALESCE(SUM(views),0) FROM posts");
 $partners  = $one("SELECT COUNT(*) FROM partners WHERE is_active=1");
+$enqNew    = $one("SELECT COUNT(*) FROM enquiries WHERE status='new'");
+$enqTotal  = $one("SELECT COUNT(*) FROM enquiries");
+$progNoDetail = $one("SELECT COUNT(*) FROM programmes WHERE is_active=1 AND (TRIM(COALESCE(context,''))='' OR TRIM(COALESCE(objectives,''))='')");
+$bioMissing = $one("SELECT COUNT(*) FROM team_members WHERE is_active=1 AND TRIM(COALESCE(bio,''))=''");
+$resCount  = $one("SELECT COUNT(*) FROM resources WHERE is_active=1");
+$vidCount  = $one("SELECT COUNT(*) FROM videos WHERE is_active=1");
 $failed24  = $one("SELECT COUNT(*) FROM admin_login_log WHERE success=0 AND created_at > (NOW() - INTERVAL 24 HOUR)");
 
 // ---- last 6 months series
@@ -77,8 +84,8 @@ $first = explode(' ', trim($_SESSION['admin_name'] ?? 'Admin'))[0];
 <div class="dash-kpis">
   <a class="kpi" href="members.php?status=approved"><span>Active members</span><b><?php echo $mApproved; ?></b><small><?php echo $mExpired; ?> expired · <?php echo $mExpiring; ?> expiring in 30 days</small></a>
   <a class="kpi <?php echo $mPending ? 'warn' : ''; ?>" href="members.php?status=pending"><span>Applications to review</span><b><?php echo $mPending; ?></b><small><?php echo $mPending ? 'Waiting for your approval' : 'All caught up'; ?></small></a>
-  <a class="kpi <?php echo $msgUnread ? 'warn' : 'dark'; ?>" href="messages.php"><span>Unread messages</span><b><?php echo $msgUnread; ?></b><small><?php echo $msgTotal; ?> total received</small></a>
-  <a class="kpi dark" href="subscribers.php"><span>Newsletter subscribers</span><b><?php echo $subTotal; ?></b><small>+<?php echo $subMonth; ?> this month</small></a>
+  <a class="kpi <?php echo $enqNew ? 'warn' : 'dark'; ?>" href="enquiries.php?status=new"><span>New enquiries</span><b><?php echo $enqNew; ?></b><small><?php echo $enqTotal; ?> received in total<?php echo $msgUnread ? ' · ' . $msgUnread . ' earlier messages unread' : ''; ?></small></a>
+  <a class="kpi dark" href="posts.php"><span>Published stories</span><b><?php echo $postLive; ?></b><small><?php echo number_format($views); ?> views · <?php echo $postDraft; ?> drafts</small></a>
 </div>
 
 <div class="dash-grid">
@@ -141,9 +148,22 @@ $first = explode(' ', trim($_SESSION['admin_name'] ?? 'Admin'))[0];
       <div class="admin-card-head"><h2>Needs your attention</h2></div>
       <div class="todo">
         <a href="members.php?status=pending"><span class="n <?php echo $mPending ? 'red' : 'ok'; ?>"><?php echo $mPending; ?></span> Membership applications to review<i>&rarr;</i></a>
-        <a href="messages.php"><span class="n <?php echo $msgUnread ? 'red' : 'ok'; ?>"><?php echo $msgUnread; ?></span> Unread contact messages<i>&rarr;</i></a>
+        <a href="enquiries.php?status=new"><span class="n <?php echo $enqNew ? 'red' : 'ok'; ?>"><?php echo $enqNew; ?></span> New enquiries (contact, partnership, SACCO, network)<i>&rarr;</i></a>
         <a href="members.php?status=approved"><span class="n <?php echo $mExpiring ? '' : 'ok'; ?>"><?php echo $mExpiring; ?></span> Memberships expiring within 30 days<i>&rarr;</i></a>
         <a href="posts.php"><span class="n <?php echo $postDraft ? '' : 'ok'; ?>"><?php echo $postDraft; ?></span> Draft posts not yet published<i>&rarr;</i></a>
+      </div>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-head"><h2>Content to complete</h2></div>
+      <p class="admin-help" style="margin-bottom:10px">Items the master brief says must be verified or approved before they are treated as final.</p>
+      <div class="todo">
+        <a href="settings.php"><span class="n <?php echo $cfg['vm_approved'] === '1' ? 'ok' : ''; ?>"><?php echo $cfg['vm_approved'] === '1' ? '✓' : '!'; ?></span> Vision &amp; mission approval by leadership<i>&rarr;</i></a>
+        <a href="settings.php"><span class="n <?php echo $cfg['policies_approved'] === '1' ? 'ok' : ''; ?>"><?php echo $cfg['policies_approved'] === '1' ? '✓' : '!'; ?></span> Policy pages reviewed by a professional<i>&rarr;</i></a>
+        <a href="programmes.php"><span class="n <?php echo $progNoDetail ? '' : 'ok'; ?>"><?php echo $progNoDetail; ?></span> Programmes still missing context / objectives<i>&rarr;</i></a>
+        <a href="team.php"><span class="n <?php echo $bioMissing ? '' : 'ok'; ?>"><?php echo $bioMissing; ?></span> Leadership profiles without an approved biography<i>&rarr;</i></a>
+        <a href="resources.php"><span class="n <?php echo $resCount ? 'ok' : ''; ?>"><?php echo $resCount; ?></span> Resources in the library<i>&rarr;</i></a>
+        <a href="videos.php"><span class="n <?php echo $vidCount ? 'ok' : ''; ?>"><?php echo $vidCount; ?></span> Videos in the library<i>&rarr;</i></a>
       </div>
     </div>
 

@@ -1,8 +1,9 @@
 User-agent: *
 Disallow: /admin/
 Disallow: /includes/
-Disallow: /contact-submit.php
-Disallow: /subscribe.php
+Disallow: /storage/
+Disallow: /card.php
 Allow: /
 
-Sitemap: /sitemap.php
+# Replace with the live domain when deploying (the sitemap is generated dynamically)
+Sitemap: https://www.nufa.media/sitemap.php

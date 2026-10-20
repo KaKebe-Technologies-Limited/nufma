@@ -3,7 +3,7 @@ $adminNav = "partners";
 require __DIR__ . "/includes/auth.php";
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$partner = ['name'=>'','logo'=>'','website'=>'','tier'=>'Partner','sort_order'=>0,'is_active'=>1];
+$partner = ['name'=>'','logo'=>'','website'=>'','tier'=>'Partner','relationship'=>'current','sort_order'=>0,'is_active'=>1];
 if ($id) {
     $r = $conn->query("SELECT * FROM partners WHERE id=$id")->fetch_assoc();
     if ($r) $partner = $r;
@@ -18,6 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $website  = trim($_POST['website'] ?? '');
     $sortOrder = (int)($_POST['sort_order'] ?? 0);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
+    $relationship = ($_POST['relationship'] ?? 'current') === 'previous' ? 'previous' : 'current';
     $logo     = $partner['logo'];
 
     if (!empty($_FILES['logo']['name'])) {
@@ -43,15 +44,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$error && $name === '') $error = "Organisation name is required.";
-    if (!$error && $logo === '') $error = "Please upload a logo image.";
 
     if (!$error) {
         if ($id) {
-            $stmt = $conn->prepare("UPDATE partners SET name=?, logo=?, website=?, tier=?, sort_order=?, is_active=? WHERE id=?");
-            $stmt->bind_param("ssssiii", $name, $logo, $website, $tier, $sortOrder, $isActive, $id);
+            $stmt = $conn->prepare("UPDATE partners SET name=?, logo=?, website=?, tier=?, relationship=?, sort_order=?, is_active=? WHERE id=?");
+            $stmt->bind_param("sssssiii", $name, $logo, $website, $tier, $relationship, $sortOrder, $isActive, $id);
         } else {
-            $stmt = $conn->prepare("INSERT INTO partners (name, logo, website, tier, sort_order, is_active) VALUES (?,?,?,?,?,?)");
-            $stmt->bind_param("ssssii", $name, $logo, $website, $tier, $sortOrder, $isActive);
+            $stmt = $conn->prepare("INSERT INTO partners (name, logo, website, tier, relationship, sort_order, is_active) VALUES (?,?,?,?,?,?,?)");
+            $stmt->bind_param("sssssii", $name, $logo, $website, $tier, $relationship, $sortOrder, $isActive);
         }
         $stmt->execute();
         header("Location: partners.php?saved=1");
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $partner = array_merge($partner, [
         'name' => $name, 'tier' => $tier, 'website' => $website,
-        'sort_order' => $sortOrder, 'is_active' => $isActive, 'logo' => $logo,
+        'sort_order' => $sortOrder, 'is_active' => $isActive, 'logo' => $logo, 'relationship' => $relationship,
     ]);
 }
 
@@ -87,8 +87,8 @@ include __DIR__ . "/includes/admin-header.php";
 
     <div class="admin-form-grid">
       <div class="field">
-        <label>Logo <?php echo $id ? '(leave empty to keep the current one)' : ''; ?></label>
-        <input type="file" name="logo" accept=".jpg,.jpeg,.png,.webp,.svg,image/*" <?php echo $id ? '' : 'required'; ?>>
+        <label>Logo <?php echo $id ? '(leave empty to keep the current one)' : '(optional)'; ?></label>
+        <input type="file" name="logo" accept=".jpg,.jpeg,.png,.webp,.svg,image/*"><span class="admin-help">Optional — without a logo the partner appears as a name and role tile.</span>
         <?php if ($partner['logo']): ?>
           <div class="admin-help" style="margin-top:10px">
             <?php if ($logoExists): ?>
@@ -106,6 +106,10 @@ include __DIR__ . "/includes/admin-header.php";
         <input type="url" name="website" value="<?php echo htmlspecialchars($partner['website'] ?? ''); ?>" placeholder="https://">
       </div>
     </div>
+    <div class="admin-form-grid">
+      <div class="field"><label>Relationship</label><select name="relationship"><option value="current"<?php echo ($partner['relationship'] ?? 'current') === 'current' ? ' selected' : ''; ?>>Current partner</option><option value="previous"<?php echo ($partner['relationship'] ?? '') === 'previous' ? ' selected' : ''; ?>>Previous supporter</option></select><span class="admin-help">Current partners and previous supporters are shown separately on the Partner page.</span></div>
+    </div>
+
 
     <div class="admin-form-grid">
       <div class="field">

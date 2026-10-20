@@ -105,3 +105,8 @@ function cms_save($conn, $page, array $schema, array $post, array $files) {
     }
     return $errors;
 }
+
+/** Image path (relative to assets/images/), unescaped — for helpers that escape on output. */
+function cms_img_raw($page, $key) {
+    return htmlspecialchars_decode(cms_img($page, $key), ENT_QUOTES);
+}

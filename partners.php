@@ -1,127 +1,104 @@
 <?php
+require_once __DIR__ . "/includes/forms.php";
 require_once __DIR__ . "/includes/content.php";
-$pageTitle = "Partners & Sponsors — NUFA | Northern Uganda Filmmakers Association";
-$pageDesc  = "Meet the organisations backing NUFA and the NUFA Awards, and find out how your brand can partner with Northern Uganda's film industry.";
-$activeNav = "partners";
-$base = "";
-$canonicalPath = "partners.php";
-require __DIR__ . "/includes/db.php";
-include __DIR__ . "/includes/header.php";
-?>
-<script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
-  {"@type":"ListItem","position":1,"name":"Home","item":"<?php echo $siteUrl; ?>/index.php"},
-  {"@type":"ListItem","position":2,"name":"Partners","item":"<?php echo $siteUrl; ?>/partners.php"}
-]}
-</script>
-<?php
-$partners = [];
-$res = $conn->query("SELECT * FROM partners WHERE is_active=1 ORDER BY sort_order ASC");
-while ($row = $res->fetch_assoc()) {
-    $row["has_logo"] = $row["logo"] !== "" && is_file(__DIR__ . "/assets/images/" . $row['logo']);
-    $partners[] = $row;
+require_once __DIR__ . "/includes/ui.php";
+
+$orgTypes = ['Government institution', 'Development partner or donor', 'Cultural organisation', 'Educational institution', 'Media company', 'Private company', 'Non-profit organisation', 'Individual'];
+$interests = ['Sponsorship of NUFA Awards', 'Film training and mentorship', 'Equipment and technical support', 'Film screenings and audience development', 'Youth and emerging filmmaker initiatives',
+              'Cultural preservation projects', 'Creative enterprise development', 'Digital innovation and industry infrastructure', 'Research, advocacy and industry engagement', 'Other'];
+$errors = []; $sent = isset($_GET['sent']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($g = form_guard($conn, 'partner')) $errors[] = $g;
+    $org = form_clean($_POST['organisation'] ?? '', 190); $person = form_clean($_POST['name'] ?? '', 150); $email = strtolower(form_clean($_POST['email'] ?? '', 190));
+    $phone = form_clean($_POST['phone'] ?? '', 40); $otype = form_clean($_POST['org_type'] ?? '', 80); $interest = form_clean($_POST['interest'] ?? '', 120);
+    $proposal = form_clean($_POST['proposal'] ?? '', 1500); $msg = form_clean($_POST['message'] ?? '', 3000);
+    if ($org === '') $errors[] = "Please enter your organisation or your name.";
+    if ($person === '') $errors[] = "Please enter a contact person.";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Please enter a valid email address.";
+    if (!in_array($otype, $orgTypes, true)) $errors[] = "Please choose an organisation type.";
+    if (!in_array($interest, $interests, true)) $errors[] = "Please choose an area of interest.";
+    if (empty($_POST['consent'])) $errors[] = "Please consent to being contacted.";
+    if (!$errors) {
+        $ok = form_save($conn, 'partner', $interest, $person, $org, $email, $phone, $msg,
+            ['Organisation type' => $otype, 'Proposed partnership' => $proposal, 'Sponsorship proposal requested' => !empty($_POST['want_proposal']) ? 'Yes' : 'No'], true);
+        if ($ok) { header("Location: partners.php?sent=1#enquiry"); exit; }
+        $errors[] = "We couldn't save your enquiry just now. Please try again or email us directly.";
+    }
 }
+
+$pageTitle = "Partner With NUFA — Invest in the Power of Storytelling";
+$pageDesc  = "Partner with the Northern Uganda Filmmakers Association to support film training, awards, audience development and creative enterprise in Northern Uganda.";
+$activeNav = "partner";
+$canonicalPath = "partners.php";
+$ogImage = "assets/images/og/og-partners.jpg";
+include __DIR__ . "/includes/header.php";
+
+$current  = $conn->query("SELECT * FROM partners WHERE is_active=1 AND relationship='current' ORDER BY sort_order ASC, id ASC")->fetch_all(MYSQLI_ASSOC);
+$previous = $conn->query("SELECT * FROM partners WHERE is_active=1 AND relationship='previous' ORDER BY sort_order ASC, id ASC")->fetch_all(MYSQLI_ASSOC);
+$tile = function ($p) {
+    $has = $p['logo'] !== '' && is_file(__DIR__ . '/assets/images/' . $p['logo']);
+    $inner = $has ? '<img src="assets/images/' . ui_e($p['logo']) . '" alt="' . ui_e($p['name']) . '" loading="lazy">' : '<div><b>' . ui_e($p['name']) . '</b><span>' . ui_e($p['tier']) . '</span></div>';
+    return '<div class="partner-tile" title="' . ui_e($p['name'] . ' — ' . $p['tier']) . '">' . ($p['website'] ? '<a href="' . ui_e($p['website']) . '" target="_blank" rel="noopener">' . $inner . '</a>' : $inner) . '</div>';
+};
+$opps = [['trophy', 'Sponsorship of NUFA Awards'], ['book', 'Film training and mentorship'], ['camera', 'Equipment and technical support'], ['film', 'Film screenings and audience development'], ['users', 'Youth and emerging filmmaker initiatives'],
+         ['heart', 'Cultural preservation projects'], ['coins', 'Creative enterprise development'], ['bulb', 'Digital innovation and industry infrastructure'], ['compass', 'Research, advocacy and industry engagement']];
+
+echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cms_value('partners', 'hero_lede'), cms_img_raw('partners', 'hero_image'), [['Partner With Us']],
+    '<a href="#enquiry" class="btn btn-gold">Partnership enquiry</a><a href="#enquiry" class="btn btn-outline">Request a sponsorship proposal</a>');
 ?>
-<a id="top"></a>
 
-<section class="page-hero">
-  <div class="page-hero-bg"><img src="assets/images/<?php echo cms_img('partners','hero_image'); ?>" alt="" aria-hidden="true"></div>
-  <div class="hero-glow g1"></div>
+<section class="section">
   <div class="container">
-    <div class="breadcrumb"><a href="index.php">Home</a><span>/</span><span>Partners</span></div>
-    <div class="eyebrow"><?php echo cms_t('partners','hero_eyebrow'); ?></div>
-    <h1 style="margin-top:18px"><?php echo cms_t('partners','hero_heading'); ?></h1>
-    <p><?php echo cms_t('partners','hero_lede'); ?></p>
+    <div class="section-head center" data-reveal><div class="eyebrow">Partnership opportunities</div><h2>Where your support makes a difference</h2><p><?php echo cms_t('partners', 'why_body'); ?></p></div>
+    <div class="grid grid-3" data-reveal-stagger>
+      <?php foreach ($opps as [$ic, $label]): ?><div class="value"><span class="icon-circle"><?php echo nufa_icon($ic, 24); ?></span><h3><?php echo ui_e($label); ?></h3></div><?php endforeach; ?>
+    </div>
+    <p class="center muted mt-2"><?php echo cms_t('partners', 'formats_note'); ?></p>
   </div>
 </section>
 
-<section class="section bg-paper">
+<section class="section section--soft">
   <div class="container">
-    <div class="section-head center">
-      <div class="eyebrow">NUFA26 Partners</div>
-      <h2>Standing behind <span class="serif">Northern Uganda's creatives</span></h2>
-    </div>
-    <div class="partner-wall" data-reveal-stagger>
-      <?php foreach ($partners as $p): ?>
-      <div class="partner-tile">
-        <?php if ($p['has_logo']): ?>
-          <img src="assets/images/<?php echo htmlspecialchars($p['logo']); ?>" alt="<?php echo htmlspecialchars($p['name']); ?> — NUFA <?php echo htmlspecialchars($p['tier']); ?>" loading="lazy">
-        <?php else: ?>
-          <div><b><?php echo htmlspecialchars($p['name']); ?></b><span><?php echo htmlspecialchars($p['tier']); ?></span></div>
-        <?php endif; ?>
-      </div>
-      <?php endforeach; ?>
-    </div>
-    <p class="lede" style="text-align:center;margin-inline:auto;margin-top:32px">This wall updates every edition — new partner logos can be added straight from the admin dashboard.</p>
+    <div class="section-head center" data-reveal><div class="eyebrow">Our partners</div><h2>Organisations standing with NUFA</h2></div>
+    <?php if ($current): ?><div class="partner-wall" data-reveal-stagger><?php foreach ($current as $p) echo $tile($p); ?></div>
+    <?php else: ?><div class="empty-state"><h3>Current partners will be listed here</h3><p>Approved partner names and logos are published once confirmed. Interested in joining them? Use the form below.</p></div><?php endif; ?>
+    <?php if ($previous): ?>
+      <h3 style="margin:48px 0 18px" class="center">Previous supporters</h3>
+      <div class="partner-wall"><?php foreach ($previous as $p) echo $tile($p); ?></div>
+    <?php endif; ?>
   </div>
 </section>
 
-<section class="section bg-cream2" id="become">
-  <div class="container">
-    <div class="section-head center">
-      <div class="eyebrow">Why Partner With NUFA</div>
-      <h2>Put your brand where the region is <span class="serif">watching</span></h2>
-    </div>
-    <div class="grid-3" data-reveal-stagger>
-      <div class="value-card">
-        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>Regional visibility</h3>
-        <p>Reach audiences and creatives across Acholi, Lango, West Nile and Karamoja — on the red carpet and year-round.</p>
-      </div>
-      <div class="value-card">
-        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.6 6.6L21 10l-5 4.3L17.4 21 12 17.3 6.6 21 8 14.3 3 10l6.4-1.4L12 2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
-        <h3>Credible association</h3>
-        <p>Align your brand with a registered, professional body building a real film industry — not a one-off event.</p>
-      </div>
-      <div class="value-card">
-        <div class="ico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 20v-1a5 5 0 0 1 5-5h1a5 5 0 0 1 5 5v1M15 4.2a3.5 3.5 0 0 1 0 6.6M17 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="8" r="3.2" stroke="currentColor" stroke-width="1.6"/></svg></div>
-        <h3>Direct community access</h3>
-        <p>Connect with 700+ trained creatives and the communities that turn out for every screening and awards night.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section bg-paper">
-  <div class="container">
-    <div class="grid-2" style="align-items:stretch">
-      <div class="assoc-visual" data-reveal>
-        <div class="frame-main"><img src="assets/images/gallery/2025/nufa25-06.webp" alt="NUFA Awards partners and guests"></div>
-      </div>
-      <div class="form-card" data-reveal>
-        <div class="eyebrow" style="margin-bottom:14px">Partnership Enquiry</div>
-        <h3 style="font-size:1.4rem;margin-bottom:24px">Tell us about your organisation</h3>
-        <?php if(isset($_GET['contact']) && $_GET['contact']==='sent'): ?>
-          <div style="background:var(--brand-100);color:var(--brand-700);padding:14px 18px;border-radius:var(--radius-md);margin-bottom:20px;font-size:.9rem;font-weight:600">Thanks — your enquiry has been sent. We'll be in touch soon.</div>
-        <?php endif; ?>
-        <form action="contact-submit.php" method="post">
-          <input type="hidden" name="redirect" value="partners.php">
-          <div class="field">
-            <label for="p-org">Organisation name</label>
-            <input id="p-org" name="name" type="text" placeholder="Your company or organisation" required>
-          </div>
-          <div class="field">
-            <label for="p-email">Email address</label>
-            <input id="p-email" name="email" type="email" placeholder="you@company.com" required>
-          </div>
-          <div class="field">
-            <label for="p-tier">Interested in</label>
-            <select id="p-tier" name="subject">
-              <option>NUFA Awards 2027 sponsorship</option>
-              <option>Media / distribution partnership</option>
-              <option>Training &amp; equipment support</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field full">
-            <label for="p-msg">Message</label>
-            <textarea id="p-msg" name="message" placeholder="Tell us a bit about what you have in mind" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-brand" style="width:100%">Send Enquiry</button>
-        </form>
-      </div>
+<section class="section" id="enquiry">
+  <div class="container member-grid" style="grid-template-columns:.8fr 1.3fr">
+    <aside class="member-side" data-reveal>
+      <h3>Start a conversation</h3>
+      <p style="color:var(--muted-on-dark)">Tell us about your organisation and what you would like to support. The NUFA team will respond with next steps and, if you request it, a sponsorship proposal.</p>
+      <ol class="member-steps"><li><b>Send your enquiry</b><span>Share who you are and your area of interest.</span></li><li><b>We respond</b><span>A member of the team will contact you.</span></li><li><b>Shape the partnership</b><span>Agree a format that works for both sides.</span></li></ol>
+      <p style="font-size:.86rem;color:var(--muted-on-dark)">Or contact us directly: <a href="mailto:<?php echo ui_e($cfg['site_email']); ?>" style="color:var(--gold)"><?php echo ui_e($cfg['site_email']); ?></a></p>
+    </aside>
+    <div class="form-card" data-reveal>
+      <h2 style="font-size:1.6rem">Partnership enquiry</h2>
+      <?php echo form_banner($sent, $errors, "Your partnership enquiry has been received. The NUFA team will be in touch."); ?>
+      <?php if (!$sent): ?>
+      <form method="post" action="partners.php#enquiry">
+        <?php echo form_open_fields(); ?>
+        <div class="form-grid">
+          <?php echo f_input('organisation', 'Organisation or individual name', ['required' => true, 'maxlength' => 190]); ?>
+          <?php echo f_input('name', 'Contact person', ['required' => true, 'autocomplete' => 'name']); ?>
+          <?php echo f_input('email', 'Email', ['type' => 'email', 'required' => true, 'autocomplete' => 'email']); ?>
+          <?php echo f_input('phone', 'Telephone', ['type' => 'tel', 'autocomplete' => 'tel']); ?>
+          <?php echo f_select('org_type', 'Organisation type', $orgTypes, ['required' => true]); ?>
+          <?php echo f_select('interest', 'Area of interest', $interests, ['required' => true]); ?>
+        </div>
+        <?php echo f_textarea('proposal', 'Proposed partnership', ['placeholder' => 'What kind of partnership do you have in mind?', 'maxlength' => 1500]); ?>
+        <?php echo f_textarea('message', 'Message', ['maxlength' => 3000]); ?>
+        <?php echo f_check('want_proposal', 'Please send me a sponsorship proposal.', false); ?>
+        <?php echo f_check('consent', 'I consent to NUFA contacting me about this enquiry and have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a>.'); ?>
+        <button class="btn btn-gold btn-block" type="submit">Send enquiry</button>
+      </form>
+      <?php endif; ?>
     </div>
   </div>
 </section>
-
 <?php include __DIR__ . "/includes/footer.php"; ?>

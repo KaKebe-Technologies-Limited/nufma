@@ -45,6 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $images = $conn->query("SELECT * FROM gallery_images ORDER BY created_at DESC");
 include __DIR__ . "/includes/admin-header.php";
 ?>
+<div class="mem-tabs"><a href="gallery.php" class="active">Photo gallery</a><a href="videos.php">Video library</a></div>
 
 <?php if (isset($_GET['added'])): ?><div class="admin-alert ok">Photo added to the gallery.</div><?php endif; ?>
 <?php if (isset($_GET['deleted'])): ?><div class="admin-alert ok">Photo removed.</div><?php endif; ?>
@@ -64,6 +65,7 @@ include __DIR__ . "/includes/admin-header.php";
           <option value="2027">NUFA27</option>
           <option value="2026">NUFA26</option>
           <option value="2025">NUFA25</option>
+          <option value="prod">Productions &amp; community</option>
         </select>
       </div>
     </div>
@@ -87,7 +89,7 @@ include __DIR__ . "/includes/admin-header.php";
       <tr>
         <td><img class="admin-thumb" src="../assets/images/<?php echo htmlspecialchars($g['image']); ?>" alt=""></td>
         <td><?php echo htmlspecialchars($g['caption'] ?: '—'); ?></td>
-        <td><span class="admin-badge gray">NUFA<?php echo substr(htmlspecialchars($g['edition']),-2); ?></span></td>
+        <td><span class="admin-badge gray"><?php echo ctype_digit((string)$g['edition']) ? 'NUFA' . substr($g['edition'],-2) : 'Productions'; ?></span></td>
         <td><a href="gallery.php?delete=<?php echo $g['id']; ?>" class="admin-btn admin-btn-danger admin-btn-sm" data-confirm="Remove this photo?">Delete</a></td>
       </tr>
       <?php endwhile; ?>

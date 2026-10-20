@@ -1,175 +1,184 @@
 <?php
 /**
- * Shared site header. Each page sets $pageTitle, $pageDesc and $activeNav
- * before including this file.
+ * Shared public header. Pages set before including it:
+ *   $pageTitle, $pageDesc, $activeNav, $canonicalPath, $ogImage (optional), $ogType (optional)
  */
-if(!isset($pageTitle)) $pageTitle = "NUFA — Northern Uganda Filmmakers Association";
-if(!isset($pageDesc)) $pageDesc = "NUFA is the home of Northern Uganda's filmmakers — uniting, training and celebrating storytellers across Acholi, Lango, West Nile and Karamoja through the annual NUFA Awards.";
-if(!isset($activeNav)) $activeNav = "";
-if(!isset($base)) $base = "";
-if(!isset($ogImage)) $ogImage = "assets/images/logo/nufa-logo.png";
-if(!isset($canonicalPath)) $canonicalPath = basename($_SERVER['PHP_SELF']);
-$siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['SCRIPT_NAME']) === '/' ? '' : dirname(str_replace('\\','/',$_SERVER['SCRIPT_NAME'])), '/');
-if(!isset($conn)) require __DIR__ . "/db.php";
-require __DIR__ . "/fonts.php";
-$activeFont = nufa_get_font_preset($conn);
+require_once __DIR__ . "/db.php";
+require_once __DIR__ . "/schema.php";
+require_once __DIR__ . "/settings.php";
+require_once __DIR__ . "/icons.php";
+require_once __DIR__ . "/fonts.php";
+
+if (!isset($pageTitle)) $pageTitle = "NUFA — Northern Uganda Filmmakers Association | Our Stories. Our Culture. Our Future.";
+if (!isset($pageDesc))  $pageDesc  = "The Northern Uganda Filmmakers Association (NUFA) brings filmmakers together to strengthen the craft of storytelling, celebrate creative excellence and build a stronger film industry in Northern Uganda.";
+if (!isset($activeNav)) $activeNav = "";
+if (!isset($base))      $base = "";
+if (!isset($ogImage))   $ogImage = "assets/images/og/og-default.jpg";
+if (!isset($ogType))    $ogType = "website";
+if (!isset($canonicalPath)) $canonicalPath = basename($_SERVER['PHP_SELF']);
+
+$cfg = nufa_site_settings($conn);
+$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+$siteUrl = ($https ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+$canonical = $siteUrl . '/' . ltrim($canonicalPath, '/');
+$font = nufa_get_font_preset($conn);
+$navProgrammes = $conn->query("SELECT slug, title FROM programmes WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
+$navEditions = $conn->query("SELECT slug, year FROM award_editions WHERE is_active=1 ORDER BY year DESC")->fetch_all(MYSQLI_ASSOC);
+$sameAs = array_values(array_filter([$cfg['facebook_url'], $cfg['instagram_url'], $cfg['x_url'], $cfg['linkedin_url'], $cfg['youtube_url']]));
+$hx = fn($s) => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
+$cssVer = @filemtime(__DIR__ . '/../assets/css/site.css');
 ?><!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title><?php echo $pageTitle; ?></title>
-<meta name="description" content="<?php echo $pageDesc; ?>">
-<meta name="theme-color" content="#FAF6EE">
-<link rel="canonical" href="<?php echo $siteUrl . '/' . ltrim($canonicalPath,'/'); ?>">
+<title><?php echo $hx($pageTitle); ?></title>
+<meta name="description" content="<?php echo $hx($pageDesc); ?>">
+<meta name="theme-color" content="#111111">
+<link rel="canonical" href="<?php echo $hx($canonical); ?>">
+<?php if (!empty($noindex)): ?><meta name="robots" content="noindex, follow"><?php endif; ?>
 
 <meta property="og:site_name" content="NUFA — Northern Uganda Filmmakers Association">
-<meta property="og:title" content="<?php echo $pageTitle; ?>">
-<meta property="og:description" content="<?php echo $pageDesc; ?>">
-<meta property="og:type" content="website">
-<meta property="og:url" content="<?php echo $siteUrl . '/' . ltrim($canonicalPath,'/'); ?>">
-<meta property="og:image" content="<?php echo $siteUrl . '/' . $ogImage; ?>">
+<meta property="og:title" content="<?php echo $hx($pageTitle); ?>">
+<meta property="og:description" content="<?php echo $hx($pageDesc); ?>">
+<meta property="og:type" content="<?php echo $hx($ogType); ?>">
+<meta property="og:url" content="<?php echo $hx($canonical); ?>">
+<meta property="og:image" content="<?php echo $hx($siteUrl . '/' . ltrim($ogImage, '/')); ?>">
 <meta property="og:locale" content="en_UG">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="<?php echo $pageTitle; ?>">
-<meta name="twitter:description" content="<?php echo $pageDesc; ?>">
-<meta name="twitter:image" content="<?php echo $siteUrl . '/' . $ogImage; ?>">
-<meta name="twitter:site" content="@NUFA_OFFICIAL1">
+<meta name="twitter:title" content="<?php echo $hx($pageTitle); ?>">
+<meta name="twitter:description" content="<?php echo $hx($pageDesc); ?>">
+<meta name="twitter:image" content="<?php echo $hx($siteUrl . '/' . ltrim($ogImage, '/')); ?>">
 
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "PerformingArtsOrganization",
-  "name": "Northern Uganda Filmmakers Association",
-  "alternateName": "NUFA",
-  "url": "<?php echo $siteUrl; ?>/",
-  "logo": "<?php echo $siteUrl; ?>/assets/images/logo/nufa-logo.png",
-  "sameAs": [
-    "https://x.com/NUFA_OFFICIAL1",
-    "https://www.facebook.com/nufa2026",
-    "https://www.instagram.com/nufa2026",
-    "https://www.linkedin.com/company/northern-uganda-film-makers-association-nufa"
-  ],
-  "address": {
-    "@type": "PostalAddress",
-    "streetAddress": "Acholi Inn",
-    "addressLocality": "Gulu City",
-    "addressRegion": "Northern Region",
-    "addressCountry": "UG"
-  },
-  "description": "NUFA unites, trains and celebrates filmmakers across Acholi, Lango, West Nile and Karamoja through the annual NUFA Awards."
-}
+<?php echo json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'Organization',
+    'name' => $cfg['site_name'],
+    'alternateName' => 'NUFA',
+    'url' => $siteUrl . '/',
+    'logo' => $siteUrl . '/assets/images/logo/nufa-logo.png',
+    'email' => $cfg['site_email'],
+    'telephone' => $cfg['site_phone'],
+    'address' => ['@type' => 'PostalAddress', 'streetAddress' => 'Plot 75, Jomo Kenyatta Road', 'addressLocality' => 'Gulu City', 'addressCountry' => 'UG'],
+    'sameAs' => $sameAs,
+    'description' => 'A regional association bringing together filmmakers and audiovisual stakeholders in Northern Uganda.',
+], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+
 </script>
+<?php if (!empty($schemaExtra)) echo '<script type="application/ld+json">' . json_encode($schemaExtra, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) . '</script>' . "\n"; ?>
 
 <link rel="icon" href="<?php echo $base; ?>assets/images/logo/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?<?php echo $activeFont['google']; ?>&display=swap">
-<link rel="stylesheet" href="<?php echo $base; ?>assets/css/style.css?v=<?php echo @filemtime(__DIR__ . "/../assets/css/style.css"); ?>">
-<style>
-:root{
-  --font-heading:<?php echo $activeFont['heading']; ?>;
-  --font-body:<?php echo $activeFont['body']; ?>;
-  --font-display:<?php echo $activeFont['display']; ?>;
-}
-</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?<?php echo $font['google']; ?>&display=swap">
+<link rel="stylesheet" href="<?php echo $base; ?>assets/css/site.css?v=<?php echo $cssVer; ?>">
+<style>:root{--font-heading:<?php echo $font['heading']; ?>;--font-body:<?php echo $font['body']; ?>}</style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to main content</a>
 
-<?php require_once __DIR__ . "/settings.php"; $siteCfg = nufa_site_settings($conn); ?>
-<header class="site-header">
-  <div class="topbar">
-    <div class="container-wide topbar-in">
-      <div class="topbar-info">
-        <a href="tel:<?php echo nufa_tel_href($siteCfg["site_phone"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><?php echo htmlspecialchars($siteCfg["site_phone"]); ?></a>
-        <a href="mailto:<?php echo htmlspecialchars($siteCfg["site_email"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="m3 7 9 6 9-6" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($siteCfg["site_email"]); ?></a>
-        <span class="topbar-addr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($siteCfg["site_address"]); ?></span>
-      </div>
-      <div class="topbar-social">
-        <a href="<?php echo htmlspecialchars($siteCfg["x_url"]); ?>" target="_blank" rel="noopener" aria-label="X">X</a>
-        <a href="<?php echo htmlspecialchars($siteCfg["facebook_url"]); ?>" target="_blank" rel="noopener" aria-label="Facebook">f</a>
-        <a href="<?php echo htmlspecialchars($siteCfg["instagram_url"]); ?>" target="_blank" rel="noopener" aria-label="Instagram">ig</a>
-        <a href="<?php echo htmlspecialchars($siteCfg["linkedin_url"]); ?>" target="_blank" rel="noopener" aria-label="LinkedIn">in</a>
-      </div>
-      <a href="<?php echo $base; ?>awards.php#nufa27" class="topbar-cta">Get Tickets · NUFA 2027</a>
+<div class="topbar">
+  <div class="container-wide topbar-in">
+    <div class="topbar-info">
+      <a href="tel:<?php echo nufa_tel_href($cfg['site_phone']); ?>"><?php echo nufa_icon('phone', 13) . $hx($cfg['site_phone']); ?></a>
+      <a href="mailto:<?php echo $hx($cfg['site_email']); ?>" class="hide-sm"><?php echo nufa_icon('mail', 13) . $hx($cfg['site_email']); ?></a>
+      <span class="hide-sm"><?php echo nufa_icon('pin', 13) . $hx($cfg['site_address']); ?></span>
+    </div>
+    <div class="topbar-social" aria-label="Social media">
+      <?php foreach (['x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram'], 'linkedin_url' => ['LinkedIn', 'linkedin'], 'youtube_url' => ['YouTube', 'youtube']] as $sk => [$slabel, $sic]):
+        if ($cfg[$sk] === '') continue; ?>
+        <a href="<?php echo $hx($cfg[$sk]); ?>" target="_blank" rel="noopener" aria-label="<?php echo $slabel; ?>"><?php echo nufa_icon($sic, 12); ?></a>
+      <?php endforeach; ?>
     </div>
   </div>
+</div>
+
+<header class="site-header" id="top">
   <div class="container-wide nav-row">
-    <a href="<?php echo $base; ?>index.php" class="brand">
-      <span class="mark"><img src="<?php echo $base; ?>assets/images/logo/nufa-logo.png" alt="NUFA logo" width="42" height="42"></span>
+    <a href="<?php echo $base; ?>index.php" class="brand" aria-label="NUFA home">
+      <span class="mark"><img src="<?php echo $base; ?>assets/images/logo/nufa-logo.png" alt="" width="46" height="46"></span>
       <span class="word">NUFA<small>Filmmakers Association</small></span>
     </a>
 
     <nav class="main-nav" aria-label="Primary">
       <ul>
-        <li class="<?php echo $activeNav==='home'?'active':''; ?>"><a href="<?php echo $base; ?>index.php">Home</a></li>
-        <li class="<?php echo $activeNav==='about'?'active':''; ?>"><a href="<?php echo $base; ?>about.php">About</a></li>
-        <li class="has-dropdown <?php echo $activeNav==='awards'?'active':''; ?>">
-          <a href="<?php echo $base; ?>awards.php">Awards</a>
-          <button type="button" class="caret-btn" aria-label="Toggle Awards menu" aria-expanded="false">
-            <svg class="caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-          </button>
+        <li class="<?php echo $activeNav === 'home' ? 'active' : ''; ?>"><a href="<?php echo $base; ?>index.php">Home</a></li>
+        <li class="has-dropdown <?php echo in_array($activeNav, ['about', 'membership']) ? 'active' : ''; ?>">
+          <a href="<?php echo $base; ?>about.php">About NUFA</a>
+          <button type="button" class="caret-btn" aria-label="Open About menu" aria-expanded="false"><svg class="caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
           <div class="dropdown">
-            <a href="<?php echo $base; ?>awards.php#nufa27"><span class="tag">Upcoming</span>2027 Awards</a>
-            <a href="<?php echo $base; ?>awards.php#nufa26"><span class="tag">Past edition</span>2026 Awards</a>
-            <a href="<?php echo $base; ?>awards.php#nufa25"><span class="tag">Past edition</span>2025 Awards</a>
+            <a href="<?php echo $base; ?>about.php#story">Our Story</a>
+            <a href="<?php echo $base; ?>about.php#vision">Vision &amp; Mission</a>
+            <a href="<?php echo $base; ?>about.php#values">Core Values</a>
+            <a href="<?php echo $base; ?>about.php#leadership">Leadership &amp; Governance</a>
+            <a href="<?php echo $base; ?>membership.php">Membership</a>
           </div>
         </li>
-        <li class="<?php echo $activeNav==='gallery'?'active':''; ?>"><a href="<?php echo $base; ?>gallery.php">Gallery</a></li>
-        <li class="<?php echo $activeNav==='news'?'active':''; ?>"><a href="<?php echo $base; ?>news.php">News</a></li>
-        <li class="<?php echo $activeNav==='partners'?'active':''; ?>"><a href="<?php echo $base; ?>partners.php">Partners</a></li>
-        <li class="<?php echo $activeNav==='membership'?'active':''; ?>"><a href="<?php echo $base; ?>membership.php">Membership</a></li>
-        <li class="<?php echo $activeNav==='contact'?'active':''; ?>"><a href="<?php echo $base; ?>contact.php">Contact</a></li>
+        <li class="has-dropdown <?php echo $activeNav === 'awards' ? 'active' : ''; ?>">
+          <a href="<?php echo $base; ?>awards.php">NUFA Awards</a>
+          <button type="button" class="caret-btn" aria-label="Open Awards menu" aria-expanded="false"><svg class="caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          <div class="dropdown">
+            <a href="<?php echo $base; ?>awards.php">Awards Overview</a>
+            <?php foreach ($navEditions as $navEd): ?><a href="<?php echo $base; ?>award.php?e=<?php echo $hx($navEd['slug']); ?>">NUFA Awards <?php echo (int)$navEd['year']; ?></a><?php endforeach; ?>
+            <a href="<?php echo $base; ?>awards.php#archive">Awards Archive</a>
+          </div>
+        </li>
+        <li class="has-dropdown <?php echo $activeNav === 'programmes' ? 'active' : ''; ?>">
+          <a href="<?php echo $base; ?>programmes.php">Programmes</a>
+          <button type="button" class="caret-btn" aria-label="Open Programmes menu" aria-expanded="false"><svg class="caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          <div class="dropdown">
+            <a href="<?php echo $base; ?>programmes.php">All Programmes</a>
+            <?php foreach ($navProgrammes as $navPg): ?><a href="<?php echo $base; ?>programme.php?slug=<?php echo $hx($navPg['slug']); ?>"><?php echo $hx($navPg['title']); ?></a><?php endforeach; ?>
+          </div>
+        </li>
+        <li class="<?php echo $activeNav === 'sacco' ? 'active' : ''; ?>"><a href="<?php echo $base; ?>sacco.php">NUFA SACCO</a></li>
+        <li class="<?php echo $activeNav === 'network' ? 'active' : ''; ?>"><a href="<?php echo $base; ?>network.php">Industry Network</a></li>
+        <li class="<?php echo $activeNav === 'news' ? 'active' : ''; ?>"><a href="<?php echo $base; ?>news.php">News &amp; Stories</a></li>
+        <li class="has-dropdown <?php echo in_array($activeNav, ['resources', 'gallery']) ? 'active' : ''; ?>">
+          <a href="<?php echo $base; ?>resources.php">Resources</a>
+          <button type="button" class="caret-btn" aria-label="Open Resources menu" aria-expanded="false"><svg class="caret" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></button>
+          <div class="dropdown">
+            <a href="<?php echo $base; ?>resources.php">Resource Library</a>
+            <a href="<?php echo $base; ?>gallery.php">Gallery &amp; Video Library</a>
+          </div>
+        </li>
+        <li class="<?php echo $activeNav === 'partner' ? 'active' : ''; ?>"><a href="<?php echo $base; ?>partners.php">Partner With Us</a></li>
+        <li class="<?php echo $activeNav === 'contact' ? 'active' : ''; ?>"><a href="<?php echo $base; ?>contact.php">Contact</a></li>
       </ul>
     </nav>
 
     <div class="header-cta">
-      <a href="<?php echo $base; ?>membership.php" class="btn btn-brand btn-sm">Join NUFA</a>
-      <button class="nav-toggle" aria-label="Open menu">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
+      <a href="<?php echo $base; ?>membership.php" class="btn btn-gold btn-sm">Become a Member</a>
+      <button class="nav-toggle" aria-label="Open menu" aria-controls="mobileNav"><?php echo nufa_icon('menu', 24); ?></button>
     </div>
   </div>
 </header>
 
-<div class="mobile-nav" aria-hidden="true">
+<div class="mobile-nav" id="mobileNav" role="dialog" aria-label="Menu" aria-hidden="true">
   <div class="mobile-nav-top">
-    <a href="<?php echo $base; ?>index.php" class="brand">
-      <span class="mark"><img src="<?php echo $base; ?>assets/images/logo/nufa-logo.png" alt="NUFA logo" width="42" height="42"></span>
-      <span class="word">NUFA</span>
-    </a>
-    <button class="mobile-nav-close" aria-label="Close menu">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </button>
+    <a href="<?php echo $base; ?>index.php" class="brand"><span class="mark"><img src="<?php echo $base; ?>assets/images/logo/nufa-logo.png" alt="" width="46" height="46"></span><span class="word">NUFA</span></a>
+    <button class="mobile-nav-close" aria-label="Close menu"><?php echo nufa_icon('close', 24); ?></button>
   </div>
-
   <ul>
     <li><a href="<?php echo $base; ?>index.php">Home</a></li>
-    <li><a href="<?php echo $base; ?>about.php">About</a></li>
-    <li>
-      <a href="#" data-toggle-sub onclick="return false;">Awards
-        <svg width="14" height="14" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-      </a>
-      <div class="mobile-sub">
-        <a href="<?php echo $base; ?>awards.php#nufa27">2027 Awards — Upcoming</a>
-        <a href="<?php echo $base; ?>awards.php#nufa26">2026 Awards — Past edition</a>
-        <a href="<?php echo $base; ?>awards.php#nufa25">2025 Awards — Past edition</a>
-      </div>
-    </li>
-    <li><a href="<?php echo $base; ?>gallery.php">Gallery</a></li>
-    <li><a href="<?php echo $base; ?>news.php">News</a></li>
-    <li><a href="<?php echo $base; ?>partners.php">Partners</a></li>
-    <li><a href="<?php echo $base; ?>membership.php">Membership</a></li>
+    <li><a href="#" data-toggle-sub onclick="return false;">About NUFA <?php echo nufa_icon('down', 16); ?></a>
+      <div class="mobile-sub"><a href="<?php echo $base; ?>about.php#story">Our Story</a><a href="<?php echo $base; ?>about.php#vision">Vision &amp; Mission</a><a href="<?php echo $base; ?>about.php#values">Core Values</a><a href="<?php echo $base; ?>about.php#leadership">Leadership</a><a href="<?php echo $base; ?>membership.php">Membership</a></div></li>
+    <li><a href="#" data-toggle-sub onclick="return false;">NUFA Awards <?php echo nufa_icon('down', 16); ?></a>
+      <div class="mobile-sub"><a href="<?php echo $base; ?>awards.php">Overview</a><?php foreach ($navEditions as $navEd): ?><a href="<?php echo $base; ?>award.php?e=<?php echo $hx($navEd['slug']); ?>">NUFA Awards <?php echo (int)$navEd['year']; ?></a><?php endforeach; ?><a href="<?php echo $base; ?>awards.php#archive">Archive</a></div></li>
+    <li><a href="#" data-toggle-sub onclick="return false;">Programmes <?php echo nufa_icon('down', 16); ?></a>
+      <div class="mobile-sub"><a href="<?php echo $base; ?>programmes.php">All Programmes</a><?php foreach ($navProgrammes as $navPg): ?><a href="<?php echo $base; ?>programme.php?slug=<?php echo $hx($navPg['slug']); ?>"><?php echo $hx($navPg['title']); ?></a><?php endforeach; ?></div></li>
+    <li><a href="<?php echo $base; ?>sacco.php">NUFA SACCO</a></li>
+    <li><a href="<?php echo $base; ?>network.php">Industry Network</a></li>
+    <li><a href="<?php echo $base; ?>news.php">News &amp; Stories</a></li>
+    <li><a href="#" data-toggle-sub onclick="return false;">Resources <?php echo nufa_icon('down', 16); ?></a>
+      <div class="mobile-sub"><a href="<?php echo $base; ?>resources.php">Resource Library</a><a href="<?php echo $base; ?>gallery.php">Gallery &amp; Video Library</a></div></li>
+    <li><a href="<?php echo $base; ?>partners.php">Partner With Us</a></li>
     <li><a href="<?php echo $base; ?>contact.php">Contact</a></li>
   </ul>
-
   <div class="mobile-nav-foot">
-    <a href="<?php echo $base; ?>membership.php" class="btn btn-brand">Join NUFA</a>
-    <div class="mobile-social social-row">
-      <a href="https://x.com/NUFA_OFFICIAL1" target="_blank" rel="noopener" aria-label="X / Twitter"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 2H22l-7.6 8.7L23.3 22h-7l-5.5-7.2L4.5 22H1.4l8.2-9.3L1 2h7.2l5 6.6L18.9 2Zm-1.2 18h1.7L7.4 4h-1.8l12.1 16Z"/></svg></a>
-      <a href="https://www.facebook.com/nufa2026" target="_blank" rel="noopener" aria-label="Facebook"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 22v-8.4h2.8l.4-3.3h-3.2V8.1c0-.95.27-1.6 1.63-1.6H17V3.5c-.3-.04-1.3-.13-2.5-.13-2.47 0-4.16 1.5-4.16 4.27v2.6H7.5v3.3h2.84V22h3.16Z"/></svg></a>
-      <a href="https://www.instagram.com/nufa2026" target="_blank" rel="noopener" aria-label="Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 8.4a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Zm0 5.9a2.3 2.3 0 1 1 0-4.6 2.3 2.3 0 0 1 0 4.6ZM16.9 6a.85.85 0 1 1 0 1.7.85.85 0 0 1 0-1.7Z"/><path d="M17 2H7a5 5 0 0 0-5 5v10a5 5 0 0 0 5 5h10a5 5 0 0 0 5-5V7a5 5 0 0 0-5-5Zm3.3 15a3.3 3.3 0 0 1-3.3 3.3H7A3.3 3.3 0 0 1 3.7 17V7A3.3 3.3 0 0 1 7 3.7h10A3.3 3.3 0 0 1 20.3 7v10Z"/></svg></a>
-      <a href="https://www.linkedin.com/company/northern-uganda-film-makers-association-nufa" target="_blank" rel="noopener" aria-label="LinkedIn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 8.5H3.56V20h3.38V8.5ZM5.25 3a1.96 1.96 0 1 0 0 3.92 1.96 1.96 0 0 0 0-3.92ZM20.44 20h-3.37v-5.9c0-1.4-.03-3.2-1.95-3.2-1.96 0-2.26 1.53-2.26 3.1V20H9.5V8.5h3.24v1.57h.05c.45-.86 1.56-1.77 3.21-1.77 3.44 0 4.07 2.26 4.07 5.2V20Z"/></svg></a>
-    </div>
+    <a href="<?php echo $base; ?>membership.php" class="btn btn-gold btn-block">Become a Member</a>
+    <a href="<?php echo $base; ?>partners.php" class="btn btn-outline btn-block">Partner With NUFA</a>
   </div>
 </div>
+<main id="main">

@@ -1,3 +1,5 @@
+# NUFA website — Apache configuration (safe to keep on Hostinger / XAMPP)
+
 # Disable any server-injected auto_prepend file
 <IfModule mod_php8.c>
     php_value auto_prepend_file none
@@ -7,4 +9,50 @@
 </IfModule>
 <IfModule mod_php5.c>
     php_value auto_prepend_file none
+</IfModule>
+
+Options -Indexes
+
+# Custom 404 page for any URL that is not a real file or folder
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ 404.php [L]
+
+    # Keep internal code, schema files, scripts and documentation out of public reach
+    RewriteRule ^(includes|database|scripts|docs|storage)/ - [F,L]
+</IfModule>
+
+# Never serve configuration, logs, SQL dumps or docs
+<FilesMatch "(\.(sql|md|log|ini|env|bak|sh)|db\.config\.php)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# Compression and caching for static assets
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css application/javascript image/svg+xml application/json
+</IfModule>
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
 </IfModule>
