@@ -2,6 +2,8 @@
 require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/awards.php";
+awd_install($conn);
 
 $slug = preg_replace('/[^a-z0-9-]/i', '', $_GET['e'] ?? '');
 $st = $conn->prepare("SELECT * FROM award_editions WHERE slug=? AND is_active=1 LIMIT 1");
@@ -87,7 +89,7 @@ echo ui_page_hero('NUFA Awards ' . $year, 'NUFA Awards ' . $year, $ed['theme_quo
     <div data-reveal>
     <?php foreach ($winners as $win): ?>
       <div class="winner"><div class="cat"><?php echo ui_e($win['category']); ?><?php if ($win['is_honorary']): ?><br><span class="tag-honorary">Honorary</span><?php endif; ?></div>
-        <div class="who"><b><?php echo ui_e($win['winner_title']); ?></b><?php if ($win['person_name']): ?><span><?php echo ui_e($win['person_name']); ?></span><?php endif; ?></div></div>
+        <div class="who"><b><?php echo ui_e($win['winner_title']); ?></b><?php if ($win['person_name']): ?><span><?php echo ui_e($win['person_name']); ?></span><?php endif; ?><?php if (!empty($win['detail'])): ?><small style="display:block;margin-top:6px;color:var(--ink-500)"><?php echo ui_e($win['detail']); ?></small><?php endif; ?></div></div>
     <?php endforeach; ?>
     </div>
   </div>
@@ -96,6 +98,36 @@ echo ui_page_hero('NUFA Awards ' . $year, 'NUFA Awards ' . $year, $ed['theme_quo
 
 <?php if (trim($highlights) !== ''): ?>
 <section class="section section--soft" id="highlights"><div class="container"><div class="section-head"><div class="eyebrow">Ceremony highlights</div><h2>Highlights</h2></div><div class="stack"><?php echo $highlights; ?></div></div></section>
+<?php endif; ?>
+
+<?php
+$it = fn($k) => awd_items($conn, $k, [(int)$ed['id']]);
+$edGuests = $it('guest'); $edMoments = $it('moment'); $edImpact = $it('impact'); $edFilms = $it('film');
+$imgOk = fn($rel) => $rel !== '' && is_file(__DIR__ . '/assets/images/' . $rel) ? $rel : '';
+?>
+<?php if ($edGuests): ?>
+<section class="section" id="guests"><div class="container"><div class="section-head" data-reveal><div class="eyebrow">Guests</div><h2>Guests &amp; dignitaries</h2></div>
+  <div class="guest-grid" data-reveal-stagger><?php foreach ($edGuests as $g): $gi = $imgOk($g['image']); ?>
+    <article class="guest"><div class="guest-photo"><?php if ($gi): ?><img src="assets/images/<?php echo ui_e($gi); ?>" alt="<?php echo ui_e($g['title']); ?>" loading="lazy"><?php else: echo nufa_icon('users', 34); endif; ?></div><h4><?php echo ui_e($g['title']); ?></h4><?php if ($g['subtitle']): ?><span><?php echo ui_e($g['subtitle']); ?></span><?php endif; ?><?php if ($g['body']): ?><p><?php echo ui_e($g['body']); ?></p><?php endif; ?></article>
+  <?php endforeach; ?></div></div></section>
+<?php endif; ?>
+<?php if ($edMoments): ?>
+<section class="section section--soft" id="moments"><div class="container"><div class="section-head" data-reveal><div class="eyebrow">Key moments</div><h2>Key moments</h2></div>
+  <div class="grid grid-3" data-reveal-stagger><?php foreach ($edMoments as $m): $mi = $imgOk($m['image']); ?>
+    <article class="card"><?php if ($mi): ?><div class="card-media"><img src="assets/images/<?php echo ui_e($mi); ?>" alt="<?php echo ui_e($m['title']); ?>" loading="lazy"></div><?php endif; ?><div class="card-body"><div class="card-meta"><span><?php echo ui_e($m['date_label']); ?></span></div><h3><?php echo ui_e($m['title']); ?></h3><?php if ($m['body']): ?><p class="muted"><?php echo ui_e($m['body']); ?></p><?php endif; ?></div></article>
+  <?php endforeach; ?></div></div></section>
+<?php endif; ?>
+<?php if ($edImpact): ?>
+<section class="section" id="impact"><div class="container"><div class="section-head" data-reveal><div class="eyebrow">Impact</div><h2>Impact stories</h2></div>
+  <div class="impact-stories"><?php foreach ($edImpact as $s): $si = $imgOk($s['image']); ?>
+    <article class="story"><?php if ($si): ?><div class="story-img"><img src="assets/images/<?php echo ui_e($si); ?>" alt="<?php echo ui_e($s['title']); ?>" loading="lazy"></div><?php endif; ?><div class="story-body"><span class="story-q" aria-hidden="true">“</span><h3><?php echo ui_e($s['title']); ?></h3><?php if ($s['subtitle']): ?><span class="story-who"><?php echo ui_e($s['subtitle']); ?></span><?php endif; ?><p><?php echo ui_e($s['body']); ?></p></div></article>
+  <?php endforeach; ?></div></div></section>
+<?php endif; ?>
+<?php if ($edFilms): ?>
+<section class="section section--black" id="films"><div class="container"><div class="section-head" data-reveal><div class="eyebrow">Screen</div><h2>Highlight films</h2></div>
+  <div class="grid grid-3" data-reveal-stagger><?php foreach ($edFilms as $f): $fi = $imgOk($f['image']); ?>
+    <article class="film-card"><div class="film-poster"><?php if ($fi): ?><img src="assets/images/<?php echo ui_e($fi); ?>" alt="<?php echo ui_e($f['title']); ?> poster" loading="lazy"><?php else: echo nufa_icon('film', 40); endif; ?></div><div class="film-body"><h3><?php echo ui_e($f['title']); ?></h3><?php if ($f['subtitle']): ?><span class="film-meta"><?php echo ui_e($f['subtitle']); ?></span><?php endif; ?><?php if ($f['body']): ?><p><?php echo ui_e($f['body']); ?></p><?php endif; ?><?php if ($f['link_url']): ?><a class="btn btn-gold btn-sm" href="<?php echo ui_e($f['link_url']); ?>" target="_blank" rel="noopener">Watch trailer</a><?php endif; ?></div></article>
+  <?php endforeach; ?></div></div></section>
 <?php endif; ?>
 
 <?php if ($gallery): ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v10` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v11` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -108,7 +108,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v10'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v11'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -310,6 +310,13 @@ function nufa_migrate($conn) {
         $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer1'")->fetch_row()[0];
         nufa_exec($conn, "INSERT INTO nav_items (location, label, url, sort_order) VALUES ('footer1', 'Schedule & Calendar', 'schedule.php', $o)");
     }
+    // ---- NUFA Awards extras (guests, moments, impact, films, roadmap; ticket & submission settings) ----
+    require_once __DIR__ . "/awards.php";
+    awd_install($conn);
+    $tc = $conn->query("SELECT setting_value FROM settings WHERE setting_key='list_team_categories'")->fetch_assoc();
+    if ($tc && trim($tc['setting_value']) !== '' && stripos($tc['setting_value'], AWD_TEAM_CATEGORY) === false) { $nv = rtrim($tc['setting_value']) . "
+" . AWD_TEAM_CATEGORY; $us = $conn->prepare("UPDATE settings SET setting_value=? WHERE setting_key='list_team_categories'"); $us->bind_param('s', $nv); $us->execute(); }
+
     // footer link to the support page (once)
     if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'support.php%'")->fetch_row()[0]) {
         $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer2'")->fetch_row()[0];
@@ -374,7 +381,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v10', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v11', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

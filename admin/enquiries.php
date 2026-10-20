@@ -4,7 +4,7 @@ $adminNav = "enquiries";
 require __DIR__ . "/includes/auth.php";
 require_once __DIR__ . "/../includes/schema.php";
 
-$types = ['contact' => 'Contact', 'partner' => 'Partnership', 'sacco' => 'SACCO interest', 'network' => 'Industry network'];
+$types = ['contact' => 'Contact', 'partner' => 'Partnership', 'sacco' => 'SACCO interest', 'network' => 'Industry network', 'tickets' => 'Ticket requests'];
 $type = isset($types[$_GET['type'] ?? '']) ? $_GET['type'] : '';
 $status = in_array($_GET['status'] ?? '', ['new', 'handled'], true) ? $_GET['status'] : '';
 $q = trim($_GET['q'] ?? '');

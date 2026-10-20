@@ -53,3 +53,10 @@ See `docs/DEPLOYMENT.md`.
 - **Announcements**: dated official notices.
 - **Visits & enquiries**: anonymous daily visit counts (no cookies or IPs) and SACCO submissions.
 - Page wording and section visibility: Page Editor → SACCO.
+
+## NUFA Awards page (Admin → Awards setup)
+- **Submission portal** (status, link, dates, fee, eligibility, guidelines) and **Tickets & booking** (status, ticket types, purchase link, how to book; booking requests arrive under Enquiries → Ticket requests).
+- **Road map, Guests, Key moments, Impact stories, Highlight films**: add items per edition; the road map is pre-filled with placeholder steps (no dates) for you to complete.
+- **Winners**: Award Winners now takes an optional note and picture per winner. The page shows the last two past editions.
+- **Technical team**: add people in Team with the category “Awards Technical Team” (they appear on the Awards page, not on About).
+- Teaser video, take-part ways, FAQ, eligibility/judging text and every placeholder message are editable in Page Editor → NUFA Awards.
