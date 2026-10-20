@@ -347,3 +347,6 @@ a.kpi:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,17,12,.12)
 .reg-badge-sm{display:inline-block;background:#fff8e6;border:1px solid #ecd9a3;border-radius:8px;padding:3px 10px;font-weight:800;letter-spacing:.03em}
 .app-dl{display:grid;grid-template-columns:minmax(150px,220px) 1fr;gap:6px 18px;margin:0 0 6px}.app-dl dt{color:#6b6459;font-size:.82rem;font-weight:700}.app-dl dd{margin:0}
 .app-files{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}.app-file{display:flex;flex-direction:column;align-items:center;gap:6px;width:130px;text-decoration:none;color:#161616;font-size:.78rem}.app-file img,.app-file span{width:130px;height:130px;object-fit:cover;border-radius:12px;border:1px solid #e4e0d6;background:#faf8f3;display:flex;align-items:center;justify-content:center;font-weight:800}
+/* feedback insights */
+.bar-row{display:flex;align-items:center;gap:10px;margin:6px 0}.bar-row span{width:38px;font-weight:700;font-size:.85rem}.bar-row b{width:34px;text-align:right}.bar-track{flex:1;height:12px;background:#eee9dc;border-radius:99px;overflow:hidden}.bar-track i{display:block;height:100%;background:linear-gradient(90deg,#c8a03c,#8a6a1c);border-radius:99px}
+.admin-table .stars svg{width:14px;height:14px}

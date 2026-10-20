@@ -58,7 +58,7 @@ echo ui_page_hero('Programme', $p['title'], $p['summary'], $p['image'] ?: 'nufa2
     <aside class="member-side" style="top:calc(var(--header-h) + 24px)">
       <h3>Take part</h3>
       <p style="color:var(--muted-on-dark);font-size:.93rem">Interested in this programme as a participant, mentor or partner? Send us a message and we will share participation information as it is confirmed.</p>
-      <div class="actions"><a href="contact.php?topic=Programmes&amp;ref=<?php echo ui_e($p['slug']); ?>" class="btn btn-gold btn-block">Express interest</a><a href="#get-involved" class="btn btn-outline btn-block">Sponsor, donate, volunteer or partner</a></div>
+      <div class="actions"><a href="contact.php?topic=Programmes&amp;ref=<?php echo ui_e($p['slug']); ?>" class="btn btn-gold btn-block">Express interest</a><a href="feedback.php?cat=Programme&amp;about=<?php echo urlencode($p['title']); ?>#form" class="btn btn-outline btn-block">Give feedback</a><a href="#get-involved" class="btn btn-outline btn-block">Sponsor, donate, volunteer or partner</a></div>
       <h4 style="color:var(--gold);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;margin:26px 0 10px">Other programmes</h4>
       <ul style="font-size:.9rem;display:grid;gap:8px"><?php foreach ($others as $o): ?><li><a href="programme.php?slug=<?php echo ui_e($o['slug']); ?>" style="color:var(--white)"><?php echo ui_e($o['title']); ?></a></li><?php endforeach; ?><li><a href="awards.php" style="color:var(--white)">NUFA Awards</a></li><li><a href="sacco.php" style="color:var(--white)">NUFA SACCO (proposed)</a></li></ul>
     </aside>

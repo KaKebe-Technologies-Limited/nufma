@@ -328,6 +328,8 @@ $CMS_SCHEMAS['seo']['fields'] += [
     'schedule_desc'  => ['label' => 'Schedule — description', 'type' => 'textarea', 'default' => 'Dates, venues and meeting links for NUFA programmes, plus a calendar of important days and public holidays in Uganda.'],
     'newsletters_title' => ['label' => 'Newsletter — title', 'type' => 'text', 'default' => 'NUFA Newsletter — News from Northern Uganda\'s Filmmakers | NUFA'],
     'newsletters_desc'  => ['label' => 'Newsletter — description', 'type' => 'textarea', 'default' => 'Read and download NUFA newsletters, and subscribe to get news about awards, programmes and the film community in Northern Uganda.'],
+    'feedback_title' => ['label' => 'Feedback — title', 'type' => 'text', 'default' => 'Give Feedback on NUFA Programmes and Activities | NUFA'],
+    'feedback_desc'  => ['label' => 'Feedback — description', 'type' => 'textarea', 'default' => 'Share your feedback on NUFA programmes, activities and initiatives — openly or anonymously. Your voice helps us improve.'],
     'support_title' => ['label' => 'Support a Programme — title', 'type' => 'text', 'default' => 'Support a Programme — Donate, Sponsor, Volunteer or Partner | NUFA'],
     'support_desc'  => ['label' => 'Support a Programme — description', 'type' => 'textarea', 'default' => "Support NUFA's programmes in Northern Uganda: donate, sponsor, volunteer or partner to help filmmakers develop their craft and tell their stories."],
 ];
@@ -413,4 +415,12 @@ $CMS_SCHEMAS['newsletters'] = ['label' => 'Newsletter', 'fields' => [
     'archive_heading' => ['label' => 'Archive — heading', 'type' => 'text', 'default' => 'Previous issues'],
     'subscribe_heading' => ['label' => 'Subscribe — heading', 'type' => 'text', 'default' => 'Get the newsletter in your inbox'],
     'subscribe_text' => ['label' => 'Subscribe — text', 'type' => 'textarea', 'default' => 'News about NUFA Awards, programmes, trainings and opportunities for filmmakers. No spam — unsubscribe whenever you like.'],
+]];
+
+$CMS_SCHEMAS['feedback'] = ['label' => 'Feedback', 'fields' => [
+    'hero_image' => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'gallery/2026/nufa26-10.jpg'],
+    'hero_title' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => 'Tell us what you think'],
+    'hero_lede'  => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => 'Your feedback on our programmes, activities and initiatives helps NUFA listen, learn and improve — share it openly or anonymously.'],
+    'showcase_heading' => ['label' => 'Public comments — heading', 'type' => 'text', 'default' => 'Voices from our community'],
+    'showcase_intro'   => ['label' => 'Public comments — intro', 'type' => 'textarea', 'default' => 'A selection of comments shared with permission.'],
 ]];
