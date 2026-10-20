@@ -324,6 +324,8 @@ $CMS_SCHEMAS['support'] = ['label' => 'Support a Programme', 'fields' => [
     'involved_intro'   => ['label' => 'Programme pages — "Get involved" intro', 'type' => 'textarea', 'default' => 'Choose how you would like to help. Every request is reviewed by the NUFA team and confirmed by email.'],
 ]];
 $CMS_SCHEMAS['seo']['fields'] += [
+    'schedule_title' => ['label' => 'Schedule — title', 'type' => 'text', 'default' => 'Programme Schedule & Calendar | NUFA'],
+    'schedule_desc'  => ['label' => 'Schedule — description', 'type' => 'textarea', 'default' => 'Dates, venues and meeting links for NUFA programmes, plus a calendar of important days and public holidays in Uganda.'],
     'support_title' => ['label' => 'Support a Programme — title', 'type' => 'text', 'default' => 'Support a Programme — Donate, Sponsor, Volunteer or Partner | NUFA'],
     'support_desc'  => ['label' => 'Support a Programme — description', 'type' => 'textarea', 'default' => "Support NUFA's programmes in Northern Uganda: donate, sponsor, volunteer or partner to help filmmakers develop their craft and tell their stories."],
 ];
@@ -355,3 +357,14 @@ $CMS_SCHEMAS['sacco']['fields'] += [
 ];
 $CMS_SCHEMAS['sacco']['fields']['faq']['default'] = "<details><summary>Is the NUFA SACCO operational?</summary><div class=\"ans\">Not unless the status at the top of this page says so. While it is Proposed or In Development it is not registered or authorised and does not accept deposits, loan repayments or loan applications.</div></details><details><summary>Who can join?</summary><div class=\"ans\">Eligibility requirements will be published once approved. Registering interest does not make you a member.</div></details><details><summary>What will membership cost?</summary><div class=\"ans\">Membership fees and share requirements will be published once approved. NUFA is not collecting any fees now.</div></details><details><summary>Can I save money with the SACCO now?</summary><div class=\"ans\">No. Please do not send money to anyone claiming to represent the NUFA SACCO.</div></details><details><summary>Can I apply for a loan?</summary><div class=\"ans\">Not yet. Loan products, eligibility, repayment terms, interest, fees and security will be published for each approved product. Nothing is promised in advance.</div></details><details><summary>How will withdrawals work?</summary><div class=\"ans\">Withdrawal rules will be set in the approved bylaws and savings product terms.</div></details><details><summary>Will I need a guarantor?</summary><div class=\"ans\">Any guarantor or security requirements will be part of each approved loan product's terms.</div></details><details><summary>How do I make a complaint?</summary><div class=\"ans\">Use the contact form or email the address on this page. A formal complaints procedure will be published with the approved documents.</div></details><details><summary>How can I stay informed?</summary><div class=\"ans\">Submit the enquiry form below and watch the Announcements section for official notices.</div></details>";
 $CMS_SCHEMAS['seo']['fields']['sacco_title']['default'] = 'NUFA SACCO — Proposed Savings and Credit Initiative for Filmmakers | NUFA';
+
+$CMS_SCHEMAS['schedule'] = ['label' => 'Schedule & Calendar', 'fields' => [
+    'hero_image' => ['label' => 'Hero — background image', 'type' => 'image', 'default' => 'production/karamoja-shoot-2.webp'],
+    'hero_title' => ['label' => 'Hero — heading', 'type' => 'text', 'default' => 'When and where NUFA programmes happen'],
+    'hero_lede'  => ['label' => 'Hero — paragraph', 'type' => 'textarea', 'default' => 'Every programme session, meeting and important date in one calendar — with public holidays marked so you can plan ahead.'],
+    'next_heading' => ['label' => 'Coming up — heading', 'type' => 'text', 'default' => 'Next sessions'],
+    'calendar_heading' => ['label' => 'Calendar — heading', 'type' => 'text', 'default' => 'NUFA calendar'],
+    'calendar_intro' => ['label' => 'Calendar — intro', 'type' => 'textarea', 'default' => 'Browse by month. Select a programme to see only its dates; public holidays and important days always show.'],
+    'remind_heading' => ['label' => 'Reminders — heading', 'type' => 'text', 'default' => 'Never miss a session'],
+    'remind_intro' => ['label' => 'Reminders — intro', 'type' => 'textarea', 'default' => 'Tell us which programmes you follow and how to reach you. We will send reminders by email or SMS before sessions.'],
+]];

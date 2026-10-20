@@ -14,7 +14,7 @@ function nufa_menu_defaults() {
             ['Home', 'index.php', 'home', []],
             ['About NUFA', 'about.php', 'about,membership', [['Our Story', 'about.php#story'], ['Vision & Mission', 'about.php#vision'], ['Core Values', 'about.php#values'], ['Leadership & Governance', 'about.php#leadership'], ['Membership', 'membership.php']]],
             ['NUFA Awards', 'awards.php', 'awards', [['Awards Overview', 'awards.php'], ['auto:editions', 'auto:editions'], ['Awards Archive', 'awards.php#archive']]],
-            ['Programmes', 'programmes.php', 'programmes', [['All Programmes', 'programmes.php'], ['auto:programmes', 'auto:programmes']]],
+            ['Programmes', 'programmes.php', 'programmes', [['All Programmes', 'programmes.php'], ['auto:programmes', 'auto:programmes'], ['Schedule & Calendar', 'schedule.php']]],
             ['NUFA SACCO', 'sacco.php', 'sacco', []],
             ['Industry Network', 'network.php', 'network', []],
             ['News & Stories', 'news.php', 'news', []],

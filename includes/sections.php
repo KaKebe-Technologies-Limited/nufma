@@ -46,6 +46,9 @@ function nufa_registry() {
         'partners' => ['label' => 'Partner With Us', 'file' => 'partners.php', 'schema' => 'partners', 'seo' => 'partners', 'form' => 'partner', 'form_label' => 'Partnership enquiry form',
             'sections' => [['opportunities', 'Partnership opportunities'], ['wall', 'Partners & previous supporters'], ['enquiry', 'Partnership enquiry form']],
             'functions' => [], 'related' => [['Partners', 'partners.php'], ['Submissions', 'enquiries.php?type=partner'], ['Form choices', 'lists.php']]],
+        'schedule' => ['label' => 'Schedule & Calendar', 'file' => 'schedule.php', 'schema' => 'schedule', 'seo' => 'schedule', 'form' => 'schedule', 'form_label' => 'Reminder sign-up form',
+            'sections' => [['next', 'Coming up (next sessions)'], ['calendar', 'Calendar & monthly agenda'], ['reminders', 'Reminder sign-up form']], 'functions' => [],
+            'related' => [['Schedule manager (events, holidays, reminders, SMS settings)', 'schedule.php']]],
         'support' => ['label' => 'Support a Programme (sponsor · donate · volunteer · partner)', 'file' => 'support.php', 'schema' => 'support', 'seo' => 'support', 'form' => 'support', 'form_label' => 'Support request form',
             'sections' => [], 'functions' => [],
             'related' => [['Support requests (approve / confirm payment)', 'support-requests.php'], ['Payment methods & giving settings', 'support-setup.php'], ['Programmes (which support options each offers)', 'programmes.php']]],
@@ -97,6 +100,7 @@ function nufa_form_cfg($page) {
         'sacco' => ['button' => 'Register interest', 'success' => 'Your expression of interest has been recorded. We will contact you with formal progress updates.', 'intro' => ''],
         'network' => ['button' => 'Register interest', 'success' => 'Your interest has been recorded. We will contact you when the network opens.', 'intro' => ''],
         'support' => ['button' => 'Submit', 'success' => 'Thank you for your support.', 'intro' => ''],
+        'schedule' => ['button' => 'Sign me up', 'success' => 'You are signed up. We will send you reminders for the programmes you chose.', 'intro' => ''],
     ][$page] ?? ['button' => 'Submit', 'success' => 'Thank you.', 'intro' => ''];
     $g = fn($k, $d) => (isset($cfg["form_{$page}_{$k}"]) && trim($cfg["form_{$page}_{$k}"]) !== '') ? $cfg["form_{$page}_{$k}"] : $d;
     return [
