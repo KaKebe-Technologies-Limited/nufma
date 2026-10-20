@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v14` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v15` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -108,7 +108,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v14'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v15'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -342,6 +342,16 @@ function nufa_migrate($conn) {
     require_once __DIR__ . "/sacco-members.php";
     sac_install($conn);
 
+    // ---- Partnership applications (co-host / sponsor) ----
+    require_once __DIR__ . "/partner-apps.php";
+    pa_install($conn);
+    $pm = $conn->query("SELECT id FROM nav_items WHERE location='header' AND parent_id IS NULL AND url='partners.php' LIMIT 1")->fetch_assoc();
+    if ($pm && !(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'partner-apply.php%'")->fetch_row()[0]) {
+        $pid = (int)$pm['id'];
+        if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE parent_id=$pid")->fetch_row()[0]) nufa_exec($conn, "INSERT INTO nav_items (location, parent_id, label, url, sort_order) VALUES ('header', $pid, 'Partner With Us', 'partners.php', 1)");
+        nufa_exec($conn, "INSERT INTO nav_items (location, parent_id, label, url, sort_order) VALUES ('header', $pid, 'Apply to co-host or partner', 'partner-apply.php', 2)");
+    }
+
     // footer link to the support page (once)
     if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'support.php%'")->fetch_row()[0]) {
         $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer2'")->fetch_row()[0];
@@ -406,7 +416,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v14', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v15', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

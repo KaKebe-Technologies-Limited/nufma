@@ -30,7 +30,7 @@ function admin_page_modules() {
         'members' => ['members.php', 'member-view.php', 'member-file.php', 'guilds.php', 'membership-settings.php'],
         'team' => ['team.php', 'team-edit.php'],
         'enquiries' => ['enquiries.php', 'enquiry-view.php', 'messages.php', 'reply.php'],
-        'support' => ['support-requests.php', 'support-view.php', 'support-file.php', 'support-setup.php'],
+        'support' => ['support-requests.php', 'support-view.php', 'support-file.php', 'support-setup.php', 'partner-applications.php', 'partner-file.php'],
         'sacco' => ['sacco-manager.php', 'sacco-applications.php', 'sacco-file.php'],
         'events' => ['schedule.php'],
         'awards' => ['award-editions.php', 'award-edition-edit.php', 'award-winners.php', 'award-winner-edit.php', 'awards-setup.php'],

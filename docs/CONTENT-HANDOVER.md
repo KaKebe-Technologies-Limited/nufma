@@ -83,3 +83,7 @@ See `docs/DEPLOYMENT.md`.
 - The form collects personal details, residence, work and NUFA membership, savings plan (shares, deposit, regular savings, products of interest), next of kin, beneficiary, introducer, registration fee payment, ID/photo/proof documents and a three-part declaration with typed signature.
 - Every applicant receives a registration number automatically at submission (default `NUFA-SACCO/2026/0001`); prefix, format, digits and the next number are set under Form, fees & numbering.
 - Review applications, open the uploaded documents (private), tick “fee received”, approve or reject (the applicant is emailed), and export CSV.
+
+## Partnership applications (Admin → Partnership applications)
+- Public form: `partner-apply.php` (linked from Partner With Us → “Co-host or partner on an activity”). Individuals and organisations give their details, pick the activity/outreach, say how they will partner and what they will contribute (value, timing, recognition) and may upload a logo.
+- Review → **Approve** (state the agreed commitment, due date, website category) → when the commitment is delivered press **Commitment met**: the partner's logo and details are added to the Partners page automatically (and shown under “Recent co-hosts & contributors”), and they are thanked by email. Turn auto-publish off per partner or globally if you prefer to publish by hand. **Remove from website** or reject at any time.

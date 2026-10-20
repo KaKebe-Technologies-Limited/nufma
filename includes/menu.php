@@ -19,7 +19,7 @@ function nufa_menu_defaults() {
             ['Industry Network', 'network.php', 'network', []],
             ['News & Stories', 'news.php', 'news,newsletters', [['News & Stories', 'news.php'], ['Newsletter', 'newsletters.php']]],
             ['Resources', 'resources.php', 'resources,gallery', [['Resource Library', 'resources.php'], ['Gallery & Video Library', 'gallery.php']]],
-            ['Partner With Us', 'partners.php', 'partner', []],
+            ['Partner With Us', 'partners.php', 'partner', [['Partner With Us', 'partners.php'], ['Apply to co-host or partner', 'partner-apply.php']]],
             ['Contact', 'contact.php', 'contact,schedule', [['Contact us', 'contact.php'], ['Calendar', 'schedule.php']]],
         ],
         'footer1' => [

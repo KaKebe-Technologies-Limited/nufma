@@ -40,7 +40,7 @@ $previous = $conn->query("SELECT * FROM partners WHERE is_active=1 AND relations
 $tile = function ($p) {
     $has = $p['logo'] !== '' && is_file(__DIR__ . '/assets/images/' . $p['logo']);
     $inner = $has ? '<img src="assets/images/' . ui_e($p['logo']) . '" alt="' . ui_e($p['name']) . '" loading="lazy">' : '<div><b>' . ui_e($p['name']) . '</b><span>' . ui_e($p['tier']) . '</span></div>';
-    return '<div class="partner-tile" title="' . ui_e($p['name'] . ' — ' . $p['tier']) . '">' . ($p['website'] ? '<a href="' . ui_e($p['website']) . '" target="_blank" rel="noopener">' . $inner . '</a>' : $inner) . '</div>';
+    return '<div class="partner-tile" title="' . ui_e($p['name'] . ' — ' . $p['tier'] . (!empty($p['activity']) ? ' · ' . $p['activity'] : '')) . '">' . ($p['website'] ? '<a href="' . ui_e($p['website']) . '" target="_blank" rel="noopener">' . $inner . '</a>' : $inner) . '</div>';
 };
 $oppIcons = ['trophy', 'book', 'camera', 'film', 'users', 'heart', 'coins', 'bulb', 'compass'];
 $opps = [];
@@ -76,6 +76,25 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
       <h3 style="margin:48px 0 18px" class="center">Previous supporters</h3>
       <div class="partner-wall"><?php foreach ($previous as $p) echo $tile($p); ?></div>
     <?php endif; ?>
+  </div>
+</section><?php endif; ?>
+
+<?php if (nufa_show('partners', 'contributors')):
+  $contrib = $conn->query("SELECT * FROM partners WHERE is_active=1 AND partner_app_id>0 ORDER BY published_at DESC, id DESC LIMIT 6")->fetch_all(MYSQLI_ASSOC);
+  if ($contrib): ?><section class="section" id="contributors">
+  <div class="container"><div class="section-head center" data-reveal><div class="eyebrow">Thank you</div><h2>Recent co-hosts &amp; contributors</h2><p>Individuals and organisations who joined NUFA activities and delivered their commitment.</p></div>
+    <div class="contrib-grid" data-reveal-stagger><?php foreach ($contrib as $cp): $has = $cp['logo'] !== '' && is_file(__DIR__ . '/assets/images/' . $cp['logo']); ?>
+      <article class="contrib"><div class="contrib-logo"><?php if ($has): ?><img src="assets/images/<?php echo ui_e($cp['logo']); ?>" alt="<?php echo ui_e($cp['name']); ?>" loading="lazy"><?php else: ?><b><?php echo ui_e(mb_substr($cp['name'], 0, 1)); ?></b><?php endif; ?></div>
+        <div><span class="chip chip--dark"><?php echo ui_e($cp['tier']); ?></span><h3><?php echo $cp['website'] ? '<a href="' . ui_e($cp['website']) . '" target="_blank" rel="noopener">' . ui_e($cp['name']) . '</a>' : ui_e($cp['name']); ?></h3>
+          <?php if ($cp['activity']): ?><p class="contrib-act"><?php echo ui_e($cp['activity']); ?></p><?php endif; ?><?php if (!empty($cp['description'])): ?><p class="muted"><?php echo ui_e($cp['description']); ?></p><?php endif; ?></div></article>
+    <?php endforeach; ?></div></div></section><?php endif; endif; ?>
+
+<?php if (nufa_show('partners', 'cohost')): ?><section class="section section--black" id="cohost">
+  <div class="container split">
+    <div data-reveal><div class="eyebrow">Co-host or partner on an activity</div><h2>Join us in the field</h2>
+      <p class="lede" style="color:var(--muted-on-dark)">Individuals and organisations can apply to co-host a NUFA activity, join an outreach, or support one with a contribution or sponsorship. Tell us who you are and what you can offer — once your application is approved and your commitment is met, your logo and details are added to the partners section of this page automatically.</p>
+      <div class="actions"><a href="partner-apply.php" class="btn btn-gold">Apply to co-host or partner</a><a href="#enquiry" class="btn btn-outline">Just ask a question</a></div></div>
+    <ol class="steps steps--dark" data-reveal><li><b>Apply</b>State your details, the activity and your contribution.</li><li><b>Approval</b>The NUFA team reviews and agrees the commitment with you.</li><li><b>Deliver</b>Your support is confirmed once the commitment is met.</li><li><b>Be listed</b>Your logo and details appear under Our partners.</li></ol>
   </div>
 </section><?php endif; ?>
 
