@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v17` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v18` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -108,7 +108,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v17'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v18'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -365,6 +365,12 @@ function nufa_migrate($conn) {
     // SACCO is presented as ongoing, not planned: footer label
     $conn->query("UPDATE nav_items SET label='NUFA SACCO' WHERE label='NUFA SACCO (proposed)'");
 
+    // the vision & mission have been approved by leadership: switch the approval on once (later changes in Site Settings are kept)
+    if (!(int)$conn->query("SELECT COUNT(*) FROM settings WHERE setting_key='vm_approved_confirmed'")->fetch_row()[0]) {
+        $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('vm_approved', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+        $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('vm_approved_confirmed', '1')");
+    }
+
     // footer link to the support page (once)
     if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'support.php%'")->fetch_row()[0]) {
         $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer2'")->fetch_row()[0];
@@ -390,7 +396,7 @@ function nufa_migrate($conn) {
     // sensible defaults for the new settings; never overwrite what an admin already saved
     $defaults = [
         'font_preset' => 'cinematic',
-        'tickets_open' => '0', 'vm_approved' => '0', 'policies_approved' => '0',
+        'tickets_open' => '0', 'vm_approved' => '1', 'policies_approved' => '0',
     ];
     $ins = $conn->prepare("INSERT IGNORE INTO settings (setting_key, setting_value) VALUES (?,?)");
     foreach ($defaults as $k => $v) { $ins->bind_param("ss", $k, $v); $ins->execute(); }
@@ -429,7 +435,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v17', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v18', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

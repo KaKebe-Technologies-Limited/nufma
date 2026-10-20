@@ -23,7 +23,7 @@ function nufa_site_settings($conn) {
         // feature switches (stored as '1' / '0')
         'tickets_open'      => '0',   // show ticket information on the Awards page
         'ticket_price'      => '',
-        'vm_approved'       => '0',   // vision & mission approved by leadership
+        'vm_approved'       => '1',   // vision & mission approved by leadership
         'policies_approved' => '0',   // legal pages reviewed by a qualified professional
         // appearance
         'brand_gold' => '#D4AF63', 'brand_ink' => '#111111', 'site_logo' => '', 'site_favicon' => '', 'og_default_image' => '', 'show_topbar' => '1', 'show_clock' => '1', 'whatsapp_enabled' => '1', 'whatsapp_number' => '0779712990', 'whatsapp_message' => 'Hello NUFA, I would like to make an enquiry.', 'clock_timezone' => 'Africa/Kampala', 'pwa_enabled' => '1',
