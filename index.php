@@ -36,7 +36,11 @@ function hc_col($imgs){
   <div class="container-wide hero-grid hero-grid-center">
     <div class="hero-copy hero-copy-center">
       <div class="eyebrow hero-eyebrow">Northern Uganda Filmmakers Association</div>
-      <h1>Celebrating the <em>spirit</em> of Northern Cinema</h1>
+      <h1><span class="h1-lead">Celebrating the</span> <em>spirit</em> of Northern Cinema</h1>
+      <div class="hero-actions">
+        <a href="awards.php#nufa27" class="btn btn-brand">Get Tickets</a>
+        <a href="about.php" class="btn btn-line-light">Our Story</a>
+      </div>
       <div class="hero-stats">
         <div class="hero-avatars">
           <img src="assets/images/team/team-president.webp" alt="">
@@ -50,6 +54,54 @@ function hc_col($imgs){
   </div>
 </section>
 
+<div class="action-cards-wrap">
+  <div class="container action-cards" data-reveal-stagger>
+    <div class="ac ac-light">
+      <span class="ac-ico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M4 5h13l3 3v11H4V5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11l2.5 2.5L16 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <h3>The NUFA Awards</h3>
+      <p>Explore every edition — winners, galleries and the road to 2027.</p>
+      <a href="awards.php" class="btn btn-brand btn-sm">Explore Awards</a>
+    </div>
+    <div class="ac ac-dark">
+      <span class="ac-ico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M3 9a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v6a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2V9Z" stroke="currentColor" stroke-width="1.5"/><path d="M14 7v10" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 2"/></svg></span>
+      <h3>Get Your Tickets</h3>
+      <p>Secure a seat at Northern Uganda's biggest night in film.</p>
+      <a href="awards.php#nufa27" class="btn btn-white btn-sm">Get Tickets</a>
+    </div>
+    <div class="ac ac-brand">
+      <span class="ac-ico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M17 20v-1a5 5 0 0 0-5-5H8a5 5 0 0 0-5 5v1M15.5 4.2a3.5 3.5 0 0 1 0 6.6M19 20v-1a5 5 0 0 0-3-4.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9.5" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/></svg></span>
+      <h3>Become a Partner</h3>
+      <p>Put your brand behind the region's storytellers all year round.</p>
+      <a href="partners.php#become" class="btn btn-white btn-sm">Partner With Us</a>
+    </div>
+  </div>
+</div>
+
+<section class="section bg-paper intro-news">
+  <div class="container">
+    <div class="section-head center" data-reveal>
+      <h2>Welcome to the official <span class="hl">NUFA</span> — we help Northern Uganda's storytellers <span class="hl">shine.</span></h2>
+      <p class="lede">Training, recognition and a regional stage for the people behind the camera.</p>
+    </div>
+    <div class="grid-3 cause-grid" data-reveal-stagger>
+      <?php
+      $latest = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 ORDER BY published_at DESC LIMIT 3");
+      while ($lp = $latest->fetch_assoc()):
+      ?>
+      <a class="cause-card" href="post.php?slug=<?php echo urlencode($lp['slug']); ?>">
+        <div class="cc-media"><img src="assets/images/<?php echo htmlspecialchars($lp['image']); ?>" alt="<?php echo htmlspecialchars($lp['title']); ?>" loading="lazy"></div>
+        <div class="cc-body">
+          <span class="cc-meta"><b><?php echo htmlspecialchars($lp['category']); ?></b> · <?php echo date("d M Y", strtotime($lp['published_at'])); ?></span>
+          <h3><?php echo htmlspecialchars($lp['title']); ?></h3>
+          <p><?php echo htmlspecialchars($lp['excerpt']); ?></p>
+        </div>
+        <div class="cc-foot"><span>Read story</span><i></i><b>&rarr;</b></div>
+      </a>
+      <?php endwhile; ?>
+    </div>
+    <div style="text-align:center;margin-top:40px"><a href="news.php" class="btn btn-brand">Visit the Newsroom</a></div>
+  </div>
+</section>
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
     <span>Acholi</span><span>Lango</span><span>West Nile</span><span>Karamoja</span><span>NUFA Awards 2027</span>
@@ -258,7 +310,7 @@ function hc_col($imgs){
       <?php
       $homePartners = $conn->query("SELECT * FROM partners WHERE is_active=1 ORDER BY sort_order ASC");
       while ($p = $homePartners->fetch_assoc()):
-        $hasLogo = file_exists(__DIR__ . "/assets/images/" . $p['logo']);
+        $hasLogo = $p["logo"] !== "" && is_file(__DIR__ . "/assets/images/" . $p["logo"]);
       ?>
       <div class="partner-tile">
         <?php if ($hasLogo): ?>

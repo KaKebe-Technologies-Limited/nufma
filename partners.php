@@ -17,7 +17,7 @@ include __DIR__ . "/includes/header.php";
 $partners = [];
 $res = $conn->query("SELECT * FROM partners WHERE is_active=1 ORDER BY sort_order ASC");
 while ($row = $res->fetch_assoc()) {
-    $row['has_logo'] = file_exists(__DIR__ . "/assets/images/" . $row['logo']);
+    $row["has_logo"] = $row["logo"] !== "" && is_file(__DIR__ . "/assets/images/" . $row['logo']);
     $partners[] = $row;
 }
 ?>

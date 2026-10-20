@@ -65,7 +65,7 @@ $activeFont = nufa_get_font_preset($conn);
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?<?php echo $activeFont['google']; ?>&display=swap">
-<link rel="stylesheet" href="<?php echo $base; ?>assets/css/style.css">
+<link rel="stylesheet" href="<?php echo $base; ?>assets/css/style.css?v=<?php echo @filemtime(__DIR__ . "/../assets/css/style.css"); ?>">
 <style>
 :root{
   --font-heading:<?php echo $activeFont['heading']; ?>;
@@ -76,8 +76,25 @@ $activeFont = nufa_get_font_preset($conn);
 </head>
 <body>
 
+<?php require_once __DIR__ . "/settings.php"; $S = nufa_site_settings($conn); ?>
 <header class="site-header">
-  <div class="container-wide">
+  <div class="topbar">
+    <div class="container-wide topbar-in">
+      <div class="topbar-info">
+        <a href="tel:<?php echo nufa_tel_href($S["site_phone"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><?php echo htmlspecialchars($S["site_phone"]); ?></a>
+        <a href="mailto:<?php echo htmlspecialchars($S["site_email"]); ?>"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="m3 7 9 6 9-6" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($S["site_email"]); ?></a>
+        <span class="topbar-addr"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.6"/></svg><?php echo htmlspecialchars($S["site_address"]); ?></span>
+      </div>
+      <div class="topbar-social">
+        <a href="<?php echo htmlspecialchars($S["x_url"]); ?>" target="_blank" rel="noopener" aria-label="X">X</a>
+        <a href="<?php echo htmlspecialchars($S["facebook_url"]); ?>" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a href="<?php echo htmlspecialchars($S["instagram_url"]); ?>" target="_blank" rel="noopener" aria-label="Instagram">ig</a>
+        <a href="<?php echo htmlspecialchars($S["linkedin_url"]); ?>" target="_blank" rel="noopener" aria-label="LinkedIn">in</a>
+      </div>
+      <a href="<?php echo $base; ?>awards.php#nufa27" class="topbar-cta">Get Tickets · NUFA 2027</a>
+    </div>
+  </div>
+  <div class="container-wide nav-row">
     <a href="<?php echo $base; ?>index.php" class="brand">
       <span class="mark"><img src="<?php echo $base; ?>assets/images/logo/nufa-logo.png" alt="NUFA logo" width="42" height="42"></span>
       <span class="word">NUFA<small>Filmmakers Association</small></span>
