@@ -3,7 +3,10 @@ $adminNav = "team";
 require __DIR__ . "/includes/auth.php";
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$t = ['name'=>'', 'role'=>'', 'photo'=>'', 'facebook_url'=>'', 'x_url'=>'', 'instagram_url'=>'', 'linkedin_url'=>'', 'bio'=>'', 'sort_order'=>0, 'is_active'=>1];
+$t = ['name'=>'', 'role'=>'', 'photo'=>'', 'facebook_url'=>'', 'x_url'=>'', 'instagram_url'=>'', 'linkedin_url'=>'', 'bio'=>'', 'category'=>($_GET['cat'] ?? ''), 'sort_order'=>0, 'is_active'=>1];
+require_once __DIR__ . "/../includes/settings.php";
+$tcats = nufa_list(nufa_site_settings($conn), 'list_team_categories');
+if (!empty($t['category']) && !in_array($t['category'], $tcats, true)) $tcats[] = $t['category'];
 if ($id) {
     $r = $conn->query("SELECT * FROM team_members WHERE id=$id")->fetch_assoc();
     if ($r) $t = $r; else { header("Location: team.php"); exit; }
@@ -19,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ig = trim($_POST['instagram_url'] ?? '');
     $li = trim($_POST['linkedin_url'] ?? '');
     $bio = trim($_POST['bio'] ?? '');
+    $category = trim($_POST['category'] ?? '');
     $sortOrder = (int)($_POST['sort_order'] ?? 0);
     $isActive = isset($_POST['is_active']) ? 1 : 0;
     $photo = $t['photo'];
@@ -45,11 +49,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$error) {
         if ($id) {
-            $stmt = $conn->prepare("UPDATE team_members SET name=?, role=?, photo=?, facebook_url=?, x_url=?, instagram_url=?, linkedin_url=?, bio=?, sort_order=?, is_active=? WHERE id=?");
-            $stmt->bind_param("ssssssssiii", $name, $role, $photo, $fb, $x, $ig, $li, $bio, $sortOrder, $isActive, $id);
+            $stmt = $conn->prepare("UPDATE team_members SET name=?, role=?, photo=?, facebook_url=?, x_url=?, instagram_url=?, linkedin_url=?, bio=?, category=?, sort_order=?, is_active=? WHERE id=?");
+            $stmt->bind_param("sssssssssiii", $name, $role, $photo, $fb, $x, $ig, $li, $bio, $category, $sortOrder, $isActive, $id);
         } else {
-            $stmt = $conn->prepare("INSERT INTO team_members (name, role, photo, facebook_url, x_url, instagram_url, linkedin_url, bio, sort_order, is_active) VALUES (?,?,?,?,?,?,?,?,?,?)");
-            $stmt->bind_param("ssssssssii", $name, $role, $photo, $fb, $x, $ig, $li, $bio, $sortOrder, $isActive);
+            $stmt = $conn->prepare("INSERT INTO team_members (name, role, photo, facebook_url, x_url, instagram_url, linkedin_url, bio, category, sort_order, is_active) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
+            $stmt->bind_param("sssssssssii", $name, $role, $photo, $fb, $x, $ig, $li, $bio, $category, $sortOrder, $isActive);
         }
         $stmt->execute();
         header("Location: team.php?saved=1");
@@ -117,6 +121,7 @@ include __DIR__ . "/includes/admin-header.php";
       </div>
     </div>
 
+    <div class="field"><label>Group (e.g. Board, Management)</label><select name="category"><option value="">— none —</option><?php foreach (array_filter(array_unique(array_merge($tcats, [$t['category'] ?? '']))) as $c): ?><option <?php echo ($t['category'] ?? '') === $c ? 'selected' : ''; ?>><?php echo htmlspecialchars($c); ?></option><?php endforeach; ?></select><span class="admin-help">Edit the list under <a href="lists.php">Form options</a>.</span></div>
     <div class="field"><label>Professional biography (shown on the About page)</label><textarea name="bio" style="min-height:110px" maxlength="1200"><?php echo htmlspecialchars($t['bio'] ?? ''); ?></textarea><span class="admin-help">Leave blank until the biography has been approved — nothing is invented.</span></div>
 
     <div class="admin-form-grid">

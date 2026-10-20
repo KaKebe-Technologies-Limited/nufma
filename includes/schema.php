@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v4` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v5` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -65,7 +65,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v4'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v5'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -143,6 +143,16 @@ function nufa_migrate($conn) {
     require_once __DIR__ . "/menu.php";
     nufa_menu_seed($conn);
 
+    // categories for grouping content in the admin and on the public pages
+    foreach (['team_members', 'partners', 'gallery_images', 'videos'] as $t) nufa_add_col($conn, $t, 'category', "VARCHAR(80) NOT NULL DEFAULT ''");
+    // derive partner categories from the tier text already entered (only where no category is set yet)
+    foreach (['Government' => ['government', 'regulatory', 'ministry'], 'Media' => ['media', 'broadcast'], 'Technology' => ['technology'], 'Industry bodies' => ['industry', 'guild'], 'Production' => ['production']] as $cat => $needles) {
+        foreach ($needles as $nd) {
+            $c = $conn->real_escape_string($cat); $n = $conn->real_escape_string($nd);
+            $conn->query("UPDATE partners SET category='$c' WHERE category='' AND LOWER(tier) LIKE '%$n%'");
+        }
+    }
+
     // column additions on existing tables
     nufa_add_col($conn, 'posts', 'image_caption', "VARCHAR(255) NOT NULL DEFAULT ''");
     nufa_add_col($conn, 'posts', 'image_credit', "VARCHAR(150) NOT NULL DEFAULT ''");
@@ -202,7 +212,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v4', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v5', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

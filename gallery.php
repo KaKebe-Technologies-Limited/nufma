@@ -15,8 +15,13 @@ foreach (glob($root . 'gallery/2025/nufa25-*.webp') as $f) $groups['2025']['item
 $prodCaptions = ['crew-monitor-check' => 'Crew checking the monitor on a Northern Uganda film set', 'cultural-portrait' => 'Cultural portrait from a film production', 'karamoja-shoot-1' => 'Filming on location in Karamoja', 'karamoja-shoot-2' => 'Production crew on location in Karamoja', 'on-set-action' => 'On set during a film production'];
 foreach (glob($root . 'production/*.webp') as $f) $groups['productions']['items'][] = ['production/' . basename($f), $prodCaptions[basename($f, '.webp')] ?? 'Film production in Northern Uganda'];
 foreach (glob($root . 'gallery/2025/nufa-*.webp') as $f) if (!preg_match('/_\d\.webp$/', $f)) $groups['productions']['items'][] = ['gallery/2025/' . basename($f), 'Filmmaking and community storytelling in Northern Uganda'];
-foreach ($conn->query("SELECT image, caption, edition FROM gallery_images WHERE image LIKE 'uploads/%' ORDER BY created_at DESC")->fetch_all(MYSQLI_ASSOC) as $u) {
-    $k = substr($u['edition'], -2) === '26' ? '2026' : (substr($u['edition'], -2) === '25' ? '2025' : 'productions');
+foreach ($conn->query("SELECT image, caption, edition, category FROM gallery_images WHERE image LIKE 'uploads/%' ORDER BY created_at DESC")->fetch_all(MYSQLI_ASSOC) as $u) {
+    if ($u['category'] !== '') {   // admin-assigned album: gets its own filter tab
+        $k = 'cat-' . preg_replace('/[^a-z0-9]+/', '-', strtolower($u['category']));
+        if (!isset($groups[$k])) $groups[$k] = ['label' => $u['category'], 'items' => []];
+    } else {
+        $k = substr($u['edition'], -2) === '26' ? '2026' : (substr($u['edition'], -2) === '25' ? '2025' : 'productions');
+    }
     array_unshift($groups[$k]['items'], [$u['image'], $u['caption'] ?: $groups[$k]['label']]);
 }
 $videos = $conn->query("SELECT * FROM videos WHERE is_active=1 ORDER BY sort_order ASC, id DESC")->fetch_all(MYSQLI_ASSOC);
@@ -51,7 +56,7 @@ echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'),
     <div class="video-grid">
       <?php foreach ($videos as $v): $embed = ui_video_embed($v['video_url']); if (!$embed) continue; ?>
       <article class="video-card"><div class="frame"><iframe src="<?php echo ui_e($embed); ?>" title="<?php echo ui_e($v['title']); ?>" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
-        <h3><?php echo ui_e($v['title']); ?></h3><?php if ($v['caption']): ?><p class="muted" style="font-size:.88rem"><?php echo ui_e($v['caption']); ?></p><?php endif; ?></article>
+        <h3><?php echo ui_e($v['title']); ?></h3><?php if (!empty($v['category'])): ?><span class="chip" style="margin-bottom:6px"><?php echo ui_e($v['category']); ?></span><?php endif; ?><?php if ($v['caption']): ?><p class="muted" style="font-size:.88rem"><?php echo ui_e($v['caption']); ?></p><?php endif; ?></article>
       <?php endforeach; ?>
     </div>
     <?php endif; ?>

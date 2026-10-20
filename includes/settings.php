@@ -81,6 +81,9 @@ Policies and guidelines
 Annual reports
 Event reports
 Publications",
+        'list_team_categories'     => "Board\nManagement\nSecretariat\nGuild Leaders\nAdvisors",
+        'list_partner_categories'  => "Government\nMedia\nTechnology\nIndustry bodies\nProduction\nCorporate sponsors\nCommunity & culture\nEducation",
+        'list_gallery_categories'  => "Awards ceremony\nRed carpet\nProductions\nTraining & workshops\nScreenings\nCommunity\nBehind the scenes",
         // verified impact figures — the Impact section stays qualitative until these are filled
         'impact1_value' => '', 'impact1_label' => '',
         'impact2_value' => '', 'impact2_label' => '',

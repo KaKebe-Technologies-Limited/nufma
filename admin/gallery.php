@@ -2,99 +2,78 @@
 $adminTitle = "Gallery";
 $adminNav = "gallery";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/schema.php";
+require_once __DIR__ . "/../includes/settings.php";
+require_once __DIR__ . "/../includes/membership.php";   // mem_store_upload()
+require_once __DIR__ . "/../includes/ui.php";
 
 if (isset($_GET['delete'])) {
-    $conn->query("DELETE FROM gallery_images WHERE id=" . (int)$_GET['delete']);
-    header("Location: gallery.php?deleted=1");
-    exit;
+    $id = (int)$_GET['delete'];
+    $row = $conn->query("SELECT image FROM gallery_images WHERE id=$id")->fetch_assoc();
+    if ($row && strpos($row['image'], 'uploads/posts/') === 0) @unlink(__DIR__ . "/../assets/images/" . $row['image']);
+    $conn->query("DELETE FROM gallery_images WHERE id=$id");
+    header("Location: gallery.php?deleted=1"); exit;
 }
 
-$error = '';
+$cats = nufa_list(nufa_site_settings($conn), 'list_gallery_categories');
+$error = ''; $added = 0;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!empty($_FILES['image']['name'])) {
-        if ($_FILES['image']['error'] !== UPLOAD_ERR_OK) {
-            $error = "Upload failed (error code " . $_FILES['image']['error'] . "). Try a smaller file.";
-        } else {
-            $ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
-            if (!in_array($ext, ['jpg','jpeg','png','webp'])) {
-                $error = "Please upload a JPG, PNG or WEBP image.";
-            } else {
-                $destDir = __DIR__ . "/../assets/images/uploads/posts/";
-                if (!is_dir($destDir)) @mkdir($destDir, 0777, true);
-                $fname = 'gallery-' . time() . '-' . mt_rand(1000,9999) . '.' . $ext;
-                $dest = $destDir . $fname;
-                if (is_writable($destDir) && move_uploaded_file($_FILES['image']['tmp_name'], $dest)) {
-                    $caption = trim($_POST['caption'] ?? '');
-                    $edition = trim($_POST['edition'] ?? '');
-                    $image = "uploads/posts/" . $fname;
-                    $stmt = $conn->prepare("INSERT INTO gallery_images (image, caption, edition) VALUES (?,?,?)");
-                    $stmt->bind_param("sss", $image, $caption, $edition);
-                    $stmt->execute();
-                    header("Location: gallery.php?added=1");
-                    exit;
-                } else {
-                    $error = "Could not save the file — check that assets/images/uploads/posts/ is writable on the server.";
-                }
-            }
-        }
-    } else {
-        $error = "Please choose an image to upload.";
+    $caption = trim($_POST['caption'] ?? ''); $edition = trim($_POST['edition'] ?? '');
+    $category = in_array($_POST['category'] ?? '', $cats, true) ? $_POST['category'] : '';
+    $files = $_FILES['images'] ?? null;
+    $list = [];
+    if ($files && is_array($files['name'])) foreach ($files['name'] as $i => $nm) if ($nm !== '') $list[] = ['name' => $nm, 'type' => $files['type'][$i], 'tmp_name' => $files['tmp_name'][$i], 'error' => $files['error'][$i], 'size' => $files['size'][$i]];
+    if (!$list) $error = "Please choose at least one image.";
+    $ins = $conn->prepare("INSERT INTO gallery_images (image, caption, edition, category) VALUES (?,?,?,?)");
+    foreach ($list as $f) {
+        [$fn, $e] = mem_store_upload($f, MEM_IMG_TYPES, 8 * 1048576, 'gallery', __DIR__ . "/../assets/images/uploads/posts/");
+        if ($e) { $error = $f['name'] . ": " . $e; continue; }
+        $img = "uploads/posts/" . $fn;
+        $ins->bind_param("ssss", $img, $caption, $edition, $category); $ins->execute(); $added++;
     }
+    if ($added && !$error) { header("Location: gallery.php?added=$added"); exit; }
 }
 
-$images = $conn->query("SELECT * FROM gallery_images ORDER BY created_at DESC");
+$cat = $_GET['cat'] ?? '';
+if ($cat !== '__none' && !in_array($cat, $cats, true)) $cat = '';
+$counts = [];
+$cr = $conn->query("SELECT category, COUNT(*) c FROM gallery_images GROUP BY category");
+while ($c = $cr->fetch_assoc()) $counts[$c['category']] = (int)$c['c'];
+$images = $conn->query("SELECT * FROM gallery_images WHERE " . ui_cat_where($conn, $cat) . " ORDER BY created_at DESC, id DESC")->fetch_all(MYSQLI_ASSOC);
 include __DIR__ . "/includes/admin-header.php";
 ?>
 <div class="mem-tabs"><a href="gallery.php" class="active">Photo gallery</a><a href="videos.php">Video library</a></div>
-
-<?php if (isset($_GET['added'])): ?><div class="admin-alert ok">Photo added to the gallery.</div><?php endif; ?>
+<?php if (isset($_GET['added'])): ?><div class="admin-alert ok"><?php echo (int)$_GET['added']; ?> photo(s) added to the gallery.</div><?php endif; ?>
 <?php if (isset($_GET['deleted'])): ?><div class="admin-alert ok">Photo removed.</div><?php endif; ?>
 <?php if ($error): ?><div class="admin-alert err"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
 <div class="admin-card">
-  <div class="admin-card-head"><h2>Add a Photo</h2><span class="admin-help">Uploaded photos join the admin-managed gallery pool</span></div>
+  <div class="admin-card-head"><h2>Add photographs</h2><span class="admin-help">Choose several at once. Only upload images NUFA has permission to publish.</span></div>
   <form class="admin-form" method="post" enctype="multipart/form-data">
     <div class="admin-form-grid">
-      <div class="field">
-        <label>Image</label>
-        <input type="file" name="image" accept="image/*" required>
-      </div>
-      <div class="field">
-        <label>Edition</label>
-        <select name="edition">
-          <option value="2027">NUFA27</option>
-          <option value="2026">NUFA26</option>
-          <option value="2025">NUFA25</option>
-          <option value="prod">Productions &amp; community</option>
-        </select>
-      </div>
+      <div class="field"><label>Images (JPG, PNG or WebP, max 8 MB each)</label><input type="file" name="images[]" accept="image/jpeg,image/png,image/webp" multiple required></div>
+      <div class="field"><label>Category / album</label><select name="category"><option value="">— none —</option><?php foreach ($cats as $c): ?><option><?php echo htmlspecialchars($c); ?></option><?php endforeach; ?></select><span class="admin-help"><a href="lists.php">Edit categories</a></span></div>
+      <div class="field"><label>Awards edition (also shows the photo on that edition's page)</label><select name="edition"><option value="">— none —</option><option value="2027">NUFA 2027</option><option value="2026">NUFA 2026</option><option value="2025">NUFA 2025</option></select></div>
+      <div class="field"><label>Caption / credit (optional)</label><input name="caption" placeholder="e.g. Red carpet arrivals — Photo: …"></div>
     </div>
-    <div class="field">
-      <label>Caption</label>
-      <input type="text" name="caption" placeholder="e.g. Guests arriving on the red carpet">
-    </div>
-    <button type="submit" class="admin-btn admin-btn-brand">Upload Photo</button>
+    <button class="admin-btn admin-btn-brand">Upload</button>
   </form>
 </div>
 
+<?php echo ui_admin_cat_tabs('gallery.php', $cats, $cat, $counts); ?>
 <div class="admin-card">
-  <div class="admin-card-head"><h2>Admin-Added Photos</h2><span class="admin-help">The main NUFA25/26 sets from the site launch live in /assets/images/gallery/</span></div>
-  <table class="admin-table">
-    <thead><tr><th></th><th>Caption</th><th>Edition</th><th></th></tr></thead>
-    <tbody>
-      <?php if ($images->num_rows === 0): ?>
-      <tr><td colspan="4" style="color:var(--text-muted)">No admin-uploaded photos yet.</td></tr>
-      <?php endif; ?>
-      <?php while ($g = $images->fetch_assoc()): ?>
+  <div class="admin-card-head"><h2>Photographs (<?php echo count($images); ?>)</h2></div>
+  <div style="overflow-x:auto"><table class="admin-table">
+    <thead><tr><th></th><th>Caption</th><th>Category</th><th>Edition</th><th></th></tr></thead><tbody>
+    <?php if (!$images): ?><tr><td colspan="5" style="color:var(--text-muted)">Nothing here yet.</td></tr><?php endif; ?>
+    <?php foreach ($images as $g): ?>
       <tr>
-        <td><img class="admin-thumb" src="../assets/images/<?php echo htmlspecialchars($g['image']); ?>" alt=""></td>
+        <td><img class="admin-thumb" src="../assets/images/<?php echo htmlspecialchars($g['image']); ?>" alt="" loading="lazy"></td>
         <td><?php echo htmlspecialchars($g['caption'] ?: '—'); ?></td>
-        <td><span class="admin-badge gray"><?php echo ctype_digit((string)$g['edition']) ? 'NUFA' . substr($g['edition'],-2) : 'Productions'; ?></span></td>
-        <td><a href="gallery.php?delete=<?php echo $g['id']; ?>" class="admin-btn admin-btn-danger admin-btn-sm" data-confirm="Remove this photo?">Delete</a></td>
+        <td><?php echo $g['category'] !== '' ? '<span class="admin-badge">' . htmlspecialchars($g['category']) . '</span>' : '<span class="admin-badge gray">none</span>'; ?></td>
+        <td><?php echo $g['edition'] !== '' ? '<span class="admin-badge gray">' . htmlspecialchars(ctype_digit($g['edition']) ? 'NUFA ' . $g['edition'] : $g['edition']) . '</span>' : '—'; ?></td>
+        <td><a href="gallery.php?delete=<?php echo $g['id']; ?>" class="admin-btn admin-btn-danger admin-btn-sm" data-confirm="Remove this photo from the gallery?">Delete</a></td>
       </tr>
-      <?php endwhile; ?>
-    </tbody>
-  </table>
+    <?php endforeach; ?></tbody></table></div>
 </div>
-
 <?php include __DIR__ . "/includes/admin-footer.php"; ?>

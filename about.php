@@ -9,6 +9,10 @@ $ogImage = "assets/images/og/og-about.jpg";
 include __DIR__ . "/includes/header.php";
 
 $team = $conn->query("SELECT * FROM team_members WHERE is_active=1 ORDER BY sort_order ASC, id ASC")->fetch_all(MYSQLI_ASSOC);
+$teamCatOrder = nufa_list($cfg, "list_team_categories");
+$teamGroups = [];
+foreach ($team as $m) $teamGroups[$m["category"] ?? ""][] = $m;
+uksort($teamGroups, function ($a, $b) use ($teamCatOrder) { $ia = array_search($a, $teamCatOrder); $ib = array_search($b, $teamCatOrder); $ia = $ia === false ? 999 : $ia; $ib = $ib === false ? 999 : $ib; return $ia <=> $ib; });
 $valueIcons = ['shield', 'star', 'handshake', 'users', 'compass', 'bulb', 'heart'];
 $draft = $cfg['vm_approved'] !== '1';
 
@@ -56,8 +60,10 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
     <?php if (!$team): ?>
       <div class="empty-state" style="background:rgba(255,255,255,.05);border-color:var(--line-dark)"><h3>Leadership profiles coming soon</h3><p style="color:var(--muted-on-dark)">Profiles will be published once names, roles and portraits have been approved.</p></div>
     <?php else: ?>
+    <?php foreach ($teamGroups as $gname => $members): ?>
+    <?php if ($gname !== "" && count($teamGroups) > 1): ?><h3 class="group-title" style="color:var(--gold);margin:44px 0 22px;font-size:1rem;letter-spacing:.14em;text-transform:uppercase"><?php echo ui_e($gname); ?></h3><?php endif; ?>
     <div class="grid grid-4" data-reveal-stagger>
-      <?php foreach ($team as $m): ?>
+      <?php foreach ($members as $m): ?>
       <article class="leader-card">
         <div class="photo"><?php if ($m['photo'] && is_file(__DIR__ . '/assets/images/' . $m['photo'])): ?><img src="assets/images/<?php echo ui_e($m['photo']); ?>" alt="Portrait of <?php echo ui_e($m['name']); ?>" width="600" height="750" loading="lazy"><?php endif; ?></div>
         <h3 style="color:var(--white)"><?php echo ui_e($m['name']); ?></h3>
@@ -73,6 +79,7 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
       </article>
       <?php endforeach; ?>
     </div>
+    <?php endforeach; ?>
     <?php endif; ?>
   </div>
 </section>

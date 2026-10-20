@@ -101,3 +101,19 @@ function nufa_resource_categories($conn) {
     require_once __DIR__ . "/settings.php";
     return nufa_list(nufa_site_settings($conn), 'list_resource_categories') ?: NUFA_RESOURCE_CATEGORIES;
 }
+
+/** Admin helper: category filter tabs. $counts = [category => n]; "" = uncategorised. */
+function ui_admin_cat_tabs($page, array $cats, $current, array $counts, $extra = []) {
+    $q = fn($c) => $page . '?' . http_build_query(array_filter(array_merge($extra, ['cat' => $c]), fn($v) => $v !== ''));
+    $total = array_sum($counts);
+    $h = '<div class="mem-tabs"><a href="' . ui_e($q('')) . '" class="' . ($current === '' ? 'active' : '') . '">All (' . $total . ')</a>';
+    foreach ($cats as $c) $h .= '<a href="' . ui_e($q($c)) . '" class="' . ($current === $c ? 'active' : '') . '">' . ui_e($c) . ' (' . (int)($counts[$c] ?? 0) . ')</a>';
+    if (!empty($counts['']) ) $h .= '<a href="' . ui_e($q('__none')) . '" class="' . ($current === '__none' ? 'active' : '') . '">Uncategorised (' . (int)$counts[''] . ')</a>';
+    return $h . '</div>';
+}
+/** SQL fragment for a category filter value from ui_admin_cat_tabs ('' = all, '__none' = uncategorised). */
+function ui_cat_where($conn, $cat) {
+    if ($cat === '') return '1=1';
+    if ($cat === '__none') return "category=''";
+    return "category='" . $conn->real_escape_string($cat) . "'";
+}

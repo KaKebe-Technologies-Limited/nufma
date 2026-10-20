@@ -61,7 +61,14 @@ echo ui_page_hero('Partner With NUFA', cms_value('partners', 'hero_heading'), cm
 <section class="section section--soft">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Our partners</div><h2><?php echo cms_t('partners', 'partners_heading'); ?></h2></div>
-    <?php if ($current): ?><div class="partner-wall" data-reveal-stagger><?php foreach ($current as $p) echo $tile($p); ?></div>
+    <?php if ($current):
+      $pOrder = nufa_list($cfg, 'list_partner_categories'); $pGroups = [];
+      foreach ($current as $p) $pGroups[$p['category'] ?? ''][] = $p;
+      uksort($pGroups, function ($a, $b) use ($pOrder) { $ia = array_search($a, $pOrder); $ib = array_search($b, $pOrder); return ($ia === false ? 999 : $ia) <=> ($ib === false ? 999 : $ib); });
+      foreach ($pGroups as $gname => $gp): ?>
+      <?php if (count($pGroups) > 1): ?><h3 class="center" style="margin:38px 0 16px;font-size:.95rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-700)"><?php echo ui_e($gname !== '' ? $gname : 'Other partners'); ?></h3><?php endif; ?>
+      <div class="partner-wall" data-reveal-stagger><?php foreach ($gp as $p) echo $tile($p); ?></div>
+      <?php endforeach; ?>
     <?php else: ?><div class="empty-state"><h3>Current partners will be listed here</h3><p>Approved partner names and logos are published once confirmed. Interested in joining them? Use the form below.</p></div><?php endif; ?>
     <?php if ($previous): ?>
       <h3 style="margin:48px 0 18px" class="center">Previous supporters</h3>

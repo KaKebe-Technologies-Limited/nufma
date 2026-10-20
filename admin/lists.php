@@ -10,6 +10,9 @@ $lists = [
     'list_org_types'           => ['Partnership form — organisation types', 'Choices for "Organisation type".'],
     'list_partner_interests'   => ['Partnership form — areas of interest', 'Choices for "Area of interest".'],
     'list_network_roles'       => ['Industry Network form — professional roles', 'Choices for "Professional role".'],
+    'list_team_categories'     => ['Leadership — groups (Board, Management …)', 'Used to group people on the About page and to filter the Leadership list in the admin.'],
+    'list_partner_categories'  => ['Partners — categories', 'Used to group the partner wall and to filter the Partners list in the admin.'],
+    'list_gallery_categories'  => ['Gallery & videos — categories', 'Albums for uploaded photographs and videos; they become filter tabs on the public Gallery page.'],
     'list_news_categories'     => ['News & Stories — categories', 'Used for story categories, the filter bar on News and the category picker when you write a story. Renaming a category does not rename it on existing stories.'],
     'list_resource_categories' => ['Resource Library — categories', 'Used when adding resources and for the filter bar on the Resources page.'],
 ];

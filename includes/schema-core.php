@@ -54,6 +54,7 @@ return array (
   `sort_order` int(11) NOT NULL DEFAULT 0,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `relationship` varchar(20) NOT NULL DEFAULT \'current\',
+  `category` varchar(80) NOT NULL DEFAULT \'\',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci',
     'messages' => 'CREATE TABLE IF NOT EXISTS `messages` (
@@ -80,6 +81,7 @@ return array (
   `caption` varchar(255) NOT NULL DEFAULT \'\',
   `edition` varchar(50) NOT NULL DEFAULT \'\',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `category` varchar(80) NOT NULL DEFAULT \'\',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci',
     'award_editions' => 'CREATE TABLE IF NOT EXISTS `award_editions` (
@@ -88,7 +90,6 @@ return array (
   `year` int(11) NOT NULL,
   `status` enum(\'upcoming\',\'past\') NOT NULL DEFAULT \'past\',
   `sort_order` int(11) NOT NULL DEFAULT 0,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `badge_text` varchar(255) NOT NULL DEFAULT \'\',
   `heading_html` varchar(500) NOT NULL DEFAULT \'\',
   `theme_quote` varchar(255) NOT NULL DEFAULT \'\',
@@ -111,13 +112,14 @@ return array (
   `masonry3` varchar(255) NOT NULL DEFAULT \'\',
   `masonry4` varchar(255) NOT NULL DEFAULT \'\',
   `extra_html` mediumtext DEFAULT NULL,
-  `nominees_html` mediumtext DEFAULT NULL,
   `sponsors_html` mediumtext DEFAULT NULL,
   `press_html` mediumtext DEFAULT NULL,
   `highlights_html` mediumtext DEFAULT NULL,
   `categories_html` mediumtext DEFAULT NULL,
   `video_url` varchar(500) NOT NULL DEFAULT \'\',
   `is_verified` tinyint(1) NOT NULL DEFAULT 1,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `nominees_html` mediumtext DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci',
@@ -146,6 +148,7 @@ return array (
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
   `bio` text DEFAULT NULL,
   `linkedin_note` varchar(10) NOT NULL DEFAULT \'\',
+  `category` varchar(80) NOT NULL DEFAULT \'\',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci',
   ),
@@ -196,6 +199,7 @@ return array (
       'sort_order' => 'int(11) NOT NULL DEFAULT \'0\'',
       'is_active' => 'tinyint(1) NOT NULL DEFAULT \'1\'',
       'relationship' => 'varchar(20) NOT NULL DEFAULT \'current\'',
+      'category' => 'varchar(80) NOT NULL DEFAULT \'\'',
     ),
     'messages' => 
     array (
@@ -218,6 +222,7 @@ return array (
       'caption' => 'varchar(255) NOT NULL DEFAULT \'\'',
       'edition' => 'varchar(50) NOT NULL DEFAULT \'\'',
       'created_at' => 'timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP',
+      'category' => 'varchar(80) NOT NULL DEFAULT \'\'',
     ),
     'award_editions' => 
     array (
@@ -225,7 +230,6 @@ return array (
       'year' => 'int(11) NOT NULL',
       'status' => 'enum(\'upcoming\',\'past\') NOT NULL DEFAULT \'past\'',
       'sort_order' => 'int(11) NOT NULL DEFAULT \'0\'',
-      'is_active' => 'tinyint(1) NOT NULL DEFAULT \'1\'',
       'badge_text' => 'varchar(255) NOT NULL DEFAULT \'\'',
       'heading_html' => 'varchar(500) NOT NULL DEFAULT \'\'',
       'theme_quote' => 'varchar(255) NOT NULL DEFAULT \'\'',
@@ -248,13 +252,14 @@ return array (
       'masonry3' => 'varchar(255) NOT NULL DEFAULT \'\'',
       'masonry4' => 'varchar(255) NOT NULL DEFAULT \'\'',
       'extra_html' => 'mediumtext NULL',
-      'nominees_html' => 'mediumtext NULL',
       'sponsors_html' => 'mediumtext NULL',
       'press_html' => 'mediumtext NULL',
       'highlights_html' => 'mediumtext NULL',
       'categories_html' => 'mediumtext NULL',
       'video_url' => 'varchar(500) NOT NULL DEFAULT \'\'',
       'is_verified' => 'tinyint(1) NOT NULL DEFAULT \'1\'',
+      'is_active' => 'tinyint(1) NOT NULL DEFAULT \'1\'',
+      'nominees_html' => 'mediumtext NULL',
     ),
     'award_winners' => 
     array (
@@ -278,6 +283,7 @@ return array (
       'is_active' => 'tinyint(1) NOT NULL DEFAULT \'1\'',
       'bio' => 'text NULL',
       'linkedin_note' => 'varchar(10) NOT NULL DEFAULT \'\'',
+      'category' => 'varchar(80) NOT NULL DEFAULT \'\'',
     ),
   ),
 );
