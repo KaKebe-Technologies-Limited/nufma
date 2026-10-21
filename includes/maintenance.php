@@ -54,7 +54,7 @@ function maint_gate($conn, $cfg, $logoRel) {
 <title><?php echo $e($m['maint_title']); ?> — <?php echo $e($cfg['site_name']); ?></title>
 <style>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 0,#2a2418,#0e0d0b 70%);color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:24px}
-.m{max-width:680px;width:100%;text-align:center}.m img{max-height:92px;max-width:240px;object-fit:contain;margin-bottom:22px}
+.m{max-width:680px;width:100%;text-align:center}.m .logo{display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:24px;padding:18px 28px;margin-bottom:28px;box-shadow:0 12px 40px rgba(0,0,0,.45)}.m .logo img{height:clamp(130px,28vw,200px);width:auto;max-width:min(300px,70vw);object-fit:contain;display:block}
 .m h1{font-size:clamp(1.8rem,5vw,2.8rem);margin:0 0 12px;color:<?php echo $gold; ?>}.m p.msg{color:#d9d4c7;line-height:1.7;font-size:1.05rem;margin:0 auto 26px;white-space:pre-line}
 .cd{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 auto 12px;max-width:460px}.cd div{background:#0d0c0a;border:1px solid <?php echo $gold; ?>66;border-radius:16px;padding:14px 4px}
 .cd b{display:block;font-size:clamp(1.6rem,6vw,2.3rem);color:<?php echo $gold; ?>;font-variant-numeric:tabular-nums;line-height:1}.cd span{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#a8a290}
@@ -62,7 +62,7 @@ function maint_gate($conn, $cfg, $logoRel) {
 .c{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;border-top:1px solid #ffffff22;padding-top:22px;color:#d9d4c7;font-size:.95rem}.c a{color:<?php echo $gold; ?>;text-decoration:none}.c a:hover{text-decoration:underline}
 .s{margin-top:14px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:.88rem}.s a{color:#a8a290;text-decoration:none}.s a:hover{color:<?php echo $gold; ?>}
 </style></head><body><main class="m">
-<img src="assets/images/<?php echo $e($logoRel); ?>" alt="<?php echo $e($cfg['site_name']); ?>">
+<div class="logo"><img src="assets/images/<?php echo $e($logoRel); ?>" alt="<?php echo $e($cfg['site_name']); ?>"></div>
 <h1><?php echo $e($m['maint_title']); ?></h1>
 <p class="msg"><?php echo $e($m['maint_message']); ?></p>
 <?php if ($end && $m['maint_countdown'] === '1' && $end > time()): ?><div class="cd" id="cd" data-end="<?php echo $e($endIso); ?>"><div><b data-u="d">--</b><span>days</span></div><div><b data-u="h">--</b><span>hours</span></div><div><b data-u="m">--</b><span>mins</span></div><div><b data-u="s">--</b><span>secs</span></div></div><?php endif; ?>
