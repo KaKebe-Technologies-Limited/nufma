@@ -11,7 +11,7 @@ const PAGE_CACHE = VERSION + '-pages';
 const OFFLINE_URL = 'offline.html';
 const PRECACHE = [OFFLINE_URL, 'assets/css/site.css?v=<?php echo (int)@filemtime(__DIR__ . '/assets/css/site.css'); ?>', 'assets/images/pwa/icon-192.png'];
 // public pages that are safe to keep a copy of for offline reading (never member, admin, card or invitation pages)
-const PAGES = ['index.php', 'about.php', 'awards.php', 'programmes.php', 'news.php', 'newsletters.php', 'gallery.php', 'resources.php', 'partners.php', 'contact.php', 'schedule.php', 'network.php', 'sacco.php', 'support.php'];
+const PAGES = ['index.php', 'about.php', 'awards.php', 'programmes.php', 'news.php', 'newsletters.php', 'gallery.php', 'resources.php', 'opportunities.php', 'partners.php', 'contact.php', 'schedule.php', 'network.php', 'sacco.php', 'support.php'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(STATIC_CACHE).then(function (c) { return c.addAll(PRECACHE); }).then(function () { return self.skipWaiting(); }));
