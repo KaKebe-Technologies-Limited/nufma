@@ -49,7 +49,10 @@ $draftVm = $cfg0['sacco_vm_approved'] !== '1';
 $govPeople = trim(cms_value('sacco', 'governance_people'));
 
 echo ui_page_hero('NUFA SACCO · ' . $statusLabel, cms_value('sacco', 'hero_heading'), cms_value('sacco', 'hero_lede'), cms_img_raw('sacco', 'hero_image'), [['NUFA SACCO']],
-    '<a href="#about" class="btn btn-gold">Learn More</a><a href="#enquiry" class="btn btn-gold">Membership Enquiry</a><a href="contact.php?topic=General" class="btn btn-outline">Contact NUFA</a>');
+    ($appsOpen ? '<a href="sacco-apply.php" class="btn btn-gold">Register as a member</a>' : '<a href="#enquiry" class="btn btn-gold">Register your interest</a>') . '<a href="#about" class="btn btn-outline">Learn more</a><a href="#enquiry" class="btn btn-ghost">Ask a question</a>');
+$regBtn = $appsOpen
+    ? '<a href="sacco-apply.php" class="btn btn-gold btn-lg">Register as a SACCO member</a><span class="muted" style="font-size:.85rem">Pay the membership fee and at least two shares to join. Your member card is issued on approval.</span>'
+    : '<a href="#enquiry" class="btn btn-gold btn-lg">Register your interest</a><span class="muted" style="font-size:.85rem">Membership registration is not open yet — leave your details and we will tell you when it opens.</span>';
 ?>
 <section class="section--tight" style="padding-bottom:0">
   <div class="container">
@@ -112,6 +115,7 @@ echo ui_page_hero('NUFA SACCO · ' . $statusLabel, cms_value('sacco', 'hero_head
       <div data-reveal><h3>Application process</h3><?php echo ui_steps(cms_value('sacco', 'membership_process')); ?>
         <h3 style="margin-top:26px">Rights, responsibilities and obligations</h3><div class="stack"><?php echo cms_h('sacco', 'membership_rights'); ?></div></div>
     </div>
+    <div class="register-band" data-reveal><div><b>Ready to join the NUFA SACCO?</b><?php echo $regBtn; ?></div></div>
   </div>
 </section><?php endif; ?>
 

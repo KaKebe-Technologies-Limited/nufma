@@ -752,3 +752,6 @@ nav.policy{display:flex;flex-wrap:wrap;gap:6px 16px}nav.policy a{margin:0!import
 .mcard--sacco .mcard-top{background:linear-gradient(135deg,#161616 0%,#2b2417 100%)}
 .mcard--sacco{border-top:4px solid var(--gold)}
 .pay-summary #pay-total{font-size:1.05rem;margin-top:6px}
+.register-band{margin-top:48px;background:linear-gradient(135deg,#161616,#2b2417);border:1px solid rgba(212,175,99,.4);border-radius:20px;padding:clamp(22px,4vw,36px);text-align:center;color:#fff}
+.register-band>div{display:flex;flex-direction:column;align-items:center;gap:14px}.register-band b{font-family:var(--font-heading);font-size:clamp(1.2rem,3vw,1.6rem)}.register-band .muted{color:#d9d4c7;max-width:52ch}
+.btn-lg{padding:16px 34px;font-size:1.05rem}
