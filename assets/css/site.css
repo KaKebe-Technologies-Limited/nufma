@@ -755,3 +755,20 @@ nav.policy{display:flex;flex-wrap:wrap;gap:6px 16px}nav.policy a{margin:0!import
 .register-band{margin-top:48px;background:linear-gradient(135deg,#161616,#2b2417);border:1px solid rgba(212,175,99,.4);border-radius:20px;padding:clamp(22px,4vw,36px);text-align:center;color:#fff}
 .register-band>div{display:flex;flex-direction:column;align-items:center;gap:14px}.register-band b{font-family:var(--font-heading);font-size:clamp(1.2rem,3vw,1.6rem)}.register-band .muted{color:#d9d4c7;max-width:52ch}
 .btn-lg{padding:16px 34px;font-size:1.05rem}
+
+/* Awards pre-events */
+.ev-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:22px;margin-top:10px}
+.ev-card{background:linear-gradient(180deg,#1d1b17,#151412);border:1px solid rgba(212,175,99,.28);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 18px 44px rgba(0,0,0,.4);color:#fff}
+.ev-img{aspect-ratio:16/8;overflow:hidden}.ev-img img{width:100%;height:100%;object-fit:cover;display:block}
+.ev-body{padding:24px 24px 26px;display:flex;flex-direction:column;gap:12px;flex:1}
+.ev-chip{align-self:flex-start;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:99px;padding:5px 12px;background:rgba(255,255,255,.1);color:#d9d4c7}.ev-chip.is-ok{background:var(--gold);color:#161616}.ev-chip.is-past{background:#333;color:#999}
+.ev-body h3{margin:0;font-size:1.45rem;color:#fff}.ev-tag{margin:0;color:var(--gold);font-weight:600}
+.ev-countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.ev-countdown>div{background:#0d0c0a;border:1px solid rgba(212,175,99,.35);border-radius:14px;padding:10px 4px;text-align:center}
+.ev-countdown b{display:block;font-family:var(--font-heading);font-size:1.7rem;line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}.ev-countdown span{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:#a8a290}
+.ev-live{grid-column:1/-1;background:var(--gold);color:#161616;border-radius:14px;padding:14px;text-align:center;font-weight:800}
+.ev-facts{list-style:none;margin:0;padding:0;display:grid;gap:10px}.ev-facts li{display:flex;gap:12px;align-items:flex-start}.ev-facts svg{color:var(--gold);flex:none;margin-top:3px}.ev-facts b{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:#a8a290}.ev-facts small{display:block;color:#a8a290}.ev-facts a{color:var(--gold)}
+.ev-desc{margin:0;color:#d9d4c7;line-height:1.65;font-size:.93rem}
+.ev-sponsors h4{margin:4px 0 8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#a8a290}
+.ev-sp-row{display:flex;flex-wrap:wrap;gap:10px}.ev-sp{background:#fff;border-radius:12px;padding:8px 12px;min-width:92px;text-align:center;color:#161616}.ev-sp img{max-height:38px;max-width:110px;object-fit:contain;display:block;margin:0 auto}.ev-sp b{font-size:.82rem;display:block}.ev-sp span{display:block;font-size:.6rem;letter-spacing:.06em;text-transform:uppercase;color:#8a6a1c;font-weight:800;margin-top:3px}.ev-sp a{color:inherit}
+.ev-nosp{margin:0;font-size:.86rem;color:#a8a290;font-style:italic}.ev-card .btn{align-self:flex-start;margin-top:auto}
+@media(max-width:560px){.ev-grid{grid-template-columns:minmax(0,1fr)}.ev-countdown b{font-size:1.4rem}}

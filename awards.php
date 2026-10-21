@@ -5,6 +5,8 @@ require_once __DIR__ . "/includes/forms.php";
 require_once __DIR__ . "/includes/settings.php";
 require_once __DIR__ . "/includes/awards.php";
 awd_install($conn);
+require_once __DIR__ . "/includes/award-events.php";
+aev_install($conn);
 $AW = awd_settings($conn);
 
 // ticket booking request
@@ -40,9 +42,9 @@ $awardNews = $conn->query("SELECT title, slug, category, excerpt, image, publish
 $submission = trim(cms_value('awards', 'submission_url'));
 
 echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value('awards', 'hero_lede'), cms_img_raw('awards', 'hero_image'), [['NUFA Awards']],
-    '<a href="#archive" class="btn btn-gold">Explore the Archive</a><a href="contact.php?topic=Awards" class="btn btn-outline">Awards enquiries</a>');
+    '<a href="awards-cohost.php" class="btn btn-gold">Co-host or sponsor an event</a><a href="#archive" class="btn btn-outline">Explore the Archive</a><a href="contact.php?topic=Awards" class="btn btn-ghost">Awards enquiries</a>');
 ?>
-<nav class="aw-subnav" aria-label="On this page"><div class="container"><?php foreach ([['roadmap', 'Road map'], ['winners', 'Winners'], ['highlights', 'Highlights'], ['moments', 'Key moments'], ['impact', 'Impact'], ['films', 'Films'], ['archive', 'Archive'], ['takepart', 'Take part'], ['submissions', 'Submit a film'], ['tickets', 'Tickets'], ['team', 'Technical team'], ['faq', 'FAQ']] as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
+<nav class="aw-subnav" aria-label="On this page"><div class="container"><?php foreach ([['events', 'Events'], ['roadmap', 'Road map'], ['winners', 'Winners'], ['highlights', 'Highlights'], ['moments', 'Key moments'], ['impact', 'Impact'], ['films', 'Films'], ['archive', 'Archive'], ['takepart', 'Take part'], ['submissions', 'Submit a film'], ['tickets', 'Tickets'], ['team', 'Technical team'], ['faq', 'FAQ']] as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
 
 <?php if (nufa_show('awards', 'purpose')): ?><section class="section">
   <div class="container split">
@@ -94,6 +96,51 @@ $guests = awd_items($conn, 'guest', $last2Ids); $moments = awd_items($conn, 'mom
 $films = awd_items($conn, 'film', $last2Ids); $roadmap = awd_items($conn, 'roadmap', array_merge([0], $nextEd ? [(int)$nextEd['id']] : []));
 ?>
 
+<?php if (nufa_show('awards', 'events')):
+  $aev = $conn->query("SELECT * FROM award_events WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
+  $aevSp = []; foreach ($conn->query("SELECT * FROM award_event_sponsors WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC) as $__s) $aevSp[$__s['event_id']][] = $__s;
+  $AE = aev_settings($conn);
+  if ($aev): ?>
+<section class="section section--black" id="events">
+  <div class="container">
+    <div class="section-head center" data-reveal><div class="eyebrow">Road to the awards</div><h2>Launch · Nomination Night · Grand Finale</h2><p><?php echo ui_e($AE['aev_intro']); ?></p>
+      <div class="actions" style="justify-content:center;margin-top:18px"><a href="awards-cohost.php" class="btn btn-gold">Apply to co-host or sponsor</a></div></div>
+    <div class="ev-grid" data-reveal-stagger>
+      <?php foreach ($aev as $ev): $iso = aev_countdown_iso($ev); $confirmed = !empty($ev['date_confirmed']) && !empty($ev['event_date']); $past = $confirmed && strtotime($ev['event_date'] . ' 23:59:59') < time(); $evImg = $ev['image'] !== '' && is_file(__DIR__ . '/assets/images/' . $ev['image']) ? $ev['image'] : '';
+        $sp = $aevSp[$ev['id']] ?? []; ?>
+      <article class="ev-card" id="ev-<?php echo ui_e($ev['slug']); ?>">
+        <?php if ($evImg): ?><div class="ev-img"><img src="assets/images/<?php echo ui_e($evImg); ?>" alt="" loading="lazy"></div><?php endif; ?>
+        <div class="ev-body">
+          <span class="ev-chip <?php echo $past ? 'is-past' : ($confirmed ? 'is-ok' : ''); ?>"><?php echo $past ? 'Completed' : ($confirmed ? 'Date confirmed' : 'Date to be announced'); ?></span>
+          <h3><?php echo ui_e($ev['title']); ?></h3>
+          <?php if ($ev['tagline'] !== ''): ?><p class="ev-tag"><?php echo ui_e($ev['tagline']); ?></p><?php endif; ?>
+          <?php if ($iso !== '' && !$past): ?><div class="ev-countdown" data-countdown="<?php echo ui_e($iso); ?>" aria-live="off"><div><b data-u="d">--</b><span>days</span></div><div><b data-u="h">--</b><span>hours</span></div><div><b data-u="m">--</b><span>mins</span></div><div><b data-u="s">--</b><span>secs</span></div></div><?php endif; ?>
+          <ul class="ev-facts">
+            <li><?php echo nufa_icon('calendar', 17); ?><span><b>When</b><?php echo ui_e(aev_when($ev)); ?></span></li>
+            <li><?php echo nufa_icon('pin', 17); ?><span><b>Venue</b><?php echo $ev['venue'] !== '' ? ui_e($ev['venue']) . ($ev['venue_note'] !== '' ? '<small>' . ui_e($ev['venue_note']) . '</small>' : '') : 'Venue to be announced'; ?><?php if ($ev['map_url'] !== ''): ?> · <a href="<?php echo ui_e($ev['map_url']); ?>" target="_blank" rel="noopener">Map</a><?php endif; ?></span></li>
+          </ul>
+          <?php if (trim((string)$ev['description']) !== ''): ?><p class="ev-desc"><?php echo ui_e($ev['description']); ?></p><?php endif; ?>
+          <?php if ($sp): ?><div class="ev-sponsors"><h4>Co-hosts &amp; sponsors</h4><div class="ev-sp-row"><?php foreach ($sp as $s): $has = $s['logo'] !== '' && is_file(__DIR__ . '/assets/images/' . $s['logo']);
+            $in = $has ? '<img src="assets/images/' . ui_e($s['logo']) . '" alt="' . ui_e($s['name']) . '" loading="lazy">' : '<b>' . ui_e($s['name']) . '</b>'; ?>
+            <div class="ev-sp" title="<?php echo ui_e($s['name'] . ' — ' . $s['tier']); ?>"><?php echo $s['website'] !== '' ? '<a href="' . ui_e($s['website']) . '" target="_blank" rel="noopener">' . $in . '</a>' : $in; ?><span><?php echo ui_e($s['tier']); ?></span></div><?php endforeach; ?></div></div>
+          <?php else: ?><p class="ev-nosp">Co-host and sponsor spots are open.</p><?php endif; ?>
+          <?php if (!$past && !empty($ev['cohost_open'])): ?><a class="btn btn-outline btn-sm" href="awards-cohost.php?event=<?php echo ui_e($ev['slug']); ?>">Co-host or sponsor this event</a><?php endif; ?>
+        </div>
+      </article>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<script>
+(function(){var els=document.querySelectorAll('[data-countdown]');if(!els.length)return;
+function pad(n){return n<10?'0'+n:''+n}
+function tick(){els.forEach(function(el){var t=Date.parse(el.getAttribute('data-countdown'));var d=t-Date.now();
+ if(isNaN(t))return; if(d<=0){el.innerHTML='<div class="ev-live">It\'s happening — see you there!</div>';return;}
+ var s=Math.floor(d/1000),dd=Math.floor(s/86400),hh=Math.floor(s%86400/3600),mm=Math.floor(s%3600/60),ss=s%60;
+ var v={d:dd,h:pad(hh),m:pad(mm),s:pad(ss)};['d','h','m','s'].forEach(function(u){var b=el.querySelector('[data-u="'+u+'"]');if(b)b.textContent=v[u];});});}
+tick();setInterval(tick,1000);})();
+</script>
+<?php endif; endif; ?>
 <?php if (nufa_show('awards', 'roadmap')): ?><section class="section" id="roadmap">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Road map</div><h2><?php echo cms_t('awards', 'roadmap_heading'); ?><?php echo $nextEd ? ' — ' . (int)$nextEd['year'] : ''; ?></h2><p><?php echo cms_t('awards', 'roadmap_intro'); ?></p></div>

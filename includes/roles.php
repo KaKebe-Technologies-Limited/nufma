@@ -33,7 +33,7 @@ function admin_page_modules() {
         'support' => ['support-requests.php', 'support-view.php', 'support-file.php', 'support-setup.php', 'partner-applications.php', 'partner-file.php'],
         'sacco' => ['sacco-manager.php', 'sacco-applications.php', 'sacco-file.php'],
         'events' => ['schedule.php', 'greetings.php'],
-        'awards' => ['award-editions.php', 'award-edition-edit.php', 'award-winners.php', 'award-winner-edit.php', 'awards-setup.php'],
+        'awards' => ['award-events.php', 'award-event-file.php', 'award-editions.php', 'award-edition-edit.php', 'award-winners.php', 'award-winner-edit.php', 'awards-setup.php'],
         'invitations' => ['invitations.php', 'invitation.php', 'invitation-file.php'],
         'news' => ['posts.php', 'post-edit.php', 'newsletters.php', 'newsletter-edit.php', 'subscribers.php', 'upload-image.php'],
         'website' => ['pages.php', 'page-editor.php', 'content.php', 'content-edit.php', 'menus.php', 'appearance.php', 'lists.php', 'website-map.php', 'sliders.php', 'slide-edit.php',

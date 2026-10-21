@@ -106,3 +106,9 @@ See `docs/DEPLOYMENT.md`.
 ## SACCO membership: fee, shares and card
 - Every applicant pays the **membership (registration) fee and at least two shares** with the application: the form requires the payment method, reference, date, total amount (checked against fee + shares × price when both are set as numbers) and proof of payment, and shows a live total to pay. Set the fee and share price in SACCO applications → Form, fees & numbering (the minimum is always 2 shares).
 - On **Approve, issue card & email** the admin first ticks that the payment proof was verified and confirms the shares paid (≥ 2). The system then issues a **membership card** (`sacco-card.php?t=…`: photo, name, member number, shares held, member since, validity, signature) and emails the link; the page also verifies the member. Resend the card link any time; set signer, note and validity under “Membership card”.
+
+## NUFA Awards pre-events (Admin → Awards pre-events)
+- The Awards page has an **Events** section for the **Launch, Nomination Night and Grand Finale** (editable; add more). Each card shows the confirmed date/time, venue (with map link), description, picture, a **live countdown**, and the **co-hosts & sponsors** (logos and links).
+- **Events & countdowns**: set the date, times, venue, map and picture; tick “Date confirmed” to publish the date, then press **Start countdown** (the countdown appears on the website; Stop removes it). Until a date is confirmed the card shows your “date to be announced” text.
+- **Co-hosts & sponsors**: add them per event with logo, role and website.
+- **Applications**: visitors use “Co-host or sponsor” (Awards page hero, each event card, or `awards-cohost.php`). Approve to publish the applicant with their logo on the chosen event page(s) — or approve without publishing — and the applicant is emailed. Reject with a reason. Export the list.
