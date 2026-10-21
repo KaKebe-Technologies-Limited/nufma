@@ -788,3 +788,27 @@ nav.policy{display:flex;flex-wrap:wrap;gap:6px 16px}nav.policy a{margin:0!import
 .op-foot{margin-top:auto;padding-top:8px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}.op-src{font-size:.82rem}.op-ver{font-size:.74rem;color:#8a8573;margin-left:auto}
 .op-cta{margin-top:34px;background:#161616;color:#fff;border-radius:20px;padding:26px 28px;display:flex;gap:20px;align-items:center;justify-content:space-between;flex-wrap:wrap}.op-cta h3{margin:0 0 4px;color:#fff}.op-cta p{margin:0;color:#cfc9b8}
 @media(max-width:560px){.op-grid{grid-template-columns:minmax(0,1fr)}.op-search input[type=search]{min-width:0;width:100%}}
+
+/* Mobile polish: touch comfort, notch safe areas, iOS input zoom, long words and wide tables */
+html{-webkit-tap-highlight-color:transparent}
+a,button,summary,label,select,input[type=checkbox],input[type=radio]{touch-action:manipulation}
+h1,h2,h3,h4,.card h3,.op-card h3,.ev-body h3{overflow-wrap:anywhere;hyphens:auto}
+.wa-float,.to-top,.install-banner{margin-bottom:env(safe-area-inset-bottom,0)}
+.wa-float{margin-right:env(safe-area-inset-right,0)}
+@media(max-width:860px){
+  input:not([type=checkbox]):not([type=radio]):not([type=file]):not([type=range]):not([type=submit]),select,textarea{font-size:16px!important;min-height:46px}
+  textarea{min-height:110px}
+  input[type=checkbox],input[type=radio]{width:20px;height:20px}
+  .topbar-wa{min-width:40px;min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+  .btn,.btn-sm{min-height:46px}
+  .footer-col a,.footer-legal a,.footer-bottom a{display:inline-block;padding-block:6px}
+  .filter-bar,.op-tools .filter-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-inline:calc(var(--gutter,16px) * -1);padding-inline:var(--gutter,16px);padding-bottom:6px}
+  .filter-bar::-webkit-scrollbar{display:none}.filter-bar>*{flex:none;white-space:nowrap;min-height:42px}
+  table.data{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .section{padding-block:clamp(44px,9vw,64px)}
+  .hero{min-height:min(82dvh,700px)}
+  .container,.container-wide{padding-inline:max(var(--gutter,16px),env(safe-area-inset-left,0))}
+  iframe,video{max-width:100%}
+  .install-banner{padding-bottom:calc(10px + env(safe-area-inset-bottom,0))}
+}
+@media(max-width:420px){.actions{flex-direction:column;align-items:stretch}.actions .btn{width:100%;justify-content:center}}

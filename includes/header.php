@@ -51,7 +51,7 @@ if (http_response_code() === 200) nufa_hit($conn, substr(preg_replace('/\.php$/'
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title><?php echo $hx($pageTitle); ?></title>
 <meta name="description" content="<?php echo $hx($pageDesc); ?>">
 <meta name="theme-color" content="<?php echo $hx($ink); ?>">
