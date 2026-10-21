@@ -9,6 +9,9 @@ if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $row = $conn->query("SELECT attachment FROM posts WHERE id=$id")->fetch_assoc();
     if (!empty($row['attachment'])) @unlink(__DIR__ . "/../assets/downloads/" . basename($row['attachment']));
+    require_once __DIR__ . "/../includes/guests.php"; guests_install($conn);
+    foreach ($conn->query("SELECT image FROM post_images WHERE post_id=$id")->fetch_all(MYSQLI_ASSOC) as $gi) @unlink(__DIR__ . "/../assets/images/" . $gi['image']);
+    $conn->query("DELETE FROM post_images WHERE post_id=$id");
     $conn->query("DELETE FROM posts WHERE id=$id");
     header("Location: posts.php?deleted=1"); exit;
 }

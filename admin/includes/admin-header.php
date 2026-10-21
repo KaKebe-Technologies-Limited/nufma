@@ -56,6 +56,7 @@ $__ico += [
     'saccoadm'   => '<ellipse cx="9" cy="7" rx="6" ry="3"/><path d="M3 7v5c0 1.700 2.700 3 6 3s6-1.300 6-3V7M15 11.500c3 0 6 1 6 2.500v3c0 1.700-3 3-6.500 3"/>',
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
+    'guests'     => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.600 2.900-6 6.500-6s6.500 2.400 6.500 6M16 5.500a3.500 3.500 0 0 1 0 6M18 14.500c2.200.700 3.500 2.700 3.500 5.500"/>',
     'opps'       => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/><path d="M8 21h8" stroke-linecap="round"/>',
     'enquiries'  => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>',
 ];
@@ -78,6 +79,7 @@ $__nav = [
         ['schedule', 'schedule.php', 'Calendar & reminders'],
         ['greetings', 'greetings.php', 'Holiday greetings'],
         ['awardevents', 'award-events.php', 'Awards pre-events', $__aevNew],
+        ['guests', 'guests.php', 'Distinguished guests'],
         ['awards', 'award-editions.php', 'Award editions'],
         ['awardsetup', 'awards-setup.php', 'Awards setup'],
         ['invitations', 'invitations.php', 'Award invitations'],
