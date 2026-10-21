@@ -35,7 +35,14 @@ function maint_is_admin() {
 /** Called from the public header: shows the holding page and stops, unless the site is live or an admin is signed in. */
 function maint_gate($conn, $cfg, $logoRel) {
     $m = maint_settings($conn);
-    if (maint_state($m) !== 'down' || maint_is_admin()) return;
+    if (maint_state($m) !== 'down') return;
+    if (empty($_GET['visitor']) && maint_is_admin()) {   // signed-in admins keep seeing the site, with a reminder
+        ob_start(function ($html) {
+            $bar = '<div style="position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#c0392b;color:#fff;padding:10px 16px;font:600 14px system-ui,sans-serif;text-align:center">Maintenance mode is ON — visitors see the holding page; you see the site because you are signed in to the admin. <a href="?visitor=1" style="color:#fff;text-decoration:underline">Preview as a visitor</a> · <a href="admin/maintenance.php" style="color:#fff;text-decoration:underline">Manage</a></div>';
+            return preg_replace('/<\/body>/i', $bar . '</body>', $html, 1);
+        });
+        return;
+    }
     $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
     $end = maint_ts($m['maint_end']);
     $endIso = $end ? (new DateTime('@' . $end))->setTimezone(maint_tz())->format('Y-m-d\TH:i:sP') : '';

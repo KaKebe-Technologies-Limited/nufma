@@ -34,8 +34,8 @@ include __DIR__ . "/includes/admin-header.php";
 <div class="admin-card" style="border-left:6px solid <?php echo $st === 'down' ? '#c0392b' : ($st === 'scheduled' ? '#d4a017' : '#1f7a3d'); ?>">
   <div class="admin-card-head"><h2>Website status:
     <?php echo $st === 'down' ? '<span class="admin-badge red">OFF — visitors see the maintenance page</span>' : ($st === 'scheduled' ? '<span class="admin-badge gray">Scheduled to go off ' . htmlspecialchars(date('j M Y, H:i', maint_ts($m['maint_start']))) . '</span>' : '<span class="admin-badge">ONLINE</span>'); ?></h2>
-    <a class="admin-btn admin-btn-line admin-btn-sm" href="../index.php" target="_blank">Open the site ↗</a></div>
-  <p class="admin-help">While the website is off, visitors see your logo, the message below, your contact details, a countdown and the expected return date. You stay signed in to the admin and can still see the real site to check your update. Times are East Africa Time (Kampala).</p>
+    <a class="admin-btn admin-btn-line admin-btn-sm" href="../index.php?visitor=1" target="_blank">Preview as a visitor ↗</a></div>
+  <p class="admin-help">While the website is off, visitors see your logo, the message below, your contact details, a countdown and the expected return date. <b>Because you are signed in, you will still see the normal site yourself</b> — use "Preview as a visitor" or a private/incognito window to see what visitors see. Times are East Africa Time (Kampala).</p>
 </div>
 
 <form method="post" class="admin-card admin-form">
