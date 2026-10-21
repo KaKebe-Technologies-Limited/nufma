@@ -25,7 +25,7 @@ $__ico = [
     'settings'    => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
     'users'       => '<circle cx="12" cy="8" r="4"/><path d="M4 21c.6-4 4-6 8-6s7.4 2 8 6" stroke-linecap="round"/>',
 ];
-$__enqNew = 0; $__subs = 0; $__msgs = 0; $__supNew = 0; $__sacNew = 0; $__paNew = 0; $__fbNew = 0; $__aevNew = 0;
+$__enqNew = 0; $__subs = 0; $__msgs = 0; $__supNew = 0; $__sacNew = 0; $__paNew = 0; $__fbNew = 0; $__aevNew = 0; $__acNew = 0;
 if (isset($conn)) {
     $__q = $conn->query("SELECT COUNT(*) c FROM enquiries WHERE status='new'"); if ($__q) $__enqNew = (int)$__q->fetch_assoc()['c'];
     $__q = $conn->query("SELECT COUNT(*) c FROM engagements WHERE status='pending'"); if ($__q) $__supNew = (int)$__q->fetch_assoc()['c'];
@@ -34,6 +34,7 @@ if (isset($conn)) {
     try { $__q = $conn->query("SELECT COUNT(*) c FROM partner_applications WHERE status='pending'"); if ($__q) $__paNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
     try { $__q = $conn->query("SELECT COUNT(*) c FROM feedback WHERE status='new'"); if ($__q) $__fbNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
     try { $__q = $conn->query("SELECT COUNT(*) c FROM award_event_apps WHERE status='pending'"); if ($__q) $__aevNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
+    try { $__q = $conn->query("SELECT (SELECT COUNT(*) FROM academy_trainers WHERE status='pending') + (SELECT COUNT(*) FROM academy_enrolments WHERE status='pending') c"); if ($__q) $__acNew = (int)$__q->fetch_assoc()["c"]; } catch (Throwable $__e) {}
     $__q = $conn->query("SELECT COUNT(*) c FROM messages"); if ($__q) $__msgs = (int)$__q->fetch_assoc()['c'];
 }
 $__ico += [
@@ -57,6 +58,7 @@ $__ico += [
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
     'guests'     => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.600 2.900-6 6.500-6s6.500 2.400 6.500 6M16 5.500a3.500 3.500 0 0 1 0 6M18 14.500c2.200.700 3.500 2.700 3.500 5.500"/>',
+    'academy'    => '<path d="M3 9l9-5 9 5-9 5-9-5Z"/><path d="M7 11.500V16c0 1.400 2.300 3 5 3s5-1.600 5-3v-4.500M21 9v6"/>',
     'opps'       => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/><path d="M8 21h8" stroke-linecap="round"/>',
     'enquiries'  => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>',
 ];
@@ -89,6 +91,7 @@ $__nav = [
         ['newsletters', 'newsletters.php', 'Newsletters'],
         ['gallery', 'gallery.php', 'Gallery & videos'],
         ['resources', 'resources.php', 'Resources'],
+        ['academy', 'academy.php', 'NUFA Academy', $__acNew],
         ['opps', 'opportunities.php', 'Opportunities'],
     ],
     'Programmes & partners' => [
