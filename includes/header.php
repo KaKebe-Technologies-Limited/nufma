@@ -14,6 +14,8 @@ require_once __DIR__ . "/sections.php";
 require_once __DIR__ . "/content.php";
 
 $cfg = nufa_site_settings($conn);
+require_once __DIR__ . "/maintenance.php";
+maint_gate($conn, $cfg, ($cfg['site_logo'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_logo'])) ? $cfg['site_logo'] : 'logo/nufa-logo.png');
 $hx = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 if (!isset($pageTitle)) $pageTitle = cms_value('seo', 'home_title');
 if (!isset($pageDesc))  $pageDesc  = cms_value('seo', 'home_desc');

@@ -38,7 +38,7 @@ function admin_page_modules() {
         'news' => ['posts.php', 'post-edit.php', 'newsletters.php', 'newsletter-edit.php', 'subscribers.php', 'upload-image.php'],
         'website' => ['pages.php', 'page-editor.php', 'content.php', 'content-edit.php', 'menus.php', 'appearance.php', 'lists.php', 'website-map.php', 'sliders.php', 'slide-edit.php',
                       'gallery.php', 'videos.php', 'resources.php', 'opportunities.php', 'programmes.php', 'programme-edit.php', 'partners.php', 'partner-edit.php'],
-        'settings' => ['settings.php'],
+        'settings' => ['settings.php', 'maintenance.php'],
         'users' => ['users.php', 'roles.php'],
     ];
     $out = [];
