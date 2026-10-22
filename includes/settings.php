@@ -26,7 +26,7 @@ function nufa_site_settings($conn) {
         'vm_approved'       => '1',   // vision & mission approved by leadership
         'policies_approved' => '0',   // legal pages reviewed by a qualified professional
         // appearance
-        'brand_gold' => '#D4AF63', 'brand_ink' => '#111111', 'site_logo' => '', 'site_favicon' => '', 'og_default_image' => '', 'show_topbar' => '1', 'show_clock' => '1', 'whatsapp_enabled' => '1', 'whatsapp_number' => '0779712990', 'whatsapp_message' => 'Hello NUFA, I would like to make an enquiry.', 'clock_timezone' => 'Africa/Kampala', 'pwa_enabled' => '1',
+        'brand_gold' => '#F57A0A', 'brand_ink' => '#111111', 'site_logo' => '', 'site_favicon' => '', 'og_default_image' => '', 'show_topbar' => '1', 'show_clock' => '1', 'whatsapp_enabled' => '1', 'whatsapp_number' => '0779712990', 'whatsapp_message' => 'Hello NUFA, I would like to make an enquiry.', 'clock_timezone' => 'Africa/Kampala', 'pwa_enabled' => '1',
         // editable option lists (one entry per line)
         'list_contact_topics'      => "General enquiry
 Membership
@@ -51,6 +51,10 @@ Creative enterprise development
 Digital innovation and industry infrastructure
 Research, advocacy and industry engagement
 Other",
+        'list_subregion_acholi' => "Gulu\nAmuru\nNwoya\nOmoro\nKitgum\nLamwo\nPader\nAgago",
+        'list_subregion_karamoja' => "Moroto\nNapak\nNakapiripirit\nAmudat\nKotido\nKaabong\nAbim\nKarenga\nNabilatuk",
+        'list_subregion_lango' => "Lira\nAlebtong\nAmolatar\nApac\nDokolo\nKole\nKwania\nOyam\nOtuke",
+        'list_subregion_west_nile' => "Arua\nKoboko\nMaracha\nYumbe\nMoyo\nAdjumani\nObongi\nNebbi\nPakwach\nZombo\nMadi-Okollo\nTerego",
         'list_network_roles'       => "Film production company
 Director or producer
 Screenwriter
@@ -116,7 +120,7 @@ function nufa_list($cfg, $key) {
 
 /** Darkens/lightens a #RRGGBB colour by mixing with black (negative) or white (positive) — used to derive the brand shades. */
 function nufa_shade($hex, $pct) {
-    $hex = ltrim($hex, '#'); if (strlen($hex) !== 6 || !ctype_xdigit($hex)) return '#D4AF63';
+    $hex = ltrim($hex, '#'); if (strlen($hex) !== 6 || !ctype_xdigit($hex)) return '#F57A0A';
     $out = '#';
     foreach ([0, 2, 4] as $i) { $c = hexdec(substr($hex, $i, 2)); $c = $pct >= 0 ? $c + (255 - $c) * $pct / 100 : $c * (100 + $pct) / 100; $out .= str_pad(dechex((int)round(max(0, min(255, $c)))), 2, '0', STR_PAD_LEFT); }
     return strtoupper($out);

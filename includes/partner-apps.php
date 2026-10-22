@@ -112,7 +112,7 @@ function pa_badge($a) {
     if ($s === 'approved') {
         if ((int)$a['partner_id'] > 0) return '<span class="admin-badge">Published on website</span>';
         if ($a['commitment_met_at']) return '<span class="admin-badge">Commitment met</span>';
-        return '<span class="admin-badge" style="background:#fff8e6;color:#6b4e0a">Awaiting commitment</span>';
+        return '<span class="admin-badge" style="background:#FFF4EA;color:#8A3F00">Awaiting commitment</span>';
     }
     return ['pending' => '<span class="admin-badge gray">Pending</span>', 'rejected' => '<span class="admin-badge red">Rejected</span>'][$s] ?? $s;
 }

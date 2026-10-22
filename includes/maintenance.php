@@ -49,18 +49,18 @@ function maint_gate($conn, $cfg, $logoRel) {
     $endTxt = $end ? (new DateTime('@' . $end))->setTimezone(maint_tz())->format('l, j F Y \a\t H:i') . ' (East Africa Time)' : '';
     http_response_code(503); header('Retry-After: ' . ($end && $end > time() ? $end - time() : 3600)); header('Cache-Control: no-store'); header('X-Robots-Tag: noindex');
     $soc = array_filter(['Facebook' => $cfg['facebook_url'] ?? '', 'Instagram' => $cfg['instagram_url'] ?? '', 'X' => $cfg['x_url'] ?? '', 'LinkedIn' => $cfg['linkedin_url'] ?? '', 'YouTube' => $cfg['youtube_url'] ?? '']);
-    $gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold'] ?? '') ? $cfg['brand_gold'] : '#D4AF63';
+    $gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold'] ?? '') ? $cfg['brand_gold'] : '#F57A0A';
     ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title><?php echo $e($m['maint_title']); ?> — <?php echo $e($cfg['site_name']); ?></title>
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 0,#2a2418,#0e0d0b 70%);color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:24px}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 0,#2A2A2A,#0E0E0E 70%);color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding:24px}
 .m{max-width:680px;width:100%;text-align:center}.m .logo{display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:24px;padding:18px 28px;margin-bottom:28px;box-shadow:0 12px 40px rgba(0,0,0,.45)}.m .logo img{height:clamp(130px,28vw,200px);width:auto;max-width:min(300px,70vw);object-fit:contain;display:block}
-.m h1{font-size:clamp(1.8rem,5vw,2.8rem);margin:0 0 12px;color:<?php echo $gold; ?>}.m p.msg{color:#d9d4c7;line-height:1.7;font-size:1.05rem;margin:0 auto 26px;white-space:pre-line}
-.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 auto 12px;max-width:460px}.cd div{background:#0d0c0a;border:1px solid <?php echo $gold; ?>66;border-radius:16px;padding:14px 4px}
-.cd b{display:block;font-size:clamp(1.6rem,6vw,2.3rem);color:<?php echo $gold; ?>;font-variant-numeric:tabular-nums;line-height:1}.cd span{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#a8a290}
-.when{color:#d9d4c7;margin:0 0 26px}.when b{color:#fff}
-.c{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;border-top:1px solid #ffffff22;padding-top:22px;color:#d9d4c7;font-size:.95rem}.c a{color:<?php echo $gold; ?>;text-decoration:none}.c a:hover{text-decoration:underline}
-.s{margin-top:14px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:.88rem}.s a{color:#a8a290;text-decoration:none}.s a:hover{color:<?php echo $gold; ?>}
+.m h1{font-size:clamp(1.8rem,5vw,2.8rem);margin:0 0 12px;color:<?php echo $gold; ?>}.m p.msg{color:#D9D9D9;line-height:1.7;font-size:1.05rem;margin:0 auto 26px;white-space:pre-line}
+.cd{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 auto 12px;max-width:460px}.cd div{background:#0D0D0D;border:1px solid <?php echo $gold; ?>66;border-radius:16px;padding:14px 4px}
+.cd b{display:block;font-size:clamp(1.6rem,6vw,2.3rem);color:<?php echo $gold; ?>;font-variant-numeric:tabular-nums;line-height:1}.cd span{font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:#A8A8A8}
+.when{color:#D9D9D9;margin:0 0 26px}.when b{color:#fff}
+.c{display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:center;border-top:1px solid #ffffff22;padding-top:22px;color:#D9D9D9;font-size:.95rem}.c a{color:<?php echo $gold; ?>;text-decoration:none}.c a:hover{text-decoration:underline}
+.s{margin-top:14px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;font-size:.88rem}.s a{color:#A8A8A8;text-decoration:none}.s a:hover{color:<?php echo $gold; ?>}
 </style></head><body><main class="m">
 <div class="logo"><img src="assets/images/<?php echo $e($logoRel); ?>" alt="<?php echo $e($cfg['site_name']); ?>"></div>
 <h1><?php echo $e($m['maint_title']); ?></h1>

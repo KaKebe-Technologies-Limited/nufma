@@ -31,7 +31,7 @@ include __DIR__ . "/includes/admin-header.php";
 <?php if (isset($_GET['done'])): ?><div class="admin-alert ok"><?php echo ['on' => ($st === 'scheduled' ? 'Maintenance mode is scheduled.' : 'The website is now OFF for visitors.'), 'off' => 'The website is back ONLINE.', 'save' => 'Saved.'][$_GET['done']] ?? 'Saved.'; ?></div><?php endif; ?>
 <?php if ($error): ?><div class="admin-alert err"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
-<div class="admin-card" style="border-left:6px solid <?php echo $st === 'down' ? '#c0392b' : ($st === 'scheduled' ? '#d4a017' : '#1f7a3d'); ?>">
+<div class="admin-card" style="border-left:6px solid <?php echo $st === 'down' ? '#c0392b' : ($st === 'scheduled' ? '#F57A0A' : '#1f7a3d'); ?>">
   <div class="admin-card-head"><h2>Website status:
     <?php echo $st === 'down' ? '<span class="admin-badge red">OFF — visitors see the maintenance page</span>' : ($st === 'scheduled' ? '<span class="admin-badge gray">Scheduled to go off ' . htmlspecialchars(date('j M Y, H:i', maint_ts($m['maint_start']))) . '</span>' : '<span class="admin-badge">ONLINE</span>'); ?></h2>
     <a class="admin-btn admin-btn-line admin-btn-sm" href="../index.php?visitor=1" target="_blank">Preview as a visitor ↗</a></div>

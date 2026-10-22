@@ -27,7 +27,7 @@ function admin_modules() {
 /** Which module guards each admin page (files not listed are open to every signed-in admin). */
 function admin_page_modules() {
     $map = [
-        'members' => ['members.php', 'member-view.php', 'member-file.php', 'guilds.php', 'membership-settings.php'],
+        'members' => ['members.php', 'member-dashboard.php', 'member-view.php', 'member-file.php', 'guilds.php', 'membership-settings.php'],
         'team' => ['team.php', 'team-edit.php'],
         'enquiries' => ['enquiries.php', 'enquiry-view.php', 'messages.php', 'reply.php', 'feedback.php'],
         'support' => ['support-requests.php', 'support-view.php', 'support-file.php', 'support-setup.php', 'partner-applications.php', 'partner-file.php'],

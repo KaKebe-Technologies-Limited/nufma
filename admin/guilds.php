@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $guilds = $conn->query("SELECT g.*, (SELECT COUNT(*) FROM members m WHERE m.guild_id=g.id) AS cnt FROM guilds g ORDER BY sort_order, name")->fetch_all(MYSQLI_ASSOC);
 include __DIR__ . "/includes/admin-header.php";
 ?>
-<div class="mem-tabs"><a href="members.php">Applications</a><a href="guilds.php" class="active">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="guilds.php" class="active">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
 <?php if ($msg): ?><div class="admin-alert ok"><?php echo htmlspecialchars($msg); ?></div><?php endif; ?>
 <?php if ($err): ?><div class="admin-alert err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
 

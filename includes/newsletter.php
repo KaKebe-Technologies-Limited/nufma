@@ -87,20 +87,20 @@ function nl_email_html($conn, $n, $sub) {
     $posts = '';
     foreach (nl_posts($conn, $n['post_ids']) as $p) {
         $posts .= '<tr><td style="padding:14px 0;border-top:1px solid #e8e4da"><a href="' . $site . '/post.php?slug=' . urlencode($p['slug']) . '" style="color:#161616;text-decoration:none"><b style="font-size:16px">' . $e($p['title']) . '</b></a>'
-               . '<div style="color:#6B6459;font-size:13px;margin-top:4px">' . $e(mb_strimwidth((string)$p['excerpt'], 0, 160, '…')) . '</div>'
-               . '<a href="' . $site . '/post.php?slug=' . urlencode($p['slug']) . '" style="color:#8a6a1c;font-size:13px;font-weight:bold;text-decoration:none">Read the story →</a></td></tr>';
+               . '<div style="color:#666666;font-size:13px;margin-top:4px">' . $e(mb_strimwidth((string)$p['excerpt'], 0, 160, '…')) . '</div>'
+               . '<a href="' . $site . '/post.php?slug=' . urlencode($p['slug']) . '" style="color:#B04A00;font-size:13px;font-weight:bold;text-decoration:none">Read the story →</a></td></tr>';
     }
-    $btn = fn($url, $label, $bg = '#C8A03C', $fg = '#161616') => '<a href="' . $e($url) . '" style="display:inline-block;background:' . $bg . ';color:' . $fg . ';text-decoration:none;padding:12px 24px;border-radius:30px;font-weight:bold;font-size:14px;margin:4px 6px 4px 0">' . $e($label) . '</a>';
+    $btn = fn($url, $label, $bg = '#F57A0A', $fg = '#161616') => '<a href="' . $e($url) . '" style="display:inline-block;background:' . $bg . ';color:' . $fg . ';text-decoration:none;padding:12px 24px;border-radius:30px;font-weight:bold;font-size:14px;margin:4px 6px 4px 0">' . $e($label) . '</a>';
     $pdf = nl_pdf_url($n);
-    return '<!doctype html><html><body style="margin:0;background:#f2f1ec;font-family:Arial,Helvetica,sans-serif;color:#211d17">'
+    return '<!doctype html><html><body style="margin:0;background:#f2f1ec;font-family:Arial,Helvetica,sans-serif;color:#1F1F1F">'
         . '<div style="display:none;max-height:0;overflow:hidden">' . $e(mb_strimwidth(strip_tags((string)$n['summary']), 0, 120, '…')) . '</div>'
-        . '<div style="max-width:620px;margin:0 auto;padding:22px 12px"><div style="background:#161616;color:#fff;padding:20px 26px;border-bottom:4px solid #C8A03C"><div style="font-size:20px;font-weight:bold;letter-spacing:.04em">NUFA <span style="color:#C8A03C">Newsletter</span></div>'
-        . ($n['issue_label'] !== '' ? '<div style="font-size:12px;color:#d9d4c7;margin-top:4px">' . $e($n['issue_label']) . '</div>' : '') . '</div>'
+        . '<div style="max-width:620px;margin:0 auto;padding:22px 12px"><div style="background:#161616;color:#fff;padding:20px 26px;border-bottom:4px solid #F57A0A"><div style="font-size:20px;font-weight:bold;letter-spacing:.04em">NUFA <span style="color:#F57A0A">Newsletter</span></div>'
+        . ($n['issue_label'] !== '' ? '<div style="font-size:12px;color:#D9D9D9;margin-top:4px">' . $e($n['issue_label']) . '</div>' : '') . '</div>'
         . '<div style="background:#fff">' . $cover . '<div style="padding:26px;line-height:1.65;font-size:15px"><h1 style="margin:0 0 10px;font-size:24px;line-height:1.25;color:#161616">' . $e($n['title']) . '</h1>'
-        . ($n['summary'] !== '' ? '<p style="color:#4a443a;font-size:16px;margin:0 0 14px">' . nl2br($e($n['summary'])) . '</p>' : '') . $body
-        . ($posts !== '' ? '<h2 style="font-size:17px;margin:26px 0 4px;color:#8a6a1c;text-transform:uppercase;letter-spacing:.06em">In this issue</h2><table width="100%" cellpadding="0" cellspacing="0">' . $posts . '</table>' : '')
+        . ($n['summary'] !== '' ? '<p style="color:#4A4A4A;font-size:16px;margin:0 0 14px">' . nl2br($e($n['summary'])) . '</p>' : '') . $body
+        . ($posts !== '' ? '<h2 style="font-size:17px;margin:26px 0 4px;color:#B04A00;text-transform:uppercase;letter-spacing:.06em">In this issue</h2><table width="100%" cellpadding="0" cellspacing="0">' . $posts . '</table>' : '')
         . '<p style="margin:24px 0 0">' . $btn(nl_issue_url($n), 'Read online') . ($pdf !== '' ? $btn($pdf, 'Download the PDF', '#161616', '#ffffff') : '') . '</p></div></div>'
-        . '<div style="text-align:center;font-size:12px;color:#6B6459;padding:16px">You are receiving this because you subscribed to NUFA news.<br><a href="' . $e($unsub) . '" style="color:#6B6459">Unsubscribe</a> &middot; Northern Uganda Filmmakers Association, Gulu</div></div></body></html>';
+        . '<div style="text-align:center;font-size:12px;color:#666666;padding:16px">You are receiving this because you subscribed to NUFA news.<br><a href="' . $e($unsub) . '" style="color:#666666">Unsubscribe</a> &middot; Northern Uganda Filmmakers Association, Gulu</div></div></body></html>';
 }
 
 function nl_email_text($conn, $n, $sub) {

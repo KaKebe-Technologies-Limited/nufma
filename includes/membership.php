@@ -255,10 +255,10 @@ function mem_email_html($subject, $text, $buttonUrl = null, $buttonLabel = 'View
     $body = nl2br(htmlspecialchars($text));
     $body = preg_replace('#(https?://[^\s<]+)#', '<a href="$1" style="color:#D2650E">$1</a>', $body);
     $btn = $buttonUrl ? '<p style="margin:26px 0 4px"><a href="' . htmlspecialchars($buttonUrl) . '" style="background:#F5821F;color:#fff;text-decoration:none;padding:13px 26px;border-radius:30px;font-weight:bold;display:inline-block">' . htmlspecialchars($buttonLabel) . '</a></p>' : '';
-    return '<!doctype html><html><body style="margin:0;background:#F2F1EC;font-family:Arial,Helvetica,sans-serif;color:#211D17">'
+    return '<!doctype html><html><body style="margin:0;background:#F2F1EC;font-family:Arial,Helvetica,sans-serif;color:#1F1F1F">'
         . '<div style="max-width:600px;margin:0 auto;padding:24px 14px"><div style="background:#F5821F;color:#fff;padding:18px 26px;font-size:20px;font-weight:bold">NUFA <span style="font-weight:normal;font-size:13px;opacity:.9">Northern Uganda Filmmakers Association</span></div>'
         . '<div style="background:#fff;padding:28px 26px;line-height:1.65;font-size:15px">' . $body . $btn . '</div>'
-        . '<div style="text-align:center;font-size:12px;color:#6B6459;padding:14px">&copy; ' . date('Y') . ' NUFA &middot; Gulu, Northern Uganda</div></div></body></html>';
+        . '<div style="text-align:center;font-size:12px;color:#666666;padding:14px">&copy; ' . date('Y') . ' NUFA &middot; Gulu, Northern Uganda</div></div></body></html>';
 }
 
 /** Sends (and logs) an e-mail. Returns true when handed to the mail system. */
@@ -287,6 +287,24 @@ function mem_status_badge($status) {
     $map = ['pending' => ['Pending', 'gray'], 'approved' => ['Approved', ''], 'rejected' => ['Rejected', 'red']];
     [$label, $cls] = $map[$status] ?? [ucfirst($status), 'gray'];
     return '<span class="admin-badge ' . $cls . '">' . $label . '</span>';
+}
+
+/* ---------- sub-regions (registration dashboard) ---------- */
+function mem_subregions() { return ['Acholi' => 'acholi', 'Karamoja' => 'karamoja', 'Lango' => 'lango', 'West Nile' => 'west_nile']; }
+/** ['Acholi' => ['gulu', 'amuru', …], …] from the editable district lists (admin → Form options). */
+function mem_subregion_map($conn) {
+    require_once __DIR__ . "/settings.php";
+    $cfg = nufa_site_settings($conn); $map = [];
+    foreach (mem_subregions() as $label => $key) $map[$label] = array_map('mb_strtolower', nufa_list($cfg, 'list_subregion_' . $key));
+    return $map;
+}
+/** Sub-region a free-text district / town belongs to, or '' when it matches none. Matches whole words, so "Gulu City, Pece" counts as Gulu. */
+function mem_subregion_of($text, array $map) {
+    $t = ' ' . preg_replace('/[^a-z0-9]+/u', ' ', mb_strtolower((string)$text)) . ' ';
+    foreach ($map as $label => $districts) foreach ($districts as $d) {
+        $d = trim(preg_replace('/[^a-z0-9]+/u', ' ', $d)); if ($d !== '' && strpos($t, ' ' . $d . ' ') !== false) return $label;
+    }
+    return '';
 }
 
 mem_install($conn);

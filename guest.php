@@ -27,8 +27,8 @@ echo ui_page_hero('Distinguished Guest', $g['name'], $line, cms_img_raw('gallery
         <span class="gs-cat"><?php echo ui_e($g['category']); ?></span>
         <h2 style="margin:6px 0 4px"><?php echo ui_e($g['name']); ?></h2>
         <?php if ($line !== ''): ?><p class="gs-title" style="font-size:1.05rem"><?php echo ui_e($line); ?></p><?php endif; ?>
-        <?php if ($ed): ?><h4 style="margin:22px 0 8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#8a8573">Editions attended</h4><div class="gs-eds"><?php foreach ($ed as $x) echo '<span>' . ui_e($x) . '</span>'; ?></div><?php endif; ?>
-        <?php if (trim((string)$g['profile']) !== ''): ?><h4 style="margin:26px 0 8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#8a8573">Profile</h4><div class="guest-profile"><?php echo ui_e($g['profile']); ?></div><?php endif; ?>
+        <?php if ($ed): ?><h4 style="margin:22px 0 8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#8A8A8A">Editions attended</h4><div class="gs-eds"><?php foreach ($ed as $x) echo '<span>' . ui_e($x) . '</span>'; ?></div><?php endif; ?>
+        <?php if (trim((string)$g['profile']) !== ''): ?><h4 style="margin:26px 0 8px;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:#8A8A8A">Profile</h4><div class="guest-profile"><?php echo ui_e($g['profile']); ?></div><?php endif; ?>
         <p style="margin-top:28px"><a href="guests.php" class="link-arrow" style="transform:none">All distinguished guests</a></p>
       </div>
     </div>

@@ -93,13 +93,13 @@ function inv_email_html($camp, $g) {
     $body = strtr((string)$camp['body'], inv_vars($camp, $g));
     $body = nl2br($e($body));
     $btn = fn($url, $label, $bg, $fg) => '<a href="' . $e($url) . '" style="display:inline-block;background:' . $bg . ';color:' . $fg . ';text-decoration:none;padding:12px 24px;border-radius:30px;font-weight:bold;font-size:14px;margin:4px 8px 4px 0">' . $e($label) . '</a>';
-    $rsvp = $camp['rsvp_on'] ? '<p style="margin:22px 0 4px"><b>Will you attend?</b>' . ($camp['rsvp_deadline'] !== '' ? ' Please reply by ' . $e($camp['rsvp_deadline']) . '.' : '') . '</p><p style="margin:6px 0 0">' . $btn(inv_rsvp_url($g) . '&a=yes', 'Yes, I will attend', '#C8A03C', '#161616') . $btn(inv_rsvp_url($g) . '&a=no', 'Sorry, I cannot', '#161616', '#ffffff') . '</p>' : '';
+    $rsvp = $camp['rsvp_on'] ? '<p style="margin:22px 0 4px"><b>Will you attend?</b>' . ($camp['rsvp_deadline'] !== '' ? ' Please reply by ' . $e($camp['rsvp_deadline']) . '.' : '') . '</p><p style="margin:6px 0 0">' . $btn(inv_rsvp_url($g) . '&a=yes', 'Yes, I will attend', '#F57A0A', '#161616') . $btn(inv_rsvp_url($g) . '&a=no', 'Sorry, I cannot', '#161616', '#ffffff') . '</p>' : '';
     $facts = '';
-    foreach (['Date' => $camp['event_date_text'], 'Venue' => $camp['venue_text']] as $k => $v) if (trim($v) !== '') $facts .= '<tr><td style="padding:4px 14px 4px 0;color:#6B6459">' . $k . '</td><td style="padding:4px 0"><b>' . $e($v) . '</b></td></tr>';
-    return '<!doctype html><html><body style="margin:0;background:#f2f1ec;font-family:Arial,Helvetica,sans-serif;color:#211d17"><div style="max-width:620px;margin:0 auto;padding:22px 12px">'
-        . '<div style="background:#161616;color:#fff;padding:22px 26px;border-bottom:4px solid #C8A03C"><div style="font-size:12px;color:#C8A03C;letter-spacing:.14em;text-transform:uppercase">Northern Uganda Filmmakers Association</div><div style="font-size:22px;font-weight:bold;margin-top:4px">' . $e($camp['title']) . '</div></div>'
+    foreach (['Date' => $camp['event_date_text'], 'Venue' => $camp['venue_text']] as $k => $v) if (trim($v) !== '') $facts .= '<tr><td style="padding:4px 14px 4px 0;color:#666666">' . $k . '</td><td style="padding:4px 0"><b>' . $e($v) . '</b></td></tr>';
+    return '<!doctype html><html><body style="margin:0;background:#f2f1ec;font-family:Arial,Helvetica,sans-serif;color:#1F1F1F"><div style="max-width:620px;margin:0 auto;padding:22px 12px">'
+        . '<div style="background:#161616;color:#fff;padding:22px 26px;border-bottom:4px solid #F57A0A"><div style="font-size:12px;color:#F57A0A;letter-spacing:.14em;text-transform:uppercase">Northern Uganda Filmmakers Association</div><div style="font-size:22px;font-weight:bold;margin-top:4px">' . $e($camp['title']) . '</div></div>'
         . '<div style="background:#fff;padding:28px 26px;line-height:1.65;font-size:15px">' . $body . ($facts !== '' ? '<table style="margin:18px 0 0;font-size:15px">' . $facts . '</table>' : '') . $rsvp . '</div>'
-        . '<div style="text-align:center;font-size:12px;color:#6B6459;padding:16px">Your personal invitation is attached to this email.<br>&copy; ' . date('Y') . ' NUFA &middot; Gulu, Northern Uganda &middot; <a href="' . $e($site) . '" style="color:#6B6459">' . $e(preg_replace('#^https?://#', '', $site)) . '</a></div></div></body></html>';
+        . '<div style="text-align:center;font-size:12px;color:#666666;padding:16px">Your personal invitation is attached to this email.<br>&copy; ' . date('Y') . ' NUFA &middot; Gulu, Northern Uganda &middot; <a href="' . $e($site) . '" style="color:#666666">' . $e(preg_replace('#^https?://#', '', $site)) . '</a></div></div></body></html>';
 }
 function inv_email_text($camp, $g) {
     $t = strtr((string)$camp['body'], inv_vars($camp, $g));

@@ -71,7 +71,7 @@ foreach (["c", "cid", "en", "eid", "S", "me", "lid", "slug", "msg", "lessons", "
 echo ui_page_hero('NUFA Academy · Final exam', $c['title'], '', cms_img_raw('gallery', 'hero_image'), [['My learning', 'academy-portal.php'], [$c['title'], 'academy-learn.php?course=' . $slug], ['Exam']]);
 ?>
 <section class="section"><div class="container" style="max-width:820px">
-<?php if ($msg): ?><div style="padding:12px 16px;border-radius:12px;background:#fff8e6;margin-bottom:14px"><?php echo ui_e($msg); ?></div><?php endif; ?>
+<?php if ($msg): ?><div style="padding:12px 16px;border-radius:12px;background:#FFF4EA;margin-bottom:14px"><?php echo ui_e($msg); ?></div><?php endif; ?>
 
 <?php if ($res): $qids = json_decode($res['qids'], true) ?: []; $ans = json_decode($res['answers'], true) ?: []; ?>
   <div class="ac-result <?php echo $res['passed'] ? 'is-pass' : 'is-fail'; ?>">

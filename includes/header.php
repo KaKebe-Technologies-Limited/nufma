@@ -37,7 +37,7 @@ if ($__pgKey !== '' && ($cfg["noindex_$__pgKey"] ?? '0') === '1') $noindex = tru
 if ($__pgKey !== '' && !empty($cfg["seo_image_$__pgKey"]) && is_file(__DIR__ . '/../assets/images/' . $cfg["seo_image_$__pgKey"])) $ogImage = 'assets/images/' . $cfg["seo_image_$__pgKey"];
 $logoRel = ($cfg['site_logo'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_logo'])) ? $cfg['site_logo'] : 'logo/nufa-logo.png';
 $faviconHref = ($cfg['site_favicon'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_favicon'])) ? 'assets/images/' . $cfg['site_favicon'] : 'assets/images/logo/favicon.svg';
-$gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold']) ? $cfg['brand_gold'] : '#D4AF63';
+$gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold']) ? $cfg['brand_gold'] : '#F57A0A';
 $ink  = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_ink']) ? $cfg['brand_ink'] : '#111111';
 $ctaLabel = cms_value('site', 'header_cta_label');
 $ctaUrl = cms_value('site', 'header_cta_url');

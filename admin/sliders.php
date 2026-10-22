@@ -59,7 +59,7 @@ include __DIR__ . "/includes/admin-header.php";
 <?php if (isset($_GET['added'])): ?><div class="admin-alert ok">Slide added.</div><?php endif; ?>
 <?php if (isset($_GET['updated'])): ?><div class="admin-alert ok">Slide updated.</div><?php endif; ?>
 <?php if (isset($_GET['deleted'])): ?><div class="admin-alert ok">Slide removed.</div><?php endif; ?>
-<?php if (!empty($_SESSION['hero_warn'])): ?><div class="admin-alert err" style="background:#fff8e6;border-color:#ecd9a3;color:#6b4e0a"><?php echo htmlspecialchars($_SESSION['hero_warn']); unset($_SESSION['hero_warn']); ?></div><?php endif; ?>
+<?php if (!empty($_SESSION['hero_warn'])): ?><div class="admin-alert err" style="background:#FFF4EA;border-color:#FFD2A6;color:#8A3F00"><?php echo htmlspecialchars($_SESSION['hero_warn']); unset($_SESSION['hero_warn']); ?></div><?php endif; ?>
 <?php if ($error): ?><div class="admin-alert err"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
 <div class="admin-card">

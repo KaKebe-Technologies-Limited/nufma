@@ -42,7 +42,7 @@ $qs = fn($extra) => '?' . http_build_query(array_merge(['q' => $q, 'guild' => $g
 <?php if (isset($_GET['deleted'])): ?><div class="admin-alert ok">Member deleted.</div><?php endif; ?>
 
 <div class="mem-tabs">
-  <a href="members.php" class="active">Applications</a>
+  <a href="member-dashboard.php">Dashboard</a><a href="members.php" class="active">Applications</a>
   <a href="guilds.php">Guilds</a>
   <a href="membership-settings.php">Membership settings</a>
 </div>

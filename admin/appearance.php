@@ -16,11 +16,11 @@ $cfg = nufa_site_settings($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['action'] ?? '') === 'reset_colours') {
-        $save('brand_gold', '#D4AF63'); $save('brand_ink', '#111111'); $msg = "Colours restored to the NUFA defaults.";
+        $save('brand_gold', '#F57A0A'); $save('brand_ink', '#111111'); $msg = "Colours restored to the NUFA defaults.";
     } else {
         foreach (['brand_gold', 'brand_ink'] as $k) {
             $v = trim($_POST[$k] ?? '');
-            if (!preg_match('/^#[0-9a-f]{6}$/i', $v)) { $err = "Colours must be a 6-digit hex value such as #D4AF63."; break; }
+            if (!preg_match('/^#[0-9a-f]{6}$/i', $v)) { $err = "Colours must be a 6-digit hex value such as #F57A0A."; break; }
             $save($k, strtoupper($v));
         }
         $save('show_topbar', isset($_POST['show_topbar']) ? '1' : '0');

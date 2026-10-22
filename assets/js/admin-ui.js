@@ -21,7 +21,7 @@
     shown = res.slice(0, 40); if(sel >= shown.length) sel = 0;
     var html = "", last = "";
     shown.forEach(function(i, n){ if(i[2] !== last){ html += "<h5>" + esc(i[2]) + "</h5>"; last = i[2]; } html += '<a href="' + esc(i[1]) + '" data-n="' + n + '" class="' + (n === sel ? "sel" : "") + '">' + esc(i[0]) + "</a>"; });
-    list.innerHTML = html || '<p style="padding:16px;color:#6b6459;margin:0">Nothing found.</p>';
+    list.innerHTML = html || '<p style="padding:16px;color:#666666;margin:0">Nothing found.</p>';
   }
   function open(){ if(!cmd) return; cmd.hidden = false; inp.value = ""; sel = 0; render(); setTimeout(function(){ inp.focus(); }, 20); }
   function close(){ if(cmd) cmd.hidden = true; }

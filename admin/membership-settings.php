@@ -48,7 +48,7 @@ $sigOk = $S['president_signature'] && is_file(__DIR__ . "/../assets/images/" . $
 include __DIR__ . "/includes/admin-header.php";
 $v = fn($k) => htmlspecialchars($S[$k]);
 ?>
-<div class="mem-tabs"><a href="members.php">Applications</a><a href="guilds.php">Guilds</a><a href="membership-settings.php" class="active">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="guilds.php">Guilds</a><a href="membership-settings.php" class="active">Membership settings</a></div>
 <?php if ($msg): ?><div class="admin-alert ok"><?php echo $msg; ?></div><?php endif; ?>
 <?php if ($err): ?><div class="admin-alert err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
 
