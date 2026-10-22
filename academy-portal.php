@@ -48,7 +48,7 @@ echo ui_page_hero('Learner portal', 'Welcome, ' . explode(' ', $me['name'])[0], 
 <section class="section"><div class="container">
   <?php if ($flash): ?><div style="padding:12px 16px;border-radius:12px;background:#e8f5ea;color:#1f6b2b;margin-bottom:12px"><?php echo ui_e($flash); ?></div><?php endif; ?>
   <?php if ($err): ?><div style="padding:12px 16px;border-radius:12px;background:#fde8e8;color:#7a1c1c;margin-bottom:12px"><?php echo ui_e($err); ?></div><?php endif; ?>
-  <?php if (!empty($_GET['pending'])): ?><div style="padding:12px 16px;border-radius:12px;background:#FFF4EA;margin-bottom:12px">Your enrolment was received. <?php echo ui_e($S['acad_payment_info']); ?></div><?php endif; ?>
+  <?php if (!empty($_GET['pending'])): ?><div style="padding:12px 16px;border-radius:12px;background:#FFF4EA;margin-bottom:12px">Your enrolment was received. Pay with the details below — the Academy team confirms your enrolment once your payment is received.</div><div style="max-width:640px;margin-bottom:18px"><?php echo pay_block($conn, '', ['ref' => $me['name']], false, 'How to pay'); ?></div><?php endif; ?>
 
   <h2 style="margin-bottom:16px">My courses</h2>
   <?php if (!$enrols): ?><div class="empty-state"><h3>You have not enrolled yet</h3><p>Browse the courses and start learning.</p><a class="btn btn-gold" href="academy.php#courses">Browse courses</a></div><?php else: ?>

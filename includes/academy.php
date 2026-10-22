@@ -4,6 +4,7 @@
  * trainer applications and a study-material library. Everything is configured in admin → NUFA Academy.
  * Learners create an account (email + password) and use the learner portal.
  */
+require_once __DIR__ . "/payments.php";
 require_once __DIR__ . "/membership.php";   // mem_send, mem_store_upload, MEM_IMG_TYPES, mem_csrf
 
 const ACAD_STORAGE_DIR = __DIR__ . '/../storage/academy/';

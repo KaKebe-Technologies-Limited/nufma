@@ -26,6 +26,7 @@ if (!empty($_GET['done']) && !empty($_SESSION['sup_done']) && (int)$_GET['done']
 
 $currencies = sup_lines($S['sup_currencies']) ?: ['UGX'];
 $methods = sup_active_methods($conn);
+$payG = pay_groups($conn, true);
 $tiers = sup_tiers($S);
 $suggested = sup_lines($S['sup_suggested_amounts']);
 $areas = sup_lines($S['sup_volunteer_areas']);
@@ -61,9 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $fc['enabled']) {
             $what = form_clean($_POST['sponsor_focus'] ?? '', 500); if ($what) $details['What to sponsor'] = $what;
             if (!empty($_POST['recognition'])) $details['Wants public recognition'] = 'Yes';
         }
-        $methodNames = array_column($methods, 'label');
-        $method = form_clean($_POST['method'] ?? '', 120);
-        if ($methods && !in_array($method, $methodNames, true)) $errors[] = "Choose how you plan to pay.";
+        $methodKey = form_clean($_POST['method'] ?? '', 40);
+        if ($payG && !isset($payG[$methodKey])) $errors[] = "Choose how you plan to pay: Bank or Mobile Money.";
+        $method = isset($payG[$methodKey]) ? pay_label($methodKey) : '';
         $paid = ($_POST['paid'] ?? 'later') === 'paid';
         if ($paid) {
             $payRef = form_clean($_POST['payment_ref'] ?? '', 150);
@@ -133,20 +134,7 @@ $typeUrl = fn($k) => 'support.php?' . http_build_query(array_filter(['type' => $
     <?php if ($done['payable']): ?>
     <div class="form-card" style="margin-top:28px">
       <h3>How to pay</h3>
-      <p class="muted"><?php echo ui_e($S['sup_payment_intro']); ?></p>
-      <?php if (!$methods): ?><p>NUFA will share payment details with you directly by email.</p><?php endif; ?>
-      <?php foreach ($methods as $m): if ($done['method'] !== '' && count($methods) > 1 && $m['label'] !== $done['method']) continue; ?>
-        <div class="pay-method"><h4><?php echo ui_e($m['label']); ?><?php echo $m['provider'] ? ' <small class="muted">· ' . ui_e($m['provider']) . '</small>' : ''; ?></h4>
-          <dl>
-            <?php if ($m['account_name']): ?><div><dt>Account name</dt><dd><?php echo ui_e($m['account_name']); ?></dd></div><?php endif; ?>
-            <?php if ($m['account_number']): ?><div><dt>Account / number</dt><dd><?php echo ui_e($m['account_number']); ?></dd></div><?php endif; ?>
-            <?php if ($m['extra']): ?><div><dt>Details</dt><dd><?php echo ui_e($m['extra']); ?></dd></div><?php endif; ?>
-            <div><dt>Your reference</dt><dd><b><?php echo ui_e($done['ref']); ?></b><?php echo $m['reference_hint'] ? ' — ' . ui_e($m['reference_hint']) : ''; ?></dd></div>
-          </dl>
-          <?php if ($m['instructions']): ?><p class="muted" style="white-space:pre-wrap"><?php echo ui_e($m['instructions']); ?></p><?php endif; ?>
-          <?php if ($m['link_url']): ?><p><a class="btn btn-gold btn-sm" href="<?php echo ui_e($m['link_url']); ?>" target="_blank" rel="noopener">Pay online</a></p><?php endif; ?>
-        </div>
-      <?php endforeach; ?>
+      <?php $__rev = ['Bank' => 'bank', 'Mobile Money' => 'momo', 'Pay online' => 'online']; echo pay_block($conn, $__rev[$done['method']] ?? '', ['ref' => $done['ref']], true, 'Your payment details'); ?>
       <?php if ($done['paid']): ?><p class="notice"><span><?php echo nufa_icon('shield', 20); ?></span><span>We have your payment reference and will verify it before confirming.</span></p><?php endif; ?>
     </div>
     <?php endif; ?>
@@ -231,21 +219,7 @@ $typeUrl = fn($k) => 'support.php?' . http_build_query(array_filter(['type' => $
           <?php endif; ?>
 
           <h3 class="form-section">Payment</h3>
-          <?php if (!$methods): ?>
-            <p class="muted">Payment details will be shared with you by email once your request is received.</p>
-          <?php else: ?>
-            <p class="muted" style="margin-bottom:12px"><?php echo ui_e($S['sup_payment_intro']); ?></p>
-            <div class="field full"><label>How do you plan to pay? <span class="req">*</span></label>
-              <div class="method-list">
-              <?php foreach ($methods as $i => $m): ?>
-                <label class="method"><input type="radio" name="method" value="<?php echo ui_e($m['label']); ?>" <?php echo (($_POST['method'] ?? ($i === 0 ? $m['label'] : '')) === $m['label']) ? 'checked' : ''; ?> required>
-                  <span><b><?php echo ui_e($m['label']); ?></b><?php echo $m['provider'] ? ' <small class="muted">· ' . ui_e($m['provider']) . '</small>' : ''; ?>
-                    <?php if ($m['account_name'] || $m['account_number']): ?><small><?php echo ui_e(trim($m['account_name'] . ' — ' . $m['account_number'], ' —')); ?></small><?php endif; ?>
-                    <?php if ($m['instructions']): ?><small style="white-space:pre-wrap"><?php echo ui_e($m['instructions']); ?></small><?php endif; ?>
-                  </span></label>
-              <?php endforeach; ?>
-              </div></div>
-          <?php endif; ?>
+          <div class="field full"><label>How do you plan to pay?<?php echo $payG ? ' <span class="req">*</span>' : ''; ?></label><?php echo pay_picker($conn, 'method', $_POST['method'] ?? '', ['ref' => 'The reference shown after you submit'], true); ?></div>
           <div class="field full"><label for="f-paid">Payment status</label>
             <select id="f-paid" name="paid" onchange="document.getElementById('paidBox').style.display=this.value==='paid'?'block':'none'">
               <option value="later" <?php echo ($_POST['paid'] ?? 'later') === 'later' ? 'selected' : ''; ?>>I will pay after my request is accepted</option>

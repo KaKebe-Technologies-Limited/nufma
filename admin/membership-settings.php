@@ -61,7 +61,7 @@ $v = fn($k) => htmlspecialchars($S[$k]);
       <div class="field"><label>Membership fee</label><input name="membership_fee" value="<?php echo $v('membership_fee'); ?>" placeholder="50,000"></div>
       <div class="field"><label>Currency</label><input name="membership_currency" value="<?php echo $v('membership_currency'); ?>"></div>
     </div>
-    <div class="field"><label>Payment instructions (shown on the membership page)</label><textarea name="payment_instructions" style="min-height:130px"><?php echo $v('payment_instructions'); ?></textarea></div>
+    <div class="field"><label>Extra payment note (the bank and Mobile Money details come from Payment details in the menu)</label><textarea name="payment_instructions" style="min-height:130px"><?php echo $v('payment_instructions'); ?></textarea></div>
   </div>
 
   <div class="admin-card">

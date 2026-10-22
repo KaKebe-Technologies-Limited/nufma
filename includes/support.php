@@ -7,6 +7,7 @@
  * step can e-mail the supporter. How people pay is configured in admin →
  * Payment & Giving setup (payment methods, currencies, tiers, e-mail wording).
  */
+require_once __DIR__ . "/payments.php";
 require_once __DIR__ . "/membership.php";    // mem_send(), mem_store_upload(), mem_csrf(), MEM_STORAGE_DIR
 require_once __DIR__ . "/schema.php";
 require_once __DIR__ . "/settings.php";
@@ -104,7 +105,7 @@ function sup_payment_block($conn, $ref, $methodLabel = '') {
     if (!$methods) return "NUFA will share payment details with you directly.\n";
     $out = $S['sup_payment_intro'] . "\n\n";
     foreach ($methods as $m) {
-        if ($methodLabel !== '' && $m['label'] !== $methodLabel && count($methods) > 1) continue;
+        if ($methodLabel !== '' && $m['label'] !== $methodLabel && pay_label(pay_key_of($m['method_type'])) !== $methodLabel && count($methods) > 1) continue;
         $out .= sup_method_text($m, $ref) . "\n\n";
     }
     if (trim($out) === trim($S['sup_payment_intro'])) foreach ($methods as $m) $out .= sup_method_text($m, $ref) . "\n\n";

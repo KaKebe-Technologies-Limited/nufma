@@ -3,6 +3,8 @@ require __DIR__ . "/includes/membership.php";   // also loads db.php + creates t
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 
 $S = mem_settings($conn);
+require_once __DIR__ . "/includes/payments.php";
+$payGroups = pay_groups($conn);
 $guilds = [];
 $gr = $conn->query("SELECT id, name, description FROM guilds WHERE is_active=1 ORDER BY sort_order ASC, name ASC");
 while ($g = $gr->fetch_assoc()) $guilds[] = $g;
@@ -29,7 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $guildId = (int)($_POST['guild_id'] ?? 0);
     $guildOk = false; foreach ($guilds as $g) if ((int)$g['id'] === $guildId) $guildOk = true;
     if (!$guildOk) $errors[] = "Choose the guild you belong to.";
-    if ($f('payment_ref') === '') $errors[] = "Enter the payment reference / transaction ID.";
+    $payChoice = $_POST['payment_choice'] ?? '';
+    if ($payGroups && !isset($payGroups[$payChoice])) $errors[] = "Choose how you will pay: Bank or Mobile Money.";
+    if (pay_proof_required($conn) && $f('payment_ref') === '') $errors[] = "Enter the payment reference / transaction ID.";
     if (empty($_POST['agree'])) $errors[] = "Please accept the declaration.";
 
     if (!$errors) {
@@ -46,8 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$errors) {
         [$photo, $e1] = mem_store_upload($_FILES['photo'] ?? [], MEM_IMG_TYPES, 3 * 1048576, 'photo');
         if ($e1) $errors[] = "Passport photo: " . $e1;
-        [$proof, $e2] = mem_store_upload($_FILES['payment_proof'] ?? [], MEM_PROOF_TYPES, 5 * 1048576, 'proof');
-        if ($e2) $errors[] = "Proof of payment: " . $e2;
+        if (!empty($_FILES['payment_proof']['name']) || pay_proof_required($conn)) {
+            [$proof, $e2] = mem_store_upload($_FILES['payment_proof'] ?? [], MEM_PROOF_TYPES, 5 * 1048576, 'proof');
+            if ($e2) $errors[] = "Proof of payment: " . $e2;
+        }
         if ($errors) {
             foreach ([$photo, $proof] as $fn) if ($fn) @unlink(MEM_STORAGE_DIR . $fn);
         }
@@ -61,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
              photo, payment_method, payment_ref, payment_date, amount_paid, payment_proof)
             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
         $vals = [$token, $name, $f('gender'), $dob, $f('phone'), $email, $f('id_number'), $f('district'), $f('address'), $f('occupation'),
-                 $f('experience'), $f('portfolio_url'), $f('bio'), $guildId, $photo, $f('payment_method'), $f('payment_ref'), $payDate,
+                 $f('experience'), $f('portfolio_url'), $f('bio'), $guildId, $photo, ($payChoice !== '' ? pay_label($payChoice) : ''), $f('payment_ref'), $payDate,
                  $f('amount_paid'), $proof];
         $stmt->bind_param("sssssssssssssissssss", ...$vals);
         if ($stmt->execute()) {
@@ -69,7 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $member = $conn->query("SELECT * FROM members WHERE id=$mid")->fetch_assoc();
             $vars = mem_member_vars($conn, $member);
             if ($S['send_receipt_email'] === '1') {
-                mem_send($conn, $mid, 'received', $email, mem_fill($S['email_received_subject'], $vars), mem_fill($S['email_received_body'], $vars));
+                $payCtx = ['amount' => $S['membership_fee'] !== '' ? $S['membership_currency'] . ' ' . $S['membership_fee'] : '', 'ref' => $name];
+                mem_send($conn, $mid, 'received', $email, mem_fill($S['email_received_subject'], $vars), mem_fill($S['email_received_body'], $vars) . "\n\n" . pay_text($conn, $payChoice, $payCtx));
             }
             if ($S['notify_admin'] === '1' && $S['admin_notify_email']) {
                 $adminUrl = mem_site_url() . '/admin/member-view.php?id=' . $mid;
@@ -78,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $adminUrl, $email);
             }
             $_SESSION['mem_csrf'] = bin2hex(random_bytes(16));
+            $_SESSION['mem_pay'] = ['choice' => $payChoice, 'name' => $name, 'amount' => $S['membership_fee'] !== '' ? $S['membership_currency'] . ' ' . $S['membership_fee'] : ''];
             header("Location: membership.php?done=1#top");
             exit;
         }
@@ -103,12 +111,12 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
       <h3>How it works</h3>
       <ol class="member-steps">
         <li><b>Complete the application</b><span>Your details, area of creative practice and a passport photo.</span></li>
-        <li><b>Pay &amp; upload proof</b><span>Pay the membership fee and attach your receipt or screenshot.</span></li>
+        <li><b>Pay the membership fee</b><span>Choose Bank or Mobile Money — the payment details appear straight away.</span></li>
         <li><b>Review &amp; confirmation</b><span>NUFA reviews your application and emails you the outcome and your registration number.</span></li>
         <li><b>Receive your card</b><span>Confirmed members get a membership card showing the validity period.</span></li>
       </ol>
       <?php if ($S['membership_fee'] !== ''): ?><div class="member-fee"><span>Membership fee</span><b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b></div><?php endif; ?>
-      <div class="member-pay"><h4>How to pay</h4><p><?php echo nl2br(htmlspecialchars($S['payment_instructions'])); ?></p></div>
+      <div class="member-pay"><h4>How to pay</h4><p><?php echo $payGroups ? 'Choose <b>Bank</b> or <b>Mobile Money</b> in step 3 of the form. The account details appear immediately, and again once you submit.' : htmlspecialchars('NUFA will show you the payment details as soon as you submit your application.'); ?></p></div>
       <p style="font-size:.82rem;color:var(--muted-on-dark);margin-top:20px"><?php echo cms_t('about', 'membership_criteria'); ?></p>
     </aside>
 
@@ -118,6 +126,7 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
         <div class="member-done-ico" aria-hidden="true">✓</div>
         <h2 style="font-size:1.6rem">Application received</h2>
         <p>Thank you for applying to join NUFA. We've emailed you a confirmation. Your application is now subject to NUFA's membership criteria and confirmation process — submitting it does not automatically make you a member. You'll receive another email once it has been reviewed.</p>
+        <?php $__mp = $_SESSION['mem_pay'] ?? []; echo pay_block($conn, $__mp['choice'] ?? '', ['amount' => $__mp['amount'] ?? '', 'ref' => $__mp['name'] ?? ''], false, 'Now pay your membership fee'); ?>
         <p style="margin-top:20px"><a href="index.php" class="btn btn-gold">Back to home</a></p>
       </div>
     <?php elseif ($S['membership_open'] !== '1'): ?>
@@ -159,15 +168,16 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
         <div class="field full"><label for="m-bio">Short professional profile</label><textarea id="m-bio" name="bio" placeholder="Tell us briefly about your work in film."><?php echo $val('bio'); ?></textarea></div>
 
         <h3 class="form-section">3 · Membership payment</h3>
-        <?php if ($S['membership_fee'] !== ''): ?><p class="muted" style="font-size:.9rem;margin-bottom:14px">Fee: <b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b> — see “How to pay” for account details.</p><?php endif; ?>
-        <div class="form-grid">
-          <div class="field"><label for="m-pm">Payment method</label><select id="m-pm" name="payment_method"><?php foreach (['Mobile Money', 'Bank deposit', 'Cash at office', 'Other'] as $o) echo '<option' . (($old['payment_method'] ?? '') === $o ? ' selected' : '') . '>' . $o . '</option>'; ?></select></div>
-          <div class="field"><label for="m-ref">Transaction ID / reference <span class="req">*</span></label><input id="m-ref" name="payment_ref" required value="<?php echo $val('payment_ref'); ?>"></div>
-          <div class="field"><label for="m-amt">Amount paid (<?php echo $cur; ?>)</label><input id="m-amt" name="amount_paid" value="<?php echo $val('amount_paid', $S['membership_fee']); ?>"></div>
-          <div class="field"><label for="m-pd">Date paid</label><input id="m-pd" name="payment_date" type="date" max="<?php echo date('Y-m-d'); ?>" value="<?php echo $val('payment_date'); ?>"></div>
-        </div>
-        <div class="field"><label for="m-proof">Proof of payment <span class="req">*</span></label><input id="m-proof" name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" required><span class="hint">Receipt or screenshot — JPG, PNG, WebP or PDF, max 5 MB. Stored privately.</span></div>
-
+        <?php if ($S['membership_fee'] !== ''): ?><p class="muted" style="font-size:.9rem;margin-bottom:14px">Membership fee: <b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b></p><?php endif; ?>
+        <div class="field full"><label>How will you pay?<?php echo $payGroups ? ' <span class="req">*</span>' : ''; ?></label><?php echo pay_picker($conn, 'payment_choice', $old['payment_choice'] ?? '', ['amount' => $S['membership_fee'] !== '' ? $S['membership_currency'] . ' ' . $S['membership_fee'] : '', 'ref' => 'Your full name']); ?></div>
+        <details class="pay-already"<?php echo (!empty($old['payment_ref']) || pay_proof_required($conn)) ? ' open' : ''; ?>><summary><?php echo pay_proof_required($conn) ? 'Payment proof (required)' : 'Already paid? Add your transaction reference (optional)'; ?></summary>
+          <div class="form-grid">
+            <div class="field"><label for="m-ref">Transaction ID / reference<?php echo pay_proof_required($conn) ? ' <span class="req">*</span>' : ''; ?></label><input id="m-ref" name="payment_ref" value="<?php echo $val('payment_ref'); ?>"></div>
+            <div class="field"><label for="m-amt">Amount paid (<?php echo $cur; ?>)</label><input id="m-amt" name="amount_paid" value="<?php echo $val('amount_paid', $S['membership_fee']); ?>"></div>
+            <div class="field"><label for="m-pd">Date paid</label><input id="m-pd" name="payment_date" type="date" max="<?php echo date('Y-m-d'); ?>" value="<?php echo $val('payment_date'); ?>"></div>
+          </div>
+          <div class="field"><label for="m-proof">Proof of payment<?php echo pay_proof_required($conn) ? ' <span class="req">*</span>' : ' (optional)'; ?></label><input id="m-proof" name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"<?php echo pay_proof_required($conn) ? ' required' : ''; ?>><span class="hint">Receipt or screenshot — JPG, PNG, WebP or PDF, max 5 MB. Stored privately.</span></div>
+        </details>
         <label class="check"><input type="checkbox" name="agree" value="1" required <?php echo !empty($old['agree']) ? 'checked' : ''; ?>><span>I confirm the information above is correct, I have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a>, and I understand that my application is subject to NUFA's membership criteria and confirmation process.</span></label>
         <button type="submit" class="btn btn-gold btn-block">Submit application</button>
       </form>

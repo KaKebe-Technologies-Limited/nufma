@@ -1,6 +1,6 @@
 <?php
-$adminTitle = "Payment & giving setup";
-$adminNav = "support";
+$adminTitle = "Payment details";
+$adminNav = "paydetails";
 require __DIR__ . "/includes/auth.php";
 require_once __DIR__ . "/../includes/support.php";
 
@@ -10,11 +10,13 @@ $save = function ($k, $v) use ($conn) {
     $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     $s->bind_param("ss", $k, $v); $s->execute();
 };
-$types = ['mobile_money' => 'Mobile money', 'bank' => 'Bank transfer', 'online' => 'Card / online payment link', 'cash' => 'Cash at the office', 'other' => 'Other'];
+$types = ['bank' => 'Bank account', 'mobile_money' => 'Mobile Money', 'online' => 'Card / online payment link (donations only)', 'cash' => 'Cash at the office (not shown on forms)', 'other' => 'Other (not shown on forms)'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['action'] ?? '';
-    if ($act === 'method_save' || $act === 'method_add') {
+    if ($act === 'pay_settings') {
+        $save('pay_require_proof', isset($_POST['pay_require_proof']) ? '1' : '0'); $save('pay_note', mb_substr(trim($_POST['pay_note'] ?? ''), 0, 400)); $msg = "Payment settings saved.";
+    } elseif ($act === 'method_save' || $act === 'method_add') {
         $id = (int)($_POST['id'] ?? 0);
         $label = trim($_POST['label'] ?? ''); $type = isset($types[$_POST['method_type'] ?? '']) ? $_POST['method_type'] : 'other';
         $link = trim($_POST['link_url'] ?? '');
@@ -76,7 +78,8 @@ $ev = fn($k) => htmlspecialchars(trim($S[$k]) !== '' ? $S[$k] : $defaults[$k]);
 <?php if ($err): ?><div class="admin-alert err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
 
 <?php if ($tab === 'methods'): ?>
-  <p class="admin-help" style="margin-bottom:14px">These are the ways supporters can pay a donation or sponsorship. Active methods are shown on the support form and in the thank-you page and approval emails, together with the supporter's reference number. Only enter accounts NUFA actually controls.</p>
+  <div class="admin-card"><div class="admin-card-head"><h2>Payment details used across the website</h2></div><p class="admin-help">Set your <b>bank account</b> and <b>Mobile Money</b> details once, here. They are shown on <b>every</b> payment form — membership, NUFA SACCO, donations and sponsorship, and Academy fees. People choose <b>Bank</b> or <b>Mobile Money</b> as they apply, the details appear immediately, and they are shown again (and emailed) after they submit. Add one entry per account or number; if you add several Mobile Money numbers (for example MTN and Airtel) all of them are shown together.</p>
+<form method="post" class="admin-form"><input type="hidden" name="action" value="pay_settings"><div class="field"><label>Note shown with the payment details (optional)</label><input name="pay_note" value="<?php echo htmlspecialchars((string)($conn->query("SELECT setting_value FROM settings WHERE setting_key='pay_note'")->fetch_row()[0] ?? '')); ?>" placeholder="e.g. Keep your receipt. Your payment is confirmed by the NUFA team."></div><label class="mem-check"><input type="checkbox" name="pay_require_proof" value="1" <?php echo ($conn->query("SELECT setting_value FROM settings WHERE setting_key='pay_require_proof'")->fetch_row()[0] ?? '0') === '1' ? 'checked' : ''; ?>> Require payment reference and proof (receipt) with membership and SACCO applications</label><p class="admin-help">Leave this off to simply show the payment details; you can still verify payments in the member and SACCO screens. Turn it on to make applicants enter a transaction reference and upload a receipt.</p><button class="admin-btn admin-btn-brand admin-btn-sm">Save</button></form></div>
   <?php foreach ($methods as $m): ?>
   <form method="post" class="admin-card admin-form pay-edit">
     <input type="hidden" name="id" value="<?php echo $m['id']; ?>">

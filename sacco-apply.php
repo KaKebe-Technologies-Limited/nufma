@@ -6,6 +6,8 @@ require_once __DIR__ . "/includes/content.php";
 require_once __DIR__ . "/includes/ui.php";
 if (session_status() !== PHP_SESSION_ACTIVE) session_start();
 sac_install($conn);
+require_once __DIR__ . "/includes/payments.php";
+$payGroups = pay_groups($conn);
 
 $cfg0 = nufa_site_settings($conn);
 $S = sac_settings($conn);
@@ -30,7 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $open && !$done) {
     if (!$dob || !strtotime($dob) || strtotime($dob) > strtotime('-16 years') || strtotime($dob) < strtotime('-110 years')) $errors[] = "Enter a valid date of birth (applicants must be at least 16).";
     if ($shares < $minShares) $errors[] = "Every member must buy at least $minShares shares.";
     // membership fee and shares are paid with the application
-    foreach (['pay_method' => 'Payment method', 'pay_ref' => 'Payment reference / transaction ID', 'pay_date' => 'Payment date', 'pay_amount' => 'Amount paid'] as $k => $l) if ($p($k) === '') $errors[] = "$l is required — the registration fee and your shares are paid with the application.";
+    $payChoice = $_POST['pay_choice'] ?? '';
+    if ($payGroups && !isset($payGroups[$payChoice])) $errors[] = "Choose how you will pay: Bank or Mobile Money.";
+    if (pay_proof_required($conn)) foreach (['pay_ref' => 'Payment reference / transaction ID', 'pay_date' => 'Payment date', 'pay_amount' => 'Amount paid'] as $k => $l) if ($p($k) === '') $errors[] = "$l is required.";
     $due = sac_total_due($S, $shares); $paid = sac_num($p('pay_amount'));
     if ($p('pay_amount') !== '' && $paid === null) $errors[] = "Enter the amount paid as a number.";
     elseif ($due !== null && $paid !== null && $paid + 0.0001 < $due[2]) $errors[] = "The amount paid must be at least " . number_format($due[2]) . " (registration fee " . number_format($due[0]) . " + $shares share" . ($shares === 1 ? '' : 's') . " × " . number_format($due[1]) . ").";
@@ -45,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $open && !$done) {
     $files = ['photo' => '', 'id_copy' => '', 'pay_proof' => ''];
     if (!$errors) {
         $dir = sac_storage();
-        $spec = ['photo' => ['Passport photo', MEM_IMG_TYPES, 3, $S['sacapp_require_photo'] === '1'], 'id_copy' => ['Copy of ID', MEM_PROOF_TYPES, 5, $S['sacapp_require_id'] === '1'], 'pay_proof' => ['Proof of payment', MEM_PROOF_TYPES, 5, true]];
+        $spec = ['photo' => ['Passport photo', MEM_IMG_TYPES, 3, $S['sacapp_require_photo'] === '1'], 'id_copy' => ['Copy of ID', MEM_PROOF_TYPES, 5, $S['sacapp_require_id'] === '1'], 'pay_proof' => ['Proof of payment', MEM_PROOF_TYPES, 5, pay_proof_required($conn)]];
         foreach ($spec as $k => [$label, $types, $mb, $req]) {
             if (empty($_FILES[$k]['name'])) { if ($req) $errors[] = "$label is required."; continue; }
             [$fn, $er] = mem_store_upload($_FILES[$k], $types, $mb * 1048576, 'sac-' . $k, $dir);
@@ -64,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $open && !$done) {
             'monthly_savings' => $p('monthly_savings', 40), 'frequency' => $p('frequency', 30), 'products' => $prods, 'purpose' => form_clean($_POST['purpose'] ?? '', 1500),
             'kin_name' => $p('kin_name', 150), 'kin_relationship' => $p('kin_relationship', 60), 'kin_phone' => $p('kin_phone', 40), 'kin_address' => $p('kin_address', 255),
             'ben_name' => $p('ben_name', 150), 'ben_relationship' => $p('ben_relationship', 60), 'ben_share' => $p('ben_share', 10), 'referee_name' => $p('referee_name', 150), 'referee_phone' => $p('referee_phone', 40),
-            'pay_method' => $p('pay_method', 60), 'pay_ref' => $p('pay_ref', 120), 'pay_date' => $payDate, 'pay_amount' => $p('pay_amount', 40),
+            'pay_method' => ($payChoice !== '' ? pay_label($payChoice) : ''), 'pay_ref' => $p('pay_ref', 120), 'pay_date' => $payDate, 'pay_amount' => $p('pay_amount', 40),
             'employment_status' => $p('employment_status', 40), 'how_heard' => $p('how_heard', 100), 'payout_method' => $p('payout_method', 60), 'payout_account' => $p('payout_account', 120), 'payout_name' => $p('payout_name', 150),
             'photo' => $files['photo'], 'id_copy' => $files['id_copy'], 'pay_proof' => $files['pay_proof'], 'signature_name' => $p('signature_name', 150), 'ip' => $ip];
         $names = implode(',', array_map(fn($c) => "`$c`", array_keys($cols))); $ph = implode(',', array_fill(0, count($cols), '?'));
@@ -73,10 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $open && !$done) {
         if ($st->execute()) {
             $app = $conn->query("SELECT * FROM sacco_applications WHERE id=" . (int)$conn->insert_id)->fetch_assoc();
             $v = sac_vars($app);
-            mem_send($conn, null, 'sacco-received', $email, strtr($S['sacapp_email_received_subject'], $v), strtr($S['sacapp_email_received_body'], $v));
+            $payCtx = ['amount' => ($due !== null ? 'UGX ' . number_format($due[2]) : ''), 'ref' => $reg];
+            mem_send($conn, null, 'sacco-received', $email, strtr($S['sacapp_email_received_subject'], $v), strtr($S['sacapp_email_received_body'], $v) . "\n\n" . pay_text($conn, $payChoice, $payCtx));
             $mS = mem_settings($conn); $to = filter_var($S['sacapp_notify_email'], FILTER_VALIDATE_EMAIL) ? $S['sacapp_notify_email'] : ($mS['admin_notify_email'] ?? '');
             if ($to) { $url = mem_site_url() . '/admin/sacco-applications.php?view=' . $app['id']; mem_send($conn, null, 'sacco-admin', $to, "New SACCO application: $name ($reg)", "A new NUFA SACCO membership application is waiting for review.\n\nName: $name\nRegistration number: $reg\nPhone: $phone\nShares: $shares\n\nReview it: $url", $url, $email); }
-            $_SESSION['sac_done'] = ['reg' => $reg, 'name' => $name, 'email' => $email]; $_SESSION['mem_csrf'] = bin2hex(random_bytes(16));
+            $_SESSION['sac_done'] = ['reg' => $reg, 'name' => $name, 'email' => $email, 'choice' => $payChoice, 'amount' => ($due !== null ? 'UGX ' . number_format($due[2]) : '')]; $_SESSION['mem_csrf'] = bin2hex(random_bytes(16));
             header("Location: sacco-apply.php?done=1#top"); exit;
         }
         $errors[] = "We couldn't save your application just now. Please try again.";
@@ -99,6 +104,7 @@ $file = fn($k, $label, $req, $hint) => '<div class="field full"><label for="f-' 
     <p class="lede">Your NUFA SACCO registration number is</p>
     <div class="reg-badge"><?php echo ui_e($done['reg']); ?></div>
     <p>Please keep it safe and quote it whenever you contact the SACCO. We have emailed a copy to <b><?php echo ui_e($done['email']); ?></b>. Once the SACCO committee has verified your payment and approved your application, you will receive your <b>NUFA SACCO membership card</b> by email — <b>it is not membership until you receive that approval</b>.</p>
+    <div style="text-align:left;max-width:640px;margin:20px auto"><?php echo pay_block($conn, $done['choice'] ?? '', ['amount' => $done['amount'] ?? '', 'ref' => $done['reg']], false, 'Now pay your registration fee and shares'); ?></div>
     <div class="actions" style="justify-content:center"><a href="sacco.php" class="btn btn-gold">Back to the SACCO page</a></div></div>
 <?php elseif (!$open): ?>
   <div class="placeholder-card"><span class="ph-icon"><?php echo nufa_icon('coins', 22); ?></span><h2>Applications are not open</h2><p>The NUFA SACCO is not accepting membership applications yet. You can register your interest on the SACCO page and we will contact you when the process opens.</p><div class="actions" style="justify-content:center;margin-top:16px"><a href="sacco.php#enquiry" class="btn btn-gold">Register your interest</a></div></div>
@@ -150,11 +156,13 @@ $file = fn($k, $label, $req, $hint) => '<div class="field full"><label for="f-' 
       <h3 class="mem-h3" style="margin:16px 0 6px">Where should your savings and dividends be paid?</h3><div class="form-grid"><?php echo f_select('payout_method', 'Payout method', ['Mobile money', 'Bank account', 'Cash at the SACCO']); ?><?php echo f_input('payout_account', 'Account or mobile-money number'); ?><?php echo f_input('payout_name', 'Name on the account'); ?></div></fieldset>
     <fieldset class="apply-card"><legend><span>7</span> Pay the membership fee and shares</legend>
       <?php if (trim($S['sacapp_pay_instructions']) !== ''): ?><div class="info-card" style="margin-bottom:14px"><?php echo ui_paragraphs($S['sacapp_pay_instructions']); ?></div><?php endif; ?>
-      <div class="form-grid"><?php echo $payMethods ? f_select('pay_method', 'Payment method', $payMethods, ['required' => true]) : f_input('pay_method', 'Payment method', ['required' => true]); ?><?php echo f_input('pay_ref', 'Reference / transaction ID', ['required' => true]); ?><?php echo f_input('pay_date', 'Payment date', ['type' => 'date', 'required' => true]); ?><?php echo f_input('pay_amount', 'Total amount paid (UGX)', ['required' => true, 'hint' => 'Registration fee + your shares']); ?></div></fieldset>
+      <div class="field"><label>How will you pay?<?php echo $payGroups ? ' <span class="req">*</span>' : ''; ?></label><?php echo pay_picker($conn, 'pay_choice', $_POST['pay_choice'] ?? '', ['ref' => 'Your full name']); ?></div>
+      <details class="pay-already"<?php echo (!empty($_POST['pay_ref']) || pay_proof_required($conn)) ? ' open' : ''; ?>><summary><?php echo pay_proof_required($conn) ? 'Payment details (required)' : 'Already paid? Add your transaction details (optional)'; ?></summary>
+      <div class="form-grid"><?php echo f_input('pay_ref', 'Reference / transaction ID', ['required' => pay_proof_required($conn)]); ?><?php echo f_input('pay_date', 'Payment date', ['type' => 'date', 'required' => pay_proof_required($conn)]); ?><?php echo f_input('pay_amount', 'Total amount paid (UGX)', ['required' => pay_proof_required($conn), 'hint' => 'Registration fee + your shares']); ?></div></details></fieldset>
     <fieldset class="apply-card"><legend><span>8</span> Documents</legend><div class="form-grid">
       <?php echo $file('photo', 'Passport-size photo', $S['sacapp_require_photo'] === '1', 'JPG, PNG or WebP, up to 3 MB'); ?>
       <?php echo $file('id_copy', 'Copy of your ID', $S['sacapp_require_id'] === '1', 'Photo or PDF, up to 5 MB'); ?>
-      <?php echo $file('pay_proof', 'Proof of payment (receipt, mobile-money message or bank slip)', true, 'Photo or PDF, up to 5 MB'); ?></div></fieldset>
+      <?php echo $file('pay_proof', 'Proof of payment (receipt, mobile-money message or bank slip)' . (pay_proof_required($conn) ? '' : ' — optional'), pay_proof_required($conn), 'Photo or PDF, up to 5 MB'); ?></div></fieldset>
     <fieldset class="apply-card"><legend><span>9</span> Declaration</legend>
       <div class="info-card" style="margin-bottom:12px"><?php echo ui_list($S['sacapp_declaration']); ?></div>
       <?php echo f_check('d_true', 'I declare that the information I have given is true and complete.'); ?>

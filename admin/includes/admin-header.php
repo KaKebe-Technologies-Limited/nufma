@@ -64,6 +64,7 @@ $__ico += [
     'resources'  => '<path d="M4 4h10l6 6v10H4V4Z"/><path d="M14 4v6h6M8 14h8M8 17h5"/>',
     'guests'     => '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.600 2.900-6 6.500-6s6.500 2.400 6.500 6M16 5.500a3.500 3.500 0 0 1 0 6M18 14.500c2.200.700 3.500 2.700 3.500 5.500"/>',
     'filmshow'   => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.500v5l4.500-2.500L10 9.500Z"/>',
+    'paydetails' => '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h4"/>',
     'academy'    => '<path d="M3 9l9-5 9 5-9 5-9-5Z"/><path d="M7 11.500V16c0 1.400 2.300 3 5 3s5-1.600 5-3v-4.500M21 9v6"/>',
     'opps'       => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/><path d="M8 21h8" stroke-linecap="round"/>',
     'enquiries'  => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>',
@@ -118,6 +119,7 @@ $__nav = [
         ['map', 'website-map.php', 'Website map'],
     ],
     'System' => [
+        ['paydetails', 'support-setup.php?tab=methods', 'Payment details'],
         ['settings', 'settings.php', 'Site settings'],
         ['maintenance', 'maintenance.php', 'Maintenance mode'],
         ['users', 'users.php', 'Admin users'],
