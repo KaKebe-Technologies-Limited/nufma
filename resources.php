@@ -49,4 +49,15 @@ echo ui_page_hero('Resources', cms_value('resources', 'hero_title'), cms_value('
     <?php endforeach; endif; endif; ?>
   </div>
 </section>
+<?php
+require_once __DIR__ . "/includes/films.php"; film_install($conn);
+$__films = $conn->query("SELECT * FROM films WHERE status='approved' ORDER BY is_featured DESC, approved_at DESC LIMIT 3")->fetch_all(MYSQLI_ASSOC);
+?>
+<section class="section section--soft" id="film-showcase"><div class="container">
+  <div class="section-head center"><div class="eyebrow">Film Showcase</div><h2>Watch films by our filmmakers</h2><p>Short films and productions reviewed by NUFA — watch them free and support the filmmakers you love.</p></div>
+  <?php if ($__films): ?><div class="fm-grid" style="margin-bottom:26px"><?php foreach ($__films as $f): ?>
+    <a class="fm-card" href="film.php?slug=<?php echo ui_e($f['slug']); ?>"><div class="fm-poster"><?php if (film_poster_ok($f)): ?><img src="assets/images/<?php echo ui_e($f['poster']); ?>" alt="" loading="lazy"><?php else: ?><span><?php echo ui_e($f['title']); ?></span><?php endif; ?><?php if ($f['runtime_min']): ?><em class="fm-run"><?php echo ui_e(film_runtime($f)); ?></em><?php endif; ?><i class="fm-play"><svg viewBox="0 0 24 24" width="20" height="20"><path d="M8 5v14l11-7z" fill="currentColor"/></svg></i></div><div class="fm-body"><h3><?php echo ui_e($f['title']); ?></h3><p class="fm-by">by <?php echo ui_e($f['fm_name']); ?></p></div></a>
+  <?php endforeach; ?></div><?php endif; ?>
+  <div class="actions" style="justify-content:center"><a class="btn btn-gold" href="films.php"><?php echo $__films ? 'Watch all films' : 'Open the Film Showcase'; ?></a><a class="btn btn-outline-dark" href="film-submit.php">Submit your film</a><a class="btn btn-outline-dark" href="academy.php">NUFA Academy</a><a class="btn btn-outline-dark" href="opportunities.php">Opportunities</a></div>
+</div></section>
 <?php include __DIR__ . "/includes/footer.php"; ?>
