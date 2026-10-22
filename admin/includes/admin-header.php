@@ -25,7 +25,7 @@ $__ico = [
     'settings'    => '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
     'users'       => '<circle cx="12" cy="8" r="4"/><path d="M4 21c.6-4 4-6 8-6s7.4 2 8 6" stroke-linecap="round"/>',
 ];
-$__enqNew = 0; $__subs = 0; $__msgs = 0; $__supNew = 0; $__sacNew = 0; $__paNew = 0; $__fbNew = 0; $__aevNew = 0; $__acNew = 0; $__fsNew = 0;
+$__enqNew = 0; $__subs = 0; $__msgs = 0; $__supNew = 0; $__sacNew = 0; $__paNew = 0; $__fbNew = 0; $__aevNew = 0; $__acNew = 0; $__fsNew = 0; $__ambNew = 0; $__actNew = 0;
 if (isset($conn)) {
     $__q = $conn->query("SELECT COUNT(*) c FROM enquiries WHERE status='new'"); if ($__q) $__enqNew = (int)$__q->fetch_assoc()['c'];
     $__q = $conn->query("SELECT COUNT(*) c FROM engagements WHERE status='pending'"); if ($__q) $__supNew = (int)$__q->fetch_assoc()['c'];
@@ -34,6 +34,8 @@ if (isset($conn)) {
     try { $__q = $conn->query("SELECT COUNT(*) c FROM partner_applications WHERE status='pending'"); if ($__q) $__paNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
     try { $__q = $conn->query("SELECT COUNT(*) c FROM feedback WHERE status='new'"); if ($__q) $__fbNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
     try { $__q = $conn->query("SELECT COUNT(*) c FROM award_event_apps WHERE status='pending'"); if ($__q) $__aevNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
+    try { $__q = $conn->query("SELECT COUNT(*) c FROM ambassadors WHERE status='pending'"); if ($__q) $__ambNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
+    try { $__q = $conn->query("SELECT (SELECT COUNT(*) FROM award_acts WHERE status='pending') + (SELECT COUNT(*) FROM award_workshops WHERE status='pending') c"); if ($__q) $__actNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
     try { $__q = $conn->query("SELECT COUNT(*) c FROM films WHERE status='pending'"); if ($__q) $__fsNew = (int)$__q->fetch_assoc()['c']; } catch (Throwable $__e) {}
     try { $__q = $conn->query("SELECT (SELECT COUNT(*) FROM academy_trainers WHERE status='pending') + (SELECT COUNT(*) FROM academy_enrolments WHERE status='pending') c"); if ($__q) $__acNew = (int)$__q->fetch_assoc()["c"]; } catch (Throwable $__e) {}
     $__q = $conn->query("SELECT COUNT(*) c FROM messages"); if ($__q) $__msgs = (int)$__q->fetch_assoc()['c'];
@@ -54,6 +56,8 @@ $__ico += [
     'partnerapps' => '<path d="M8 12l3 3 5-6" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0Z"/>',
     'feedback'   => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M12 8.500l1 2 2.200.3-1.600 1.500.4 2.200-2-1.100-2 1.100.4-2.200L8.800 10.800 11 10.500l1-2Z"/>',
     'greetings'  => '<path d="M4 11h16v9H4v-9Z"/><path d="M12 11v9M3 7h18v4H3V7Z"/><path d="M12 7c-2-3-5-3-5-1s3 1 5 1c2 0 5 1 5-1s-3-2-5 1Z"/>',
+    'ambassadors' => '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.600-6 8-6s8 2 8 6M17 3.500l1 2 2 .3-1.500 1.400.4 2-1.900-1-1.900 1 .4-2L14 5.800l2-.3 1-2Z"/>',
+    'awardacts'   => '<path d="M9 18V6l10-2v12"/><circle cx="6.500" cy="18" r="2.500"/><circle cx="16.500" cy="16" r="2.500"/>',
     'awardevents' => '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6" stroke-linecap="round"/>',
     'saccoadm'   => '<ellipse cx="9" cy="7" rx="6" ry="3"/><path d="M3 7v5c0 1.700 2.700 3 6 3s6-1.300 6-3V7M15 11.500c3 0 6 1 6 2.500v3c0 1.700-3 3-6.500 3"/>',
     'programmes' => '<path d="M3 7l9-4 9 4-9 4-9-4Z"/><path d="M7 10v5c0 1.500 2.200 3 5 3s5-1.500 5-3v-5"/>',
@@ -77,12 +81,14 @@ $__nav = [
         ['feedback', 'feedback.php', 'Feedback', $__fbNew],
         ['support', 'support-requests.php', 'Support requests', $__supNew],
         ['partnerapps', 'partner-applications.php', 'Partnership applications', $__paNew],
+        ['ambassadors', 'ambassadors.php', 'Ambassador applications', $__ambNew],
         $__msgs > 0 ? ['messages', 'messages.php', 'Messages (earlier)', $__unread] : null,
     ])),
     'Events & awards' => [
         ['schedule', 'schedule.php', 'Calendar & reminders'],
         ['greetings', 'greetings.php', 'Holiday greetings'],
         ['awardevents', 'award-events.php', 'Awards pre-events', $__aevNew],
+        ['awardacts', 'award-acts.php', 'Awards build-up', $__actNew],
         ['guests', 'guests.php', 'Distinguished guests'],
         ['awards', 'award-editions.php', 'Award editions'],
         ['awardsetup', 'awards-setup.php', 'Awards setup'],

@@ -7,6 +7,8 @@ require_once __DIR__ . "/includes/awards.php";
 awd_install($conn);
 require_once __DIR__ . "/includes/award-events.php";
 aev_install($conn);
+require_once __DIR__ . "/includes/outreach.php";
+out_install($conn);
 $AW = awd_settings($conn);
 
 // ticket booking request
@@ -44,7 +46,7 @@ $submission = trim(cms_value('awards', 'submission_url'));
 echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value('awards', 'hero_lede'), cms_img_raw('awards', 'hero_image'), [['NUFA Awards']],
     '<a href="awards-cohost.php" class="btn btn-gold">Co-host or sponsor an event</a><a href="#archive" class="btn btn-outline">Explore the Archive</a><a href="contact.php?topic=Awards" class="btn btn-ghost">Awards enquiries</a>');
 ?>
-<nav class="aw-subnav" aria-label="On this page"><div class="container"><?php foreach ([['events', 'Events'], ['roadmap', 'Road map'], ['winners', 'Winners'], ['highlights', 'Highlights'], ['moments', 'Key moments'], ['impact', 'Impact'], ['films', 'Films'], ['archive', 'Archive'], ['takepart', 'Take part'], ['submissions', 'Submit a film'], ['tickets', 'Tickets'], ['team', 'Technical team'], ['faq', 'FAQ']] as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
+<nav class="aw-subnav" aria-label="On this page"><div class="container"><?php foreach ([['events', 'Events'], ['buildup', 'Get involved'], ['roadmap', 'Road map'], ['winners', 'Winners'], ['highlights', 'Highlights'], ['moments', 'Key moments'], ['impact', 'Impact'], ['films', 'Films'], ['archive', 'Archive'], ['takepart', 'Take part'], ['submissions', 'Submit a film'], ['tickets', 'Tickets'], ['team', 'Technical team'], ['faq', 'FAQ']] as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
 
 <?php if (nufa_show('awards', 'purpose')): ?><section class="section">
   <div class="container split">
@@ -100,6 +102,7 @@ $films = awd_items($conn, 'film', $last2Ids); $roadmap = awd_items($conn, 'roadm
   $aev = $conn->query("SELECT * FROM award_events WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
   $aevSp = []; foreach ($conn->query("SELECT * FROM award_event_sponsors WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC) as $__s) $aevSp[$__s['event_id']][] = $__s;
   $AE = aev_settings($conn);
+  $aevActs = []; foreach ($conn->query("SELECT name, act_type, assigned_event_id FROM award_acts WHERE status='approved' AND is_public=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC) as $__a) $aevActs[$__a['assigned_event_id']][] = $__a;
   if ($aev): ?>
 <section class="section section--black" id="events">
   <div class="container">
@@ -124,6 +127,8 @@ $films = awd_items($conn, 'film', $last2Ids); $roadmap = awd_items($conn, 'roadm
             $in = $has ? '<img src="assets/images/' . ui_e($s['logo']) . '" alt="' . ui_e($s['name']) . '" loading="lazy">' : '<b>' . ui_e($s['name']) . '</b>'; ?>
             <div class="ev-sp" title="<?php echo ui_e($s['name'] . ' — ' . $s['tier']); ?>"><?php echo $s['website'] !== '' ? '<a href="' . ui_e($s['website']) . '" target="_blank" rel="noopener">' . $in . '</a>' : $in; ?><span><?php echo ui_e($s['tier']); ?></span></div><?php endforeach; ?></div></div>
           <?php else: ?><p class="ev-nosp">Co-host and sponsor spots are open.</p><?php endif; ?>
+          <?php $__ac = $aevActs[$ev['id']] ?? []; if ($__ac): ?><div class="ev-sponsors"><h4>On the line-up</h4><div class="ev-sp-row"><?php foreach ($__ac as $__a): ?><div class="ev-sp" title="<?php echo ui_e($__a['act_type']); ?>"><b><?php echo ui_e($__a['name']); ?></b><span><?php echo ui_e($__a['act_type']); ?></span></div><?php endforeach; ?></div></div><?php endif; ?>
+          <?php if (!$past): ?><a class="btn btn-ghost btn-sm" href="awards-perform.php?event=<?php echo ui_e($ev['slug']); ?>">Perform at this event</a><?php endif; ?>
           <?php if (!$past && !empty($ev['cohost_open'])): ?><a class="btn btn-outline btn-sm" href="awards-cohost.php?event=<?php echo ui_e($ev['slug']); ?>">Co-host or sponsor this event</a><?php endif; ?>
         </div>
       </article>
@@ -141,6 +146,26 @@ function tick(){els.forEach(function(el){var t=Date.parse(el.getAttribute('data-
 tick();setInterval(tick,1000);})();
 </script>
 <?php endif; endif; ?>
+<?php if (nufa_show('awards', 'buildup')):
+  $OS = out_settings($conn);
+  $bwork = $conn->query("SELECT * FROM award_workshops WHERE status='approved' AND is_public=1 ORDER BY COALESCE(confirmed_date, proposed_date) IS NULL, COALESCE(confirmed_date, proposed_date)")->fetch_all(MYSQLI_ASSOC);
+  $bacts = $conn->query("SELECT name, act_type, assigned_event_id, photo FROM award_acts WHERE status='approved' AND is_public=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
+  $evNames = []; foreach ($aev ?? [] as $__e) $evNames[$__e['id']] = $__e['title']; ?>
+<section class="section" id="buildup">
+  <div class="container">
+    <div class="section-head center" data-reveal><div class="eyebrow">Build the moment with us</div><h2>Be part of the road to the NUFA Awards</h2><p><?php echo ui_e($OS['bld_intro']); ?></p></div>
+    <div class="bu-grid" data-reveal-stagger>
+      <?php if ($OS['bld_acts_open'] === '1'): ?><div class="bu-card"><span class="bu-ic">♪</span><h3>Perform on the night</h3><p>Musicians, poets, spoken-word artists, dancers and cultural performers — showcase your act at the Launch, Nomination Night or Grand Finale.</p><a class="btn btn-gold btn-sm" href="awards-perform.php">Apply to perform</a></div><?php endif; ?>
+      <?php if ($OS['bld_workshops_open'] === '1'): ?><div class="bu-card"><span class="bu-ic">✦</span><h3>Host a pre-event workshop</h3><p>Bring filmmakers together in your town. Tell us your venue, how many filmmakers you need and what you will contribute.</p><a class="btn btn-gold btn-sm" href="awards-workshop.php">Host a workshop</a></div><?php endif; ?>
+      <div class="bu-card"><span class="bu-ic">★</span><h3>Become an ambassador</h3><p>Lobby for NUFA, share our proposal with donors, hold fundraising and meet the Board every month.</p><a class="btn btn-gold btn-sm" href="ambassadors.php">Become an ambassador</a></div>
+      <div class="bu-card"><span class="bu-ic">♥</span><h3>Co-host or sponsor</h3><p>Put your name behind the Launch, Nomination Night or Grand Finale.</p><a class="btn btn-gold btn-sm" href="awards-cohost.php">Co-host or sponsor</a></div>
+    </div>
+    <?php if ($bacts): ?><h3 style="margin:44px 0 14px">Announced line-up</h3><div class="gs-grid"><?php foreach ($bacts as $a): ?><div class="gs-card"><div class="gs-photo" style="aspect-ratio:16/10"><?php if ($a['photo'] !== '' && is_file(__DIR__ . '/assets/images/' . $a['photo'])): ?><img src="assets/images/<?php echo ui_e($a['photo']); ?>" alt="<?php echo ui_e($a['name']); ?>" loading="lazy"><?php else: ?><span style="font-size:2rem">♪</span><?php endif; ?></div><div class="gs-body"><span class="gs-cat"><?php echo ui_e($evNames[$a['assigned_event_id']] ?? 'NUFA Awards'); ?></span><h3><?php echo ui_e($a['name']); ?></h3><p class="gs-title"><?php echo ui_e($a['act_type']); ?></p></div></div><?php endforeach; ?></div><?php endif; ?>
+    <?php if ($bwork): ?><h3 style="margin:44px 0 14px">Pre-event workshops</h3><div class="ac-classes"><?php foreach ($bwork as $w): $d = $w['confirmed_date'] ?: $w['proposed_date']; ?>
+      <div class="ac-class"><span class="ac-mode">Workshop</span><h3><?php echo ui_e($w['title']); ?></h3><p><?php echo $d ? ui_e(date('j F Y', strtotime($d))) . ($w['confirmed_date'] ? '' : ' (proposed)') : 'Date to be confirmed'; ?></p><p class="muted"><?php echo ui_e($w['venue']); ?>, <?php echo ui_e($w['town']); ?></p><p class="muted">Hosted by <?php echo ui_e($w['host_name']); ?> · looking for <b><?php echo (int)$w['filmmakers_needed']; ?></b> filmmakers</p><a class="btn btn-outline btn-sm" href="contact.php?topic=Awards&amp;message=<?php echo urlencode('I would like to join the workshop: ' . $w['title'] . ' (' . $w['town'] . ')'); ?>">I want to take part</a></div><?php endforeach; ?></div><?php endif; ?>
+  </div>
+</section>
+<?php endif; ?>
 <?php if (nufa_show('awards', 'roadmap')): ?><section class="section" id="roadmap">
   <div class="container">
     <div class="section-head center" data-reveal><div class="eyebrow">Road map</div><h2><?php echo cms_t('awards', 'roadmap_heading'); ?><?php echo $nextEd ? ' — ' . (int)$nextEd['year'] : ''; ?></h2><p><?php echo cms_t('awards', 'roadmap_intro'); ?></p></div>
