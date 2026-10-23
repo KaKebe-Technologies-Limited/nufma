@@ -17,7 +17,7 @@ $classes = $conn->query("SELECT * FROM academy_classes WHERE is_active=1 AND (en
 $trainers = $conn->query("SELECT name, expertise, location, mode, bio FROM academy_trainers WHERE status='approved' AND is_public=1 ORDER BY name LIMIT 8")->fetch_all(MYSQLI_ASSOC);
 $cats = []; foreach ($courses as $c) if ($c['category'] !== '') $cats[$c['category']] = ($cats[$c['category']] ?? 0) + 1;
 
-echo ui_page_hero('Resources', 'NUFA Academy', $S['acad_intro'], cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['NUFA Academy']],
+echo ui_page_hero('Resources', 'NUFA Academy', $S['acad_intro'], 'gallery/2026/nufa26-20.jpg', [['Resources', 'resources.php'], ['NUFA Academy']],
     ($me ? '<a href="academy-portal.php" class="btn btn-gold">My learning</a>' : ($S['acad_registration_open'] === '1' ? '<a href="academy-register.php" class="btn btn-gold">Create a learner account</a><a href="academy-login.php" class="btn btn-outline">Sign in</a>' : '<a href="academy-login.php" class="btn btn-gold">Sign in</a>')) . '<a href="#courses" class="btn btn-ghost">Browse courses</a>');
 ?>
 <section class="section" id="how">

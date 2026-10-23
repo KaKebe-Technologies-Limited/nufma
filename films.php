@@ -12,7 +12,7 @@ include __DIR__ . "/includes/header.php";
 $films = $conn->query("SELECT * FROM films WHERE status='approved' ORDER BY is_featured DESC, sort_order, approved_at DESC, id DESC")->fetch_all(MYSQLI_ASSOC);
 $genres = []; foreach ($films as $f) if ($f['genre'] !== '') $genres[$f['genre']] = ($genres[$f['genre']] ?? 0) + 1;
 $feat = null; foreach ($films as $f) if ($f['is_featured']) { $feat = $f; break; }
-echo ui_page_hero('Resources', 'Film Showcase', $S['film_intro'], cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Film Showcase']],
+echo ui_page_hero('Resources', 'Film Showcase', $S['film_intro'], 'gallery/2026/nufa26-31.jpg', [['Resources', 'resources.php'], ['Film Showcase']],
     '<a href="#films" class="btn btn-gold">Watch films</a><a href="film-submit.php" class="btn btn-outline">Submit your film</a>');
 $card = function ($f) { ob_start(); ?>
   <a class="fm-card" href="film.php?slug=<?php echo ui_e($f['slug']); ?>" data-genre="<?php echo ui_e($f['genre']); ?>" data-hay="<?php echo ui_e(strtolower($f['title'] . ' ' . $f['fm_name'] . ' ' . $f['genre'] . ' ' . $f['language'] . ' ' . $f['synopsis'])); ?>">

@@ -12,7 +12,7 @@ function nufa_registry() {
     $form = fn($type) => $type;
     return [
         'home' => ['label' => 'Home', 'file' => 'index.php', 'schema' => 'home', 'seo' => 'home',
-            'sections' => [['hero', 'Hero banner', false], ['who', 'Who We Are'], ['awards', 'NUFA Awards feature'], ['programmes', 'Programmes and Initiatives'], ['impact', 'Our Impact'], ['partnership', 'Partnership feature'], ['news', 'News and Stories'], ['cta', 'Bottom call-to-action']],
+            'sections' => [['hero', 'Hero banner', false], ['who', 'Who We Are'], ['awards', 'NUFA Awards feature'], ['programmes', 'Programmes and Initiatives'], ['impact', 'Our Impact'], ['moments', 'NUFA26 photo moments'], ['partnership', 'Partnership feature'], ['news', 'News and Stories'], ['cta', 'Bottom call-to-action']],
             'functions' => [['news_count', 'Number of news cards shown', 'number', '3', 'Between 1 and 6.']],
             'related' => [['Hero photographs', 'sliders.php'], ['Programmes (cards)', 'programmes.php'], ['News & Stories', 'posts.php'], ['Verified impact figures', 'settings.php']]],
         'about' => ['label' => 'About NUFA', 'file' => 'about.php', 'schema' => 'about', 'seo' => 'about',

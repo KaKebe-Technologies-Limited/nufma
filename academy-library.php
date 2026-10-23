@@ -11,7 +11,7 @@ include __DIR__ . "/includes/header.php";
 $rows = $conn->query("SELECT * FROM academy_resources WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
 $cats = []; foreach ($rows as $r) if ($r['category'] !== '') $cats[$r['category']] = ($cats[$r['category']] ?? 0) + 1;
 $types = []; foreach ($rows as $r) $types[$r['type']] = true;
-echo ui_page_hero('NUFA Academy', 'Study Library', 'Free and low-cost learning resources from around the world — courses, channels, script libraries, software, templates and sound libraries — organised by subject.', cms_img_raw('gallery', 'hero_image'), [['NUFA Academy', 'academy.php'], ['Study Library']],
+echo ui_page_hero('NUFA Academy', 'Study Library', 'Free and low-cost learning resources from around the world — courses, channels, script libraries, software, templates and sound libraries — organised by subject.', 'gallery/2026/nufa26-20.jpg', [['NUFA Academy', 'academy.php'], ['Study Library']],
     '<a href="#list" class="btn btn-gold">Browse resources</a><a href="academy.php#courses" class="btn btn-outline">NUFA courses</a>');
 ?>
 <section class="section" id="list"><div class="container">

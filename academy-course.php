@@ -35,7 +35,7 @@ include __DIR__ . "/includes/header.php";
 foreach (["c", "cid", "en", "eid", "S", "me", "lid", "slug", "msg", "lessons", "qn", "classes", "pass", "mins", "cnt", "totalMin", "doneIds", "cur", "want", "idx", "prev", "next", "done", "tot", "pct", "allDone", "maxAtt", "open", "resultId", "res", "used"] as $__k) if (array_key_exists($__k, $__keep)) $$__k = $__keep[$__k];
 $pass = acad_pass_mark($c, $S); $mins = acad_exam_minutes($c, $S); $cnt = min($qn, acad_exam_count($c, $S));
 $totalMin = array_sum(array_column($lessons, 'minutes'));
-echo ui_page_hero($c['category'] . ' · ' . $c['level'], $c['title'], $c['summary'], cms_img_raw('gallery', 'hero_image'), [['NUFA Academy', 'academy.php'], [$c['title']]]);
+echo ui_page_hero($c['category'] . ' · ' . $c['level'], $c['title'], $c['summary'], 'gallery/2026/nufa26-20.jpg', [['NUFA Academy', 'academy.php'], [$c['title']]]);
 ?>
 <section class="section">
   <div class="container ac-detail">

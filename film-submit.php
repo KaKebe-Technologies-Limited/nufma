@@ -61,7 +61,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && !$done && $S['film_open'] === '
 }
 $pageTitle = "Submit your film — NUFA Film Showcase"; $pageDesc = "Filmmakers can submit short films and productions to the NUFA Film Showcase for review and public viewing."; $activeNav = "films"; $canonicalPath = "film-submit.php";
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('Film Showcase', 'Submit your film', $S['film_submit_intro'], cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Film Showcase', 'films.php'], ['Submit']]);
+echo ui_page_hero('Film Showcase', 'Submit your film', $S['film_submit_intro'], 'gallery/2026/nufa26-31.jpg', [['Resources', 'resources.php'], ['Film Showcase', 'films.php'], ['Submit']]);
 $sel = fn($k, $val, $d = '') => (($_POST[$k] ?? $d) === $val) ? 'selected' : '';
 $ck = fn($k) => !empty($_POST[$k]) ? 'checked' : '';
 ?>

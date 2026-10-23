@@ -42,7 +42,7 @@ $classes = $conn->query("SELECT * FROM academy_classes WHERE is_active=1 AND (CO
 $want = (int)($_GET['class'] ?? 0);
 $pageTitle = "My learning — NUFA Academy"; $pageDesc = "Your NUFA Academy learner portal."; $activeNav = "academy"; $canonicalPath = "academy-portal.php"; $noindex = true;
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('Learner portal', 'Welcome, ' . explode(' ', $me['name'])[0], 'Your courses, live classes and certificates.', cms_img_raw('gallery', 'hero_image'), [['NUFA Academy', 'academy.php'], ['My learning']],
+echo ui_page_hero('Learner portal', 'Welcome, ' . explode(' ', $me['name'])[0], 'Your courses, live classes and certificates.', 'gallery/2026/nufa26-20.jpg', [['NUFA Academy', 'academy.php'], ['My learning']],
     '<a href="academy.php#courses" class="btn btn-gold">Find a course</a><a href="academy-logout.php?t=' . urlencode(mem_csrf()) . '" class="btn btn-outline">Sign out</a>');
 ?>
 <section class="section"><div class="container">

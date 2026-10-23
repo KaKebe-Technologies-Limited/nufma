@@ -17,7 +17,7 @@ $canonicalPath = "guest.php?id=" . $gid;
 if (guest_photo_ok($g)) $ogImage = "assets/images/" . $g['photo'];
 include __DIR__ . "/includes/header.php";
 $others = $conn->query("SELECT id, name, title, organisation, photo FROM vip_guests WHERE is_active=1 AND id<>$gid ORDER BY is_featured DESC, RAND() LIMIT 4")->fetch_all(MYSQLI_ASSOC);
-echo ui_page_hero('Distinguished Guest', $g['name'], $line, cms_img_raw('gallery', 'hero_image'), [['About NUFA', 'about.php'], ['Distinguished Guests', 'guests.php'], [$g['name']]]);
+echo ui_page_hero('Distinguished Guest', $g['name'], $line, 'gallery/2026/nufa26-35.jpg', [['About NUFA', 'about.php'], ['Distinguished Guests', 'guests.php'], [$g['name']]]);
 ?>
 <section class="section">
   <div class="container">

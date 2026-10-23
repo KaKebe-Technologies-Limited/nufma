@@ -45,7 +45,7 @@ $activeNav = "partner"; $canonicalPath = "ambassadors.php";
 include __DIR__ . "/includes/header.php";
 $pub = $S['amb_show_public'] === '1' ? $conn->query("SELECT name, country, interests FROM ambassadors WHERE status='approved' AND is_public=1 ORDER BY name")->fetch_all(MYSQLI_ASSOC) : [];
 $next = out_next_meeting($conn);
-echo ui_page_hero('Partner with us', 'Become a NUFA Ambassador', $S['amb_intro'], cms_img_raw('partners', 'hero_image'), [['Partner With Us', 'partners.php'], ['Ambassadors']],
+echo ui_page_hero('Partner with us', 'Become a NUFA Ambassador', $S['amb_intro'], 'gallery/2026/nufa26-18.jpg', [['Partner With Us', 'partners.php'], ['Ambassadors']],
     '<a href="#apply" class="btn btn-gold">Apply to be an ambassador</a><a href="#role" class="btn btn-outline">What ambassadors do</a>');
 $val = fn($k) => ui_e($_POST[$k] ?? '');
 $has = fn($k, $v) => in_array($v, (array)($_POST[$k] ?? []), true) ? 'checked' : '';

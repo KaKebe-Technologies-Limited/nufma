@@ -13,7 +13,7 @@ $rows = $conn->query("SELECT * FROM vip_guests WHERE is_active=1 ORDER BY is_fea
 $eds = []; foreach ($rows as $r) foreach (guest_editions($r) as $x) $eds[$x] = true;
 krsort($eds);
 
-echo ui_page_hero('About NUFA', 'Distinguished Guests', 'The VIPs, leaders and special guests who have joined us at NUFA Awards — and the editions they attended.', cms_img_raw('gallery', 'hero_image'), [['About NUFA', 'about.php'], ['Distinguished Guests']]);
+echo ui_page_hero('About NUFA', 'Distinguished Guests', 'The VIPs, leaders and special guests who have joined us at NUFA Awards — and the editions they attended.', 'gallery/2026/nufa26-35.jpg', [['About NUFA', 'about.php'], ['Distinguished Guests']]);
 ?>
 <section class="section" id="guests">
   <div class="container">
@@ -37,6 +37,17 @@ echo ui_page_hero('About NUFA', 'Distinguished Guests', 'The VIPs, leaders and s
     <?php endif; ?>
   </div>
 </section>
+<section class="section section--soft"><div class="container">
+  <div class="section-head center" data-reveal><div class="eyebrow">NUFA Awards 2026</div><h2>Our guests on the night</h2><p>Leaders, elders, creatives and friends who joined the NUFA26 ceremony.</p></div>
+  <?php echo ui_photo_grid([
+      ['gallery/2026/nufa26-35.jpg', 'Distinguished guests on stage at NUFA26'],
+      ['gallery/2026/nufa26-20.jpg', 'Guests follow the ceremony'],
+      ['gallery/2026/nufa26-22.jpg', 'A guest at the NUFA26 ceremony'],
+      ['gallery/2026/nufa26-24.jpg', 'Guests enjoy the programme'],
+      ['gallery/2026/nufa26-27.jpg', 'Guests in the audience'],
+      ['gallery/2026/nufa26-30.jpg', 'Smiles from our guests'],
+  ], 'strip'); ?>
+</div></section>
 <script>
 (function(){var tabs=document.querySelectorAll('[data-ed]'),cards=document.querySelectorAll('.gs-card');
 tabs.forEach(function(b){b.addEventListener('click',function(){tabs.forEach(function(x){x.classList.remove('is-active')});b.classList.add('is-active');var v=b.dataset.ed;cards.forEach(function(c){c.hidden=!(v==='all'||c.dataset.eds.indexOf('|'+v+'|')>-1);});});});})();

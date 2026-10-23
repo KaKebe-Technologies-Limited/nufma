@@ -73,6 +73,16 @@ function ui_video_embed($url) {
     return '';
 }
 
+/** Photo grid with the site lightbox. $tiles = [[file, caption], …]; $mode 'mosaic' (first photo large) or 'strip'. Files live in assets/images/. */
+function ui_photo_grid(array $tiles, $mode = 'mosaic') {
+    $o = '<div class="pm-grid pm-' . ($mode === 'strip' ? 'strip' : 'mosaic') . '" data-reveal-stagger>';
+    foreach ($tiles as $i => [$f, $cap]) {
+        if (!is_file(__DIR__ . '/../assets/images/' . $f)) continue;
+        $o .= '<figure class="pm-tile' . ($mode === 'mosaic' && $i === 0 ? ' pm-big' : '') . '"><img src="assets/images/' . ui_e($f) . '" data-lightbox="assets/images/' . ui_e($f) . '" data-caption="' . ui_e($cap) . '" alt="' . ui_e($cap) . '" loading="lazy" decoding="async"><figcaption>' . ui_e($cap) . '</figcaption></figure>';
+    }
+    return $o . '</div>';
+}
+
 function ui_date($d, $fmt = 'j F Y') { return $d ? date($fmt, strtotime($d)) : ''; }
 function ui_excerpt($text, $len = 160) {
     $t = trim(preg_replace('/\s+/', ' ', strip_tags((string)$text)));

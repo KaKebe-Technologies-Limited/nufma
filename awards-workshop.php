@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$done && $S['bld_workshops_open'] 
 }
 $pageTitle = "Host a pre-event workshop — NUFA Awards"; $pageDesc = "Host a pre-event workshop for filmmakers in the build-up to the NUFA Awards: add your venue, the number of filmmakers you need and your contribution."; $activeNav = "awards"; $canonicalPath = "awards-workshop.php";
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('NUFA Awards', 'Host a pre-event workshop', $S['bld_workshop_intro'], cms_img_raw('awards', 'hero_image'), [['NUFA Awards', 'awards.php'], ['Host a workshop']]);
+echo ui_page_hero('NUFA Awards', 'Host a pre-event workshop', $S['bld_workshop_intro'], 'gallery/2026/nufa26-20.jpg', [['NUFA Awards', 'awards.php'], ['Host a workshop']]);
 $val = fn($k) => ui_e($_POST[$k] ?? '');
 ?>
 <section class="section"><div class="container" style="max-width:860px">

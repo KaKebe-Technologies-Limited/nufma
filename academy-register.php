@@ -33,7 +33,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $pageTitle = "Create a learner account — NUFA Academy"; $pageDesc = "Create your NUFA Academy learner account."; $activeNav = "academy"; $canonicalPath = "academy-register.php"; $noindex = true;
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('NUFA Academy', 'Create your learner account', 'It is free and takes a minute. Use your email address to sign in to the learner portal.', cms_img_raw('gallery', 'hero_image'), [['NUFA Academy', 'academy.php'], ['Create account']]);
+echo ui_page_hero('NUFA Academy', 'Create your learner account', 'It is free and takes a minute. Use your email address to sign in to the learner portal.', 'gallery/2026/nufa26-20.jpg', [['NUFA Academy', 'academy.php'], ['Create account']]);
 ?>
 <section class="section"><div class="container" style="max-width:560px">
   <?php foreach ($errors as $e): ?><div style="padding:12px 16px;border-radius:12px;background:#fde8e8;color:#7a1c1c;margin-bottom:10px"><?php echo ui_e($e); ?></div><?php endforeach; ?>

@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $pageTitle = "Sign in — NUFA Academy"; $pageDesc = "Sign in to your NUFA Academy learner portal."; $activeNav = "academy"; $canonicalPath = "academy-login.php"; $noindex = true;
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('NUFA Academy', 'Learner sign in', 'Sign in with your email to continue learning, take exams and download certificates.', cms_img_raw('gallery', 'hero_image'), [['NUFA Academy', 'academy.php'], ['Sign in']]);
+echo ui_page_hero('NUFA Academy', 'Learner sign in', 'Sign in with your email to continue learning, take exams and download certificates.', 'gallery/2026/nufa26-20.jpg', [['NUFA Academy', 'academy.php'], ['Sign in']]);
 ?>
 <section class="section"><div class="container" style="max-width:520px">
   <?php if (!empty($_GET['reset'])): ?><div style="padding:12px 16px;border-radius:12px;background:#e8f5ea;color:#1f6b2b;margin-bottom:10px">Your password was changed. Please sign in.</div><?php endif; ?>

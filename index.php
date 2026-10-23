@@ -120,6 +120,25 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
   </div>
 </section><?php endif; ?>
 
+<!-- NUFA26 IN PICTURES -->
+<?php if (nufa_show('home', 'moments')): ?><section class="section" id="moments" aria-labelledby="moments-h">
+  <div class="container">
+    <div class="section-head center" data-reveal><div class="eyebrow">NUFA Awards 2026</div><h2 id="moments-h">The night in pictures</h2><p>Winners, elders, guests and the filmmakers who make Northern Uganda’s stories — moments from the NUFA26 ceremony.</p></div>
+    <?php echo ui_photo_grid([
+        ['gallery/2026/nufa26-16.jpg', 'A winner receives a trophy and certificate on the NUFA26 stage'],
+        ['gallery/2026/nufa26-18.jpg', 'Winners and guests celebrate on stage'],
+        ['gallery/2026/nufa26-31.jpg', 'The NUFA26 Awards hall and stage'],
+        ['gallery/2026/nufa26-32.jpg', 'A moment of honour for our elders'],
+        ['gallery/2026/nufa26-35.jpg', 'Distinguished guests honoured at NUFA26'],
+        ['gallery/2026/nufa26-33.jpg', 'A portrait is presented in tribute'],
+        ['gallery/2026/nufa26-20.jpg', 'Guests follow the ceremony'],
+        ['gallery/2026/nufa26-29.jpg', 'Filmmakers and friends in the audience'],
+        ['gallery/2026/nufa26-26.jpg', 'Smiles from the audience'],
+    ]); ?>
+    <p class="center" style="text-align:center;margin-top:26px"><a href="gallery.php#photos" class="btn btn-dark">Open the full gallery</a></p>
+  </div>
+</section><?php endif; ?>
+
 <!-- PARTNERSHIP -->
 <?php if (nufa_show('home', 'partnership')): ?><section class="section feature-band section--black" aria-labelledby="partner-feature">
   <div class="bg"><img src="assets/images/<?php echo cms_img('home', 'partner_image'); ?>" alt="" loading="lazy"></div>

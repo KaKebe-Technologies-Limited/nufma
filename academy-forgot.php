@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $pageTitle = "Reset your password — NUFA Academy"; $pageDesc = "Reset your NUFA Academy password."; $activeNav = "academy"; $canonicalPath = "academy-forgot.php"; $noindex = true;
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('NUFA Academy', 'Reset your password', '', cms_img_raw('gallery', 'hero_image'), [['NUFA Academy', 'academy.php'], ['Reset password']]);
+echo ui_page_hero('NUFA Academy', 'Reset your password', '', 'gallery/2026/nufa26-20.jpg', [['NUFA Academy', 'academy.php'], ['Reset password']]);
 ?>
 <section class="section"><div class="container" style="max-width:520px">
   <?php if ($err): ?><div style="padding:12px 16px;border-radius:12px;background:#fde8e8;color:#7a1c1c;margin-bottom:10px"><?php echo ui_e($err); ?></div><?php endif; ?>

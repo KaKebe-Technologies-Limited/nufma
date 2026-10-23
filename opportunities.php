@@ -21,7 +21,7 @@ usort($rows, function ($a, $b) use ($rank) {
 $counts = array_fill_keys(array_keys($cats), 0); foreach ($rows as $r) if (isset($counts[$r['category']])) $counts[$r['category']]++;
 $closing = array_filter($rows, fn($r) => $r['_st'] === 'open' && $r['deadline'] && strtotime($r['deadline']) - time() < 21 * 86400);
 
-echo ui_page_hero('Resources', 'Opportunities for filmmakers', 'Film awards and festivals, funding in Uganda and abroad, labs and training — with who can apply and where to apply. Find the ones that fit your film.', cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Opportunities']],
+echo ui_page_hero('Resources', 'Opportunities for filmmakers', 'Film awards and festivals, funding in Uganda and abroad, labs and training — with who can apply and where to apply. Find the ones that fit your film.', 'gallery/2026/nufa26-16.jpg', [['Resources', 'resources.php'], ['Opportunities']],
     '<a href="#list" class="btn btn-gold">Browse opportunities</a><a href="contact.php?topic=Opportunities" class="btn btn-outline">Suggest an opportunity</a>');
 ?>
 <section class="section" id="list">

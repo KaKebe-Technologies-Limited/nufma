@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$done && $S['bld_acts_open'] === '
 }
 $pageTitle = "Perform at the NUFA Awards — Musicians, Poets and Spoken-Word Artists"; $pageDesc = "Apply to showcase your music, poetry or spoken word at the NUFA Awards Launch, Nomination Night or Grand Finale."; $activeNav = "awards"; $canonicalPath = "awards-perform.php";
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('NUFA Awards', 'Perform at the NUFA Awards', $S['bld_acts_intro'], cms_img_raw('awards', 'hero_image'), [['NUFA Awards', 'awards.php'], ['Perform']]);
+echo ui_page_hero('NUFA Awards', 'Perform at the NUFA Awards', $S['bld_acts_intro'], 'gallery/2026/nufa26-31.jpg', [['NUFA Awards', 'awards.php'], ['Perform']]);
 $val = fn($k) => ui_e($_POST[$k] ?? '');
 ?>
 <section class="section"><div class="container" style="max-width:860px">

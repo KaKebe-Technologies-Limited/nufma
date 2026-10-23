@@ -32,7 +32,7 @@ $pageTitle = ($cur ? $cur['title'] . ' — ' : '') . $c['title'] . " — NUFA Ac
 $__keep = get_defined_vars();
 include __DIR__ . "/includes/header.php";
 foreach (["c", "cid", "en", "eid", "S", "me", "lid", "slug", "msg", "lessons", "qn", "classes", "pass", "mins", "cnt", "totalMin", "doneIds", "cur", "want", "idx", "prev", "next", "done", "tot", "pct", "allDone", "maxAtt", "open", "resultId", "res", "used"] as $__k) if (array_key_exists($__k, $__keep)) $$__k = $__keep[$__k];
-echo ui_page_hero('NUFA Academy · ' . $c['level'], $c['title'], '', cms_img_raw('gallery', 'hero_image'), [['My learning', 'academy-portal.php'], [$c['title']]]);
+echo ui_page_hero('NUFA Academy · ' . $c['level'], $c['title'], '', 'gallery/2026/nufa26-20.jpg', [['My learning', 'academy-portal.php'], [$c['title']]]);
 ?>
 <section class="section"><div class="container ac-learn">
   <aside class="ac-nav">

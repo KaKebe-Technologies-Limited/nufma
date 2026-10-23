@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$done && $S['acad_trainers_open'] 
 }
 $pageTitle = "Apply to facilitate classes — NUFA Academy"; $pageDesc = "Experienced film trainers can apply to facilitate NUFA Academy classes in person or online."; $activeNav = "academy"; $canonicalPath = "academy-teach.php";
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('NUFA Academy', 'Teach with NUFA Academy', $S['acad_trainer_intro'], cms_img_raw('gallery', 'hero_image'), [['NUFA Academy', 'academy.php'], ['Apply to facilitate']]);
+echo ui_page_hero('NUFA Academy', 'Teach with NUFA Academy', $S['acad_trainer_intro'], 'gallery/2026/nufa26-20.jpg', [['NUFA Academy', 'academy.php'], ['Apply to facilitate']]);
 $val = fn($k, $d = '') => ui_e($_POST[$k] ?? $d);
 ?>
 <section class="section"><div class="container" style="max-width:780px">

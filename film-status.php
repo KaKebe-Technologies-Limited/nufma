@@ -9,7 +9,7 @@ $film = null;
 if ($ref !== '' && $t !== '') { $s = $conn->prepare("SELECT * FROM films WHERE ref=? AND token_hash=?"); $h = hash('sha256', $t); $s->bind_param("ss", $ref, $h); $s->execute(); $film = $s->get_result()->fetch_assoc(); }
 $pageTitle = "Film submission status — NUFA Film Showcase"; $pageDesc = "Check the review status of your film."; $activeNav = "films"; $canonicalPath = "film-status.php"; $noindex = true;
 include __DIR__ . "/includes/header.php";
-echo ui_page_hero('Film Showcase', 'Submission status', '', cms_img_raw('gallery', 'hero_image'), [['Film Showcase', 'films.php'], ['Status']]);
+echo ui_page_hero('Film Showcase', 'Submission status', '', 'gallery/2026/nufa26-31.jpg', [['Film Showcase', 'films.php'], ['Status']]);
 $label = ['pending' => ['Waiting for review', 'Our team is reviewing your film. This can take a few days.'], 'approved' => ['Approved', 'Your film is live on the Film Showcase.'], 'rejected' => ['Not approved', ''], 'changes' => ['Changes needed', '']];
 ?>
 <section class="section"><div class="container" style="max-width:720px">
