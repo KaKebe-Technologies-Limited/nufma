@@ -7,5 +7,6 @@
 <script src="../assets/js/admin-ui.js"></script>
 <script src="../assets/js/admin-editor.js"></script>
 <script src="../assets/js/admin-export.js"></script>
+<script src="../assets/js/admin-gallery-picker.js"></script>
 </body>
 </html>

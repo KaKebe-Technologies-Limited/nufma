@@ -7,6 +7,8 @@ $activeNav = "gallery";
 $canonicalPath = "gallery.php";
 $ogImage = "assets/images/og/og-gallery.jpg";
 include __DIR__ . "/includes/header.php";
+require_once __DIR__ . "/includes/gallery-lib.php";
+gallery_hl_import($conn);   // adds the Highlights photo set the first time (once the files are uploaded)
 
 $root = __DIR__ . '/assets/images/';
 $groups = ['2026' => ['label' => 'NUFA Awards 2026', 'items' => []], '2025' => ['label' => 'NUFA Awards 2025', 'items' => []], 'productions' => ['label' => 'Productions & community', 'items' => []]];
@@ -15,15 +17,17 @@ foreach (glob($root . 'gallery/2025/nufa25-*.webp') as $f) $groups['2025']['item
 $prodCaptions = ['crew-monitor-check' => 'Crew checking the monitor on a Northern Uganda film set', 'cultural-portrait' => 'Cultural portrait from a film production', 'karamoja-shoot-1' => 'Filming on location in Karamoja', 'karamoja-shoot-2' => 'Production crew on location in Karamoja', 'on-set-action' => 'On set during a film production'];
 foreach (glob($root . 'production/*.webp') as $f) $groups['productions']['items'][] = ['production/' . basename($f), $prodCaptions[basename($f, '.webp')] ?? 'Film production in Northern Uganda'];
 foreach (glob($root . 'gallery/2025/nufa-*.webp') as $f) if (!preg_match('/_\d\.webp$/', $f)) $groups['productions']['items'][] = ['gallery/2025/' . basename($f), 'Filmmaking and community storytelling in Northern Uganda'];
-foreach ($conn->query("SELECT image, caption, edition, category FROM gallery_images WHERE image LIKE 'uploads/%' ORDER BY created_at DESC")->fetch_all(MYSQLI_ASSOC) as $u) {
+foreach ($conn->query("SELECT image, caption, edition, category FROM gallery_images WHERE image LIKE 'uploads/%' OR image LIKE 'gallery/highlights/%' ORDER BY created_at DESC, id ASC")->fetch_all(MYSQLI_ASSOC) as $u) {
     if ($u['category'] !== '') {   // admin-assigned album: gets its own filter tab
         $k = 'cat-' . preg_replace('/[^a-z0-9]+/', '-', strtolower($u['category']));
         if (!isset($groups[$k])) $groups[$k] = ['label' => $u['category'], 'items' => []];
     } else {
         $k = substr($u['edition'], -2) === '26' ? '2026' : (substr($u['edition'], -2) === '25' ? '2025' : 'productions');
     }
-    array_unshift($groups[$k]['items'], [$u['image'], $u['caption'] ?: $groups[$k]['label']]);
+    if (strpos($u['image'], GALLERY_HL_DIR) === 0) $groups[$k]['items'][] = [$u['image'], $u['caption'] ?: 'NUFA highlights'];   // keep the photographers' order
+    else array_unshift($groups[$k]['items'], [$u['image'], $u['caption'] ?: $groups[$k]['label']]);
 }
+if (isset($groups["cat-highlights"])) $groups = ["cat-highlights" => $groups["cat-highlights"]] + $groups;   // newest set first
 $videos = $conn->query("SELECT * FROM videos WHERE is_active=1 ORDER BY sort_order ASC, id DESC")->fetch_all(MYSQLI_ASSOC);
 
 echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'), cms_value('gallery', 'hero_lede'), cms_img_raw('gallery', 'hero_image'), [['Resources', 'resources.php'], ['Gallery & Video']],
@@ -39,7 +43,7 @@ echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'),
     <div class="masonry" style="margin-inline:var(--gutter)">
       <?php foreach ($groups as $k => $g) foreach ($g['items'] as [$img, $cap]): ?>
       <div class="m-item" data-gallery-item="<?php echo ui_e($k); ?>">
-        <img src="assets/images/<?php echo ui_e($img); ?>" data-lightbox="assets/images/<?php echo ui_e($img); ?>" data-caption="<?php echo ui_e($cap); ?>" alt="<?php echo ui_e($cap); ?>" loading="lazy" decoding="async">
+        <img src="assets/images/<?php echo ui_e(gallery_thumb($img)); ?>" data-lightbox="assets/images/<?php echo ui_e($img); ?>" data-caption="<?php echo ui_e($cap); ?>" alt="<?php echo ui_e($cap); ?>" loading="lazy" decoding="async">
         <div class="m-overlay"><span><?php echo ui_e($g['label']); ?></span></div>
       </div>
       <?php endforeach; ?>

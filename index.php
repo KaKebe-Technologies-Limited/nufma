@@ -121,10 +121,10 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
 </section><?php endif; ?>
 
 <!-- NUFA26 IN PICTURES -->
-<?php if (nufa_show('home', 'moments')): ?><section class="section" id="moments" aria-labelledby="moments-h">
+<?php if (nufa_show('home', 'moments')): require_once __DIR__ . "/includes/gallery-lib.php"; $featPics = gallery_featured($conn, 9); $customPics = count($featPics) >= 3; ?><section class="section" id="moments" aria-labelledby="moments-h">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">NUFA Awards 2026</div><h2 id="moments-h">The night in pictures</h2><p>Winners, elders, guests and the filmmakers who make Northern Uganda’s stories — moments from the NUFA26 ceremony.</p></div>
-    <?php echo ui_photo_grid([
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo $customPics ? 'From the gallery' : 'NUFA Awards 2026'; ?></div><h2 id="moments-h"><?php echo $customPics ? 'Moments in pictures' : 'The night in pictures'; ?></h2><p><?php echo $customPics ? "Moments from NUFA events, screenings and the people who make Northern Uganda’s film industry." : "Winners, elders, guests and the filmmakers who make Northern Uganda’s stories — moments from the NUFA26 ceremony."; ?></p></div>
+    <?php echo ui_photo_grid($customPics ? $featPics : [
         ['gallery/2026/nufa26-16.jpg', 'A winner receives a trophy and certificate on the NUFA26 stage'],
         ['gallery/2026/nufa26-18.jpg', 'Winners and guests celebrate on stage'],
         ['gallery/2026/nufa26-31.jpg', 'The NUFA26 Awards hall and stage'],
