@@ -8,6 +8,7 @@ $canonicalPath = "about.php";
 $ogImage = "assets/images/og/og-about.jpg";
 include __DIR__ . "/includes/header.php";
 
+require_once __DIR__ . "/includes/team-seed.php"; team_seed_okello($conn);
 $team = $conn->query("SELECT * FROM team_members WHERE is_active=1 AND category <> 'Awards Technical Team' ORDER BY sort_order ASC, id ASC")->fetch_all(MYSQLI_ASSOC);
 $teamCatOrder = nufa_list($cfg, "list_team_categories");
 $teamGroups = [];
@@ -68,7 +69,7 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
         <div class="photo"><?php if ($m['photo'] && is_file(__DIR__ . '/assets/images/' . $m['photo'])): ?><img src="assets/images/<?php echo ui_e($m['photo']); ?>" alt="Portrait of <?php echo ui_e($m['name']); ?>" width="600" height="750" loading="lazy"><?php endif; ?></div>
         <h3 style="color:var(--white)"><?php echo ui_e($m['name']); ?></h3>
         <div class="role" style="color:var(--gold)"><?php echo ui_e($m['role']); ?></div>
-        <?php if (!empty($m['bio'])): ?><p style="color:var(--muted-on-dark)"><?php echo ui_e(ui_excerpt($m['bio'], 160)); ?></p><?php endif; ?>
+        <?php if (!empty($m['bio'])): ?><?php if (mb_strlen($m['bio']) > 200): ?><details class="leader-bio"><summary>Read profile</summary><div><?php echo ui_paragraphs($m['bio']); ?></div></details><?php else: ?><p style="color:var(--muted-on-dark)"><?php echo ui_e($m['bio']); ?></p><?php endif; ?><?php endif; ?>
         <?php if ($m['linkedin_url'] || $m['x_url'] || $m['facebook_url'] || $m['instagram_url']): ?>
         <div class="social-row" style="justify-content:center;margin-top:12px">
           <?php foreach (['linkedin_url' => ['LinkedIn', 'linkedin'], 'x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram']] as $k => [$l, $ic]) if ($m[$k]): ?>

@@ -2,6 +2,7 @@
 $adminTitle = "Leadership";
 $adminNav = "team";
 require __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/../includes/team-seed.php"; team_seed_okello($conn);
 require_once __DIR__ . "/../includes/schema.php";
 require_once __DIR__ . "/../includes/settings.php";
 require_once __DIR__ . "/../includes/ui.php";

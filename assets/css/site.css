@@ -1139,3 +1139,12 @@ body{color:var(--nufa-text);background:var(--nufa-white)}
 /* WhatsApp chat button sits bottom-left (back-to-top stays bottom-right) */
 .wa-float{right:auto;left:18px;margin-right:0;margin-left:env(safe-area-inset-left,0)}
 @media(max-width:860px){.wa-float{right:auto;left:14px}.to-top{bottom:18px;right:18px}}
+
+/* Leadership cards: expandable full profile */
+.leader-bio{margin-top:10px;text-align:left}
+.leader-bio summary{cursor:pointer;list-style:none;display:inline-block;font-weight:700;font-size:.82rem;color:var(--accent);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:6px 16px;margin:0 auto;text-align:center}
+.leader-card .leader-bio{text-align:center}
+.leader-bio summary::-webkit-details-marker{display:none}
+.leader-bio[open] summary{background:var(--nufa-primary);border-color:var(--nufa-primary);color:#fff}
+.leader-bio>div{text-align:left;margin-top:12px;font-size:.88rem;line-height:1.65;color:var(--muted-on-dark)}
+.leader-bio>div p{margin:0 0 10px}
