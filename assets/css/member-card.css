@@ -1,0 +1,56 @@
+/* NUFA membership card — CR80 proportions (85.6 × 54 mm). Everything is in em, so --w alone scales the whole card. */
+.idc-set{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:flex-start}
+.idc{--w:360px;--red:#D50000;--orange:#FF7900;--ink:#111;position:relative;width:var(--w);height:calc(var(--w) * .631);font-size:calc(var(--w) / 36);overflow:hidden;border-radius:1em;background:#fff;color:#111;box-shadow:0 .6em 2em rgba(0,0,0,.22);font-family:Montserrat,Inter,"Segoe UI",Arial,sans-serif;line-height:1.25;box-sizing:border-box;flex:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.idc *{box-sizing:border-box;margin:0;padding:0}
+.idc-sm{--w:250px}.idc-xs{--w:200px}
+
+/* front */
+.idc-head{position:absolute;left:0;right:0;top:0;height:6.4em;background:linear-gradient(115deg,#111 0%,#1d1d1d 70%,#2a2a2a 100%);display:flex;align-items:center;gap:1em;padding:0 1.4em;color:#fff}
+.idc-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:.45em;background:linear-gradient(90deg,var(--red) 0 70%,var(--orange) 70% 100%)}
+.idc-logo{width:4.2em;height:4.2em;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex:none;border:.15em solid var(--red)}
+.idc-logo img{width:86%;height:86%;object-fit:contain}
+.idc-org{flex:1;min-width:0}.idc-org b{display:block;font-size:1.75em;font-weight:900;letter-spacing:.06em;line-height:1}
+.idc-org i{display:block;font-style:normal;font-size:.62em;letter-spacing:.14em;text-transform:uppercase;color:#CFCFCF;margin-top:.5em;line-height:1.3}
+.idc-tag{font-size:.68em;font-weight:800;letter-spacing:.2em;text-transform:uppercase;background:var(--red);color:#fff;padding:.55em 1em;border-radius:2em;flex:none}
+.idc-photo{position:absolute;left:1.5em;top:7.7em;width:7.2em;height:9.3em;border-radius:.5em;overflow:hidden;border:.2em solid var(--red);background:#EDEDED;display:flex;align-items:center;justify-content:center}
+.idc-photo img{width:100%;height:100%;object-fit:cover}.idc-photo span{font-size:3.4em;font-weight:800;color:#9A9A9A}
+.idc-info{position:absolute;left:9.7em;right:1.4em;top:7.5em;bottom:5.4em}
+.idc-info h3{font-size:1.5em;font-weight:800;line-height:1.12;color:#111;max-height:2.3em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.idc-guild{margin-top:.5em;font-size:.72em;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--red)}
+.idc-info dl{display:grid;grid-template-columns:1fr 1fr;gap:.8em 1em;margin-top:1.1em}
+.idc-info dt{font-size:.56em;letter-spacing:.15em;text-transform:uppercase;color:#7A7A7A;font-weight:700}
+.idc-info dd{font-size:.82em;font-weight:700;color:#111;margin-top:.15em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.idc-band{position:absolute;left:0;right:0;bottom:0;height:4.8em;background:#111;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 1.5em;border-top:.35em solid var(--red)}
+.idc-band small{display:block;font-size:.52em;letter-spacing:.2em;text-transform:uppercase;color:#BDBDBD;font-weight:700}
+.idc-band b{display:block;font-size:1.35em;font-weight:800;letter-spacing:.07em;color:var(--orange);margin-top:.15em;white-space:nowrap}
+.idc-band em{font-style:normal;font-size:.62em;font-weight:800;letter-spacing:.16em;text-transform:uppercase;padding:.5em 1.1em;border-radius:2em}
+.idc-band em.good{background:#0E7A3F;color:#fff}.idc-band em.bad{background:#B71C1C;color:#fff}
+.idc-stamp{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) rotate(-14deg);font-size:3.6em;font-weight:900;letter-spacing:.12em;color:rgba(183,28,28,.7);border:.12em solid rgba(183,28,28,.7);padding:0 .3em;border-radius:.2em;pointer-events:none}
+
+/* back */
+.idc-back::before{content:"";position:absolute;left:0;right:0;top:0;height:.9em;background:linear-gradient(90deg,var(--red) 0 70%,var(--orange) 70% 100%)}
+.idc-qr{position:absolute;left:1.5em;top:2.4em;width:11.2em;text-align:center}
+.idc-qr svg{width:11.2em;height:11.2em;display:block;border:.12em solid #E3E3E3;border-radius:.5em}
+.idc-qr small{display:block;margin-top:.55em;font-size:.64em;letter-spacing:.18em;text-transform:uppercase;font-weight:800;color:#111}
+.idc-terms{position:absolute;left:14.4em;right:1.5em;top:2.4em}
+.idc-terms h4{font-size:.68em;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:800;margin-bottom:.6em}
+.idc-terms p{font-size:.68em;line-height:1.5;color:#444;margin-bottom:.5em}
+.idc-sign{position:absolute;left:14.4em;right:1.5em;top:11.2em;height:4.6em}
+.idc-sign img{height:2em;width:auto;max-width:9em;object-fit:contain;display:block}.idc-nosig{display:block;height:2em}
+.idc-sign i{display:block;width:9em;border-top:.1em solid #111;margin:.1em 0 .35em}
+.idc-sign b{display:block;font-size:.76em;font-weight:800}.idc-sign small{display:block;font-size:.62em;color:#666;margin-top:.1em}
+.idc-contact{position:absolute;left:calc(var(--w)/24);right:calc(var(--w)/24);bottom:calc(var(--w)/11.25);font-size:.66em;color:#333;display:flex;flex-wrap:wrap;gap:.2em .8em;justify-content:center;text-align:center;line-height:1.4}
+.idc-contact span{color:var(--red)}
+.idc-band--back{height:2.5em;border-top:0;font-size:1em;padding:0 1.5em}.idc-band--back span{font-size:.62em;font-weight:700;letter-spacing:.1em}.idc-band--back span:last-child{color:var(--orange)}
+.idc.is-expired .idc-qr svg{opacity:.45}
+
+/* printing: cards keep their exact physical size */
+.idc-sheet .idc{--w:85.6mm;box-shadow:none;border:.2mm solid #cfcfcf;break-inside:avoid;page-break-inside:avoid}
+.idc-sheet{display:grid;grid-template-columns:repeat(2,85.6mm);gap:6mm 8mm;justify-content:center;padding:8mm 0}
+@media print{
+  @page{size:A4;margin:8mm}
+  body{background:#fff!important}
+  .no-print{display:none!important}
+  .idc{box-shadow:none!important}
+  .idc-single .idc{--w:85.6mm}
+}

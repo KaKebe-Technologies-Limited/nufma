@@ -104,7 +104,7 @@ $idRows = $tab === 'ids' ? $conn->query("SELECT m.id, m.full_name, m.email, m.ph
 include __DIR__ . "/includes/admin-header.php";
 $validity = function () use ($e, $validityDefault) { return '<div class="field"><label>Valid from</label><input type="date" name="valid_from" value="' . date('Y-m-d') . '"></div><div class="field"><label>Valid until</label><input type="date" name="valid_until" value="' . date('Y-m-d', strtotime("+$validityDefault months -1 day")) . '"></div>'; };
 ?>
-<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php" class="active">Register &amp; import</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php" class="active">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
 <?php if ($flash): ?><div class="admin-alert <?php echo $flashType; ?>"><?php echo $flash; ?></div><?php endif; ?>
 
 <div class="admin-grid" style="grid-template-columns:repeat(3,1fr)">

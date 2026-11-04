@@ -4,6 +4,7 @@
  * member (card.php?t=<token>). Doubles as a verification page.
  */
 require __DIR__ . "/includes/membership.php";
+require_once __DIR__ . "/includes/member-card.php";
 
 $token = preg_replace('/[^a-f0-9]/', '', $_GET['t'] ?? '');
 $m = null;
@@ -40,7 +41,7 @@ $activeNav = "membership"; $base = "";
 include __DIR__ . "/includes/header.php";
 ?>
 <section class="section section--soft">
-  <div class="container" style="max-width:720px">
+  <div class="container" style="max-width:860px">
     <div class="card-actions no-print">
       <div>
         <h2 style="font-size:1.4rem">Your NUFA membership card</h2>
@@ -49,35 +50,9 @@ include __DIR__ . "/includes/header.php";
       <button type="button" class="btn btn-gold btn-sm" onclick="window.print()">Print / Save PDF</button>
     </div>
 
-    <div class="mcard <?php echo $expired ? 'is-expired' : ''; ?>" id="mcard">
-      <div class="mcard-top">
-        <img src="assets/images/logo/nufa-logo.png" alt="" class="mcard-logo">
-        <div><b>NUFA</b><span>Northern Uganda Filmmakers Association</span></div>
-        <em>MEMBER</em>
-      </div>
-      <div class="mcard-body">
-        <div class="mcard-photo"><?php if ($photoSrc): ?><img src="<?php echo $photoSrc; ?>" alt=""><?php else: ?><span><?php echo htmlspecialchars(mb_substr($m['full_name'], 0, 1)); ?></span><?php endif; ?></div>
-        <div class="mcard-info">
-          <h3><?php echo htmlspecialchars($m['full_name']); ?></h3>
-          <p class="mcard-guild"><?php echo htmlspecialchars($m['guild_name'] ?? ''); ?></p>
-          <dl>
-            <div><dt>Reg. No.</dt><dd class="mcard-reg"><?php echo htmlspecialchars($m['reg_no']); ?></dd></div>
-            <div><dt>Valid from</dt><dd><?php echo $fmt($m['valid_from']); ?></dd></div>
-            <div><dt>Valid until</dt><dd><?php echo $fmt($m['valid_until']); ?></dd></div>
-          </dl>
-        </div>
-      </div>
-      <div class="mcard-foot">
-        <p><?php echo htmlspecialchars($S['card_note']); ?></p>
-        <div class="mcard-sign">
-          <?php if ($sigOk): ?><img src="assets/images/<?php echo htmlspecialchars($sig); ?>" alt="Signature"><?php else: ?><span class="mcard-nosig"></span><?php endif; ?>
-          <i></i>
-          <b><?php echo htmlspecialchars($S['president_name']); ?></b>
-          <small><?php echo htmlspecialchars($S['president_title']); ?></small>
-        </div>
-      </div>
-      <?php if ($expired): ?><div class="mcard-stamp">EXPIRED</div><?php endif; ?>
-    </div>
+    <link rel="stylesheet" href="assets/css/member-card.css">
+    <div class="idc-single"><?php echo mem_card_html($conn, $m, ["prefix" => ""]); ?></div>
+    <p class="no-print" style="text-align:center;color:var(--text-muted);font-size:.85rem;margin:14px 0 0">Front and back of your card. The QR code on the back opens this verification page.</p>
 
     <div class="card-verify no-print <?php echo $expired ? 'bad' : 'good'; ?>">
       <?php if ($expired): ?>

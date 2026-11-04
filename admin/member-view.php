@@ -76,7 +76,7 @@ $proofIsPdf = strtolower(pathinfo($m['payment_proof'], PATHINFO_EXTENSION)) === 
 include __DIR__ . "/includes/admin-header.php";
 $row = fn($l, $v) => '<div class="mem-row"><span>' . $l . '</span><b>' . ($v !== '' && $v !== null ? htmlspecialchars($v) : '—') . '</b></div>';
 ?>
-<div class="mem-tabs"><a href="members.php">&larr; All applications</a></div>
+<div class="mem-tabs"><a href="members.php">&larr; All applications</a><a href="member-card.php?id=<?php echo $id; ?>">Membership card (preview / issue)</a></div>
 
 <?php if ($flash): ?><div class="admin-alert <?php echo $flashType === 'err' ? 'err' : ($flashType === 'warn' ? 'err' : 'ok'); ?>"><?php echo htmlspecialchars($flash); ?></div><?php endif; ?>
 

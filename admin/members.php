@@ -42,7 +42,7 @@ $qs = fn($extra) => '?' . http_build_query(array_merge(['q' => $q, 'guild' => $g
 <?php if (isset($_GET['deleted'])): ?><div class="admin-alert ok">Member deleted.</div><?php endif; ?>
 
 <div class="mem-tabs">
-  <a href="member-dashboard.php">Dashboard</a><a href="members.php" class="active">Applications</a><a href="member-add.php">Register &amp; import</a>
+  <a href="member-dashboard.php">Dashboard</a><a href="members.php" class="active">Applications</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php">Cards</a>
   <a href="guilds.php">Guilds</a>
   <a href="membership-settings.php">Membership settings</a>
 </div>
@@ -87,7 +87,7 @@ $qs = fn($extra) => '?' . http_build_query(array_merge(['q' => $q, 'guild' => $g
         <td><?php echo mem_status_badge($r['status']); ?></td>
         <td><?php echo $r['valid_until'] ? date('d M Y', strtotime($r['valid_until'])) : '—'; ?></td>
         <td><?php echo date('d M Y', strtotime($r['created_at'])); ?></td>
-        <td><a class="admin-btn admin-btn-line admin-btn-sm" href="member-view.php?id=<?php echo $r['id']; ?>"><?php echo $r['status'] === 'pending' ? 'Review' : 'View'; ?></a></td>
+        <td><a class="admin-btn admin-btn-line admin-btn-sm" href="member-view.php?id=<?php echo $r['id']; ?>"><?php echo $r['status'] === 'pending' ? 'Review' : 'View'; ?></a> <a class="admin-btn admin-btn-line admin-btn-sm" href="member-card.php?id=<?php echo $r['id']; ?>">Card</a></td>
       </tr>
     <?php endforeach; ?>
     </tbody>
