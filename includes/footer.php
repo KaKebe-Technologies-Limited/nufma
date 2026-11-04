@@ -14,7 +14,7 @@ $mobileCta2Label = cms_value('site', 'mobile_cta2_label');
     <div class="footer-brand">
       <a href="<?php echo $base; ?>index.php" class="brand">
         <span class="mark"><img src="<?php echo $base; ?>assets/images/<?php echo $fe($logoRel); ?>" alt="" width="46" height="46" loading="lazy"></span>
-        <span class="word">NUFA<small><?php echo $fe($cfg['site_name']); ?></small></span>
+        <span class="word">NUFA<small><?php echo $fe(cms_value('site', 'brand_subtitle')); ?></small></span>
       </a>
       <p class="footer-tag"><?php echo cms_t('site', 'footer_tagline'); ?></p>
       <p><?php echo cms_t('site', 'footer_description'); ?></p>
@@ -52,6 +52,7 @@ $mobileCta2Label = cms_value('site', 'mobile_cta2_label');
   <div class="container-wide footer-bottom">
     <span>© <span data-year>2026</span> <?php echo cms_t('site', 'footer_copyright'); ?></span>
     <div class="legal"><?php foreach ($footerLegal as $it): ?><a href="<?php echo nufa_href($it['url']); ?>"<?php echo nufa_link_attrs($it); ?>><?php echo $fe($it['label']); ?></a><?php endforeach; ?></div>
+    <a class="admin-login-btn" href="<?php echo $base; ?>admin/login.php" rel="nofollow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Admin login</a>
   </div>
 </footer>
 
