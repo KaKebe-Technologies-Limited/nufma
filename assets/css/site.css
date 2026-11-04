@@ -1056,3 +1056,47 @@ body{color:var(--nufa-text);background:var(--nufa-white)}
 .section--dark .form-card,.section--black .form-card,.section--dark .card:not(.card--dark),.section--black .card:not(.card--dark),.section--dark .ac-box,.section--dark .pay-block{--gold:var(--nufa-primary);--gold-600:var(--nufa-primary-hover);--gold-700:var(--nufa-primary-hover);--gold-300:#E57373;--gold-100:#FDECEC;--on-gold:#fff;color:var(--nufa-text)}
 .form-card .muted,.card .muted,.section--dark .form-card p,.section--dark .form-card h2,.section--dark .form-card h3{color:var(--muted)}.section--dark .form-card h2,.section--dark .form-card h3{color:var(--nufa-black)}
 .status-banner .btn-outline-dark,.status-banner .btn-outline{border-color:#fff;color:#fff}.status-banner .btn-outline-dark:hover,.status-banner .btn-outline:hover{background:#fff;color:#111}
+
+/* ===== Header brand lockup v3: larger logo, bolder wordmark, red rule + one-line descriptor ===== */
+.site-header .nav-row{min-height:104px;padding:10px 0}
+.site-header.is-scrolled .nav-row{min-height:78px}
+.site-header .brand{gap:18px;align-items:center}
+.site-header .brand .mark{width:84px;height:84px;padding:5px;border:2px solid var(--nufa-primary);box-shadow:0 6px 18px rgba(213,0,0,.18);transition:width .25s,height .25s}
+.site-header.is-scrolled .brand .mark{width:62px;height:62px}
+.site-header .brand .word{font-size:2.15rem;font-weight:900;letter-spacing:.05em;line-height:1;padding-left:18px;border-left:3px solid var(--nufa-primary);transition:font-size .25s}
+.site-header.is-scrolled .brand .word{font-size:1.7rem}
+.site-header .brand .word small{display:block;margin-top:8px;font-size:.68rem;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--nufa-muted);max-width:none;white-space:nowrap;line-height:1.2}
+@media (max-width:1180px){
+  .site-header .nav-row{min-height:88px}
+  .site-header .brand .mark{width:68px;height:68px}
+  .site-header .brand .word{font-size:1.8rem;padding-left:14px}
+  .site-header .brand .word small{font-size:.58rem;letter-spacing:.18em}
+}
+@media (max-width:760px){
+  .site-header .nav-row{min-height:72px;padding:8px 0}
+  .site-header .brand{gap:12px}
+  .site-header .brand .mark{width:56px;height:56px}
+  .site-header.is-scrolled .brand .mark{width:48px;height:48px}
+  .site-header .brand .word{font-size:1.5rem;padding-left:12px}
+  .site-header .brand .word small{display:block;font-size:.5rem;letter-spacing:.14em;margin-top:5px}
+}
+@media (max-width:380px){.site-header .brand .word small{display:none}.site-header .brand .word{border-left:0;padding-left:0}}
+.mobile-nav .brand .mark{width:56px;height:56px;border:2px solid var(--nufa-primary)}.mobile-nav .brand .word{font-size:1.5rem;font-weight:900}
+@media (min-width:1181px){
+  .site-header .brand{gap:14px}
+  .site-header .brand .mark{width:78px;height:78px}
+  .site-header .brand .word{font-size:1.95rem;padding-left:14px}
+  .site-header .brand .word small{font-size:.58rem;letter-spacing:.17em;margin-top:7px}
+  .site-header .main-nav li>a{padding:9px 7px;font-size:.76rem}
+  .site-header .header-cta .btn{padding-left:16px;padding-right:16px}
+}
+@media (min-width:1181px) and (max-width:1399px){
+  .site-header .brand .mark{width:68px;height:68px}.site-header .brand .word{font-size:1.7rem}
+  .site-header .main-nav li>a{padding:9px 5px;font-size:.72rem}
+}
+@media (min-width:1181px) and (max-width:1599px){
+  .site-header .main-nav li>a{padding:9px 4px;font-size:.7rem;letter-spacing:0}
+  .site-header .main-nav li.has-dropdown>a{padding-right:1px}
+  .site-header .main-nav ul{gap:0}
+  .site-header .header-cta .btn{padding:10px 14px;font-size:.74rem}
+}
