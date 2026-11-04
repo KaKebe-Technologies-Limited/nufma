@@ -112,3 +112,37 @@ function mem_import_row(?array $map, array $r, array $guildByName) {
     if (!empty($d['guild'])) { $k = strtolower($d['guild']); if (isset($guildByName[$k])) $d['guild_id'] = $guildByName[$k]; }
     return $d;
 }
+
+/** Earlier records in the database that can be turned into members: key => [label, FROM/SELECT sql (normalised columns), search columns]. */
+function mem_sources($conn) {
+    $all = [
+        'members'    => ['Existing members — renew membership', "SELECT id, full_name, email, phone, gender, dob, district, occupation, id_number, address, reg_no, status, valid_until FROM members", ['full_name', 'email', 'phone', 'reg_no']],
+        'sacco'      => ['SACCO applicants', "SELECT id, full_name, email, phone, gender, dob, district, occupation, id_number, address, '' AS reg_no, status, NULL AS valid_until FROM sacco_applications", ['full_name', 'email', 'phone']],
+        'learners'   => ['NUFA Academy learners', "SELECT id, name AS full_name, email, phone, '' AS gender, NULL AS dob, '' AS district, '' AS occupation, '' AS id_number, '' AS address, '' AS reg_no, '' AS status, NULL AS valid_until FROM academy_learners", ['name', 'email', 'phone']],
+        'ambassadors' => ['Ambassador applicants', "SELECT id, name AS full_name, email, phone, '' AS gender, NULL AS dob, city AS district, occupation, '' AS id_number, '' AS address, '' AS reg_no, status, NULL AS valid_until FROM ambassadors", ['name', 'email', 'phone', 'city']],
+        'films'      => ['Film Showcase filmmakers', "SELECT id, fm_name AS full_name, email, phone, '' AS gender, NULL AS dob, fm_location AS district, '' AS occupation, '' AS id_number, '' AS address, '' AS reg_no, status, NULL AS valid_until FROM films WHERE fm_name<>''", ['fm_name', 'email', 'phone']],
+        'subscribers' => ['Newsletter subscribers (with a name)', "SELECT id, name AS full_name, email, '' AS phone, '' AS gender, NULL AS dob, '' AS district, '' AS occupation, '' AS id_number, '' AS address, '' AS reg_no, '' AS status, NULL AS valid_until FROM subscribers WHERE name<>'' AND unsubscribed=0", ['name', 'email']],
+    ];
+    $out = [];
+    foreach ($all as $k => $s) {
+        preg_match('/FROM (\w+)/', $s[1], $m);
+        $t = $conn->query("SHOW TABLES LIKE '" . $m[1] . "'");
+        if ($t && $t->num_rows) $out[$k] = $s;
+    }
+    return $out;
+}
+
+/** Rows of one source (optionally filtered by a search text), newest first. */
+function mem_source_rows($conn, array $src, $q = '', $limit = 100, array $ids = []) {
+    [$label, $sql, $cols] = $src;
+    $where = []; $types = ''; $params = [];
+    $hasWhere = stripos($sql, ' WHERE ') !== false;
+    if ($ids) $where[] = "id IN (" . implode(',', array_map('intval', $ids)) . ")";
+    if ($q !== '') {
+        $likes = []; foreach ($cols as $c) { $likes[] = "$c LIKE ?"; $types .= 's'; $params[] = "%$q%"; }
+        $where[] = '(' . implode(' OR ', $likes) . ')';
+    }
+    $sql .= ($where ? ($hasWhere ? ' AND ' : ' WHERE ') . implode(' AND ', $where) : '') . " ORDER BY id DESC LIMIT " . (int)$limit;
+    $st = $conn->prepare($sql); if ($params) $st->bind_param($types, ...$params); $st->execute();
+    return $st->get_result()->fetch_all(MYSQLI_ASSOC);
+}

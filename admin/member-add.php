@@ -8,7 +8,7 @@ require_once __DIR__ . "/../includes/member-admin.php";
 $S = mem_settings($conn);
 $guilds = $conn->query("SELECT id, name FROM guilds WHERE is_active=1 ORDER BY sort_order, name")->fetch_all(MYSQLI_ASSOC);
 $guildByName = []; foreach ($guilds as $g) $guildByName[strtolower($g['name'])] = (int)$g['id'];
-$tabs = ['add' => 'Register a member', 'import' => 'Import from CSV', 'ids' => 'Issue membership IDs', 'export' => 'Export records'];
+$tabs = ['add' => 'Register a member', 'import' => 'Import from CSV', 'existing' => 'From existing records', 'ids' => 'Issue membership IDs', 'export' => 'Export records'];
 $tab = isset($tabs[$_GET['tab'] ?? '']) ? $_GET['tab'] : 'add';
 $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 $flash = ''; $flashType = 'ok'; $report = null;
@@ -85,6 +85,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($report['bad']) $flashType = 'warn';
             }
             $tab = 'import';
+        } elseif ($act === 'existing') {
+            $srcs = mem_sources($conn); $key = $_POST['source'] ?? '';
+            $ids = array_values(array_filter(array_map('intval', $_POST['ids'] ?? [])));
+            if (!isset($srcs[$key]) || !$ids) { $flash = 'Choose a source and tick at least one record.'; $flashType = 'warn'; }
+            else {
+                $rows = mem_source_rows($conn, $srcs[$key], '', 500, $ids); $defGuild = (int)($_POST['guild_id'] ?? 0);
+                $report = ['ok' => 0, 'dup' => 0, 'bad' => 0, 'mail' => 0, 'lines' => [], 'headers' => true];
+                foreach ($rows as $n => $r) {
+                    $name = trim((string)$r['full_name']);
+                    if ($key === 'members') {   // renew an existing member: new validity, same ID
+                        $reg = mem_issue_id($conn, (int)$r['id'], $from ?: date('Y-m-d'), $until ?: date('Y-m-d', strtotime('+' . $validityDefault . ' months -1 day')));
+                        $report['ok']++; if ($notify && mem_admin_notify($conn, (int)$r['id'])) $report['mail']++;
+                        $report['lines'][] = [$n + 1, $name, 'Renewed · ID ' . $reg]; continue;
+                    }
+                    if ($name === '') { $report['bad']++; $report['lines'][] = [$n + 1, '—', 'Skipped — no name']; continue; }
+                    if (mem_admin_exists($conn, $name, trim((string)$r['email']), trim((string)$r['phone']))) { $report['dup']++; $report['lines'][] = [$n + 1, $name, 'Skipped — already a member']; continue; }
+                    $d = $r; $d['guild_id'] = $defGuild; $d['status'] = $issue ? 'approved' : 'pending'; $d['note'] = 'From ' . $srcs[$key][0];
+                    try {
+                        $id = mem_admin_create($conn, $d); $report['ok']++; $reg = $issue ? mem_issue_id($conn, $id, $from, $until) : '';
+                        if ($issue && $notify && mem_admin_notify($conn, $id)) $report['mail']++;
+                        $report['lines'][] = [$n + 1, $name, $reg ? 'Registered · ID ' . $reg : 'Registered (pending — no ID yet)'];
+                    } catch (Throwable $ex) { $report['bad']++; $report['lines'][] = [$n + 1, $name, 'Error — ' . $ex->getMessage()]; }
+                }
+                $flash = ($key === 'members' ? 'Renewed ' : 'Registered ') . $report['ok'] . ' member(s)' . ($report['dup'] ? ', ' . $report['dup'] . ' already members (skipped)' : '') . ($report['bad'] ? ', ' . $report['bad'] . ' problem(s)' : '') . ($report['mail'] ? ', ' . $report['mail'] . ' email(s) sent' : '') . '.';
+            }
+            $tab = 'existing';
         } elseif ($act === 'issue') {
             $ids = array_values(array_filter(array_map('intval', $_POST['ids'] ?? [])));
             if (!empty($_POST['all'])) $ids = array_map('intval', array_column($conn->query("SELECT id FROM members WHERE reg_no IS NULL OR reg_no='' ORDER BY created_at, id LIMIT 5000")->fetch_all(MYSQLI_ASSOC), 'id'));
@@ -159,6 +185,43 @@ $validity = function () use ($e, $validityDefault) { return '<div class="field">
 <?php if ($report && $report['lines']): ?>
 <div class="admin-card"><div class="admin-card-head"><h2>Import report</h2><span class="admin-help"><?php echo $report['headers'] ? 'Headings were detected.' : 'No headings found — each line was read as a name.'; ?></span></div>
   <div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>Row</th><th>Name</th><th>Result</th></tr></thead><tbody>
+  <?php foreach ($report['lines'] as [$ln, $nm, $res]): ?><tr><td><?php echo (int)$ln; ?></td><td><?php echo $e($nm); ?></td><td><?php echo $e($res); ?></td></tr><?php endforeach; ?>
+  </tbody></table></div></div>
+<?php endif; ?>
+
+<?php elseif ($tab === 'existing'):
+    $srcs = mem_sources($conn); $sk = $_GET['source'] ?? ($_POST['source'] ?? 'members'); if (!isset($srcs[$sk])) $sk = array_key_first($srcs);
+    $sq = trim($_GET['q'] ?? ''); $srows = $sk ? mem_source_rows($conn, $srcs[$sk], $sq, 100) : [];
+    $isMembers = $sk === 'members';
+?>
+<div class="admin-card">
+  <div class="admin-card-head"><h2>Add members from earlier records</h2><span class="admin-help">Pick people already in the database — SACCO applicants, Academy learners, ambassadors, Film Showcase filmmakers or newsletter subscribers — and register them as members, or renew existing members.</span></div>
+  <form method="get" class="mem-filter"><input type="hidden" name="tab" value="existing">
+    <select name="source" onchange="this.form.submit()"><?php foreach ($srcs as $k => $s) echo '<option value="' . $k . '"' . ($k === $sk ? ' selected' : '') . '>' . $e($s[0]) . '</option>'; ?></select>
+    <input type="search" name="q" placeholder="Search name, email or phone" value="<?php echo $e($sq); ?>"><button class="admin-btn admin-btn-brand">Search</button>
+  </form>
+  <?php if (!$srows): ?><p style="color:var(--text-muted);padding:14px 0">No records found in this source.</p>
+  <?php else: ?>
+  <form method="post"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="existing"><input type="hidden" name="source" value="<?php echo $e($sk); ?>">
+    <p class="admin-help">Showing up to 100 of the latest records — use the search to narrow down.</p>
+    <div style="overflow-x:auto"><table class="admin-table" data-noexport><thead><tr><th><input type="checkbox" id="exAll" aria-label="Select all"></th><th>Name</th><th>Contact</th><th>District</th><th><?php echo $isMembers ? 'Membership ID' : 'Status'; ?></th><th><?php echo $isMembers ? 'Valid until' : 'Already a member?'; ?></th></tr></thead><tbody>
+    <?php foreach ($srows as $r): $isM = !$isMembers && mem_admin_exists($conn, trim((string)$r['full_name']), trim((string)$r['email']), trim((string)$r['phone'])); ?>
+      <tr><td><input type="checkbox" name="ids[]" value="<?php echo (int)$r['id']; ?>" class="exRow"<?php echo $isM ? '' : ''; ?>></td><td><b><?php echo $e($r['full_name']); ?></b></td><td><?php echo $e(trim($r['email'] . ' ' . $r['phone'])); ?></td><td><?php echo $e($r['district'] ?: '—'); ?></td>
+      <td><?php echo $isMembers ? $e($r['reg_no'] ?: '—') : ($r['status'] !== '' ? $e($r['status']) : '—'); ?></td>
+      <td><?php echo $isMembers ? ($r['valid_until'] ? date('d M Y', strtotime($r['valid_until'])) . (strtotime($r['valid_until'] . ' 23:59:59') < time() ? ' <span class="admin-badge gray">expired</span>' : '') : '—') : ($isM ? '<span class="admin-badge">Yes</span>' : 'No'); ?></td></tr>
+    <?php endforeach; ?></tbody></table></div>
+    <?php if (!$isMembers): ?><div class="admin-form-grid" style="margin-top:12px"><div class="field"><label>Guild for the new members</label><select name="guild_id"><option value="">— choose later —</option><?php foreach ($guilds as $g) echo '<option value="' . $g['id'] . '">' . $e($g['name']) . '</option>'; ?></select></div></div>
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="issue" value="1" checked> Approve and issue membership IDs now</label><?php else: ?><input type="hidden" name="issue" value="1"><p class="admin-help" style="margin-top:12px">Renewing keeps each member's ID and sets the new validity dates below.</p><?php endif; ?>
+    <div class="admin-form-grid"><?php echo $validity(); ?></div>
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="notify" value="1"> Email each person their ID and card link</label>
+    <p><button class="admin-btn admin-btn-brand"><?php echo $isMembers ? 'Renew selected members' : 'Register selected as members'; ?></button></p>
+  </form>
+  <script>document.getElementById('exAll')?.addEventListener('change',function(){var v=this.checked;document.querySelectorAll('.exRow').forEach(function(c){c.checked=v})});</script>
+  <?php endif; ?>
+</div>
+<?php if ($report && $report['lines']): ?>
+<div class="admin-card"><div class="admin-card-head"><h2>Result</h2></div>
+  <div style="overflow-x:auto"><table class="admin-table"><thead><tr><th>#</th><th>Name</th><th>Result</th></tr></thead><tbody>
   <?php foreach ($report['lines'] as [$ln, $nm, $res]): ?><tr><td><?php echo (int)$ln; ?></td><td><?php echo $e($nm); ?></td><td><?php echo $e($res); ?></td></tr><?php endforeach; ?>
   </tbody></table></div></div>
 <?php endif; ?>
