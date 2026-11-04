@@ -95,6 +95,11 @@ function nufa_hit($conn, $page) {
     if (preg_match('/bot|crawl|spider|slurp|curl|wget|monitor/i', $_SERVER['HTTP_USER_AGENT'] ?? '')) return;
     $p = $conn->real_escape_string($page);
     $conn->query("INSERT INTO page_hits (page, day, hits) VALUES ('$p', CURDATE(), 1) ON DUPLICATE KEY UPDATE hits = hits + 1");
+    try {   // visitor statistics (device, country, unique visitors) — must never break a page
+        require_once __DIR__ . '/analytics.php';
+        $item = ''; if (in_array($page, ['post', 'film', 'programme', 'award', 'guest', 'academy-course'], true)) $item = preg_replace('/[^A-Za-z0-9_-]/', '', (string)($_GET['slug'] ?? $_GET['e'] ?? $_GET['id'] ?? ''));
+        ana_record($conn, $page, $item);
+    } catch (Throwable $__e) { }
 }
 
 /** The editorial categories defined in the master brief. */

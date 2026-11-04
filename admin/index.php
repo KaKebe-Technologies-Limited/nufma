@@ -5,6 +5,7 @@ require __DIR__ . "/includes/auth.php";
 require_once __DIR__ . "/../includes/membership.php";
 require_once __DIR__ . "/../includes/settings.php";
 require_once __DIR__ . "/../includes/schedule.php";
+require_once __DIR__ . "/../includes/analytics.php";
 $cfg = nufa_site_settings($conn);
 
 $one = function ($sql) use ($conn) { try { $r = $conn->query($sql); return $r ? (float)($r->fetch_row()[0] ?? 0) : 0; } catch (Throwable $e) { return 0; } };
@@ -39,6 +40,7 @@ $maxM = max(1, max(array_column($months, 'n')));
 $byGuild = $rows("SELECT g.name, COUNT(m.id) c FROM guilds g LEFT JOIN members m ON m.guild_id=g.id AND m.status='approved' GROUP BY g.id ORDER BY c DESC, g.sort_order LIMIT 6");
 $maxG = max(1, max(array_map(fn($g) => (int)$g['c'], $byGuild ?: [['c' => 1]])));
 $topPages = $rows("SELECT page, SUM(hits) h FROM page_hits WHERE day >= CURDATE() - INTERVAL 29 DAY GROUP BY page ORDER BY h DESC LIMIT 6"); $maxP = max(1, ...array_map(fn($x) => (int)$x['h'], $topPages ?: [['h' => 1]]));
+$ana = ana_report($conn, 30); $hasAna = ana_has_data($conn);
 $topPosts = $rows("SELECT id, title, views FROM posts WHERE is_published=1 ORDER BY views DESC LIMIT 5");
 
 // ---- calendar: the next events & holidays
@@ -104,7 +106,8 @@ $trend = $visitsPrev > 0 ? round(($visits30 - $visitsPrev) / $visitsPrev * 100) 
   <a class="dx-kpi" href="subscribers.php"><span>Newsletter subscribers</span><b><?php echo number_format($subTotal); ?></b><small>Active on the mailing list</small></a>
   <a class="dx-kpi" href="posts.php"><span>Stories published</span><b><?php echo $postLive; ?></b><small><?php echo $postDraft; ?> draft<?php echo $postDraft === 1 ? '' : 's'; ?></small></a>
   <a class="dx-kpi" href="schedule.php"><span>Events · next 30 days</span><b><?php echo $eventsMonth; ?></b><small>Plus public holidays ahead</small></a>
-  <div class="dx-kpi"><span>Website visits · 30 days</span><b><?php echo number_format($visits30); ?></b><small><?php echo $trend === null ? 'Counting started recently' : ('<span class="' . ($trend >= 0 ? 'up' : '') . '">' . ($trend >= 0 ? '▲ ' : '▼ ') . abs($trend) . '%</span> vs previous 30 days'); ?></small></div>
+  <?php if ($hasAna): ?><a class="dx-kpi" href="visitors.php"><span>Visitors · 30 days</span><b><?php echo number_format($ana['visitors']); ?></b><small><?php echo number_format($ana['views']); ?> page views · <?php echo array_sum($ana['devices']) ? round($ana['devices']['m'] * 100 / array_sum($ana['devices'])) : 0; ?>% on mobile</small></a>
+  <?php else: ?><div class="dx-kpi"><span>Website visits · 30 days</span><b><?php echo number_format($visits30); ?></b><small><?php echo $trend === null ? 'Counting started recently' : ('<span class="' . ($trend >= 0 ? 'up' : '') . '">' . ($trend >= 0 ? '▲ ' : '▼ ') . abs($trend) . '%</span> vs previous 30 days'); ?></small></div><?php endif; ?>
   <a class="dx-kpi" href="feedback.php?tab=insights"><span>Feedback rating</span><b><?php echo $fbCount ? number_format($fbAvg, 1) . ' ★' : '—'; ?></b><small><?php echo $fbCount; ?> response<?php echo $fbCount === 1 ? '' : 's'; ?></small></a>
 </div>
 
@@ -113,9 +116,14 @@ $trend = $visitsPrev > 0 ? round(($visits30 - $visitsPrev) / $visitsPrev * 100) 
     <div class="admin-card"><div class="admin-card-head"><h2>Quick actions</h2><span class="admin-help">The most common jobs, one click away</span></div>
       <div class="dx-quick"><?php foreach ($quick as $q): ?><a href="<?php echo $q[3]; ?>"><i><?php echo $q[0]; ?></i><span><?php echo htmlspecialchars($q[1]); ?><small><?php echo htmlspecialchars($q[2]); ?></small></span></a><?php endforeach; ?></div></div>
 
+    <?php if ($hasAna): echo ana_panel_chart($ana, 'Visitors'); ?>
+    <div class="edit-grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px"><?php echo ana_panel_devices($ana); echo ana_panel_countries($ana, 6); ?></div>
+    <p class="admin-help" style="margin:-6px 4px 14px"><a href="visitors.php">Open the full visitor report →</a></p>
+    <?php else: ?>
     <div class="admin-card"><div class="admin-card-head"><h2>Website visits — last 30 days</h2><span class="admin-help">Anonymous page counts · no cookies or IP addresses</span></div>
       <?php if (!array_sum($visitSeries)): ?><p class="admin-help">Visits will appear here as people browse the website (your own admin visits are not counted).</p><?php endif; ?>
       <div class="dx-chart wide"><?php foreach ($visitSeries as $d => $n): ?><div class="c" title="<?php echo date('d M', strtotime($d)) . ': ' . $n; ?> visits"><i style="height:<?php echo max(3, round($n / $maxVisit * 105)); ?>px"></i><span><?php echo date('j', strtotime($d)) % 5 === 0 ? date('j', strtotime($d)) : '&nbsp;'; ?></span></div><?php endforeach; ?></div></div>
+    <?php endif; ?>
 
     <div class="edit-grid" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px">
       <div class="admin-card"><div class="admin-card-head"><h2>Membership applications</h2><span class="admin-help">last 6 months</span></div>
@@ -139,7 +147,9 @@ $trend = $visitsPrev > 0 ? round(($visits30 - $visitsPrev) / $visitsPrev * 100) 
       <div class="dx-feed"><?php foreach ($feed as $x): ?><a href="<?php echo htmlspecialchars($x['u']); ?>"><span class="ic"><?php echo $x['i']; ?></span><div><div class="tt"><?php echo htmlspecialchars($x['a']); ?></div><div class="ss"><?php echo htmlspecialchars((string)$x['b']); ?> · <?php echo $ago($x['t']); ?></div></div></a><?php endforeach; if (!$feed) echo '<p class="admin-help">Nothing yet — new applications, enquiries and feedback will show up here.</p>'; ?></div></div>
 
     <div class="admin-card"><div class="admin-card-head"><h2>Most visited pages</h2><span class="admin-help">30 days</span></div>
-      <div class="dx-top"><?php foreach ($topPages as $p): ?><div class="r"><span><?php echo htmlspecialchars(ucfirst(str_replace(['-', '_'], ' ', $p['page']))); ?></span><div class="bar"><i style="width:<?php echo round($p['h'] / $maxP * 100); ?>%"></i></div><em><?php echo number_format((int)$p['h']); ?></em></div><?php endforeach; if (!$topPages) echo '<p class="admin-help">No visits recorded yet.</p>'; ?></div>
+      <?php if ($hasAna): ?><div class="dx-top"><?php $mxp = max(1, (int)($ana['pages'][0]['views'] ?? 1)); foreach (array_slice($ana['pages'], 0, 8) as $p): ?><div class="r"><span><?php echo ana_h(ana_page_label($p['page'])); ?></span><div class="bar"><i style="width:<?php echo round($p['views'] / $mxp * 100); ?>%"></i></div><em><?php echo number_format((int)$p['views']); ?></em></div><?php endforeach; if (!$ana['pages']) echo '<p class="admin-help">No visits recorded yet.</p>'; ?></div>
+      <?php else: ?><div class="dx-top"><?php foreach ($topPages as $p): ?><div class="r"><span><?php echo htmlspecialchars(ucfirst(str_replace(['-', '_'], ' ', $p['page']))); ?></span><div class="bar"><i style="width:<?php echo round($p['h'] / $maxP * 100); ?>%"></i></div><em><?php echo number_format((int)$p['h']); ?></em></div><?php endforeach; if (!$topPages) echo '<p class="admin-help">No visits recorded yet.</p>'; ?></div>
+      <?php endif; ?>
       <?php if ($topPosts): ?><h3 class="mem-h3" style="margin-top:16px">Top stories</h3><div class="dx-top"><?php foreach ($topPosts as $p): ?><div class="r"><span><a href="post-edit.php?id=<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['title']); ?></a></span><em><?php echo number_format((int)$p['views']); ?> views</em></div><?php endforeach; ?></div><?php endif; ?></div>
 
     <div class="admin-card"><div class="admin-card-head"><h2>Health check</h2></div>

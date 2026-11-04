@@ -159,6 +159,7 @@ HTML],
 <p>This website uses only essential cookies needed for it to work — for example a session cookie that protects forms against misuse and keeps administrators signed in. We do not use advertising or tracking cookies and do not currently run third-party analytics.</p>
 <p>If analytics or other non-essential technologies are added in future, this policy will be updated and consent will be requested where required.</p>
 <p>Fonts are loaded from Google Fonts, which may receive your IP address when a page loads.</p>
+<p>We keep simple, anonymous visitor statistics — which pages are viewed, whether a visit is from a phone, tablet or computer, and the country — using a one-way code that changes every day. We do not use cookies for this and we do not store IP addresses or names in these statistics.</p>
 HTML],
     'terms' => ['label' => 'Website Terms of Use', 'type' => 'html', 'default' => <<<'HTML'
 <p>By using this website you agree to these terms.</p>
