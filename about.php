@@ -8,7 +8,7 @@ $canonicalPath = "about.php";
 $ogImage = "assets/images/og/og-about.jpg";
 include __DIR__ . "/includes/header.php";
 
-require_once __DIR__ . "/includes/team-seed.php"; team_seed_okello($conn);
+require_once __DIR__ . "/includes/team-seed.php"; team_seed_okello($conn); team_seed_ojok($conn);
 $team = $conn->query("SELECT * FROM team_members WHERE is_active=1 AND category <> 'Awards Technical Team' ORDER BY sort_order ASC, id ASC")->fetch_all(MYSQLI_ASSOC);
 $teamCatOrder = nufa_list($cfg, "list_team_categories");
 $teamGroups = [];

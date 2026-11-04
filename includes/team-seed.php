@@ -18,3 +18,19 @@ function team_seed_okello($conn) {
     }
     $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('team_okello_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
+
+/** One-time: new portrait and full profile for Ojok Odong, President. Edit it any time in Admin → Team. */
+function team_seed_ojok($conn) {
+    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='team_ojok_v1'");
+    if (!$f || $f->num_rows) return;
+    if (!is_file(__DIR__ . '/../assets/images/team/team-president-ojok.webp')) return;   // photo not uploaded yet
+    $photo = 'team/team-president-ojok.webp';
+    $bio = "Ojok Odong is an award-winning Ugandan filmmaker, producer, screenwriter and director from Northern Uganda, with over a decade of experience in film, television and documentary production. He is passionate about authentic African storytelling, with a particular interest in stories that explore culture, identity, history and the lived experiences of African communities.\n\n"
+        . "He is the President of the Northern Uganda Filmmakers Association (NUFA), an organisation dedicated to strengthening the film industry in Northern Uganda through professional development, industry advocacy, collaboration and the promotion of regional talent. He is also one of the founders of the Northern Uganda Film Awards, an initiative established to recognise filmmaking excellence, create opportunities for emerging creatives and position Northern Uganda as an important centre for African storytelling.\n\n"
+        . "Through his creative work, including the award-winning short films like Shame of Puberty and Home, Ojok continues to champion the representation of Northern Uganda's social lifestyle, stereotypes, cultural heritage and stories through cinema.\n\n"
+        . "An alumnus of the Maisha Film Lab, he remains committed to nurturing emerging filmmakers, building sustainable creative opportunities and contributing to the growth of Uganda's film and creative industries.";
+    $name = 'Ojok Odong';
+    $s = $conn->prepare("UPDATE team_members SET photo=?, bio=? WHERE name=? AND role LIKE '%President%' AND role NOT LIKE '%Vice%'");
+    $s->bind_param("sss", $photo, $bio, $name); $s->execute();
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('team_ojok_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+}
