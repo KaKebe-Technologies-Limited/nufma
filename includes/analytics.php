@@ -124,7 +124,7 @@ function ana_panel_chart($r, $title = 'Visitors') {
     return $o . '</div></div>';
 }
 function ana_panel_devices($r) {
-    $t = max(1, array_sum($r['devices'])); $lab = ['m' => ['Mobile', '#F57A0A'], 't' => ['Tablet', '#FFB066'], 'd' => ['Desktop', '#111111']];
+    $t = max(1, array_sum($r['devices'])); $lab = ['m' => ['Mobile', '#D50000'], 't' => ['Tablet', '#FF7900'], 'd' => ['Desktop', '#111111']];
     $o = '<div class="admin-card"><div class="admin-card-head"><h2>Mobile or desktop?</h2><span class="admin-help">share of visitors</span></div>';
     if (!array_sum($r['devices'])) return $o . '<p class="admin-help">No visits recorded yet.</p></div>';
     $o .= '<div class="an-stack" role="img" aria-label="Device split">';

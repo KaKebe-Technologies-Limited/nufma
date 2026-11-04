@@ -253,12 +253,12 @@ function mem_member_vars($conn, $m, $extra = []) {
 
 function mem_email_html($subject, $text, $buttonUrl = null, $buttonLabel = 'View my membership card') {
     $body = nl2br(htmlspecialchars($text));
-    $body = preg_replace('#(https?://[^\s<]+)#', '<a href="$1" style="color:#D2650E">$1</a>', $body);
-    $btn = $buttonUrl ? '<p style="margin:26px 0 4px"><a href="' . htmlspecialchars($buttonUrl) . '" style="background:#F5821F;color:#fff;text-decoration:none;padding:13px 26px;border-radius:30px;font-weight:bold;display:inline-block">' . htmlspecialchars($buttonLabel) . '</a></p>' : '';
-    return '<!doctype html><html><body style="margin:0;background:#F2F1EC;font-family:Arial,Helvetica,sans-serif;color:#1F1F1F">'
-        . '<div style="max-width:600px;margin:0 auto;padding:24px 14px"><div style="background:#F5821F;color:#fff;padding:18px 26px;font-size:20px;font-weight:bold">NUFA <span style="font-weight:normal;font-size:13px;opacity:.9">Northern Uganda Filmmakers Association</span></div>'
+    $body = preg_replace('#(https?://[^\s<]+)#', '<a href="$1" style="color:#D50000">$1</a>', $body);
+    $btn = $buttonUrl ? '<p style="margin:26px 0 4px"><a href="' . htmlspecialchars($buttonUrl) . '" style="background:#D50000;color:#fff;text-decoration:none;padding:13px 26px;border-radius:30px;font-weight:bold;display:inline-block">' . htmlspecialchars($buttonLabel) . '</a></p>' : '';
+    return '<!doctype html><html><body style="margin:0;background:#F5F5F5;font-family:Arial,Helvetica,sans-serif;color:#1F1F1F">'
+        . '<div style="max-width:600px;margin:0 auto;padding:24px 14px"><div style="background:#D50000;color:#fff;padding:18px 26px;font-size:20px;font-weight:bold">NUFA <span style="font-weight:normal;font-size:13px;opacity:.9">Northern Uganda Filmmakers Association</span></div>'
         . '<div style="background:#fff;padding:28px 26px;line-height:1.65;font-size:15px">' . $body . $btn . '</div>'
-        . '<div style="text-align:center;font-size:12px;color:#666666;padding:14px">&copy; ' . date('Y') . ' NUFA &middot; Gulu, Northern Uganda</div></div></body></html>';
+        . '<div style="text-align:center;font-size:12px;color:#757575;padding:14px">&copy; ' . date('Y') . ' NUFA &middot; Gulu, Northern Uganda</div></div></body></html>';
 }
 
 /** Sends (and logs) an e-mail. Returns true when handed to the mail system. */

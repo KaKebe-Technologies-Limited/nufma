@@ -49,7 +49,7 @@ function maint_gate($conn, $cfg, $logoRel) {
     $endTxt = $end ? (new DateTime('@' . $end))->setTimezone(maint_tz())->format('l, j F Y \a\t H:i') . ' (East Africa Time)' : '';
     http_response_code(503); header('Retry-After: ' . ($end && $end > time() ? $end - time() : 3600)); header('Cache-Control: no-store'); header('X-Robots-Tag: noindex');
     $soc = array_filter(['Facebook' => $cfg['facebook_url'] ?? '', 'Instagram' => $cfg['instagram_url'] ?? '', 'X' => $cfg['x_url'] ?? '', 'LinkedIn' => $cfg['linkedin_url'] ?? '', 'YouTube' => $cfg['youtube_url'] ?? '']);
-    $gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold'] ?? '') ? $cfg['brand_gold'] : '#F57A0A';
+    $gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_accent'] ?? '') ? $cfg['brand_accent'] : '#FF7900';
     ?><!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title><?php echo $e($m['maint_title']); ?> — <?php echo $e($cfg['site_name']); ?></title>
 <style>

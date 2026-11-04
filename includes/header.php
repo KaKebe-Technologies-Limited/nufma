@@ -37,8 +37,9 @@ if ($__pgKey !== '' && ($cfg["noindex_$__pgKey"] ?? '0') === '1') $noindex = tru
 if ($__pgKey !== '' && !empty($cfg["seo_image_$__pgKey"]) && is_file(__DIR__ . '/../assets/images/' . $cfg["seo_image_$__pgKey"])) $ogImage = 'assets/images/' . $cfg["seo_image_$__pgKey"];
 $logoRel = ($cfg['site_logo'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_logo'])) ? $cfg['site_logo'] : 'logo/nufa-logo.png';
 $faviconHref = ($cfg['site_favicon'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_favicon'])) ? 'assets/images/' . $cfg['site_favicon'] : 'assets/images/logo/favicon.svg';
-$gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold']) ? $cfg['brand_gold'] : '#F57A0A';
+$gold = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_gold']) ? $cfg['brand_gold'] : '#D50000';
 $ink  = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_ink']) ? $cfg['brand_ink'] : '#111111';
+$accent = preg_match('/^#[0-9a-f]{6}$/i', $cfg['brand_accent'] ?? '') ? $cfg['brand_accent'] : '#FF7900';
 $ctaLabel = cms_value('site', 'header_cta_label');
 $ctaUrl = cms_value('site', 'header_cta_url');
 
@@ -103,7 +104,7 @@ if (http_response_code() === 200) nufa_hit($conn, substr(preg_replace('/\.php$/'
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?<?php echo $font['google']; ?>&display=swap">
 <link rel="stylesheet" href="<?php echo $base; ?>assets/css/site.css?v=<?php echo $cssVer; ?>">
 <style>:root{--font-heading:<?php echo $font['heading']; ?>;--font-body:<?php echo $font['body']; ?>;
---gold:<?php echo $gold; ?>;--gold-600:<?php echo nufa_shade($gold, -12); ?>;--gold-300:<?php echo nufa_shade($gold, 28); ?>;--gold-700:<?php echo nufa_shade($gold, -38); ?>;--gold-100:<?php echo nufa_shade($gold, 88); ?>;
+--gold:<?php echo $gold; ?>;--nufa-primary:<?php echo $gold; ?>;--nufa-primary-hover:<?php echo nufa_shade($gold, -14); ?>;--gold-600:<?php echo nufa_shade($gold, -14); ?>;--gold-700:<?php echo nufa_shade($gold, -14); ?>;--gold-300:<?php echo nufa_shade($accent, 30); ?>;--gold-100:<?php echo nufa_shade($gold, 92); ?>;--accent:<?php echo $accent; ?>;--nufa-secondary:<?php echo $accent; ?>;--nufa-secondary-hover:<?php echo nufa_shade($accent, -10); ?>;
 --ink:<?php echo $ink; ?>;--ink-700:<?php echo nufa_shade($ink, 12); ?>;--ink-900:<?php echo nufa_shade($ink, -55); ?>}</style>
 </head>
 <body>

@@ -6,7 +6,7 @@ require __DIR__ . "/../includes/membership.php";
 $e = fn($v) => htmlspecialchars((string)$v);
 $map = mem_subregion_map($conn);
 $regions = array_keys($map); $all = array_merge($regions, ['Other / not stated']);
-$colour = ['Acholi' => '#F57A0A', 'Karamoja' => '#111111', 'Lango' => '#8A8A8A', 'West Nile' => '#FFB066', 'Other / not stated' => '#D9D9D9'];
+$colour = ['Acholi' => '#D50000', 'Karamoja' => '#111111', 'Lango' => '#757575', 'West Nile' => '#FF7900', 'Other / not stated' => '#D9D9D9'];
 
 // filters
 $status = in_array($_GET['status'] ?? '', ['approved', 'pending', 'rejected'], true) ? $_GET['status'] : '';
@@ -80,7 +80,7 @@ include __DIR__ . "/includes/admin-header.php";
     <div class="rd-bar"><i style="width:<?php echo round($s['total'] * 100 / $max); ?>%;background:<?php echo $colour[$r]; ?>"></i></div>
     <p class="rd-sub"><?php echo $share; ?>% of registrations<?php echo $top ? ' · most from ' . $e($top) . ' (' . $s['districts'][$top] . ')' : ''; ?></p>
     <div class="rd-pills"><span><b><?php echo $s['approved']; ?></b> approved</span><span><b><?php echo $s['pending']; ?></b> pending</span><span><b><?php echo $s['rejected']; ?></b> rejected</span></div>
-    <div class="rd-gender" title="Female / Male / Other"><i style="width:<?php echo round($s['F'] * 100 / $gt); ?>%;background:#F57A0A"></i><i style="width:<?php echo round($s['M'] * 100 / $gt); ?>%;background:#111"></i><i style="width:<?php echo round($s['O'] * 100 / $gt); ?>%;background:#B8B8B8"></i></div>
+    <div class="rd-gender" title="Female / Male / Other"><i style="width:<?php echo round($s['F'] * 100 / $gt); ?>%;background:#D50000"></i><i style="width:<?php echo round($s['M'] * 100 / $gt); ?>%;background:#111"></i><i style="width:<?php echo round($s['O'] * 100 / $gt); ?>%;background:#B8B8B8"></i></div>
     <p class="rd-sub">Female <?php echo $s['F']; ?> · Male <?php echo $s['M']; ?><?php echo $s['O'] ? ' · Other ' . $s['O'] : ''; ?></p>
     <?php if ($s['districts']): ?><details class="rd-dist"><summary>Districts (<?php echo count($s['districts']); ?>)</summary><table class="admin-table" data-noexport><tbody><?php foreach ($s['districts'] as $d => $n): ?><tr><td><?php echo $e($d); ?></td><td style="text-align:right"><b><?php echo $n; ?></b></td></tr><?php endforeach; ?></tbody></table></details><?php endif; ?>
   </div>

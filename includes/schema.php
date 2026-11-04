@@ -1,7 +1,7 @@
 <?php
 /**
  * Database migrations for the content modules added in the "master brief" rebuild.
- * Runs once (guarded by the `schema_v29` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
+ * Runs once (guarded by the `schema_v30` setting; if any step fails it is retried on the next load and the reason is written to storage/migration.log) and is safe to run on a database
  * that already holds the live site's data: it only creates missing tables/columns
  * and never alters or removes existing rows.
  */
@@ -108,7 +108,7 @@ function nufa_migrate($conn) {
     // 1. guarantee the settings table exists so the version flag can be read
     $core = require __DIR__ . "/schema-core.php";
     nufa_exec($conn, $core['create']['settings']);
-    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v29'");
+    $flag = $conn->query("SELECT setting_value FROM settings WHERE setting_key='schema_v30'");
     if ($flag && $flag->num_rows) return;
     $GLOBALS['__nufa_schema_errors'] = 0;
 
@@ -411,6 +411,13 @@ function nufa_migrate($conn) {
         $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('photo_nufa27_post','1')");
     }
 
+    // NUFA design system v2: red primary, orange accent (once; only replaces the colours that shipped before, never a custom colour)
+    if (!$conn->query("SELECT 1 FROM settings WHERE setting_key='palette_nufa_v2'")->num_rows) {
+        $conn->query("UPDATE settings SET setting_value='#D50000' WHERE setting_key='brand_gold' AND LOWER(setting_value) IN ('#d4af63','#f57a0a')");
+        $conn->query("INSERT IGNORE INTO settings (setting_key, setting_value) VALUES ('brand_accent','#FF7900')");
+        $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('palette_nufa_v2','1')");
+    }
+
     // footer link to the support page (once)
     if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE url LIKE 'support.php%'")->fetch_row()[0]) {
         $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer2'")->fetch_row()[0];
@@ -475,7 +482,7 @@ function nufa_migrate($conn) {
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");
     foreach ($official as $k => $v) { $up->bind_param("ss", $k, $v); $up->execute(); }
 
-    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v29', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    if (empty($GLOBALS['__nufa_schema_errors'])) nufa_exec($conn, "INSERT INTO settings (setting_key, setting_value) VALUES ('schema_v30', '1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 nufa_migrate($conn);

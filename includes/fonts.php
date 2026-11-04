@@ -5,12 +5,12 @@
  */
 $FONT_PRESETS = [
   'cinematic' => [
-    'label'    => 'Cinematic (default)',
-    'sample'   => 'Manrope + Inter',
-    'google'   => "family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800",
-    'heading'  => "'Manrope',ui-sans-serif,system-ui,sans-serif",
-    'body'     => "'Inter',ui-sans-serif,system-ui,sans-serif",
-    'display'  => "'Manrope',ui-sans-serif,system-ui,sans-serif",
+    'label'    => 'NUFA standard (default)',
+    'sample'   => 'Montserrat + Inter',
+    'google'   => "family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800",
+    'heading'  => "'Montserrat',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",
+    'body'     => "'Inter',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",
+    'display'  => "'Montserrat',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,sans-serif",
   ],
   'editorial' => [
     'label'    => 'Editorial (default)',

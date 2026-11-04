@@ -16,11 +16,11 @@ $cfg = nufa_site_settings($conn);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (($_POST['action'] ?? '') === 'reset_colours') {
-        $save('brand_gold', '#F57A0A'); $save('brand_ink', '#111111'); $msg = "Colours restored to the NUFA defaults.";
+        $save('brand_gold', '#D50000'); $save('brand_accent', '#FF7900'); $save('brand_ink', '#111111'); $msg = "Colours restored to the NUFA defaults.";
     } else {
-        foreach (['brand_gold', 'brand_ink'] as $k) {
+        foreach (['brand_gold', 'brand_accent', 'brand_ink'] as $k) {
             $v = trim($_POST[$k] ?? '');
-            if (!preg_match('/^#[0-9a-f]{6}$/i', $v)) { $err = "Colours must be a 6-digit hex value such as #F57A0A."; break; }
+            if (!preg_match('/^#[0-9a-f]{6}$/i', $v)) { $err = "Colours must be a 6-digit hex value such as #D50000."; break; }
             $save($k, strtoupper($v));
         }
         $save('show_topbar', isset($_POST['show_topbar']) ? '1' : '0');
@@ -43,9 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $GLOBALS['__reload'] = true;
     $cfgRows = $conn->query("SELECT setting_key, setting_value FROM settings"); $cfg2 = [];
     while ($r = $cfgRows->fetch_assoc()) $cfg2[$r['setting_key']] = $r['setting_value'];
-    $cfg = array_merge($cfg, array_filter($cfg2, fn($v, $k) => in_array($k, ['brand_gold', 'brand_ink', 'site_logo', 'site_favicon', 'og_default_image', 'show_topbar', 'show_clock', 'clock_timezone', 'pwa_enabled', 'whatsapp_enabled', 'whatsapp_number', 'whatsapp_message']), ARRAY_FILTER_USE_BOTH));
+    $cfg = array_merge($cfg, array_filter($cfg2, fn($v, $k) => in_array($k, ['brand_gold', 'brand_accent', 'brand_ink', 'site_logo', 'site_favicon', 'og_default_image', 'show_topbar', 'show_clock', 'clock_timezone', 'pwa_enabled', 'whatsapp_enabled', 'whatsapp_number', 'whatsapp_message']), ARRAY_FILTER_USE_BOTH));
 }
-$gold = $cfg['brand_gold']; $ink = $cfg['brand_ink'];
+$gold = $cfg['brand_gold']; $ink = $cfg['brand_ink']; $accentC = $cfg['brand_accent'] ?? '#FF7900';
 $img = fn($k) => $cfg[$k] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg[$k]);
 include __DIR__ . "/includes/admin-header.php";
 ?>
@@ -74,10 +74,11 @@ include __DIR__ . "/includes/admin-header.php";
   <div class="admin-card">
     <div class="admin-card-head"><h2>Brand colours</h2><span class="admin-help">Lighter and darker shades are generated automatically. Keep good contrast between text and buttons.</span></div>
     <div class="admin-form-grid">
-      <div class="field"><label>Accent colour (buttons, highlights)</label><div style="display:flex;gap:10px"><input type="color" name="brand_gold" value="<?php echo htmlspecialchars($gold); ?>" style="max-width:70px;padding:3px"><input value="<?php echo htmlspecialchars($gold); ?>" disabled style="max-width:110px"></div></div>
-      <div class="field"><label>Dark colour (header, footer, dark sections)</label><div style="display:flex;gap:10px"><input type="color" name="brand_ink" value="<?php echo htmlspecialchars($ink); ?>" style="max-width:70px;padding:3px"><input value="<?php echo htmlspecialchars($ink); ?>" disabled style="max-width:110px"></div></div>
+      <div class="field"><label>Primary colour — NUFA red (buttons, links, active menu)</label><div style="display:flex;gap:10px"><input type="color" name="brand_gold" value="<?php echo htmlspecialchars($gold); ?>" style="max-width:70px;padding:3px"><input value="<?php echo htmlspecialchars($gold); ?>" disabled style="max-width:110px"></div></div>
+      <div class="field"><label>Secondary colour — orange (small creative accents, accents on dark sections)</label><div style="display:flex;gap:10px"><input type="color" name="brand_accent" value="<?php echo htmlspecialchars($accentC); ?>" style="max-width:70px;padding:3px"><input value="<?php echo htmlspecialchars($accentC); ?>" disabled style="max-width:110px"></div></div>
+      <div class="field"><label>Dark colour (footer, top bar, cinematic sections)</label><div style="display:flex;gap:10px"><input type="color" name="brand_ink" value="<?php echo htmlspecialchars($ink); ?>" style="max-width:70px;padding:3px"><input value="<?php echo htmlspecialchars($ink); ?>" disabled style="max-width:110px"></div></div>
     </div>
-    <div class="palette-preview"><span style="background:<?php echo htmlspecialchars($ink); ?>;color:<?php echo htmlspecialchars($gold); ?>">Dark section</span><span style="background:<?php echo htmlspecialchars($gold); ?>;color:<?php echo htmlspecialchars($ink); ?>">Button</span><span style="background:<?php echo nufa_shade($gold, 88); ?>;color:<?php echo nufa_shade($gold, -38); ?>">Soft highlight</span></div>
+    <div class="palette-preview"><span style="background:<?php echo htmlspecialchars($ink); ?>;color:<?php echo htmlspecialchars($accentC); ?>">Dark section</span><span style="background:<?php echo htmlspecialchars($gold); ?>;color:#fff">Primary button</span><span style="background:<?php echo htmlspecialchars($accentC); ?>;color:#111">Orange accent</span><span style="background:<?php echo nufa_shade($gold, 92); ?>;color:<?php echo nufa_shade($gold, -14); ?>">Soft highlight</span></div>
     <label class="mem-check" style="margin-top:18px"><input type="checkbox" name="show_topbar" value="1" <?php echo $cfg['show_topbar'] === '1' ? 'checked' : ''; ?>> Show the contact bar above the header (phone, email, address, social icons)</label>
     <label class="mem-check" style="margin-top:10px"><input type="checkbox" name="show_clock" value="1" <?php echo ($cfg['show_clock'] ?? '1') === '1' ? 'checked' : ''; ?>> Show a live clock (date and time) in the contact bar</label>
     <div class="field" style="max-width:340px;margin-top:8px"><label>Clock time zone</label><select name="clock_timezone"><?php $tzNow = $cfg['clock_timezone'] ?? 'Africa/Kampala'; foreach (['Africa/Kampala' => 'Uganda (EAT)', 'Africa/Nairobi' => 'Kenya (EAT)', 'Africa/Dar_es_Salaam' => 'Tanzania (EAT)', 'Africa/Kigali' => 'Rwanda (CAT)', 'Africa/Johannesburg' => 'South Africa (SAST)', 'Africa/Lagos' => 'Nigeria (WAT)', 'Europe/London' => 'London', 'UTC' => 'UTC'] as $tzk => $tzl) echo '<option value="' . $tzk . '"' . ($tzNow === $tzk ? ' selected' : '') . '>' . $tzl . '</option>'; ?></select></div>
