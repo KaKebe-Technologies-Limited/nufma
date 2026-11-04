@@ -20,6 +20,18 @@ function mem_card_ensure($conn) {
     $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('mem_card_col','1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
+/** One-time: use the supplied signature image on the card if none has been set (an admin can replace or remove it in Membership settings). */
+function mem_card_sig_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='sig_seed_v1'");
+    if (!$f || $f->num_rows) return;
+    $rel = 'signature/president-signature.png';
+    if (!is_file(__DIR__ . '/../assets/images/' . $rel)) return;
+    $S = mem_settings($conn, true);
+    if (($S['president_signature'] ?? '') === '') mem_save_setting($conn, 'president_signature', $rel);
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('sig_seed_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+}
+
 /** Issues the card: approves the member, gives them a membership ID if they have none, and records the issue date. Returns the ID. */
 function mem_card_issue($conn, $id, $notify = false) {
     mem_card_ensure($conn);
@@ -41,6 +53,7 @@ function mem_card_photo($m) {
  * Needs assets/css/member-card.css on the page.
  */
 function mem_card_html($conn, array $m, array $o = []) {
+    mem_card_sig_seed($conn);
     $S = mem_settings($conn); $C = nufa_site_settings($conn);
     $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
     $pre = $o['prefix'] ?? ''; $side = $o['side'] ?? 'both';

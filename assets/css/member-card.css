@@ -35,8 +35,8 @@
 .idc-terms{position:absolute;left:14.4em;right:1.5em;top:2.4em}
 .idc-terms h4{font-size:.68em;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:800;margin-bottom:.6em}
 .idc-terms p{font-size:.68em;line-height:1.5;color:#444;margin-bottom:.5em}
-.idc-sign{position:absolute;left:14.4em;right:1.5em;top:11.2em;height:4.6em}
-.idc-sign img{height:2em;width:auto;max-width:9em;object-fit:contain;display:block}.idc-nosig{display:block;height:2em}
+.idc-sign{position:absolute;left:14.4em;right:1.5em;top:10.6em;height:5.4em}
+.idc-sign img{height:2.6em;width:auto;max-width:11em;object-fit:contain;object-position:left bottom;display:block;margin-bottom:-.3em}.idc-nosig{display:block;height:2.6em}
 .idc-sign i{display:block;width:9em;border-top:.1em solid #111;margin:.1em 0 .35em}
 .idc-sign b{display:block;font-size:.76em;font-weight:800}.idc-sign small{display:block;font-size:.62em;color:#666;margin-top:.1em}
 .idc-contact{position:absolute;left:calc(var(--w)/24);right:calc(var(--w)/24);bottom:calc(var(--w)/11.25);font-size:.66em;color:#333;display:flex;flex-wrap:wrap;gap:.2em .8em;justify-content:center;text-align:center;line-height:1.4}
