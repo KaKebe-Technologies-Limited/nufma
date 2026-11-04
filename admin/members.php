@@ -25,8 +25,8 @@ $rows = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
 if (nufa_export_format() !== '') {
 $__ex = [];
-    $__ex[] = ['Reg No', 'Name', 'Email', 'Phone', 'Gender', 'DOB', 'District', 'Guild', 'Status', 'Valid from', 'Valid until', 'Applied'];
-    foreach ($rows as $r) $__ex[] = [$r['reg_no'], $r['full_name'], $r['email'], $r['phone'], $r['gender'], $r['dob'], $r['district'], $r['guild_name'], $r['status'], $r['valid_from'], $r['valid_until'], $r['created_at']];
+    $__ex[] = ['Reg No', 'Name', 'Email', 'Phone', 'Gender', 'DOB', 'District', 'Sub-region', 'Guild', 'Status', 'Valid from', 'Valid until', 'Applied'];
+    foreach ($rows as $r) $__ex[] = [$r['reg_no'], $r['full_name'], $r['email'], $r['phone'], $r['gender'], $r['dob'], $r['district'], mem_subregion_for($r, mem_subregion_map($conn)), $r['guild_name'], $r['status'], $r['valid_from'], $r['valid_until'], $r['created_at']];
     nufa_export_send(nufa_export_format(), 'NUFA members', array_shift($__ex), $__ex, 'nufa-members');
 }
 

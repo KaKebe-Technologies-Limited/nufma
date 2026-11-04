@@ -28,6 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dob = $f('dob');
     if (!$dob || !strtotime($dob) || strtotime($dob) > strtotime('-10 years')) $errors[] = "Enter a valid date of birth.";
     if ($f('district') === '') $errors[] = "District / town is required.";
+    $subregion = $f('subregion');
+    if (!in_array($subregion, mem_subregion_options(), true)) $errors[] = "Choose your sub-region.";
     $guildId = (int)($_POST['guild_id'] ?? 0);
     $guildOk = false; foreach ($guilds as $g) if ((int)$g['id'] === $guildId) $guildOk = true;
     if (!$guildOk) $errors[] = "Choose the guild you belong to.";
@@ -72,6 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sssssssssssssissssss", ...$vals);
         if ($stmt->execute()) {
             $mid = $conn->insert_id;
+            $su = $conn->prepare("UPDATE members SET subregion=? WHERE id=?"); $su->bind_param("si", $subregion, $mid); $su->execute();
             $member = $conn->query("SELECT * FROM members WHERE id=$mid")->fetch_assoc();
             $vars = mem_member_vars($conn, $member);
             if ($S['send_receipt_email'] === '1') {
@@ -150,6 +153,9 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
           <div class="field"><label for="m-dob">Date of birth <span class="req">*</span></label><input id="m-dob" name="dob" type="date" required max="<?php echo date('Y-m-d', strtotime('-10 years')); ?>" value="<?php echo $val('dob'); ?>"></div>
           <div class="field"><label for="m-id">National ID / passport no.</label><input id="m-id" name="id_number" value="<?php echo $val('id_number'); ?>"></div>
           <div class="field"><label for="m-district">District or location <span class="req">*</span></label><input id="m-district" name="district" required list="district-list" autocomplete="off" value="<?php echo $val('district'); ?>"><datalist id="district-list"><?php foreach (mem_subregion_map($conn) as $__r => $__ds) foreach ($__ds as $__d) echo '<option value="' . htmlspecialchars(ucwords($__d)) . '" label="' . $__r . '">'; ?></datalist></div>
+          <div class="field"><label for="m-sub">Sub-region <span class="req">*</span></label>
+            <select id="m-sub" name="subregion" required><option value="">Select your sub-region…</option><?php foreach (mem_subregion_options() as $o) echo '<option value="' . $o . '"' . (($old['subregion'] ?? '') === $o ? ' selected' : '') . '>' . ($o === 'Other' ? 'Other / outside Northern Uganda' : $o) . '</option>'; ?></select>
+            <span class="hint">Filled in for you when you type your district; change it if needed.</span></div>
           <div class="field"><label for="m-addr">Physical address</label><input id="m-addr" name="address" value="<?php echo $val('address'); ?>"></div>
         </div>
         <div class="field"><label for="m-photo">Passport-size photo <span class="req">*</span></label><input id="m-photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required><span class="hint">JPG, PNG or WebP, max 3 MB. Used on your membership card.</span></div>
@@ -185,4 +191,5 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
     </div>
   </div>
 </section>
+<script>(function(){var map=<?php echo json_encode(mem_subregion_map($conn), JSON_UNESCAPED_UNICODE); ?>,d=document.getElementById("m-district"),s=document.getElementById("m-sub");if(!d||!s)return;function guess(){if(s.value)return;var t=" "+d.value.toLowerCase().replace(/[^a-z0-9]+/g," ")+" ";for(var r in map){for(var i=0;i<map[r].length;i++){var x=map[r][i].replace(/[^a-z0-9]+/g," ").trim();if(x&&t.indexOf(" "+x+" ")>-1){s.value=r;return;}}}}d.addEventListener("change",guess);d.addEventListener("blur",guess);})();</script>
 <?php include __DIR__ . "/includes/footer.php"; ?>

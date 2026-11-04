@@ -89,7 +89,7 @@ $row = fn($l, $v) => '<div class="mem-row"><span>' . $l . '</span><b>' . ($v !==
         <div style="flex:1">
           <?php echo $row('Full name', $m['full_name']), $row('Email', $m['email']), $row('Phone', $m['phone']), $row('Gender', $m['gender']),
                 $row('Date of birth', $m['dob'] ? date('j M Y', strtotime($m['dob'])) : ''), $row('ID / passport', $m['id_number']),
-                $row('District / town', $m['district']), $row('Address', $m['address']); ?>
+                $row('District / town', $m['district']), $row('Sub-region', mem_subregion_for($m, mem_subregion_map($conn))), $row('Address', $m['address']); ?>
         </div>
       </div>
     </div>

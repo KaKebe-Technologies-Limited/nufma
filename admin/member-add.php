@@ -18,7 +18,7 @@ $validityDefault = max(1, (int)$S['validity_months']);
 if (isset($_GET['template'])) {
     while (ob_get_level()) ob_end_clean();
     header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="nufa-members-import-template.csv"');
-    echo "\xEF\xBB\xBF" . "full_name,email,phone,gender,dob,district,guild,occupation,id_number,address\r\n" . "Akello Grace,grace@example.com,0772000000,Female,1995-04-12,Gulu,Actors & Performers,Actor,,Pece\r\n" . "Ocen David,,0703000000,Male,,Kitgum,Directors & Producers,Director,,\r\n";
+    echo "\xEF\xBB\xBF" . "full_name,email,phone,gender,dob,district,subregion,guild,occupation,id_number,address\r\n" . "Akello Grace,grace@example.com,0772000000,Female,1995-04-12,Gulu,Acholi,Actors & Performers,Actor,,Pece\r\n" . "Ocen David,,0703000000,Male,,Kitgum,,Directors & Producers,Director,,\r\n";
     exit;
 }
 function mem_export_where($conn, array $q, &$types, array &$params) {
@@ -36,9 +36,9 @@ if (isset($_GET['fmt']) && isset(NUFA_EXPORT_FORMATS[$_GET['fmt']])) {
     $types = ''; $params = [];
     $sql = "SELECT m.*, g.name AS guild_name FROM members m LEFT JOIN guilds g ON g.id=m.guild_id" . mem_export_where($conn, $_GET, $types, $params) . " ORDER BY m.full_name";
     $st = $conn->prepare($sql); if ($params) $st->bind_param($types, ...$params); $st->execute();
-    $ex = [];
-    foreach ($st->get_result()->fetch_all(MYSQLI_ASSOC) as $r) $ex[] = [$r['reg_no'] ?: '', $r['full_name'], $r['gender'], $r['dob'], $r['phone'], $r['email'], $r['id_number'], $r['district'], $r['address'], $r['occupation'], $r['experience'], $r['guild_name'], $r['status'], $r['valid_from'], $r['valid_until'], $r['payment_method'], $r['payment_ref'], $r['amount_paid'], $r['created_at'], mem_card_link($r)];
-    nufa_export_send($_GET['fmt'], 'NUFA members register', ['Membership ID', 'Full name', 'Gender', 'Date of birth', 'Phone', 'Email', 'ID number', 'District', 'Address', 'Occupation', 'Experience', 'Guild', 'Status', 'Valid from', 'Valid until', 'Payment method', 'Payment ref', 'Amount paid', 'Registered', 'Card link'], $ex, 'nufa-members-register', count($ex) . ' member(s) · exported ' . date('d M Y H:i'));
+    $ex = []; $srMap = mem_subregion_map($conn);
+    foreach ($st->get_result()->fetch_all(MYSQLI_ASSOC) as $r) $ex[] = [$r['reg_no'] ?: '', $r['full_name'], $r['gender'], $r['dob'], $r['phone'], $r['email'], $r['id_number'], $r['district'], mem_subregion_for($r, $srMap), $r['address'], $r['occupation'], $r['experience'], $r['guild_name'], $r['status'], $r['valid_from'], $r['valid_until'], $r['payment_method'], $r['payment_ref'], $r['amount_paid'], $r['created_at'], mem_card_link($r)];
+    nufa_export_send($_GET['fmt'], 'NUFA members register', ['Membership ID', 'Full name', 'Gender', 'Date of birth', 'Phone', 'Email', 'ID number', 'District', 'Sub-region', 'Address', 'Occupation', 'Experience', 'Guild', 'Status', 'Valid from', 'Valid until', 'Payment method', 'Payment ref', 'Amount paid', 'Registered', 'Card link'], $ex, 'nufa-members-register', count($ex) . ' member(s) · exported ' . date('d M Y H:i'));
 }
 
 /* ---- actions ---- */
@@ -126,6 +126,7 @@ $validity = function () use ($e, $validityDefault) { return '<div class="field">
       <div class="field"><label>Gender</label><select name="gender"><option value="">—</option><option>Female</option><option>Male</option><option>Other</option></select></div>
       <div class="field"><label>Date of birth</label><input type="date" name="dob"></div>
       <div class="field"><label>District</label><input name="district"></div>
+      <div class="field"><label>Sub-region</label><select name="subregion"><option value="">Work out from the district</option><?php foreach (mem_subregion_options() as $o) echo '<option>' . $e($o) . '</option>'; ?></select></div>
       <div class="field"><label>Guild / craft</label><select name="guild_id"><option value="">—</option><?php foreach ($guilds as $g) echo '<option value="' . $g['id'] . '">' . $e($g['name']) . '</option>'; ?></select></div>
       <div class="field"><label>Occupation</label><input name="occupation"></div>
       <div class="field"><label>ID number (NIN)</label><input name="id_number"></div>
@@ -142,7 +143,7 @@ $validity = function () use ($e, $validityDefault) { return '<div class="field">
 <?php elseif ($tab === 'import'): ?>
 <div class="admin-card">
   <div class="admin-card-head"><h2>Import members from a CSV file</h2><a class="admin-btn admin-btn-line admin-btn-sm" href="member-add.php?template=1">⬇ Download the CSV template</a></div>
-  <p class="admin-help">Columns recognised (any order, first row = headings): <b>full_name</b> (or name, or first_name + last_name), email, phone, gender, dob, district, guild, occupation, id_number, address. A file with <b>just a list of names, one per line</b>, also works. In Excel use <i>Save As → CSV</i>. Up to 5,000 rows per file.</p>
+  <p class="admin-help">Columns recognised (any order, first row = headings): <b>full_name</b> (or name, or first_name + last_name), email, phone, gender, dob, district, subregion, guild, occupation, id_number, address. A file with <b>just a list of names, one per line</b>, also works. In Excel use <i>Save As → CSV</i>. Up to 5,000 rows per file.</p>
   <form method="post" enctype="multipart/form-data" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="import">
     <div class="admin-form-grid">
       <div class="field"><label>CSV file *</label><input data-no-picker type="file" name="file" accept=".csv,.tsv,.txt,text/csv,text/plain" required></div>

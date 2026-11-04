@@ -64,13 +64,14 @@ function mem_card_html($conn, array $m, array $o = []) {
     $link = mem_card_link($m);
     $site = preg_replace('#^https?://#', '', rtrim($C['site_website'] ?? '', '/'));
     $since = !empty($m['approved_at']) ? date('Y', strtotime($m['approved_at'])) : ($m['valid_from'] ? date('Y', strtotime($m['valid_from'])) : '—');
+    $subregion = mem_subregion_for($m, mem_subregion_map($conn)); if ($subregion === 'Other') $subregion = 'Other';
     $initial = mb_strtoupper(mb_substr($m['full_name'], 0, 1));
     $out = '<div class="idc-set">';
     if ($side !== 'back') {
         $out .= '<div class="idc idc-front' . ($expired ? ' is-expired' : '') . '"><div class="idc-head"><span class="idc-logo"><img src="' . $e($pre) . 'assets/images/logo/nufa-logo.png" alt=""></span><span class="idc-org"><b>NUFA</b><i>Northern Uganda Filmmakers Association</i></span><span class="idc-tag">Member</span></div>'
             . '<div class="idc-photo">' . ($photo ? '<img src="' . $photo . '" alt="">' : '<span>' . $e($initial) . '</span>') . '</div>'
-            . '<div class="idc-info"><h3>' . $e($m['full_name']) . '</h3><p class="idc-guild">' . $e($m['guild_name'] ?: 'Member') . '</p>'
-            . '<dl><div><dt>Valid from</dt><dd>' . $fmt($m['valid_from']) . '</dd></div><div><dt>Valid until</dt><dd>' . $fmt($m['valid_until']) . '</dd></div><div><dt>District</dt><dd>' . $e($m['district'] ?: '—') . '</dd></div><div><dt>Member since</dt><dd>' . $e($since) . '</dd></div></dl></div>'
+            . '<div class="idc-info"><h3>' . $e($m['full_name']) . '</h3>'
+            . '<dl><div><dt>Guild</dt><dd>' . $e($m['guild_name'] ?: '—') . '</dd></div><div><dt>Sub-region</dt><dd>' . $e($subregion ?: '—') . '</dd></div><div><dt>District</dt><dd>' . $e($m['district'] ?: '—') . '</dd></div><div><dt>Member since</dt><dd>' . $e($since) . '</dd></div><div><dt>Valid from</dt><dd>' . $fmt($m['valid_from']) . '</dd></div><div><dt>Valid until</dt><dd>' . $fmt($m['valid_until']) . '</dd></div></dl></div>'
             . '<div class="idc-band"><span><small>Membership ID</small><b>' . $e($m['reg_no'] ?: 'NOT YET ISSUED') . '</b></span><em class="' . ($expired ? 'bad' : 'good') . '">' . ($expired ? 'Expired' : ($m['status'] === 'approved' ? 'Active' : ucfirst($m['status']))) . '</em></div>'
             . ($expired ? '<div class="idc-stamp">EXPIRED</div>' : '') . '</div>';
     }

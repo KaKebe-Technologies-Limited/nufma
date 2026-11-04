@@ -15,10 +15,14 @@ function mem_admin_create($conn, array $d) {
     $guild = (int)($d['guild_id'] ?? 0) ?: null;
     $status = in_array($d['status'] ?? '', ['pending', 'approved', 'rejected'], true) ? $d['status'] : 'pending';
     $token = bin2hex(random_bytes(16));
+    mem_subregion_col($conn);
+    $sub = $g('subregion');
+    if (!in_array($sub, mem_subregion_options(), true)) { $sub = ''; foreach (mem_subregion_options() as $o) if (strcasecmp($o, $g('subregion')) === 0) $sub = $o; }
+    if ($sub === '') $sub = mem_subregion_of($g('district'), mem_subregion_map($conn));
     $email = $g('email'); $phone = $g('phone'); $district = $g('district'); $address = $g('address'); $occ = $g('occupation'); $idn = $g('id_number');
     $note = 'Registered by admin' . (!empty($d['note']) ? ': ' . $d['note'] : '');
-    $s = $conn->prepare("INSERT INTO members (card_token, full_name, gender, dob, phone, email, id_number, district, address, occupation, guild_id, status, admin_note) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    $s->bind_param("ssssssssssiss", $token, $name, $gender, $dob, $phone, $email, $idn, $district, $address, $occ, $guild, $status, $note);
+    $s = $conn->prepare("INSERT INTO members (card_token, full_name, gender, dob, phone, email, id_number, district, subregion, address, occupation, guild_id, status, admin_note) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $s->bind_param("sssssssssssiss", $token, $name, $gender, $dob, $phone, $email, $idn, $district, $sub, $address, $occ, $guild, $status, $note);
     $s->execute();
     return (int)$conn->insert_id;
 }
@@ -72,6 +76,7 @@ function mem_import_aliases() {
         'gender' => ['gender', 'sex'],
         'dob' => ['dob', 'date of birth', 'birthday', 'birth date'],
         'district' => ['district', 'location', 'town', 'area'],
+        'subregion' => ['subregion', 'sub-region', 'sub region', 'sub_region', 'region'],
         'address' => ['address', 'residence', 'village'],
         'occupation' => ['occupation', 'role', 'profession', 'skill', 'job'],
         'id_number' => ['id number', 'id_number', 'national id', 'nin', 'id no', 'id'],

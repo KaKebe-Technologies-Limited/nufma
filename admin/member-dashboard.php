@@ -21,13 +21,13 @@ elseif ($period === '12m') $where[] = "created_at >= '" . date('Y-m-01', strtoti
 elseif ($period === '90d') $where[] = "created_at >= '" . date('Y-m-d', strtotime('-90 days')) . "'";
 elseif ($period === 'custom') { if ($from) $where[] = "created_at >= '$from'"; if ($to) $where[] = "created_at < DATE_ADD('$to', INTERVAL 1 DAY)"; }
 $W = $where ? ' WHERE ' . implode(' AND ', $where) : '';
-$rows = $conn->query("SELECT id, district, gender, status, guild_id, created_at FROM members$W")->fetch_all(MYSQLI_ASSOC);
+$rows = $conn->query("SELECT id, district, subregion, gender, status, guild_id, created_at FROM members$W")->fetch_all(MYSQLI_ASSOC);
 
 $stat = []; foreach ($all as $r) $stat[$r] = ['total' => 0, 'approved' => 0, 'pending' => 0, 'rejected' => 0, 'F' => 0, 'M' => 0, 'O' => 0, 'districts' => []];
 $months = []; for ($i = 11; $i >= 0; $i--) $months[date('Y-m', strtotime("first day of -$i months"))] = array_fill_keys($all, 0);
 $unmatched = []; $total = 0;
 foreach ($rows as $m) {
-    $r = mem_subregion_of($m['district'], $map) ?: 'Other / not stated';
+    $r = mem_subregion_for($m, $map); if ($r === '' || $r === 'Other') $r = 'Other / not stated';
     $s =& $stat[$r]; $s['total']++; $s[$m['status']]++; $total++;
     $s[$m['gender'] === 'Female' ? 'F' : ($m['gender'] === 'Male' ? 'M' : 'O')]++;
     $dn = trim($m['district']) !== '' ? ucwords(mb_strtolower(trim($m['district']))) : '(blank)'; $s['districts'][$dn] = ($s['districts'][$dn] ?? 0) + 1;
