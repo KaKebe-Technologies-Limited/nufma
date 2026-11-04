@@ -3,7 +3,7 @@
 require __DIR__ . "/includes/auth.php";
 require_once __DIR__ . "/../includes/export.php";
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header("Location: index.php"); exit; }
-$fmt = in_array($_POST['format'] ?? '', ['pdf', 'xlsx', 'docx', 'csv'], true) ? $_POST['format'] : 'csv';
+$fmt = isset(NUFA_EXPORT_FORMATS[$_POST['format'] ?? '']) ? $_POST['format'] : 'csv';
 $data = json_decode((string)($_POST['data'] ?? ''), true);
 if (!is_array($data) || empty($data['headers']) || !is_array($data['headers'])) { http_response_code(400); exit('Nothing to export.'); }
 $headers = array_slice(array_map('strval', $data['headers']), 0, 40);

@@ -137,7 +137,37 @@ function nufa_build_csv(array $headers, array $rows) {
     $f = fopen('php://temp', 'w+'); fwrite($f, "\xEF\xBB\xBF"); fputcsv($f, $headers); foreach ($rows as $r) fputcsv($f, array_values($r)); rewind($f); $s = stream_get_contents($f); fclose($f); return $s;
 }
 
-/** Sends the file and exits. $format: pdf | xlsx | docx | csv. */
+const NUFA_EXPORT_FORMATS = ['pdf' => 'PDF document', 'xlsx' => 'Excel spreadsheet (.xlsx)', 'xls' => 'Excel 97-2003 (.xls)', 'docx' => 'Word document', 'doc' => 'Word 97-2003 (.doc)', 'csv' => 'CSV file', 'tsv' => 'Tab-separated (.tsv)', 'json' => 'JSON', 'xml' => 'XML', 'html' => 'Web page (HTML)', 'txt' => 'Plain text'];
+
+/** Simple HTML table (also opened by Excel as .xls and by Word as .doc). */
+function nufa_build_html_table($title, array $headers, array $rows, $subtitle = '') {
+    $h = '<!doctype html><html><head><meta charset="utf-8"><title>' . nufa_x($title) . '</title><style>body{font-family:Arial,sans-serif}table{border-collapse:collapse}th{background:#D50000;color:#fff;text-align:left}th,td{border:1px solid #999;padding:4px 8px;font-size:11pt}</style></head><body><h2>' . nufa_x($title) . '</h2>' . ($subtitle !== '' ? '<p>' . nufa_x($subtitle) . '</p>' : '') . '<table><thead><tr>';
+    foreach ($headers as $c) $h .= '<th>' . nufa_x($c) . '</th>';
+    $h .= '</tr></thead><tbody>';
+    foreach ($rows as $r) { $h .= '<tr>'; foreach (array_values($r) as $v) $h .= '<td style="mso-number-format:\'\\@\'">' . nufa_x($v) . '</td>'; $h .= '</tr>'; }
+    return $h . '</tbody></table></body></html>';
+}
+function nufa_build_json($title, array $headers, array $rows) {
+    $out = [];
+    foreach ($rows as $r) { $r = array_values($r); $o = []; foreach ($headers as $i => $k) $o[$k] = $r[$i] ?? ''; $out[] = $o; }
+    return json_encode(['title' => $title, 'exported' => date('c'), 'count' => count($out), 'records' => $out], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+function nufa_build_xml($title, array $headers, array $rows) {
+    $tags = array_map(fn($h) => preg_replace('/^[^a-z_]+/i', '_', preg_replace('/[^a-z0-9_]+/i', '_', trim($h))) ?: 'field', $headers);
+    $x = '<?xml version="1.0" encoding="UTF-8"?>' . "\n" . '<export title="' . nufa_x($title) . '" exported="' . date('c') . '" count="' . count($rows) . '">' . "\n";
+    foreach ($rows as $r) { $r = array_values($r); $x .= "  <record>\n"; foreach ($tags as $i => $t) $x .= "    <$t>" . nufa_x($r[$i] ?? '') . "</$t>\n"; $x .= "  </record>\n"; }
+    return $x . '</export>';
+}
+function nufa_build_txt($title, array $headers, array $rows) {
+    $w = array_map(fn($h) => mb_strlen($h), $headers);
+    foreach ($rows as $r) foreach (array_values($r) as $i => $v) $w[$i] = min(40, max($w[$i] ?? 0, mb_strlen($v)));
+    $line = function ($cells) use ($w) { $o = []; foreach ($w as $i => $n) { $v = mb_substr((string)($cells[$i] ?? ''), 0, $n); $o[] = $v . str_repeat(' ', $n - mb_strlen($v)); } return rtrim(implode('  ', $o)); };
+    $t = $title . "\n" . str_repeat('=', mb_strlen($title)) . "\n" . $line($headers) . "\n" . implode('  ', array_map(fn($n) => str_repeat('-', $n), $w)) . "\n";
+    foreach ($rows as $r) $t .= $line(array_values($r)) . "\n";
+    return $t;
+}
+
+/** Sends the file and exits. $format: any key of NUFA_EXPORT_FORMATS. */
 function nufa_export_send($format, $title, array $headers, array $rows, $filename = 'export', $subtitle = '') {
     $headers = array_map('nufa_clean_cell', array_values($headers));
     $rows = array_map(fn($r) => array_map('nufa_clean_cell', array_values($r)), $rows);
@@ -147,6 +177,13 @@ function nufa_export_send($format, $title, array $headers, array $rows, $filenam
         case 'pdf':  $data = nufa_build_pdf($title, $headers, $rows, $subtitle); $mime = 'application/pdf'; $ext = 'pdf'; break;
         case 'xlsx': $data = nufa_build_xlsx($title, $headers, $rows); $mime = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'; $ext = 'xlsx'; break;
         case 'docx': $data = nufa_build_docx($title, $headers, $rows, $subtitle ?: 'Generated ' . date('d M Y H:i')); $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'; $ext = 'docx'; break;
+        case 'xls':  $data = nufa_build_html_table($title, $headers, $rows, $subtitle); $mime = 'application/vnd.ms-excel'; $ext = 'xls'; break;
+        case 'doc':  $data = nufa_build_html_table($title, $headers, $rows, $subtitle ?: 'Generated ' . date('d M Y H:i')); $mime = 'application/msword'; $ext = 'doc'; break;
+        case 'html': $data = nufa_build_html_table($title, $headers, $rows, $subtitle); $mime = 'text/html; charset=utf-8'; $ext = 'html'; break;
+        case 'tsv':  $data = "\xEF\xBB\xBF" . implode("\t", $headers) . "\r\n" . implode("\r\n", array_map(fn($r) => implode("\t", array_values($r)), $rows)); $mime = 'text/tab-separated-values; charset=utf-8'; $ext = 'tsv'; break;
+        case 'json': $data = nufa_build_json($title, $headers, $rows); $mime = 'application/json; charset=utf-8'; $ext = 'json'; break;
+        case 'xml':  $data = nufa_build_xml($title, $headers, $rows); $mime = 'application/xml; charset=utf-8'; $ext = 'xml'; break;
+        case 'txt':  $data = nufa_build_txt($title, $headers, $rows); $mime = 'text/plain; charset=utf-8'; $ext = 'txt'; break;
         default:     $data = nufa_build_csv($headers, $rows); $mime = 'text/csv; charset=utf-8'; $ext = 'csv';
     }
     while (ob_get_level()) ob_end_clean();
@@ -157,13 +194,13 @@ function nufa_export_send($format, $title, array $headers, array $rows, $filenam
 /** Export format requested in the URL (?export=pdf|xlsx|docx|csv; the old ?export=1 means CSV). '' when not exporting. */
 function nufa_export_format() {
     $e = $_GET['export'] ?? ''; if ($e === '') return '';
-    return in_array($e, ['pdf', 'xlsx', 'docx', 'csv'], true) ? $e : 'csv';
+    return isset(NUFA_EXPORT_FORMATS[$e]) ? $e : 'csv';
 }
 
 /** Small dropdown of export formats for a page whose export handler reads ?export=. $base is the page URL (with existing query). */
 function nufa_export_menu($base = '', $label = 'Export') {
     $sep = strpos($base, '?') === false ? '?' : (substr($base, -1) === '?' ? '' : '&');
-    $items = ['pdf' => 'PDF document', 'xlsx' => 'Excel spreadsheet', 'docx' => 'Word document', 'csv' => 'CSV file'];
+    $items = NUFA_EXPORT_FORMATS;
     $h = '<span class="exp-menu"><button type="button" class="admin-btn admin-btn-line admin-btn-sm exp-toggle" aria-haspopup="true">⬇ ' . htmlspecialchars($label) . ' ▾</button><span class="exp-list" hidden>';
     foreach ($items as $k => $l) $h .= '<a href="' . htmlspecialchars($base . $sep . 'export=' . $k) . '">' . $l . '</a>';
     return $h . '</span></span>';

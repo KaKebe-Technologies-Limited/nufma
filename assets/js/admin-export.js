@@ -33,7 +33,7 @@
     [["csrf", token], ["format", fmt], ["title", pageTitle(table)], ["data", JSON.stringify(d)]].forEach(function(p){ var i = document.createElement("input"); i.type = "hidden"; i.name = p[0]; i.value = p[1]; f.appendChild(i); });
     document.body.appendChild(f); f.submit(); setTimeout(function(){ f.remove(); }, 1500);
   }
-  var items = [["pdf", "PDF document"], ["xlsx", "Excel spreadsheet"], ["docx", "Word document"], ["csv", "CSV file"]];
+  var items = [["pdf", "PDF document"], ["xlsx", "Excel spreadsheet (.xlsx)"], ["xls", "Excel 97-2003 (.xls)"], ["docx", "Word document"], ["doc", "Word 97-2003 (.doc)"], ["csv", "CSV file"], ["tsv", "Tab-separated (.tsv)"], ["json", "JSON"], ["xml", "XML"], ["html", "Web page (HTML)"], ["txt", "Plain text"]];
   [].slice.call(document.querySelectorAll("table.admin-table")).forEach(function(table){
     if(table.hasAttribute("data-noexport") || table.closest("[data-noexport]")) return;
     var d = extract(table); if(!d || d.rows.length < 1) return;
