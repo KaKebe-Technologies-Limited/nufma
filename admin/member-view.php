@@ -87,7 +87,7 @@ $row = fn($l, $v) => '<div class="mem-row"><span>' . $l . '</span><b>' . ($v !==
       <div class="mem-profile">
         <?php if ($m['photo']): ?><a href="member-file.php?id=<?php echo $id; ?>&f=photo" target="_blank"><img src="member-file.php?id=<?php echo $id; ?>&f=photo" alt="Photo"></a><?php endif; ?>
         <div style="flex:1">
-          <?php echo $row('Full name', $m['full_name']), $row('Email', $m['email']), $row('Phone', $m['phone']), $row('Gender', $m['gender']),
+          <?php echo $row('Full name', $m['full_name']), $row('Application reference', (function($t) { require_once __DIR__ . '/../includes/track.php'; return track_member_ref($t); })($m['card_token'])), $row('Email', $m['email']), $row('Phone', $m['phone']), $row('Gender', $m['gender']),
                 $row('Date of birth', $m['dob'] ? date('j M Y', strtotime($m['dob'])) : ''), $row('ID / passport', $m['id_number']),
                 $row('District / town', $m['district']), $row('Sub-region', mem_subregion_for($m, mem_subregion_map($conn))), $row('Address', $m['address']); ?>
         </div>

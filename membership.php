@@ -89,7 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $_SESSION['mem_csrf'] = bin2hex(random_bytes(16));
             $_SESSION['mem_pay'] = ['choice' => $payChoice, 'name' => $name, 'amount' => $S['membership_fee'] !== '' ? $S['membership_currency'] . ' ' . $S['membership_fee'] : ''];
-            header("Location: membership.php?done=1#top");
+            require_once __DIR__ . "/includes/track.php";
+            header("Location: membership.php?done=1&ref=" . track_member_ref($token) . "#top");
             exit;
         }
         $errors[] = "We couldn't save your application. Please try again.";
@@ -129,6 +130,7 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
         <div class="member-done-ico" aria-hidden="true">✓</div>
         <h2 style="font-size:1.6rem">Application received</h2>
         <p>Thank you for applying to join NUFA. We've emailed you a confirmation. Your application is now subject to NUFA's membership criteria and confirmation process — submitting it does not automatically make you a member. You'll receive another email once it has been reviewed.</p>
+        <?php if (preg_match('/^MEM-[A-F0-9]{8}$/', $_GET['ref'] ?? '')): ?><p style="margin-top:14px">Your application reference: <span class="reg-badge" style="display:inline-block;font-size:1.1rem"><?php echo htmlspecialchars($_GET['ref']); ?></span></p><p>Keep it safe — you can <a href="track.php?ref=<?php echo htmlspecialchars($_GET['ref']); ?>" style="text-decoration:underline">track your application</a> at any time.</p><?php else: ?><p style="margin-top:14px">You can <a href="track.php" style="text-decoration:underline">track your application</a> at any time with your email and phone number.</p><?php endif; ?>
         <?php $__mp = $_SESSION['mem_pay'] ?? []; echo pay_block($conn, $__mp['choice'] ?? '', ['amount' => $__mp['amount'] ?? '', 'ref' => $__mp['name'] ?? ''], false, 'Now pay your membership fee'); ?>
         <p style="margin-top:20px"><a href="index.php" class="btn btn-gold">Back to home</a></p>
       </div>
