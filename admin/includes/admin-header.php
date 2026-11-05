@@ -10,6 +10,7 @@ if (isset($conn)) {
 }
 
 $__ico = [
+    'siteimages' => '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.800"/><path d="m4 18 5-5 4 4 3-3 4 4" stroke-linecap="round" stroke-linejoin="round"/>',
     'dashboard'   => '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="14" width="8" height="7" rx="2"/>',
     'members'     => '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.5 1.8-2 3-2s2.4.5 3 2M14 10h4M14 13h3" stroke-linecap="round"/>',
     'messages'    => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/>',
@@ -70,8 +71,19 @@ $__ico += [
     'opps'       => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/><path d="M8 21h8" stroke-linecap="round"/>',
     'enquiries'  => '<path d="M4 5h16v11H9l-5 4V5Z"/><path d="M8 9h8M8 12h5"/>',
 ];
+$__pageLinks = [];
+if (admin_can('website', ROLE_VIEW)) {
+    require_once __DIR__ . "/../../includes/settings.php"; require_once __DIR__ . "/../../includes/sections.php";
+    foreach (nufa_registry() as $__k => $__p) if (empty($__p['virtual'])) $__pageLinks[] = ['pages', 'page-editor.php?page=' . $__k, $__p['label'], 0, $__k];
+}
 $__nav = [
     'Overview' => [['dashboard', 'index.php', 'Dashboard'], ['visitors', 'visitors.php', 'Visitors']],
+    'Edit the website' => [
+        ['pages', 'pages.php', 'All pages, page by page'],
+        ['siteimages', 'site-images.php', 'All pictures on the site'],
+        ['sliders', 'sliders.php', 'Home hero slider (first picture)'],
+    ],
+    'Edit a page' => $__pageLinks,
     'People' => [
         ['members', 'members.php', 'Membership', $__pending],
         ['saccoapps', 'sacco-applications.php', 'SACCO applications', $__sacNew],
@@ -110,10 +122,8 @@ $__nav = [
         ['partners', 'partners.php', 'Partners'],
         ['saccoadm', 'sacco-manager.php', 'NUFA SACCO'],
     ],
-    'Website' => [
-        ['pages', 'pages.php', 'Page editor'],
-        ['content', 'content.php', 'Page content'],
-        ['sliders', 'sliders.php', 'Hero images'],
+    'Website settings' => [
+        ['content', 'content.php', 'All text in one list'],
         ['menus', 'menus.php', 'Menus & footer'],
         ['appearance', 'appearance.php', 'Appearance & branding'],
         ['lists', 'lists.php', 'Form options'],
@@ -170,16 +180,30 @@ $__initial = strtoupper(mb_substr($_SESSION['admin_name'] ?? 'A', 0, 1));
       <span>NUFA <small>Admin</small></span>
     </a>
     <nav class="admin-nav" aria-label="Admin">
-      <?php foreach ($__nav as $group => $items): ?>
-        <div class="admin-nav-group"><?php echo $group; ?></div>
+      <div class="admin-nav-search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.500-3.500" stroke-linecap="round"/></svg><input type="search" id="navFilter" placeholder="Find a page…" autocomplete="off" aria-label="Find a page in the menu"></div>
+      <?php
+      $__cur = ($_GET['page'] ?? '');
+      $__isActive = function ($it) use ($adminNav, $__cur) {
+          if (!empty($it[4])) return $adminNav === 'pages' && $__cur === $it[4];
+          if ($it[0] === 'pages') return $adminNav === 'pages' && $__cur === '';
+          return $adminNav === $it[0];
+      };
+      foreach ($__nav as $group => $items):
+          $__open = false; $__badge = 0; foreach ($items as $__i) { if ($__isActive($__i)) $__open = true; $__badge += (int)($__i[3] ?? 0); }
+          $__gid = 'g' . substr(md5($group), 0, 6); ?>
+        <div class="admin-nav-sec" data-group="<?php echo $__gid; ?>" data-default="<?php echo $__open || in_array($group, ['Overview', 'Edit the website', 'Edit a page'], true) ? '1' : '0'; ?>"<?php echo $__open ? ' data-active="1"' : ''; ?>>
+        <button type="button" class="admin-nav-group" aria-expanded="true"><span><?php echo $group; ?></span><?php if ($__badge): ?><b class="admin-count"><?php echo $__badge; ?></b><?php endif; ?><svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div class="admin-nav-items">
         <?php foreach ($items as $it): ?>
-        <a href="<?php echo $it[1]; ?>" class="<?php echo $adminNav === $it[0] ? 'active' : ''; ?>">
+        <a href="<?php echo $it[1]; ?>" class="<?php echo $__isActive($it) ? 'active' : ''; ?><?php echo !empty($it[4]) ? ' sub' : ''; ?>">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><?php echo $__ico[$it[0]]; ?></svg>
           <?php echo $it[2]; ?>
           <?php if (!empty($it[3])): ?><span class="admin-count"><?php echo $it[3]; ?></span><?php endif; ?>
         </a>
         <?php endforeach; ?>
+        </div></div>
       <?php endforeach; ?>
+      <p class="admin-nav-none" id="navNone" hidden>No page matches.</p>
     </nav>
     <div class="admin-sidebar-foot">
       <a href="../index.php" target="_blank" class="admin-view-site">

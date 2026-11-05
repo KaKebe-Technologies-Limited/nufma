@@ -1,6 +1,7 @@
 <?php
 /** Small presentation helpers shared by the public pages. */
 require_once __DIR__ . "/icons.php";
+require_once __DIR__ . "/site-images.php";
 
 function ui_e($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }
 
@@ -16,6 +17,7 @@ function ui_img($rel, $alt, $opts = []) {
 
 /** Standard inner-page banner. $crumbs: [['Label','url'], ..., ['Current']] */
 function ui_page_hero($eyebrow, $title, $lede, $imageRel, array $crumbs = [], $actionsHtml = '') {
+    $imageRel = site_img(site_hero_slot(), $imageRel);   // a replacement picked in Admin → All pictures wins
     ob_start(); ?>
 <section class="page-hero">
   <div class="page-hero-bg"><img src="assets/images/<?php echo ui_e($imageRel); ?>" alt="" width="1920" height="1080" fetchpriority="high" decoding="async"></div>
@@ -77,6 +79,7 @@ function ui_video_embed($url) {
 function ui_photo_grid(array $tiles, $mode = 'mosaic') {
     $o = '<div class="pm-grid pm-' . ($mode === 'strip' ? 'strip' : 'mosaic') . '" data-reveal-stagger>';
     foreach ($tiles as $i => [$f, $cap]) {
+        $f = site_img('grid:' . basename($_SERVER['SCRIPT_NAME'] ?? '', '.php') . ':' . $i, $f);
         if (!is_file(__DIR__ . '/../assets/images/' . $f)) continue;
         $o .= '<figure class="pm-tile' . ($mode === 'mosaic' && $i === 0 ? ' pm-big' : '') . '"><img src="assets/images/' . ui_e(function_exists('gallery_thumb') ? gallery_thumb($f) : $f) . '" data-lightbox="assets/images/' . ui_e($f) . '" data-caption="' . ui_e($cap) . '" alt="' . ui_e($cap) . '" loading="lazy" decoding="async"><figcaption>' . ui_e($cap) . '</figcaption></figure>';
     }

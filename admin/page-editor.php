@@ -75,7 +75,7 @@ $viewUrl = '../' . ($key === 'policies' ? 'policy.php?p=privacy' : $pg['file']);
 ?>
 <div class="pe-head">
   <div><a href="pages.php" class="admin-help">&larr; All pages</a><h2><?php echo htmlspecialchars($pg['label']); ?></h2></div>
-  <?php if (empty($pg['virtual'])): ?><a href="<?php echo htmlspecialchars($viewUrl); ?>" target="_blank" class="admin-btn admin-btn-line">View live page</a><?php endif; ?>
+  <span style="display:flex;gap:8px;flex-wrap:wrap"><a href="site-images.php?open=<?php echo urlencode($key); ?>#pg-<?php echo htmlspecialchars($key); ?>" class="admin-btn admin-btn-brand">Pictures on this page</a><?php if (empty($pg['virtual'])): ?><a href="<?php echo htmlspecialchars($viewUrl); ?>" target="_blank" class="admin-btn admin-btn-line">View live page</a><?php endif; ?></span>
 </div>
 <div class="mem-tabs">
   <?php foreach ($tabs as $t => $label): ?><a href="page-editor.php?page=<?php echo $key; ?>&tab=<?php echo $t; ?>" class="<?php echo $tab === $t ? 'active' : ''; ?>"><?php echo $label; ?></a><?php endforeach; ?>
@@ -93,8 +93,10 @@ $viewUrl = '../' . ($key === 'policies' ? 'policy.php?p=privacy' : $pg['file']);
   <form method="post" enctype="multipart/form-data" class="admin-form">
     <input type="hidden" name="action" value="content">
     <p class="admin-help" style="margin-bottom:14px">Change any text or image below. Leave a field unchanged to keep what is live; clear it to restore the original wording. <?php echo count($schema); ?> editable items, grouped by area of the page.</p>
-    <?php foreach ($groups as $gname => $fields): ?>
-    <details class="pe-group" <?php echo array_key_first($groups) === $gname ? 'open' : ''; ?>>
+    <?php if ($key === 'home'): ?><div class="notice-inline" style="margin-bottom:14px"><b>Looking for the first picture on the home page?</b> It is the <a href="sliders.php">Hero slider</a> (or change any home picture in <a href="site-images.php?open=home">All pictures → Home</a>).</div><?php endif; ?>
+    <div class="si-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px"><b style="align-self:center">Jump to:</b><?php $__gi = 0; foreach ($groups as $gname => $fields): $__gi++; ?><a href="#grp-<?php echo $__gi; ?>" class="admin-badge gray" style="text-decoration:none"><?php echo htmlspecialchars($gname); ?></a><?php endforeach; ?></div>
+    <?php $__gi = 0; foreach ($groups as $gname => $fields): $__gi++; ?>
+    <details class="pe-group" id="grp-<?php echo $__gi; ?>" open>
       <summary><?php echo htmlspecialchars($gname); ?> <span class="admin-badge gray"><?php echo count($fields); ?></span></summary>
       <div class="pe-group-body">
       <?php foreach ($fields as $fk => $def): $type = $def['type'] ?? 'text'; $val = $values[$fk] ?? ''; $label = strpos($def['label'], ' — ') !== false ? explode(' — ', $def['label'], 2)[1] : $def['label']; ?>

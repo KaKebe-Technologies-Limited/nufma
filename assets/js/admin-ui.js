@@ -47,3 +47,29 @@
     if(!t.parentElement.classList.contains("admin-table-wrap") && !t.closest("form")){ var w = document.createElement("div"); w.className = "admin-table-wrap"; t.parentNode.insertBefore(w, t); w.appendChild(t); }
   });
 })();
+
+/* Sidebar: collapsible sections (remembered) + live "find a page" filter */
+(function(){
+  "use strict";
+  var secs = [].slice.call(document.querySelectorAll(".admin-nav-sec")); if(!secs.length) return;
+  var KEY = "nufa_nav_open", saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch(e) {}
+  function persist(){ var o = {}; secs.forEach(function(s){ o[s.dataset.group] = !s.classList.contains("is-closed"); }); try { localStorage.setItem(KEY, JSON.stringify(o)); } catch(e) {} }
+  function set(s, open){ s.classList.toggle("is-closed", !open); var b = s.querySelector(".admin-nav-group"); if(b) b.setAttribute("aria-expanded", open ? "true" : "false"); }
+  secs.forEach(function(s){
+    var open = s.dataset.active === "1" ? true : (s.dataset.group in saved ? !!saved[s.dataset.group] : s.dataset.default === "1");
+    set(s, open);
+    s.querySelector(".admin-nav-group").addEventListener("click", function(){ set(s, s.classList.contains("is-closed")); persist(); });
+  });
+  var f = document.getElementById("navFilter"), none = document.getElementById("navNone");
+  if(f) f.addEventListener("input", function(){
+    var q = f.value.trim().toLowerCase(), any = false;
+    secs.forEach(function(s){
+      var hit = 0;
+      [].slice.call(s.querySelectorAll(".admin-nav-items a")).forEach(function(a){ var m = !q || a.textContent.toLowerCase().indexOf(q) > -1; a.classList.toggle("is-hidden", !m); if(m) hit++; });
+      s.classList.toggle("is-hidden", !hit); if(hit) any = true;
+      if(q) s.classList.remove("is-closed"); else set(s, s.dataset.active === "1" ? true : (s.dataset.group in saved ? !!saved[s.dataset.group] : s.dataset.default === "1"));
+    });
+    if(none) none.hidden = any || !q;
+  });
+})();
