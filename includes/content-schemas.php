@@ -356,6 +356,8 @@ $CMS_SCHEMAS['sacco']['fields'] += [
     'governance_eyebrow' => ['label' => 'Governance — small label', 'type' => 'text', 'default' => 'Governance & leadership'],
     'governance_heading' => ['label' => 'Governance — heading', 'type' => 'text', 'default' => 'Who will run it'],
     'governance_leaders_heading' => ['label' => 'Governance — heading above the SACCO leadership cards (leave blank for none; the people themselves are added in Leadership & team → category “SACCO Leadership”)', 'type' => 'text', 'default' => ''],
+    'governance_board_title' => ['label' => 'Governance — heading for the board / governance profiles', 'type' => 'text', 'default' => 'Board & governance'],
+    'governance_mgmt_title' => ['label' => 'Governance — heading for the management profiles', 'type' => 'text', 'default' => 'Management'],
     'governance_people' => ['label' => 'Governance — board, management, committees and documents (HTML; leave blank until approved)', 'type' => 'html', 'default' => ''],
     'governance_empty_title' => ['label' => 'Governance — title shown when nothing is published yet', 'type' => 'text', 'default' => 'To be published'],
     'governance_note' => ['label' => 'Governance — note when nothing is published yet', 'type' => 'textarea', 'default' => "Board members, management, committees and governance documents will be published here only once they have been formally constituted and approved."],

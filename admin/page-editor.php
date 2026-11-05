@@ -115,6 +115,7 @@ $viewUrl = '../' . ($key === 'policies' ? 'policy.php?p=privacy' : $pg['file']);
     <details class="pe-group" id="grp-<?php echo $__gi; ?>" open>
       <summary><?php echo htmlspecialchars($gname); ?> <span class="admin-badge gray"><?php echo count($fields); ?></span></summary>
       <div class="pe-group-body">
+      <?php if ($key === 'sacco' && $gname === 'Governance'): ?><div class="notice-inline" style="margin-bottom:14px"><b>Add the people shown in this section.</b> They appear here as profile cards (photo, role, biography and social links), grouped under the two headings below. <a class="admin-btn admin-btn-brand admin-btn-sm" href="team-edit.php?cat=SACCO%20Governance">+ Add a board / governance member</a> <a class="admin-btn admin-btn-brand admin-btn-sm" href="team-edit.php?cat=SACCO%20Management">+ Add a manager</a> <a class="admin-btn admin-btn-line admin-btn-sm" href="team.php">See all profiles</a></div><?php endif; ?>
       <?php if ($key === 'home' && $gname === 'Hero'): $__hs = $conn->query("SELECT id, image, alt_text, is_active FROM hero_slides ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC); ?>
         <div class="field"><label>Background pictures (the slideshow behind the heading)</label>
           <p class="admin-help" style="margin:0 0 10px">These are the big pictures that change behind “Our Stories. Our Culture. Our Future.” The first one is what visitors see first. Replace any picture, or add another below (up to 6 are shown). <a href="sliders.php">Reorder, hide or delete →</a></p>

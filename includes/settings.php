@@ -85,7 +85,7 @@ Policies and guidelines
 Annual reports
 Event reports
 Publications",
-        'list_team_categories'     => "Board\nManagement\nSecretariat\nGuild Leaders\nAdvisors\nSACCO Leadership\nAwards Technical Team",
+        'list_team_categories'     => "Board\nManagement\nSecretariat\nGuild Leaders\nAdvisors\nSACCO Governance\nSACCO Management\nAwards Technical Team",
         'list_partner_categories'  => "Government\nMedia\nTechnology\nIndustry bodies\nProduction\nCorporate sponsors\nCommunity & culture\nEducation",
         'list_gallery_categories'  => "Awards ceremony\nRed carpet\nProductions\nTraining & workshops\nScreenings\nCommunity\nBehind the scenes",
         // NUFA SACCO (status must reflect verified reality)

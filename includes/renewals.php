@@ -83,6 +83,20 @@ function mem_renew_approve($conn, $rid, $note = '') {
     return $until;
 }
 
+/** One-time: add "SACCO Governance" and "SACCO Management" to the saved list of leadership categories. */
+function mem_team_cat_seed_v2($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='team_cat_sacco_v2'");
+    if (!$f || $f->num_rows) return;
+    $tc = $conn->query("SELECT setting_value FROM settings WHERE setting_key='list_team_categories'")->fetch_assoc();
+    if ($tc && trim($tc['setting_value']) !== '') {
+        $nv = rtrim($tc['setting_value']);
+        foreach (['SACCO Governance', 'SACCO Management'] as $c) if (stripos("\n" . $nv . "\n", "\n" . $c . "\n") === false) $nv .= "\n" . $c;
+        $u = $conn->prepare("UPDATE settings SET setting_value=? WHERE setting_key='list_team_categories'"); $u->bind_param('s', $nv); $u->execute();
+    }
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('team_cat_sacco_v2','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+}
+
 /** One-time: the supplied signature is printed on every membership card — the NUFA membership card and the NUFA SACCO card (both earlier and new cards). Replace it any time in Membership settings / SACCO settings. */
 function mem_card_signature_seed($conn) {
     static $done = false; if ($done) return; $done = true;

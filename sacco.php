@@ -197,17 +197,36 @@ $regBtn = $appsOpen
 <?php if (nufa_show('sacco', 'governance')): ?><section class="section section--soft" id="governance">
   <div class="container">
     <div class="section-head" data-reveal><div class="eyebrow"><?php echo cms_t('sacco', 'governance_eyebrow'); ?></div><h2><?php echo cms_t('sacco', 'governance_heading'); ?></h2></div>
-    <?php $__sl = $conn->query("SELECT * FROM team_members WHERE is_active=1 AND category='SACCO Leadership' ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC); if ($__sl): ?>
-    <?php if (trim(cms_value('sacco', 'governance_leaders_heading')) !== ''): ?><h3 data-reveal style="margin:0 0 16px"><?php echo cms_t('sacco', 'governance_leaders_heading'); ?></h3><?php endif; ?>
-    <div class="guest-grid team-grid" data-reveal-stagger style="margin-bottom:26px">
-      <?php foreach ($__sl as $m): $mp = (!empty($m['photo']) && is_file(__DIR__ . '/assets/images/' . $m['photo'])) ? $m['photo'] : ''; ?>
-      <article class="guest"><div class="guest-photo"><?php if ($mp): ?><img src="assets/images/<?php echo ui_e($mp); ?>" alt="<?php echo ui_e($m['name']); ?>" loading="lazy"><?php else: echo nufa_icon('users', 34); endif; ?></div>
-        <h4><?php echo ui_e($m['name']); ?></h4><span><?php echo ui_e($m['role']); ?></span><?php if (!empty($m['bio'])): ?><p><?php echo ui_e(ui_excerpt($m['bio'], 180)); ?></p><?php endif; ?></article>
+    <?php
+      $__grp = [
+        ['board', cms_value('sacco', 'governance_board_title'), ['SACCO Governance', 'SACCO Leadership']],
+        ['mgmt', cms_value('sacco', 'governance_mgmt_title'), ['SACCO Management']],
+      ];
+      $__sl = [];
+      foreach ($__grp as [$gk, $gt, $cats]) {
+          $in = "'" . implode("','", array_map([$conn, 'real_escape_string'], $cats)) . "'";
+          $__sl[$gk] = $conn->query("SELECT * FROM team_members WHERE is_active=1 AND category IN ($in) ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC);
+      }
+      $__any = count($__sl['board']) + count($__sl['mgmt']) > 0;
+      if (trim(cms_value('sacco', 'governance_leaders_heading')) !== '' && $__any): ?><p class="gv-intro" data-reveal><?php echo cms_t('sacco', 'governance_leaders_heading'); ?></p><?php endif;
+      foreach ($__grp as [$gk, $gt, $cats]): if (!$__sl[$gk]) continue; ?>
+    <div class="gv-group" data-reveal><h3 class="gv-title"><span></span><?php echo ui_e($gt); ?></h3>
+      <div class="gv-grid">
+      <?php foreach ($__sl[$gk] as $m):
+          $mp = (!empty($m['photo']) && is_file(__DIR__ . '/assets/images/' . $m['photo'])) ? $m['photo'] : '';
+          $soc = []; foreach (['linkedin_url' => ['LinkedIn', 'linkedin'], 'x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram']] as $k => [$sl, $ic]) if (!empty($m[$k])) $soc[] = [$m[$k], $sl, $ic];
+          $bio = trim((string)($m['bio'] ?? '')); ?>
+        <article class="gv-card">
+          <div class="gv-photo"><?php if ($mp): ?><img src="assets/images/<?php echo ui_e($mp); ?>" alt="Portrait of <?php echo ui_e($m['name']); ?>" loading="lazy"><?php else: ?><span><?php echo ui_e(mb_strtoupper(mb_substr($m['name'], 0, 1))); ?></span><?php endif; ?></div>
+          <div class="gv-body"><h4><?php echo ui_e($m['name']); ?></h4><p class="gv-role"><?php echo ui_e($m['role']); ?></p>
+            <?php if ($bio !== ''): ?><?php if (mb_strlen($bio) > 170): ?><p class="gv-bio"><?php echo ui_e(ui_excerpt($bio, 150)); ?></p><details class="gv-more"><summary>Read full profile</summary><div class="gv-full"><?php echo ui_paragraphs($bio); ?></div></details><?php else: ?><p class="gv-bio"><?php echo ui_e($bio); ?></p><?php endif; ?><?php endif; ?>
+            <?php if ($soc): ?><div class="gv-soc"><?php foreach ($soc as [$u, $sl, $ic]): ?><a href="<?php echo ui_e($u); ?>" target="_blank" rel="noopener" aria-label="<?php echo ui_e($m['name'] . ' on ' . $sl); ?>"><?php echo nufa_icon($ic, 16); ?></a><?php endforeach; ?></div><?php endif; ?></div>
+        </article>
       <?php endforeach; ?>
-    </div>
-    <?php endif; ?>
+      </div></div>
+    <?php endforeach; ?>
     <?php if ($govPeople !== ''): ?><div class="stack" data-reveal><?php echo $govPeople; ?></div>
-    <?php elseif (!$__sl): ?><div class="empty-state"><h3><?php echo cms_t('sacco', 'governance_empty_title'); ?></h3><p><?php echo cms_t('sacco', 'governance_note'); ?></p></div><?php endif; ?>
+    <?php elseif (!$__any): ?><div class="empty-state"><h3><?php echo cms_t('sacco', 'governance_empty_title'); ?></h3><p><?php echo cms_t('sacco', 'governance_note'); ?></p></div><?php endif; ?>
   </div>
 </section><?php endif; ?>
 
