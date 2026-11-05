@@ -6,4 +6,4 @@ Disallow: /card.php
 Allow: /
 
 # Replace with the live domain when deploying (the sitemap is generated dynamically)
-Sitemap: https://www.nufa.media/sitemap.php
+Sitemap: https://www.nufawards.com/sitemap.php

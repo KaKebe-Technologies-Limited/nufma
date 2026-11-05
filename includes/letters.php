@@ -161,7 +161,7 @@ function ltr_email_html($conn, array $l) {
 /** Sends the letter by email (headed-paper HTML + plain-text copy). Returns true if handed to the mail system. */
 function ltr_send_email($conn, array $l) {
     if (!filter_var($l['email'], FILTER_VALIDATE_EMAIL)) return false;
-    $M = mem_settings($conn); $from = $M['email_from'] ?: 'info@nufa.media'; $fromName = $M['email_from_name'] ?: 'NUFA';
+    $M = mem_settings($conn); $from = $M['email_from'] ?: 'info@nufawards.com'; $fromName = $M['email_from_name'] ?: 'NUFA';
     $subject = 'Invitation: ' . $l['event_title'] . ($l['event_date'] ? ' — ' . date('j F Y', strtotime($l['event_date'])) : '');
     $text = $l['body'] . "\n\nView and download the letter: " . ltr_link($l) . "\n\n— Northern Uganda Filmmakers Association";
     $html = ltr_email_html($conn, $l); $b = 'nufa_' . bin2hex(random_bytes(8));

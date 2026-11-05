@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $subject = trim($_POST['subject'] ?? '');
     $body = trim($_POST['body'] ?? '');
     if ($subject && $body) {
-        $fromEmail = 'info@nufa.media';
+        $fromEmail = 'info@nufawards.com';
         $headers  = "From: NUFA <{$fromEmail}>\r\n";
         $headers .= "Reply-To: {$fromEmail}\r\n";
         $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";

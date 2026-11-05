@@ -14,7 +14,7 @@ function nufa_site_settings($conn) {
         'site_phone'    => '+256 774 757 587',
         'site_phone2'   => '+256 779 712 990',
         'site_address'  => 'Plot 75, Jomo Kenyatta Road, Gulu City, Uganda',
-        'site_website'  => 'https://www.nufa.media/',
+        'site_website'  => 'https://www.nufawards.com/',
         'facebook_url'  => 'https://www.facebook.com/nufa2026',
         'instagram_url' => 'https://www.instagram.com/nufa2026',
         'x_url'         => 'https://x.com/NUFA_OFFICIAL1',

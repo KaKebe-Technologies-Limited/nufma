@@ -25,7 +25,7 @@ Privacy Policy, Cookie Policy, Terms of Use, Image & Content Permissions, Access
 6. **News articles** — the ten articles imported from the earlier site are the association's own posts; please confirm each is accurate and approved. Mark any demonstration content as unpublished.
 7. **Impact figures** — none are shown. Add verified indicators in *Site Settings → Verified impact figures* when available.
 8. **Resources and videos** — the library is empty by design. Upload approved documents (Resources) and official YouTube/Vimeo links (Gallery & Videos).
-9. **Contact details** — set from the brief: Plot 75, Jomo Kenyatta Road, Gulu City · nuf.association@gmail.com · +256 774 757 587 / +256 779 712 990 · https://www.nufa.media/. A map is intentionally **not** shown until the exact office location is verified.
+9. **Contact details** — set from the brief: Plot 75, Jomo Kenyatta Road, Gulu City · nuf.association@gmail.com · +256 774 757 587 / +256 779 712 990 · https://www.nufawards.com/. A map is intentionally **not** shown until the exact office location is verified.
 10. **Photographs** — the images used come from NUFA's own galleries and productions. Please confirm publication permission for people shown, and add photographer credits (News → image credit; Gallery note).
 11. **Membership payment details** — real mobile-money/bank details, fee, validity period, president's name and signature (Membership → Membership settings).
 12. **Sending e-mail address** — an address on the hosting domain (Membership settings → Emails) for reliable delivery.

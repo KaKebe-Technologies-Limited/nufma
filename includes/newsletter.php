@@ -112,7 +112,7 @@ function nl_email_text($conn, $n, $sub) {
 /** Sends one issue to one address (HTML + plain text) and logs it. */
 function nl_mail($conn, $to, $subject, $html, $text) {
     $s = mem_settings($conn);
-    $from = $s['email_from'] ?: 'info@nufa.media'; $fromName = $s['email_from_name'] ?: 'NUFA';
+    $from = $s['email_from'] ?: 'info@nufawards.com'; $fromName = $s['email_from_name'] ?: 'NUFA';
     $b = 'nufa_' . bin2hex(random_bytes(8));
     $headers = "From: " . mb_encode_mimeheader($fromName) . " <{$from}>\r\nReply-To: {$from}\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"{$b}\"\r\nList-Unsubscribe: <" . mem_site_url() . "/newsletters.php>\r\n";
     $msg = "--{$b}\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n{$text}\r\n\r\n--{$b}\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n{$html}\r\n\r\n--{$b}--";

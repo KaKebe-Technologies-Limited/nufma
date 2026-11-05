@@ -112,7 +112,7 @@ function inv_email_text($camp, $g) {
 /** Sends the invitation email (with the PDF attached) and logs it. Returns [ok, note]. */
 function inv_mail($conn, $camp, $g, $toOverride = null) {
     $s = mem_settings($conn);
-    $from = $s['email_from'] ?: 'info@nufa.media'; $fromName = $s['email_from_name'] ?: 'NUFA';
+    $from = $s['email_from'] ?: 'info@nufawards.com'; $fromName = $s['email_from_name'] ?: 'NUFA';
     $to = $toOverride ?: $g['email'];
     $subject = strtr($camp['subject'] !== '' ? $camp['subject'] : 'You are invited: {event}', inv_vars($camp, $g));
     [$pdf, $note] = inv_pdf($camp, $g);

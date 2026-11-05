@@ -82,3 +82,17 @@ function mem_renew_approve($conn, $rid, $note = '') {
     $a = $conn->prepare("UPDATE member_renewals SET status='approved', new_valid_until=?, approved_at=NOW(), admin_note=? WHERE id=?"); $n = mb_substr($note, 0, 500); $a->bind_param("ssi", $until, $n, $rid); $a->execute();
     return $until;
 }
+
+/** One-time: the website is www.nufawards.com — replace any saved www.nufa.media / @nufa.media in settings, page text, menus and stories. */
+function mem_domain_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='domain_nufawards_v1'");
+    if (!$f || $f->num_rows) return;
+    $targets = [['settings', 'setting_value'], ['page_content', 'field_value'], ['nav_items', 'url'], ['posts', 'content'], ['posts', 'excerpt'], ['programmes', 'summary'], ['resources', 'description']];
+    foreach ($targets as [$t, $c]) {
+        $x = $conn->query("SHOW COLUMNS FROM `$t` LIKE '$c'"); if (!$x || !$x->num_rows) continue;
+        $conn->query("UPDATE `$t` SET `$c`=REPLACE(REPLACE(`$c`,'www.nufa.media','www.nufawards.com'),'nufa.media','nufawards.com') WHERE `$c` LIKE '%nufa.media%'");
+    }
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('domain_nufawards_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    mem_settings($conn, true);
+}

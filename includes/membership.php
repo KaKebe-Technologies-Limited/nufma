@@ -28,7 +28,7 @@ function mem_defaults() {
         'president_title'      => 'President, NUFA',
         'president_signature'  => '',
         'card_note'            => 'This card remains the property of NUFA. Valid only for the period shown.',
-        'email_from'           => 'info@nufa.media',
+        'email_from'           => 'info@nufawards.com',
         'email_from_name'      => 'NUFA',
         'admin_notify_email'   => 'nuf.association@gmail.com',
         'send_receipt_email'   => '1',
@@ -266,7 +266,7 @@ function mem_email_html($subject, $text, $buttonUrl = null, $buttonLabel = 'View
 /** Sends (and logs) an e-mail. Returns true when handed to the mail system. */
 function mem_send($conn, $memberId, $kind, $to, $subject, $text, $buttonUrl = null, $replyTo = '') {
     $s = mem_settings($conn);
-    $from = $s['email_from'] ?: 'info@nufa.media';
+    $from = $s['email_from'] ?: 'info@nufawards.com';
     $fromName = $s['email_from_name'] ?: 'NUFA';
     $boundary = 'nufa_' . bin2hex(random_bytes(8));
     $html = mem_email_html($subject, $text, $buttonUrl);
@@ -332,4 +332,5 @@ mem_install($conn);
 mem_subregion_col($conn);
 require_once __DIR__ . "/renewals.php";
 mem_fees_seed($conn);
+mem_domain_seed($conn);
 mem_renew_install($conn);
