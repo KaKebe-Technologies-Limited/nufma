@@ -34,7 +34,7 @@ function admin_page_modules() {
         'sacco' => ['sacco-manager.php', 'sacco-applications.php', 'sacco-file.php'],
         'events' => ['schedule.php', 'greetings.php'],
         'awards' => ['award-acts.php', 'guests.php', 'award-events.php', 'award-event-file.php', 'award-editions.php', 'award-edition-edit.php', 'award-winners.php', 'award-winner-edit.php', 'awards-setup.php'],
-        'invitations' => ['invitations.php', 'invitation.php', 'invitation-file.php'],
+        'invitations' => ['invitations.php', 'letters.php', 'invitation.php', 'invitation-file.php'],
         'news' => ['posts.php', 'post-edit.php', 'newsletters.php', 'newsletter-edit.php', 'subscribers.php', 'upload-image.php'],
         'website' => ['pages.php', 'page-editor.php', 'content.php', 'content-edit.php', 'menus.php', 'appearance.php', 'lists.php', 'website-map.php', 'sliders.php', 'slide-edit.php', 'site-images.php',
                       'gallery.php', 'videos.php', 'resources.php', 'films.php', 'film-file.php', 'opportunities.php', 'academy.php', 'academy-course.php', 'academy-classes.php', 'academy-learners.php', 'academy-trainers.php', 'academy-resources.php', 'programmes.php', 'programme-edit.php', 'partners.php', 'partner-edit.php'],

@@ -10,6 +10,7 @@ if (isset($conn)) {
 }
 
 $__ico = [
+    'letters' => '<path d="M5 3h10l4 4v14H5V3Z"/><path d="M15 3v4h4M8 12h8M8 15h8M8 18h5" stroke-linecap="round"/>',
     'siteimages' => '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.800"/><path d="m4 18 5-5 4 4 3-3 4 4" stroke-linecap="round" stroke-linejoin="round"/>',
     'dashboard'   => '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="14" width="8" height="7" rx="2"/>',
     'members'     => '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2"/><path d="M6 16c.6-1.5 1.8-2 3-2s2.4.5 3 2M14 10h4M14 13h3" stroke-linecap="round"/>',
@@ -107,6 +108,7 @@ $__nav = [
         ['awards', 'award-editions.php', 'Award editions'],
         ['awardsetup', 'awards-setup.php', 'Awards setup'],
         ['invitations', 'invitations.php', 'Award invitations'],
+        ['letters', 'letters.php', 'Invitation letters'],
     ],
     'Stories & media' => [
         ['posts', 'posts.php', 'News & stories'],
