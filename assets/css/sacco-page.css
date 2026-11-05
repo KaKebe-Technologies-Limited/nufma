@@ -53,3 +53,45 @@
 
 @media (max-width:760px){.sp-reg{margin-top:-20px}.sp-reg a.more{margin-left:0}.sp .section-head{margin-bottom:24px}}
 .sp .status-banner{flex-wrap:nowrap;align-items:flex-start}.sp .status-banner>svg{flex:none;margin-top:2px}
+
+/* About — interactive tabs */
+.sp .ab-head{max-width:780px;margin-bottom:30px}
+.sp .ab-head h2{margin:6px 0 12px}
+.sp .ab-lede{font-size:1.12rem;line-height:1.7;color:var(--sp-mute)}
+.sp .ab-wrap{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:26px;align-items:start}
+.sp .ab-tabs{position:relative;display:flex;flex-direction:column;gap:10px;padding-left:0}
+.sp .ab-tab{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:16px 18px;border-radius:16px;background:#fff;border:1px solid var(--sp-line);cursor:pointer;color:var(--sp-ink);transition:transform .25s,box-shadow .25s,border-color .25s,background .25s;font:inherit}
+.sp .ab-tab:hover{transform:translateX(4px);border-color:#F4C7C3}
+.sp .ab-tab.is-on{background:linear-gradient(135deg,#D50000,#B30000);color:#fff;border-color:transparent;box-shadow:0 14px 30px rgba(213,0,0,.28);transform:translateX(8px)}
+.sp .ab-ic{flex:none;width:42px;height:42px;border-radius:12px;background:#FFF0E6;color:var(--sp-org);display:flex;align-items:center;justify-content:center}
+.sp .ab-tab.is-on .ab-ic{background:rgba(255,255,255,.18);color:#fff}
+.sp .ab-tt{flex:1;min-width:0}.sp .ab-tt b{display:block;font-size:.98rem}.sp .ab-tt small{display:block;font-size:.76rem;opacity:.7;margin-top:2px}
+.sp .ab-n{font-weight:900;font-size:1.3rem;opacity:.22}
+.sp .ab-bar{display:none}
+.sp .ab-panels{background:#fff;border:1px solid var(--sp-line);border-radius:22px;box-shadow:0 14px 40px rgba(0,0,0,.07);padding:clamp(22px,3vw,38px);min-height:340px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.sp .ab-panels::before{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,121,0,.13),rgba(255,121,0,0) 70%)}
+.sp .ab-panel{flex:1;opacity:0;transform:translateY(14px);transition:opacity .4s ease,transform .4s ease;position:relative}
+.sp .ab-panel.is-on{opacity:1;transform:none}
+.sp .ab-panel .lede{font-size:1.1rem}.sp .ab-panel p{line-height:1.75}
+.sp .ab-panel .stack>*+*{margin-top:14px}
+.sp .ab-people{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.sp .ab-person{display:flex;gap:12px;align-items:center;text-align:left;padding:16px;border-radius:16px;background:#FAF8F5;border:2px solid transparent;cursor:pointer;font:inherit;color:var(--sp-ink);font-weight:600;transition:.25s}
+.sp .ab-person:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(0,0,0,.08)}
+.sp .ab-person.is-on{border-color:var(--sp-red);background:#FFF3F0}
+.sp .ab-pn{flex:none;width:34px;height:34px;border-radius:50%;background:var(--sp-org);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.sp .ab-person.is-on .ab-pn{background:var(--sp-red)}
+.sp .ab-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:22px;padding-top:16px;border-top:1px solid var(--sp-line);position:relative}
+.sp .ab-nav button{background:none;border:0;font:inherit;font-weight:700;color:var(--sp-red);cursor:pointer;padding:6px 4px}
+.sp .ab-nav button:hover{text-decoration:underline}
+.sp .ab-dots{display:flex;gap:8px}.sp .ab-dots i{width:9px;height:9px;border-radius:99px;background:#ddd;transition:.3s}.sp .ab-dots i.is-on{width:26px;background:var(--sp-red)}
+/* vision & mission */
+.sp .vm-card{position:relative;transition:transform .3s,box-shadow .3s}
+.sp .vm-card:hover{transform:translateY(-6px);box-shadow:0 20px 44px rgba(0,0,0,.25)}
+.sp .vm-ic{display:inline-flex;width:40px;height:40px;border-radius:50%;background:rgba(255,121,0,.18);color:var(--sp-org);align-items:center;justify-content:center;margin-bottom:12px;font-size:1.1rem}
+@media (max-width:860px){
+  .sp .ab-wrap{grid-template-columns:1fr}
+  .sp .ab-tabs{flex-direction:row;overflow-x:auto;gap:8px;padding-bottom:6px;scrollbar-width:none}.sp .ab-tabs::-webkit-scrollbar{display:none}
+  .sp .ab-tab{flex:none;width:auto;min-width:210px;transform:none!important}
+  .sp .ab-n{display:none}
+}
+@media (prefers-reduced-motion:reduce){.sp .ab-panel,.sp .ab-tab,.sp .ab-person,.sp .vm-card{transition:none}}

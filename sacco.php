@@ -83,17 +83,51 @@ $regBtn = $appsOpen
 
 <?php if (nufa_show('sacco', 'about')): ?><section class="section" id="about">
   <div class="container">
-    <div class="split">
-      <div data-reveal><div class="eyebrow">About NUFA SACCO</div><h2>What is being explored</h2><div class="lede stack"><?php echo ui_paragraphs(cms_value('sacco', 'intro_body')); ?></div>
-        <h3 style="margin-top:28px">Background and rationale</h3><div class="stack"><?php echo cms_h('sacco', 'rationale'); ?></div></div>
-      <div data-reveal>
-        <h3>Relationship with NUFA</h3><div class="stack"><?php echo cms_h('sacco', 'about_relationship'); ?></div>
-        <h3 style="margin-top:26px">Intended beneficiaries</h3><div class="stack"><?php echo cms_h('sacco', 'about_beneficiaries'); ?></div>
+    <?php
+      $__intro = ui_paragraphs(cms_value('sacco', 'intro_body'));
+      $__people = array_values(array_filter(array_map(fn($x) => trim(html_entity_decode(strip_tags($x))), preg_split('/<\/?(?:p|li|br|ul|ol|div)[^>]*>/i', cms_h('sacco', 'about_beneficiaries')))));
+      $__tabs = [
+        ['overview', 'Overview', 'What it is', 'compass'],
+        ['why', 'Background', 'Why a SACCO', 'coins'],
+        ['nufa', 'Relationship with NUFA', 'How it connects', 'handshake'],
+        ['who', 'Who it is for', 'Intended beneficiaries', 'users'],
+      ];
+    ?>
+    <div class="ab" data-reveal>
+      <div class="ab-head"><div class="eyebrow">About NUFA SACCO</div><h2>What is being explored</h2><p class="ab-lede"><?php echo ui_e(trim(strtok(strip_tags(cms_value('sacco', 'intro_body')), "\n"))); ?></p></div>
+      <div class="ab-wrap">
+        <div class="ab-tabs" role="tablist" aria-label="About the NUFA SACCO" aria-orientation="vertical">
+          <?php foreach ($__tabs as $i => [$id, $label, $sub, $ic]): ?>
+          <button type="button" role="tab" class="ab-tab<?php echo $i === 0 ? ' is-on' : ''; ?>" id="abt-<?php echo $id; ?>" aria-controls="abp-<?php echo $id; ?>" aria-selected="<?php echo $i === 0 ? 'true' : 'false'; ?>" tabindex="<?php echo $i === 0 ? '0' : '-1'; ?>">
+            <span class="ab-ic"><?php echo nufa_icon($ic, 20); ?></span><span class="ab-tt"><b><?php echo ui_e($label); ?></b><small><?php echo ui_e($sub); ?></small></span><span class="ab-n"><?php echo $i + 1; ?></span>
+          </button>
+          <?php endforeach; ?>
+          <div class="ab-bar" aria-hidden="true"><i></i></div>
+        </div>
+        <div class="ab-panels">
+          <div class="ab-panel is-on" role="tabpanel" id="abp-overview" aria-labelledby="abt-overview"><div class="lede stack"><?php echo $__intro; ?></div></div>
+          <div class="ab-panel" role="tabpanel" id="abp-why" aria-labelledby="abt-why" hidden><div class="stack"><?php echo cms_h('sacco', 'rationale'); ?></div></div>
+          <div class="ab-panel" role="tabpanel" id="abp-nufa" aria-labelledby="abt-nufa" hidden><div class="stack"><?php echo cms_h('sacco', 'about_relationship'); ?></div></div>
+          <div class="ab-panel" role="tabpanel" id="abp-who" aria-labelledby="abt-who" hidden>
+            <?php if (count($__people) > 1): ?><p class="muted" style="margin-bottom:14px">Tap a card to highlight it.</p><div class="ab-people"><?php foreach ($__people as $i => $pp): ?><button type="button" class="ab-person"><span class="ab-pn"><?php echo $i + 1; ?></span><span><?php echo ui_e($pp); ?></span></button><?php endforeach; ?></div>
+            <?php else: ?><div class="stack"><?php echo cms_h('sacco', 'about_beneficiaries'); ?></div><?php endif; ?>
+          </div>
+          <div class="ab-nav"><button type="button" class="ab-prev" aria-label="Previous">&larr; Previous</button><span class="ab-dots" aria-hidden="true"><?php foreach ($__tabs as $i => $t): ?><i class="<?php echo $i === 0 ? 'is-on' : ''; ?>"></i><?php endforeach; ?></span><button type="button" class="ab-next" aria-label="Next">Next &rarr;</button></div>
+        </div>
       </div>
     </div>
+    <script>(function(){var root=document.querySelector('.ab');if(!root)return;var tabs=[].slice.call(root.querySelectorAll('.ab-tab')),panels=[].slice.call(root.querySelectorAll('.ab-panel')),dots=[].slice.call(root.querySelectorAll('.ab-dots i')),bar=root.querySelector('.ab-bar i'),cur=0,timer=null;
+    function go(i,focus){cur=(i+tabs.length)%tabs.length;tabs.forEach(function(t,k){var on=k===cur;t.classList.toggle('is-on',on);t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1;});panels.forEach(function(p,k){var on=k===cur;if(on){p.hidden=false;void p.offsetWidth;p.classList.add('is-on');}else{p.classList.remove('is-on');p.hidden=true;}});dots.forEach(function(d,k){d.classList.toggle('is-on',k===cur);});if(bar)bar.style.transform='translateY('+(cur*100)+'%)';if(focus)tabs[cur].focus();}
+    tabs.forEach(function(t,k){t.addEventListener('click',function(){stop();go(k);});t.addEventListener('keydown',function(e){if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();stop();go(cur+1,true);}else if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();stop();go(cur-1,true);}});});
+    root.querySelector('.ab-next').addEventListener('click',function(){stop();go(cur+1);});root.querySelector('.ab-prev').addEventListener('click',function(){stop();go(cur-1);});
+    root.querySelectorAll('.ab-person').forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('is-on');});});
+    function stop(){if(timer){clearInterval(timer);timer=null;}}
+    if(bar)bar.style.height=(100/tabs.length)+'%';go(0);
+    var seen=false;if('IntersectionObserver' in window){new IntersectionObserver(function(en){en.forEach(function(x){if(x.isIntersecting&&!seen){seen=true;timer=setInterval(function(){go(cur+1);if(cur===tabs.length-1)stop();},7000);}});},{threshold:.5}).observe(root);}
+    root.addEventListener('mouseenter',stop);root.addEventListener('focusin',stop);})();</script>
     <div class="vm-grid" style="margin-top:44px" data-reveal-stagger>
-      <div class="vm-card"><h3>Vision</h3><p><?php echo cms_t('sacco', 'vision_text'); ?></p><?php if ($draftVm): ?><span class="draft-flag">Draft — subject to approval</span><?php endif; ?></div>
-      <div class="vm-card"><h3>Mission</h3><p><?php echo cms_t('sacco', 'mission_text'); ?></p><?php if ($draftVm): ?><span class="draft-flag">Draft — subject to approval</span><?php endif; ?></div>
+      <div class="vm-card vm-card--v"><span class="vm-ic">&#9673;</span><h3>Vision</h3><p><?php echo cms_t('sacco', 'vision_text'); ?></p><?php if ($draftVm): ?><span class="draft-flag">Draft — subject to approval</span><?php endif; ?></div>
+      <div class="vm-card vm-card--m"><span class="vm-ic">&#10148;</span><h3>Mission</h3><p><?php echo cms_t('sacco', 'mission_text'); ?></p><?php if ($draftVm): ?><span class="draft-flag">Draft — subject to approval</span><?php endif; ?></div>
     </div>
   </div>
 </section><?php endif; ?>
