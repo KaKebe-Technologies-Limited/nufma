@@ -333,4 +333,4 @@ mem_install($conn);
 mem_subregion_col($conn);
 require_once __DIR__ . "/renewals.php";
 // run the one-time setup steps that exist (an older renewals.php on the server must never take the site down)
-foreach (['mem_fees_seed', 'mem_domain_seed', 'mem_team_cat_seed', 'mem_renew_install'] as $__fn) if (function_exists($__fn)) $__fn($conn);
+foreach (['mem_fees_seed', 'mem_domain_seed', 'mem_team_cat_seed', 'mem_card_signature_seed', 'mem_renew_install'] as $__fn) if (function_exists($__fn)) $__fn($conn);

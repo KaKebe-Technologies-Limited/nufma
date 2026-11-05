@@ -83,6 +83,18 @@ function mem_renew_approve($conn, $rid, $note = '') {
     return $until;
 }
 
+/** One-time: the supplied signature is printed on every membership card — the NUFA membership card and the NUFA SACCO card (both earlier and new cards). Replace it any time in Membership settings / SACCO settings. */
+function mem_card_signature_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='card_sig_v1'");
+    if (!$f || $f->num_rows) return;
+    $rel = 'signature/membership-signature.png';
+    if (!is_file(__DIR__ . '/../assets/images/' . $rel)) return;   // picture not uploaded yet
+    foreach (['president_signature', 'sacapp_chair_signature'] as $k) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param('ss', $k, $rel); $s->execute(); }
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('card_sig_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    mem_settings($conn, true);
+}
+
 /** One-time: add "SACCO Leadership" to the saved list of leadership categories (Admin → Leadership & team). */
 function mem_team_cat_seed($conn) {
     static $done = false; if ($done) return; $done = true;
