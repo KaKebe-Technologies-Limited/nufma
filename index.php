@@ -31,7 +31,8 @@ for ($i = 1; $i <= 4; $i++) if ($cfg["impact{$i}_value"] !== '' && $cfg["impact{
 <!-- HERO -->
 <section class="hero" aria-label="Introduction">
   <div class="hero-media" aria-hidden="true" data-hero-slides="<?php echo count($heroSlides); ?>">
-    <?php foreach ($heroSlides as $i => $hs): ?><?php if ($i === 0): ?><img class="is-active" src="assets/images/<?php echo ui_e($hs['image']); ?>" alt="" width="1920" height="1080" fetchpriority="high" decoding="async"><?php else: ?><img data-src="assets/images/<?php echo ui_e($hs['image']); ?>" alt="" width="1920" height="1080" decoding="async"><?php endif; ?><?php endforeach; ?>
+    <?php $heroTall = function ($rel) { $s = @getimagesize(__DIR__ . "/assets/images/" . $rel); return ($s && $s[1] > 0 && $s[0] / $s[1] < 1.45) ? " is-tall" : ""; }; ?>
+    <?php foreach ($heroSlides as $i => $hs): ?><?php if ($i === 0): ?><img class="is-active<?php echo $heroTall($hs["image"]); ?>" src="assets/images/<?php echo ui_e($hs['image']); ?>" alt="" width="1920" height="1080" fetchpriority="high" decoding="async"><?php else: ?><img class="<?php echo trim($heroTall($hs["image"])); ?>" data-src="assets/images/<?php echo ui_e($hs['image']); ?>" alt="" width="1920" height="1080" decoding="async"><?php endif; ?><?php endforeach; ?>
   </div>
   <div class="container-wide">
     <div class="hero-inner">

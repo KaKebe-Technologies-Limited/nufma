@@ -1148,3 +1148,12 @@ body{color:var(--nufa-text);background:var(--nufa-white)}
 .leader-bio[open] summary{background:var(--nufa-primary);border-color:var(--nufa-primary);color:#fff}
 .leader-bio>div{text-align:left;margin-top:12px;font-size:.88rem;line-height:1.65;color:var(--muted-on-dark)}
 .leader-bio>div p{margin:0 0 10px}
+
+/* ===== Hero pictures: show more of the photo, keep it sharp ===== */
+.hero{min-height:max(min(86svh,820px),min(54vw,960px))}
+.hero-media img{object-position:center 30%;image-rendering:auto;backface-visibility:hidden}
+.hero-media img.is-tall{object-position:center 18%}
+@keyframes heroZoom{from{transform:scale(1)}to{transform:scale(1.035)}}
+.hero-media img{transform:scale(1)}
+.hero::before{background:linear-gradient(90deg,rgba(8,8,8,.74) 0%,rgba(8,8,8,.42) 52%,rgba(8,8,8,.1) 100%),linear-gradient(0deg,rgba(8,8,8,.6),transparent 38%)}
+@media (max-width:860px){.hero{min-height:min(82svh,700px)}.hero-media img{object-position:center 25%}}
