@@ -331,7 +331,5 @@ function mem_subregion_options() { return array_merge(array_keys(mem_subregions(
 mem_install($conn);
 mem_subregion_col($conn);
 require_once __DIR__ . "/renewals.php";
-mem_fees_seed($conn);
-mem_domain_seed($conn);
-mem_team_cat_seed($conn);
-mem_renew_install($conn);
+// run the one-time setup steps that exist (an older renewals.php on the server must never take the site down)
+foreach (['mem_fees_seed', 'mem_domain_seed', 'mem_team_cat_seed', 'mem_renew_install'] as $__fn) if (function_exists($__fn)) $__fn($conn);
