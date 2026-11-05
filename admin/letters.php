@@ -77,6 +77,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 elseif ($act === 'delete') { $conn->query("DELETE FROM invitation_letters WHERE id=$lid"); header("Location: letters.php?deleted=1"); exit; }
                 $id = $lid;
             }
+        } elseif ($act === 'general_update') {
+            $batchSc = ($_POST['scope'] ?? '') === 'batch' && preg_match('/^[0-9-]+$/', $_POST['batch'] ?? '') ? $_POST['batch'] : '';
+            $rs = $conn->query("SELECT * FROM invitation_letters" . ($batchSc !== '' ? " WHERE batch='" . $conn->real_escape_string($batchSc) . "'" : ''));
+            $rows = $rs ? $rs->fetch_all(MYSQLI_ASSOC) : []; $n = 0;
+            $nt = trim($_POST['event_title'] ?? ''); $nd = trim($_POST['event_date'] ?? ''); $ntm = trim($_POST['event_time'] ?? ''); $nv = trim($_POST['venue'] ?? ''); $np = trim($_POST['purpose'] ?? '');
+            $rewrite = !empty($_POST['rewrite']); $today = !empty($_POST['letter_today']); $sgn = $_POST['signer'] ?? 'keep';
+            $ndSql = $nd !== '' && strtotime($nd) ? date('Y-m-d', strtotime($nd)) : '';
+            foreach ($rows as $r) {
+                $new = $r;
+                if ($nt !== '') $new['event_title'] = $nt;
+                if ($ndSql !== '') $new['event_date'] = $ndSql;
+                if ($ntm !== '') $new['event_time'] = $ntm;
+                if ($nv !== '') $new['venue'] = $nv;
+                if ($np !== '') $new['purpose'] = $np;
+                $changed = ($new['event_title'] !== $r['event_title']) || ($new['event_date'] !== $r['event_date']) || ($new['event_time'] !== $r['event_time']) || ($new['venue'] !== $r['venue']) || $np !== '';
+                $body = $r['body'];
+                if ($rewrite) $body = ltr_generate($conn, $new);
+                elseif ($changed) {   // keep any manual wording, but correct the facts that changed
+                    if ($new['event_title'] !== $r['event_title'] && $r['event_title'] !== '') $body = str_replace([mb_strtoupper($r['event_title']), $r['event_title']], [mb_strtoupper($new['event_title']), $new['event_title']], $body);
+                    if ($new['event_date'] !== $r['event_date'] && $r['event_date']) $body = str_replace(date('l, j F Y', strtotime($r['event_date'])), date('l, j F Y', strtotime($new['event_date'])), $body);
+                    if ($new['event_time'] !== $r['event_time'] && $r['event_time'] !== '') $body = str_replace($r['event_time'], $new['event_time'], $body);
+                    if ($new['venue'] !== $r['venue'] && $r['venue'] !== '') $body = str_replace($r['venue'], $new['venue'], $body);
+                }
+                $ld = $today ? date('Y-m-d') : $r['letter_date'];
+                $sid = $r['signer_id'];
+                if ($sgn === 'none') $sid = -1; elseif ($sgn === 'default') $sid = null; elseif ($sgn !== 'keep' && (int)$sgn > 0) $sid = (int)$sgn;
+                $u = $conn->prepare("UPDATE invitation_letters SET event_title=?, event_date=?, event_time=?, venue=?, purpose=?, body=?, letter_date=?, signer_id=?, updated_at=NOW() WHERE id=?");
+                $ed = $new['event_date'] ?: null; $pp = (string)$new['purpose'];
+                $u->bind_param("sssssssii", $new['event_title'], $ed, $new['event_time'], $new['venue'], $pp, $body, $ld, $sid, $r['id']); $u->execute(); $n++;
+            }
+            $flash = "Updated $n letter" . ($n === 1 ? '' : 's') . ($batchSc !== '' ? ' in this batch' : '') . ' in one go. The letterhead and signing always show the latest version, and links already sent show the corrected letters straight away.';
+            if ($batchSc !== '') $batchId = $batchSc;
         } elseif ($act === 'sig_flag') {
             $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('lt_show_signature',?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $v = isset($_POST['lt_show_signature']) ? '1' : '0'; $s->bind_param("s", $v); $s->execute();
             $flash = $v === '1' ? 'The signature block is now printed on every letter (earlier letters included) that has a signatory.' : 'The signature block is now hidden on letters that use the default signatory.'; $tab = 'signatories';
@@ -288,6 +320,22 @@ $eventFields = function ($v = []) use ($e) { ?>
 <div class="admin-card"><div class="admin-card-head"><h2><?php echo $batchId !== '' ? 'This batch' : 'Invitation letters'; ?> (<?php echo count($rows); ?>)</h2><span><?php if ($batchId !== ''): ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php">All letters</a> <?php endif; ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?tab=bulk">+ Several at once</a> <a class="admin-btn admin-btn-brand admin-btn-sm" href="letters.php?tab=new">+ New letter</a></span></div>
   <?php if (!$rows): ?><p style="color:var(--text-muted);padding:14px 0">No letters yet. Create the first one with <b>New letter</b> or <b>Several at once</b>.</p><?php else: ?>
   <?php $sigs = ltr_signatories($conn); ?>
+  <details style="margin-bottom:12px;border:1px solid #F4C7C3;border-radius:12px;background:#FDECEC"><summary style="cursor:pointer;padding:12px 14px;font-weight:800;color:#8A0000;list-style:none">&#8635; General update — change everything on all <?php echo $batchId !== '' ? 'letters in this batch' : 'letters'; ?> at once &#9662;</summary>
+    <form method="post" class="admin-form" style="padding:0 14px 14px"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="general_update"><input type="hidden" name="scope" value="<?php echo $batchId !== '' ? 'batch' : 'all'; ?>"><input type="hidden" name="batch" value="<?php echo $e($batchId); ?>">
+      <p class="admin-help" style="margin:0 0 10px">Fill in only what you want to change — empty boxes are left as they are. Everything is applied to <b><?php echo count($rows); ?> letter<?php echo count($rows) === 1 ? '' : 's'; ?></b> together, and the links already sent show the corrected letters straight away.</p>
+      <div class="admin-form-grid">
+        <div class="field"><label>Event</label><input name="event_title" placeholder="leave empty to keep"></div>
+        <div class="field"><label>Date of the event</label><input type="date" name="event_date"></div>
+        <div class="field"><label>Time</label><input name="event_time" placeholder="leave empty to keep"></div>
+        <div class="field"><label>Venue</label><input name="venue" placeholder="leave empty to keep"></div>
+        <div class="field"><label>Signed by</label><select name="signer"><option value="keep">Keep as it is</option><option value="default">Default signatory</option><?php foreach ($sigs as $sg) echo '<option value="' . (int)$sg['id'] . '">' . $e($sg['name']) . '</option>'; ?><option value="none">No signature</option></select></div>
+      </div>
+      <div class="field"><label>What the event is about (optional)</label><textarea name="purpose" style="min-height:60px" placeholder="leave empty to keep"></textarea></div>
+      <label style="display:flex;gap:8px;align-items:center;margin:4px 0"><input type="checkbox" name="rewrite" value="1"> Rewrite every letter's wording from the template (this replaces any edits you made to the text)</label>
+      <label style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" name="letter_today" value="1"> Set the letter date to today on all of them</label>
+      <button class="admin-btn admin-btn-brand" data-confirm="Update all <?php echo count($rows); ?> letters now?">&#8635; Update everything at once</button>
+      <span class="admin-help" style="margin-left:8px">If you leave "rewrite" unticked, your own wording is kept and only the changed event, date, time and venue are corrected inside it.</span>
+    </form></details>
   <form method="post" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:12px;background:#FFF7F0;border:1px solid #FFD9B8;border-radius:12px"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="sign_apply"><input type="hidden" name="scope" value="<?php echo $batchId !== '' ? 'batch' : 'all'; ?>"><input type="hidden" name="batch" value="<?php echo $e($batchId); ?>">
     <b>&#9998; One signature for <?php echo $batchId !== '' ? 'this whole batch' : 'all letters'; ?>:</b>
     <select name="signer"><option value="default">Default signatory</option><?php foreach ($sigs as $sg) echo '<option value="' . (int)$sg['id'] . '">' . $e($sg['name']) . '</option>'; ?><option value="none">No signature</option></select>
