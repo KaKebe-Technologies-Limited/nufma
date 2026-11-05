@@ -196,8 +196,9 @@ $regBtn = $appsOpen
 
 <?php if (nufa_show('sacco', 'governance')): ?><section class="section section--soft" id="governance">
   <div class="container">
-    <div class="section-head" data-reveal><div class="eyebrow">Governance &amp; leadership</div><h2>Who will run it</h2></div>
+    <div class="section-head" data-reveal><div class="eyebrow"><?php echo cms_t('sacco', 'governance_eyebrow'); ?></div><h2><?php echo cms_t('sacco', 'governance_heading'); ?></h2></div>
     <?php $__sl = $conn->query("SELECT * FROM team_members WHERE is_active=1 AND category='SACCO Leadership' ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC); if ($__sl): ?>
+    <?php if (trim(cms_value('sacco', 'governance_leaders_heading')) !== ''): ?><h3 data-reveal style="margin:0 0 16px"><?php echo cms_t('sacco', 'governance_leaders_heading'); ?></h3><?php endif; ?>
     <div class="guest-grid team-grid" data-reveal-stagger style="margin-bottom:26px">
       <?php foreach ($__sl as $m): $mp = (!empty($m['photo']) && is_file(__DIR__ . '/assets/images/' . $m['photo'])) ? $m['photo'] : ''; ?>
       <article class="guest"><div class="guest-photo"><?php if ($mp): ?><img src="assets/images/<?php echo ui_e($mp); ?>" alt="<?php echo ui_e($m['name']); ?>" loading="lazy"><?php else: echo nufa_icon('users', 34); endif; ?></div>
@@ -206,7 +207,7 @@ $regBtn = $appsOpen
     </div>
     <?php endif; ?>
     <?php if ($govPeople !== ''): ?><div class="stack" data-reveal><?php echo $govPeople; ?></div>
-    <?php elseif (!$__sl): ?><div class="empty-state"><h3>To be published</h3><p><?php echo cms_t('sacco', 'governance_note'); ?></p></div><?php endif; ?>
+    <?php elseif (!$__sl): ?><div class="empty-state"><h3><?php echo cms_t('sacco', 'governance_empty_title'); ?></h3><p><?php echo cms_t('sacco', 'governance_note'); ?></p></div><?php endif; ?>
   </div>
 </section><?php endif; ?>
 
