@@ -7,6 +7,7 @@ require_once __DIR__ . "/content.php";
 $fe = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 $logoRel = ($cfg['site_logo'] !== '' && is_file(__DIR__ . '/../assets/images/' . $cfg['site_logo'])) ? $cfg['site_logo'] : 'logo/nufa-logo.png';
 require_once __DIR__ . "/track.php"; track_menu_seed($conn);
+require_once __DIR__ . "/directory.php"; dir_menu_seed($conn);
 $footer1 = nufa_menu($conn, 'footer1'); $footer2 = nufa_menu($conn, 'footer2'); $footerLegal = nufa_menu($conn, 'footer_legal');
 $mobileCta2Label = cms_value('site', 'mobile_cta2_label');
 ?>

@@ -130,7 +130,7 @@ $idRows = $tab === 'ids' ? $conn->query("SELECT m.id, m.full_name, m.email, m.ph
 include __DIR__ . "/includes/admin-header.php";
 $validity = function () use ($e, $validityDefault) { return '<div class="field"><label>Valid from</label><input type="date" name="valid_from" value="' . date('Y-m-d') . '"></div><div class="field"><label>Valid until</label><input type="date" name="valid_until" value="' . date('Y-m-d', strtotime("+$validityDefault months -1 day")) . '"></div>'; };
 ?>
-<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php" class="active">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php" class="active">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="directory.php">Directory</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
 <?php if ($flash): ?><div class="admin-alert <?php echo $flashType; ?>"><?php echo $flash; ?></div><?php endif; ?>
 
 <div class="admin-grid" style="grid-template-columns:repeat(3,1fr)">
@@ -158,6 +158,7 @@ $validity = function () use ($e, $validityDefault) { return '<div class="field">
       <div class="field"><label>ID number (NIN)</label><input name="id_number"></div>
       <div class="field"><label>Address</label><input name="address"></div>
     </div>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:10px"><input type="checkbox" name="in_directory" value="1"> Show this member in the public Filmmakers Directory (name, guild, region and craft only)</label>
     <h3 style="margin:18px 0 8px">Membership ID</h3>
     <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="issue" value="1" checked> Approve and issue a membership ID now (next: <b><?php echo $e($nextId); ?></b>)</label>
     <div class="admin-form-grid"><?php echo $validity(); ?></div>

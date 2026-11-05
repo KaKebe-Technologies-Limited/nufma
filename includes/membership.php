@@ -310,11 +310,13 @@ function mem_subregion_of($text, array $map) {
 /** Adds members.subregion once. */
 function mem_subregion_col($conn) {
     static $done = false; if ($done) return; $done = true;
-    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='mem_subregion_col'");
-    if (!$f || $f->num_rows) return;
-    $c = $conn->query("SHOW COLUMNS FROM members LIKE 'subregion'");
-    if ($c && !$c->num_rows) $conn->query("ALTER TABLE members ADD COLUMN subregion VARCHAR(40) NOT NULL DEFAULT ''");
-    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('mem_subregion_col','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    foreach ([['mem_subregion_col', 'subregion', "VARCHAR(40) NOT NULL DEFAULT ''"], ['mem_dir_col', 'in_directory', 'TINYINT(1) NOT NULL DEFAULT 0']] as [$flag, $col, $ddl]) {
+        $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='$flag'");
+        if (!$f || $f->num_rows) continue;
+        $c = $conn->query("SHOW COLUMNS FROM members LIKE '$col'");
+        if ($c && !$c->num_rows) $conn->query("ALTER TABLE members ADD COLUMN $col $ddl");
+        $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('$flag','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    }
 }
 /** Sub-region of a member row: the one chosen on the form, otherwise worked out from the district ('' if unknown). */
 function mem_subregion_for(array $m, array $map) {

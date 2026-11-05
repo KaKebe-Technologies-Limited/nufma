@@ -45,7 +45,7 @@ $nIssue = (int)$conn->query("SELECT COUNT(*) FROM members WHERE reg_no IS NULL O
 include __DIR__ . "/includes/admin-header.php";
 ?>
 <link rel="stylesheet" href="../assets/css/member-card.css">
-<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php" class="active">Cards</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php" class="active">Cards</a><a href="directory.php">Directory</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
 <?php if ($flash): ?><div class="admin-alert <?php echo $flashType; ?>"><?php echo $flash; ?></div><?php endif; ?>
 <div class="mem-tabs"><a href="member-cards.php?tab=ready" class="<?php echo $tab === 'ready' ? 'active' : ''; ?>">Ready cards (<?php echo $nReady; ?>)</a><a href="member-cards.php?tab=issue" class="<?php echo $tab === 'issue' ? 'active' : ''; ?>">Awaiting issue (<?php echo $nIssue; ?>)</a></div>
 

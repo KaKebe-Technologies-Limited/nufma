@@ -54,6 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $v = mem_member_vars($conn, $m);
             $ok = mem_send($conn, $id, 'approved', $m['email'], mem_fill($S['email_approved_subject'], $v), mem_fill($S['email_approved_body'], $v), $v['card_link']);
             $flash = $ok ? "Approval email re-sent to " . $m['email'] . "." : "The email could not be sent from this server."; if (!$ok) $flashType = 'warn';
+        } elseif ($act === 'directory') {
+            $v = !empty($_POST['in_directory']) ? 1 : 0; $conn->query("UPDATE members SET in_directory=$v WHERE id=$id"); $m = $load(); $flash = $v ? 'Now listed in the public Filmmakers Directory.' : 'Removed from the public Filmmakers Directory.';
         } elseif ($act === 'note') {
             $n = trim($_POST['admin_note'] ?? '');
             $u = $conn->prepare("UPDATE members SET admin_note=? WHERE id=?"); $u->bind_param("si", $n, $id); $u->execute();
@@ -153,6 +155,14 @@ $row = fn($l, $v) => '<div class="mem-row"><span>' . $l . '</span><b>' . ($v !==
       <?php elseif ($m['reject_reason']): ?>
         <p style="margin-top:12px;color:var(--red-600)"><b>Rejected:</b> <?php echo htmlspecialchars($m['reject_reason']); ?></p>
       <?php endif; ?>
+    </div>
+
+    <div class="admin-card">
+      <div class="admin-card-head"><h2>Public directory</h2></div>
+      <form method="post" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="directory">
+        <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="in_directory" value="1" <?php echo !empty($m['in_directory']) ? 'checked' : ''; ?>> Show in the public Filmmakers Directory</label>
+        <p class="admin-help">Only name, guild, region, craft and portfolio link are shown, and only while the membership is approved and valid.</p>
+        <button class="admin-btn admin-btn-line admin-btn-sm">Save</button></form>
     </div>
 
     <div class="admin-card">

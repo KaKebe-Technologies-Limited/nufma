@@ -24,7 +24,9 @@ function mem_admin_create($conn, array $d) {
     $s = $conn->prepare("INSERT INTO members (card_token, full_name, gender, dob, phone, email, id_number, district, subregion, address, occupation, guild_id, status, admin_note) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
     $s->bind_param("sssssssssssiss", $token, $name, $gender, $dob, $phone, $email, $idn, $district, $sub, $address, $occ, $guild, $status, $note);
     $s->execute();
-    return (int)$conn->insert_id;
+    $newId = (int)$conn->insert_id;
+    if (!empty($d['in_directory'])) $conn->query("UPDATE members SET in_directory=1 WHERE id=$newId");
+    return $newId;
 }
 
 /** Approves a member and gives them a membership ID (kept if they already have one). Returns the reg_no. */

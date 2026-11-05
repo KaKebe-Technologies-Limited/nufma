@@ -54,7 +54,7 @@ if (($_GET['export'] ?? '') === 'csv') {
 }
 include __DIR__ . "/includes/admin-header.php";
 ?>
-<div class="mem-tabs"><a href="member-dashboard.php" class="active">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php" class="active">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="directory.php">Directory</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
 
 <form method="get" class="ax-toolbar rd-filters">
   <div class="ax-seg"><?php foreach (['' => 'All statuses', 'approved' => 'Approved', 'pending' => 'Pending', 'rejected' => 'Rejected'] as $k => $l): ?><a href="<?php echo $e($qs(['status' => $k])); ?>" class="<?php echo $status === $k ? 'on' : ''; ?>"><?php echo $l; ?></a><?php endforeach; ?></div>

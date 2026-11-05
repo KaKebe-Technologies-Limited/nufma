@@ -74,7 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bind_param("sssssssssssssissssss", ...$vals);
         if ($stmt->execute()) {
             $mid = $conn->insert_id;
-            $su = $conn->prepare("UPDATE members SET subregion=? WHERE id=?"); $su->bind_param("si", $subregion, $mid); $su->execute();
+            $inDir = !empty($_POST['in_directory']) ? 1 : 0;
+            $su = $conn->prepare("UPDATE members SET subregion=?, in_directory=? WHERE id=?"); $su->bind_param("sii", $subregion, $inDir, $mid); $su->execute();
             $member = $conn->query("SELECT * FROM members WHERE id=$mid")->fetch_assoc();
             $vars = mem_member_vars($conn, $member);
             if ($S['send_receipt_email'] === '1') {
@@ -186,6 +187,7 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
           </div>
           <div class="field"><label for="m-proof">Proof of payment<?php echo pay_proof_required($conn) ? ' <span class="req">*</span>' : ' (optional)'; ?></label><input id="m-proof" name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"<?php echo pay_proof_required($conn) ? ' required' : ''; ?>><span class="hint">Receipt or screenshot — JPG, PNG, WebP or PDF, max 5 MB. Stored privately.</span></div>
         </details>
+        <label class="check"><input type="checkbox" name="in_directory" value="1" <?php echo !empty($old['in_directory']) ? 'checked' : ''; ?>><span>Optional: once I am an approved member, list my <b>name, guild, region, district, craft and portfolio link</b> in the public <a href="directory.php" target="_blank">Filmmakers Directory</a> so people can find me. My phone and email are never shown.</span></label>
         <label class="check"><input type="checkbox" name="agree" value="1" required <?php echo !empty($old['agree']) ? 'checked' : ''; ?>><span>I confirm the information above is correct, I have read the <a href="policy.php?p=privacy" target="_blank">privacy notice</a>, and I understand that my application is subject to NUFA's membership criteria and confirmation process.</span></label>
         <button type="submit" class="btn btn-gold btn-block">Submit application</button>
       </form>
