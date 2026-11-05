@@ -1,0 +1,55 @@
+/* NUFA SACCO page — cleaner, calmer, consistent. Scoped to .sp so nothing else on the site is affected. */
+.sp{--sp-ink:#1c1c1c;--sp-mute:#6f6f6f;--sp-line:#ececec;--sp-red:#D50000;--sp-org:#FF7900}
+
+/* registration strip under the hero */
+.sp-reg{position:relative;z-index:3;margin-top:-34px;padding-bottom:6px}
+.sp-reg-in{display:flex;align-items:center;gap:14px 26px;flex-wrap:wrap;background:#fff;border:1px solid var(--sp-line);border-radius:18px;box-shadow:0 14px 40px rgba(0,0,0,.12);padding:16px 22px;border-left:6px solid #0E7A3F}
+.sp-reg-badge{display:inline-flex;align-items:center;gap:8px;background:#E8F5EE;color:#0E7A3F;border-radius:99px;padding:7px 14px;font-weight:800;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.sp-reg-badge svg{flex:none}
+.sp-reg-item{display:flex;flex-direction:column;gap:2px;min-width:0}
+.sp-reg-item small{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--sp-mute);font-weight:700}
+.sp-reg-item b{font-size:.98rem;color:var(--sp-ink)}
+.sp-reg a.more{margin-left:auto;font-weight:700;font-size:.88rem;color:var(--sp-red);text-decoration:underline;white-space:nowrap}
+
+/* page menu as pills */
+.sp .sacco-tools{border:0;padding:22px 0 8px;gap:14px 22px}
+.sp .sacco-nav{gap:8px}
+.sp .sacco-nav a{display:inline-block;padding:8px 16px;border-radius:99px;background:#fff;border:1px solid var(--sp-line);color:var(--sp-ink);font-weight:700;font-size:.82rem;transition:.2s}
+.sp .sacco-nav a:hover{border-color:var(--sp-red);color:var(--sp-red);transform:translateY(-1px)}
+.sp .search-form input{border-radius:99px 0 0 99px}.sp .search-form button{border-radius:0 99px 99px 0}
+
+/* status banner: light card instead of a black bar */
+.sp .status-banner{background:#fff;color:var(--sp-ink);border:1px solid var(--sp-line);border-left:6px solid var(--sp-org);border-radius:16px;box-shadow:0 8px 24px rgba(0,0,0,.06);padding:18px 24px}
+.sp .status-banner svg{color:var(--sp-org)}.sp .status-banner b{color:var(--sp-red)}
+
+/* headings */
+.sp .section-head{margin-bottom:34px}
+.sp .section-head h2{font-size:clamp(1.7rem,3.2vw,2.5rem);letter-spacing:-.01em}
+.sp .section-head .eyebrow{display:inline-flex;align-items:center;gap:10px}
+.sp .section--soft{background:#F6F4F1}
+
+/* cards */
+.sp .info-card,.sp .value,.sp .announce,.sp .resource-item,.sp .card{background:#fff;border:1px solid var(--sp-line);border-radius:18px;box-shadow:0 8px 26px rgba(0,0,0,.05);padding:24px}
+.sp .value{height:100%}.sp .value h3{margin:14px 0 6px}
+.sp .vm-grid{gap:20px}.sp .vm-card{border-radius:18px}
+.sp .announce{margin-bottom:16px}
+.sp .resource-item{display:flex;gap:16px;align-items:center;padding:18px 22px;margin-bottom:12px}
+.sp .icon-circle{background:#FFF0E6;color:var(--sp-org)}
+
+/* FAQ accordion */
+.sp .faq details,.sp .accordion details{background:#fff;border:1px solid var(--sp-line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.sp .faq summary,.sp .accordion summary{cursor:pointer;padding:16px 20px;font-weight:700;list-style:none;position:relative;padding-right:46px}
+.sp .faq summary::-webkit-details-marker,.sp .accordion summary::-webkit-details-marker{display:none}
+.sp .faq summary::after,.sp .accordion summary::after{content:"+";position:absolute;right:20px;top:50%;transform:translateY(-50%);font-size:1.4rem;color:var(--sp-red);font-weight:400}
+.sp .faq details[open] summary::after,.sp .accordion details[open] summary::after{content:"–"}
+.sp .faq details[open],.sp .accordion details[open]{border-color:#F4C7C3}
+.sp .faq .ans,.sp .accordion .ans{padding:0 20px 18px;color:var(--sp-mute)}
+
+/* registration & authorisation section */
+.sp #regulatory .reg-card{border-radius:20px}
+.sp #regulatory .reg-name{background:linear-gradient(90deg,#F0FAF4,#fff);border-left-color:#0E7A3F}
+.sp #regulatory .reg-name b{font-size:1.25rem}
+.sp #regulatory .reg-name::after{content:"Verified registration";display:inline-block;margin-top:12px;background:#E8F5EE;color:#0E7A3F;border-radius:99px;padding:5px 12px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+
+@media (max-width:760px){.sp-reg{margin-top:-20px}.sp-reg a.more{margin-left:0}.sp .section-head{margin-bottom:24px}}
+.sp .status-banner{flex-wrap:nowrap;align-items:flex-start}.sp .status-banner>svg{flex:none;margin-top:2px}

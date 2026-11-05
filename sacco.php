@@ -54,6 +54,17 @@ $regBtn = $appsOpen
     ? '<a href="sacco-apply.php" class="btn btn-gold btn-lg">Register as a SACCO member</a><span class="muted" style="font-size:.85rem">Pay the membership fee and at least two shares to join. Your member card is issued on approval.</span>'
     : '<a href="#enquiry" class="btn btn-gold btn-lg">Register your interest</a><span class="muted" style="font-size:.85rem">Membership registration is not open yet — leave your details and we will tell you when it opens.</span>';
 ?>
+<link rel="stylesheet" href="assets/css/sacco-page.css?v=<?php echo (int)@filemtime(__DIR__ . '/assets/css/sacco-page.css'); ?>">
+<div class="sp">
+<?php if ($reg): $__rn = $reg['Registration number'] ?? ''; $__rs = $reg['Licence / authorisation status'] ?? ''; $__rd = $reg['Date'] ?? ''; ?>
+<div class="sp-reg" role="note" aria-label="Registration details"><div class="container"><div class="sp-reg-in">
+  <span class="sp-reg-badge"><?php echo nufa_icon('shield', 16); ?> Registered cooperative</span>
+  <?php if ($__rn !== ''): ?><div class="sp-reg-item"><small>Registration no.</small><b><?php echo ui_e($__rn); ?></b></div><?php endif; ?>
+  <?php if ($__rs !== ''): ?><div class="sp-reg-item"><small>Status</small><b><?php echo ui_e($__rs); ?></b></div><?php endif; ?>
+  <?php if ($__rd !== ''): ?><div class="sp-reg-item"><small>Date</small><b><?php echo ui_e($__rd); ?></b></div><?php endif; ?>
+  <a class="more" href="#regulatory">Full registration details</a>
+</div></div></div>
+<?php endif; ?>
 <section class="section--tight" style="padding-bottom:0">
   <div class="container">
     <div class="sacco-tools">
@@ -260,4 +271,5 @@ $regBtn = $appsOpen
   });
 })();
 </script>
+</div><!-- /.sp -->
 <?php include __DIR__ . "/includes/footer.php"; ?>
