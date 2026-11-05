@@ -47,6 +47,8 @@ function ltr_install($conn) {
         }
         $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('ltr_trim_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
     }
+    $cu = $conn->query("SHOW COLUMNS FROM invitation_letters LIKE 'updated_at'");
+    if ($cu && !$cu->num_rows) $conn->query("ALTER TABLE invitation_letters ADD COLUMN updated_at DATETIME NULL");
     $c = $conn->query("SHOW COLUMNS FROM invitation_letters LIKE 'batch'");
     if ($c && !$c->num_rows) $conn->query("ALTER TABLE invitation_letters ADD COLUMN batch VARCHAR(30) NOT NULL DEFAULT '', ADD KEY idx_batch (batch)");
 }

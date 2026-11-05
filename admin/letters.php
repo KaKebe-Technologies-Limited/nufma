@@ -63,13 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $lid = (int)($_POST['id'] ?? 0); $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc();
             if ($l) {
                 if ($act === 'save' || $act === 'save_email') {
-                    $u = $conn->prepare("UPDATE invitation_letters SET honorific=?, recipient_name=?, position=?, organisation=?, email=?, phone=?, event_title=?, event_date=?, event_time=?, venue=?, body=? WHERE id=?");
+                    $u = $conn->prepare("UPDATE invitation_letters SET honorific=?, recipient_name=?, position=?, organisation=?, email=?, phone=?, event_title=?, event_date=?, event_time=?, venue=?, body=?, updated_at=NOW() WHERE id=?");
                     $ed = !empty($_POST['event_date']) && strtotime($_POST['event_date']) ? date('Y-m-d', strtotime($_POST['event_date'])) : null;
                     $vals = [trim($_POST['honorific'] ?? ''), trim($_POST['recipient_name'] ?? ''), trim($_POST['position'] ?? ''), trim($_POST['organisation'] ?? ''), trim($_POST['email'] ?? ''), trim($_POST['phone'] ?? ''), trim($_POST['event_title'] ?? ''), $ed, trim($_POST['event_time'] ?? ''), trim($_POST['venue'] ?? ''), trim($_POST['body'] ?? '')];
                     $u->bind_param(str_repeat('s', 11) . 'i', ...array_merge($vals, [$lid])); $u->execute(); $flash = 'Letter saved.';
                     if ($act === 'save_email') { $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc(); $ok = ltr_send_email($conn, $l); $flash = $ok ? 'Saved and emailed to ' . $l['email'] . '.' : 'Saved, but the email could not be sent. ' . (nufa_mail_error() ?: 'No valid email address.') . ' Set up delivery under System → Email delivery.'; if (!$ok) $flashType = 'warn'; }
                 } elseif ($act === 'regenerate') {
-                    $l['purpose'] = $l['purpose'] ?? ''; $b = ltr_generate($conn, $l); $u = $conn->prepare("UPDATE invitation_letters SET body=? WHERE id=?"); $u->bind_param("si", $b, $lid); $u->execute(); $flash = 'The letter text was rewritten from the template.';
+                    $l['purpose'] = $l['purpose'] ?? ''; $b = ltr_generate($conn, $l); $u = $conn->prepare("UPDATE invitation_letters SET body=?, updated_at=NOW() WHERE id=?"); $u->bind_param("si", $b, $lid); $u->execute(); $flash = 'The letter text was rewritten from the template.';
                 } elseif ($act === 'email') {
                     $ok = ltr_send_email($conn, $l); $flash = $ok ? 'Email sent to ' . $l['email'] . '.' : 'The email could not be sent. ' . (nufa_mail_error() ?: 'No valid email address.') . ' Set up delivery under System → Email delivery. You can still send the link by WhatsApp.'; if (!$ok) $flashType = 'warn';
                 } elseif ($act === 'mark_wa') { $conn->query("UPDATE invitation_letters SET wa_sent_at=NOW(), status='sent' WHERE id=$lid"); if (!empty($_POST['ajax'])) { echo 'ok'; exit; } }
@@ -140,6 +140,7 @@ $eventFields = function ($v = []) use ($e) { ?>
 <div class="edit-grid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:start">
   <div class="admin-card"><div class="admin-card-head"><h2>Edit before sending</h2></div>
     <p class="admin-help" style="margin:0 0 10px">Change the name, contact details, event details or the wording of this letter, then save. The preview on the right updates after you save.</p>
+    <?php if ($L['email_sent_at'] || $L['wa_sent_at']): ?><div class="admin-alert ok" style="margin:0 0 12px"><b>Already sent.</b> The link in the WhatsApp message / email opens the <b>latest saved version</b> — when you save here, anyone who opens (or already has open) their link sees the corrected letter within a minute. The short message text that was already delivered cannot change; press <b>Send on WhatsApp</b> again if you want to send the corrected message.</div><?php endif; ?>
     <form method="post" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="id" value="<?php echo $L['id']; ?>"><input type="hidden" name="action" value="save">
       <div class="admin-form-grid">
         <div class="field"><label>Title (Hon., Dr., Mr., Ms.…)</label><input name="honorific" value="<?php echo $e($L['honorific']); ?>"></div>
@@ -241,7 +242,7 @@ $eventFields = function ($v = []) use ($e) { ?>
         <td><?php echo $e(trim($r['honorific'] . ' ' . $r['recipient_name'])); ?><br><span style="color:#777;font-size:.82rem"><?php echo $e($r['position']); ?></span></td>
         <td style="font-size:.84rem"><?php echo $e($r['email'] ?: '—'); ?><br><?php echo $e($r['phone'] ?: '—'); ?></td>
         <td><?php echo $e($r['event_title']); ?><br><span style="color:#777;font-size:.82rem"><?php echo $r['event_date'] ? date('d M Y', strtotime($r['event_date'])) : '—'; ?></span></td>
-        <td class="ltSent"><?php echo $r['email_sent_at'] ? '<span class="admin-badge">Email</span> ' : ''; echo $r['wa_sent_at'] ? '<span class="admin-badge">WhatsApp</span>' : ''; echo (!$r['email_sent_at'] && !$r['wa_sent_at']) ? '<span class="admin-badge gray">Not sent</span>' : ''; ?></td>
+        <td class="ltSent"><?php echo $r['email_sent_at'] ? '<span class="admin-badge">Email</span> ' : ''; echo $r['wa_sent_at'] ? '<span class="admin-badge">WhatsApp</span> ' : ''; echo ($r['updated_at'] && ($r['email_sent_at'] || $r['wa_sent_at'])) ? '<span class="admin-badge gray" title="Edited after sending — the link already shows the update">updated</span>' : ''; echo (!$r['email_sent_at'] && !$r['wa_sent_at']) ? '<span class="admin-badge gray">Not sent</span>' : ''; ?></td>
         <td style="white-space:nowrap"><a class="admin-btn admin-btn-brand admin-btn-sm" href="letters.php?id=<?php echo $r['id']; ?><?php echo $batchId !== '' ? '&amp;batch=' . $e($batchId) : ''; ?>" title="Change the details or the wording, then send">&#9998; Edit before sending</a>
           <?php if ($wa): ?><a class="admin-btn admin-btn-sm" style="background:#128C4A;color:#fff;border-color:#128C4A" href="<?php echo $e($wa); ?>" target="_blank" rel="noopener" data-wa="<?php echo $r['id']; ?>">WhatsApp</a><?php endif; ?></td></tr>
     <?php endforeach; ?></tbody></table></div>
