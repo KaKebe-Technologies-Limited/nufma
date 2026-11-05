@@ -7,7 +7,7 @@ ltr_install($conn);
 $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
 $S = ltr_settings($conn);
 $flash = ''; $flashType = 'ok';
-$tabs = ['list' => 'All letters', 'new' => 'New letter', 'bulk' => 'Several at once', 'settings' => 'Letterhead & template'];
+$tabs = ['list' => 'All letters', 'new' => 'New letter', 'bulk' => 'Several at once', 'signatories' => 'Signatories & signing', 'settings' => 'Letterhead & template'];
 $tab = isset($tabs[$_GET['tab'] ?? '']) ? $_GET['tab'] : 'list';
 $id = (int)($_GET['id'] ?? 0);
 
@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $ed = !empty($_POST['event_date']) && strtotime($_POST['event_date']) ? date('Y-m-d', strtotime($_POST['event_date'])) : null;
                     $vals = [trim($_POST['honorific'] ?? ''), trim($_POST['recipient_name'] ?? ''), trim($_POST['position'] ?? ''), trim($_POST['organisation'] ?? ''), trim($_POST['email'] ?? ''), trim($_POST['phone'] ?? ''), trim($_POST['event_title'] ?? ''), $ed, trim($_POST['event_time'] ?? ''), trim($_POST['venue'] ?? ''), trim($_POST['body'] ?? '')];
                     $u->bind_param(str_repeat('s', 11) . 'i', ...array_merge($vals, [$lid])); $u->execute(); $flash = 'Letter saved.';
+                    $sv = $_POST['signer'] ?? 'default'; $svv = $sv === 'none' ? '-1' : ($sv === 'default' ? 'NULL' : (string)(int)$sv); $conn->query("UPDATE invitation_letters SET signer_id=$svv WHERE id=$lid");
                     if ($act === 'save_email') { $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc(); $ok = ltr_send_email($conn, $l); $flash = $ok ? 'Saved and emailed to ' . $l['email'] . '.' : 'Saved, but the email could not be sent. ' . (nufa_mail_error() ?: 'No valid email address.') . ' Set up delivery under System → Email delivery.'; if (!$ok) $flashType = 'warn'; }
                 } elseif ($act === 'regenerate') {
                     $l['purpose'] = $l['purpose'] ?? ''; $b = ltr_generate($conn, $l); $u = $conn->prepare("UPDATE invitation_letters SET body=?, updated_at=NOW() WHERE id=?"); $u->bind_param("si", $b, $lid); $u->execute(); $flash = 'The letter text was rewritten from the template.';
@@ -76,10 +77,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 elseif ($act === 'delete') { $conn->query("DELETE FROM invitation_letters WHERE id=$lid"); header("Location: letters.php?deleted=1"); exit; }
                 $id = $lid;
             }
+        } elseif ($act === 'sig_flag') {
+            $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES ('lt_show_signature',?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $v = isset($_POST['lt_show_signature']) ? '1' : '0'; $s->bind_param("s", $v); $s->execute();
+            $flash = $v === '1' ? 'The signature block is now printed on every letter (earlier letters included) that has a signatory.' : 'The signature block is now hidden on letters that use the default signatory.'; $tab = 'signatories';
+        } elseif ($act === 'sig_save') {
+            $sid = (int)($_POST['sid'] ?? 0); $nm = trim($_POST['name'] ?? ''); $ti = trim($_POST['title'] ?? ''); $tab = 'signatories';
+            if ($nm === '') { $flash = 'Enter the name of the person signing.'; $flashType = 'err'; }
+            else {
+                $old = $sid ? $conn->query("SELECT * FROM letter_signatories WHERE id=$sid")->fetch_assoc() : null; $sig = $old['signature'] ?? '';
+                if (!empty($_POST['remove_sig']) && $sig) { @unlink(__DIR__ . "/../assets/images/" . $sig); $sig = ''; }
+                if (!empty($_FILES['sig']['name'])) {
+                    [$fn, $se] = mem_store_upload($_FILES['sig'], MEM_IMG_TYPES, 2 * 1048576, 'signatory', __DIR__ . "/../assets/images/uploads/signature/");
+                    if ($se) { $flash = 'Signature: ' . $se; $flashType = 'err'; } else { if ($sig && strpos($sig, 'uploads/signature/') === 0) @unlink(__DIR__ . "/../assets/images/" . $sig); $sig = 'uploads/signature/' . $fn; }
+                }
+                if ($flashType !== 'err') {
+                    if ($sid && $old) { $u = $conn->prepare("UPDATE letter_signatories SET name=?, title=?, signature=? WHERE id=?"); $u->bind_param("sssi", $nm, $ti, $sig, $sid); $u->execute(); }
+                    else { $first = !(int)$conn->query("SELECT COUNT(*) FROM letter_signatories")->fetch_row()[0]; $df = $first ? 1 : 0; $u = $conn->prepare("INSERT INTO letter_signatories (name, title, signature, is_default) VALUES (?,?,?,?)"); $u->bind_param("sssi", $nm, $ti, $sig, $df); $u->execute(); }
+                    $flash = 'Signatory saved. Letters that use this signatory — new and earlier — show the change straight away.';
+                }
+            }
+        } elseif ($act === 'sig_default') {
+            $sid = (int)($_POST['sid'] ?? 0); $tab = 'signatories';
+            if ($conn->query("SELECT 1 FROM letter_signatories WHERE id=$sid")->num_rows) { $conn->query("UPDATE letter_signatories SET is_default=0"); $conn->query("UPDATE letter_signatories SET is_default=1 WHERE id=$sid"); $flash = 'Default signatory changed — every letter that uses the default (new and earlier) now shows this person.'; }
+        } elseif ($act === 'sig_delete') {
+            $sid = (int)($_POST['sid'] ?? 0); $tab = 'signatories'; $row = $conn->query("SELECT * FROM letter_signatories WHERE id=$sid")->fetch_assoc();
+            if ($row) { if ($row['signature'] && strpos($row['signature'], 'uploads/signature/') === 0) @unlink(__DIR__ . "/../assets/images/" . $row['signature']); $conn->query("DELETE FROM letter_signatories WHERE id=$sid"); $conn->query("UPDATE invitation_letters SET signer_id=NULL WHERE signer_id=$sid"); if ($row['is_default']) $conn->query("UPDATE letter_signatories SET is_default=1 ORDER BY id LIMIT 1"); $flash = 'Signatory removed. Letters that used them now use the default signatory.'; }
+        } elseif ($act === 'sign_apply') {
+            $v = $_POST['signer'] ?? 'default'; $sv = $v === 'none' ? '-1' : ($v === 'default' ? 'NULL' : (string)(int)$v);
+            $scope = $_POST['scope'] ?? 'all'; $bw = $scope === 'batch' && preg_match('/^[0-9-]+$/', $_POST['batch'] ?? '') ? " WHERE batch='" . $conn->real_escape_string($_POST['batch']) . "'" : '';
+            $conn->query("UPDATE invitation_letters SET signer_id=$sv, updated_at=NOW()$bw"); $n = $conn->affected_rows;
+            $flash = "Signing updated on $n letter" . ($n === 1 ? '' : 's') . ($bw ? ' in this batch' : ' (all letters, including earlier ones)') . ' — the links already sent show it straight away.'; if ($bw) $batchId = $_POST['batch'];
         } elseif ($act === 'settings') {
             $save = function ($k, $v) use ($conn) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param("ss", $k, $v); $s->execute(); };
-            $save('lt_show_signature', isset($_POST['lt_show_signature']) ? '1' : '0');
-            foreach (['lt_ref_prefix', 'lt_signer_name', 'lt_signer_title', 'lt_rsvp', 'lt_closing', 'lt_template'] as $k) $save($k, trim($_POST[$k] ?? ''));
+            foreach (['lt_ref_prefix', 'lt_rsvp', 'lt_closing', 'lt_template'] as $k) $save($k, trim($_POST[$k] ?? ''));
             $lhDir = __DIR__ . "/../assets/images/uploads/letterhead/";
             if (!empty($_POST['remove_letterhead']) && $S['lt_letterhead']) { @unlink(__DIR__ . "/../assets/images/" . $S['lt_letterhead']); $save('lt_letterhead', ''); }
             if (!empty($_FILES['lt_letterhead']['name'])) {
@@ -155,6 +185,7 @@ $eventFields = function ($v = []) use ($e) { ?>
         <div class="field"><label>Venue</label><input name="venue" value="<?php echo $e($L['venue']); ?>"></div>
       </div>
       <div class="field"><label>Letter text (separate paragraphs with a blank line)</label><textarea name="body" style="min-height:300px"><?php echo $e($L['body']); ?></textarea></div>
+      <?php $sigs = ltr_signatories($conn); $cur = $L['signer_id'] === null ? 'default' : ((int)$L['signer_id'] === -1 ? 'none' : (string)(int)$L['signer_id']); ?><div class="field"><label>Signed by</label><select name="signer"><option value="default"<?php echo $cur === 'default' ? ' selected' : ''; ?>>Default signatory<?php echo $sigs ? ' (' . $e($sigs[0]['name'] ?: 'not named yet') . ')' : ''; ?></option><?php foreach ($sigs as $sg) echo '<option value="' . (int)$sg['id'] . '"' . ($cur === (string)(int)$sg['id'] ? ' selected' : '') . '>' . $e($sg['name']) . ($sg['title'] ? ' — ' . $e($sg['title']) : '') . '</option>'; ?><option value="none"<?php echo $cur === 'none' ? ' selected' : ''; ?>>No signature on this letter</option></select><span class="admin-help">Manage the people who sign under the <a href="letters.php?tab=signatories">Signatories &amp; signing</a> tab.</span></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="admin-btn admin-btn-brand">Save changes</button><button class="admin-btn admin-btn-line" name="action" value="save_email" data-confirm="Save and email this letter now?">Save &amp; email</button></div>
     </form>
     <form method="post" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><?php echo mem_csrf_field(); ?><input type="hidden" name="id" value="<?php echo $L['id']; ?>">
@@ -205,16 +236,43 @@ $eventFields = function ($v = []) use ($e) { ?>
   </form>
   <script>document.getElementById('addRows').addEventListener('click',function(){var tb=document.querySelector('#bulkTable tbody');for(var i=0;i<5;i++){var r=tb.rows[0].cloneNode(true);r.querySelectorAll('input').forEach(function(x){x.value='';});tb.appendChild(r);}});</script></div>
 
+<?php elseif ($tab === 'signatories'): $sigs = ltr_signatories($conn); ?>
+<div class="admin-card"><div class="admin-card-head"><h2>Signatories &amp; signing</h2><span class="admin-help">Add the people who sign letters, then choose who signs which letters.</span></div>
+  <form method="post" class="admin-form" style="margin-bottom:14px"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="sig_flag">
+    <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="lt_show_signature" value="1" <?php echo $S['lt_show_signature'] === '1' ? 'checked' : ''; ?> onchange="this.form.submit()"> Print the signature block (signature picture, name and title) at the bottom of letters</label></form>
+  <p class="admin-help">The <b>default signatory</b> signs every letter that has no one else chosen — change it once and all letters, new and earlier, update (including links already sent). To have different people sign different letters, choose the signer on each letter, or use <b>One signature for this whole batch / all letters</b> on the letters list.</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:14px">
+  <?php foreach ($sigs as $sg): ?>
+    <form method="post" enctype="multipart/form-data" class="admin-form" style="border:1px solid #e3e3e3;border-radius:12px;padding:14px;background:#fff"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="sig_save"><input type="hidden" name="sid" value="<?php echo $sg['id']; ?>">
+      <?php echo $sg['is_default'] ? '<span class="admin-badge">Default signatory</span>' : ''; ?>
+      <div style="height:64px;background:#fff;border:1px dashed #ccc;border-radius:8px;display:flex;align-items:center;justify-content:center;margin:8px 0"><?php echo ($sg['signature'] && is_file(__DIR__ . '/../assets/images/' . $sg['signature'])) ? '<img src="../assets/images/' . $e($sg['signature']) . '" alt="" style="max-height:58px;max-width:100%">' : '<span class="admin-help">no signature picture</span>'; ?></div>
+      <div class="field"><label>Name</label><input name="name" required value="<?php echo $e($sg['name']); ?>"></div>
+      <div class="field"><label>Title / position</label><input name="title" value="<?php echo $e($sg['title']); ?>"></div>
+      <div class="field"><label>Signature picture (PNG with transparent background is best)</label><input data-no-picker type="file" name="sig" accept="image/png,image/jpeg,image/webp"></div>
+      <?php if ($sg['signature']): ?><label style="display:flex;gap:6px;align-items:center;font-size:.85rem"><input type="checkbox" name="remove_sig" value="1"> Remove the signature picture</label><?php endif; ?>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="admin-btn admin-btn-brand admin-btn-sm">Save</button>
+        <?php if (!$sg['is_default']): ?><button class="admin-btn admin-btn-line admin-btn-sm" name="action" value="sig_default">Make default</button><?php endif; ?>
+        <button class="admin-btn admin-btn-danger admin-btn-sm" name="action" value="sig_delete" data-confirm="Remove this signatory?">Delete</button></div>
+    </form>
+  <?php endforeach; ?>
+    <form method="post" enctype="multipart/form-data" class="admin-form" style="border:2px dashed #ccc;border-radius:12px;padding:14px"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="sig_save"><input type="hidden" name="sid" value="0">
+      <b>+ Add a signatory</b>
+      <div class="field"><label>Name</label><input name="name" required></div>
+      <div class="field"><label>Title / position</label><input name="title" placeholder="e.g. Chairperson, Executive Board"></div>
+      <div class="field"><label>Signature picture</label><input data-no-picker type="file" name="sig" accept="image/png,image/jpeg,image/webp"></div>
+      <button class="admin-btn admin-btn-brand admin-btn-sm">Add</button></form>
+  </div></div>
+<?php if ($sigs): ?><div class="admin-card"><div class="admin-card-head"><h2>Sign all letters at once</h2></div>
+  <form method="post" class="admin-form" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="sign_apply"><input type="hidden" name="scope" value="all">
+    <div class="field" style="margin:0;min-width:260px"><label>One signature for every letter (new and earlier)</label><select name="signer"><option value="default">Default signatory</option><?php foreach ($sigs as $sg) echo '<option value="' . (int)$sg['id'] . '">' . $e($sg['name']) . '</option>'; ?><option value="none">No signature</option></select></div>
+    <button class="admin-btn admin-btn-brand" data-confirm="Apply to EVERY letter, including earlier ones?">Apply to all letters</button></form></div><?php endif; ?>
+
 <?php elseif ($tab === 'settings'): ?>
 <div class="admin-card"><div class="admin-card-head"><h2>Letterhead &amp; template</h2><span class="admin-help">Letters use the official NUFA letterhead picture below.</span></div>
   <form method="post" enctype="multipart/form-data" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="settings">
     <div class="field"><label>Letterhead picture (shown at the top of every letter and email — about 4.5 × wider than tall)</label><input data-no-picker type="file" name="lt_letterhead" accept="image/png,image/jpeg,image/webp"><div style="margin-top:8px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;display:inline-block"><img src="../assets/images/<?php echo $e(ltr_letterhead($conn)); ?>" alt="" style="max-width:100%;height:70px"></div><?php if ($S['lt_letterhead']): ?> <label style="display:inline-flex;gap:6px;align-items:center;margin-left:10px"><input type="checkbox" name="remove_letterhead" value="1"> Go back to the NUFA letterhead</label><?php else: ?><span class="admin-help"> The official NUFA letterhead is in use.</span><?php endif; ?></div>
-    <label style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" name="lt_show_signature" value="1" <?php echo $S['lt_show_signature'] === '1' ? 'checked' : ''; ?>> Print the signature block (signature picture, name and title) at the bottom of the letter</label>
     <div class="admin-form-grid">
-      <div class="field"><label>Signed by (name)</label><input name="lt_signer_name" value="<?php echo $e($S['lt_signer_name']); ?>" placeholder="Blank = the president's name from Membership settings"></div>
-      <div class="field"><label>Signer's title</label><input name="lt_signer_title" value="<?php echo $e($S['lt_signer_title']); ?>"></div>
       <div class="field"><label>Reference prefix</label><input name="lt_ref_prefix" value="<?php echo $e($S['lt_ref_prefix']); ?>"><span class="admin-help">Letters are numbered like <?php echo $e($S['lt_ref_prefix']); ?>/<?php echo date('Y'); ?>/0001</span></div>
-      <div class="field"><label>Signature picture (transparent PNG is best)</label><input data-no-picker type="file" name="lt_signature" accept="image/png,image/jpeg,image/webp"><?php $sg = ltr_signer($conn); if ($sg['sig']): ?><div style="margin-top:8px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;display:inline-block"><img src="../assets/images/<?php echo $e($sg['sig']); ?>" alt="" style="height:50px"></div><?php if ($S['lt_signature']): ?> <label style="display:inline-flex;gap:6px;align-items:center;margin-left:10px"><input type="checkbox" name="remove_signature" value="1"> Remove</label><?php else: ?><span class="admin-help"> (using the president's signature from Membership settings)</span><?php endif; ?><?php endif; ?></div>
     </div>
     <div class="field"><label>Letter template</label><textarea name="lt_template" style="min-height:260px;font-family:monospace;font-size:.84rem"><?php echo $e($S['lt_template']); ?></textarea>
       <span class="admin-help">Placeholders: {salutation} {name} {event} {EVENT} {date} {position_phrase} {time_phrase} {venue_phrase} {purpose} {rsvp} {closing}. Empty parts are left out automatically.</span></div>
@@ -229,6 +287,11 @@ $eventFields = function ($v = []) use ($e) { ?>
     $waQueue = []; foreach ($rows as $r) { $u = ltr_wa_url($r); if ($u && !$r['wa_sent_at']) $waQueue[] = ['id' => (int)$r['id'], 'url' => $u, 'name' => trim($r['honorific'] . ' ' . $r['recipient_name'])]; } ?>
 <div class="admin-card"><div class="admin-card-head"><h2><?php echo $batchId !== '' ? 'This batch' : 'Invitation letters'; ?> (<?php echo count($rows); ?>)</h2><span><?php if ($batchId !== ''): ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php">All letters</a> <?php endif; ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?tab=bulk">+ Several at once</a> <a class="admin-btn admin-btn-brand admin-btn-sm" href="letters.php?tab=new">+ New letter</a></span></div>
   <?php if (!$rows): ?><p style="color:var(--text-muted);padding:14px 0">No letters yet. Create the first one with <b>New letter</b> or <b>Several at once</b>.</p><?php else: ?>
+  <?php $sigs = ltr_signatories($conn); ?>
+  <form method="post" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:12px;background:#FFF7F0;border:1px solid #FFD9B8;border-radius:12px"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="sign_apply"><input type="hidden" name="scope" value="<?php echo $batchId !== '' ? 'batch' : 'all'; ?>"><input type="hidden" name="batch" value="<?php echo $e($batchId); ?>">
+    <b>&#9998; One signature for <?php echo $batchId !== '' ? 'this whole batch' : 'all letters'; ?>:</b>
+    <select name="signer"><option value="default">Default signatory</option><?php foreach ($sigs as $sg) echo '<option value="' . (int)$sg['id'] . '">' . $e($sg['name']) . '</option>'; ?><option value="none">No signature</option></select>
+    <button class="admin-btn admin-btn-brand admin-btn-sm" data-confirm="Apply this signing to <?php echo $batchId !== '' ? 'every letter in this batch' : 'EVERY letter, including earlier ones'; ?>?">Apply</button><span class="admin-help">Earlier letters and links already sent update straight away.</span></form>
   <form method="post" id="lettersForm"><?php echo mem_csrf_field(); ?>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:12px;background:#F7F7F7;border-radius:12px">
       <label style="display:flex;gap:6px;align-items:center;font-weight:700"><input type="checkbox" id="ltAll"> Select all</label>

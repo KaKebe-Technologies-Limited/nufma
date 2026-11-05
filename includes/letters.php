@@ -47,6 +47,27 @@ function ltr_install($conn) {
         }
         $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('ltr_trim_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
     }
+    $conn->query("CREATE TABLE IF NOT EXISTS letter_signatories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(160) NOT NULL,
+        title VARCHAR(200) NOT NULL DEFAULT '',
+        signature VARCHAR(255) NOT NULL DEFAULT '',
+        is_default TINYINT(1) NOT NULL DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $cs = $conn->query("SHOW COLUMNS FROM invitation_letters LIKE 'signer_id'");
+    if ($cs && !$cs->num_rows) $conn->query("ALTER TABLE invitation_letters ADD COLUMN signer_id INT NULL");
+    // one-time: the signer that was set in the old letterhead settings (or the president) becomes the default signatory
+    $fs = $conn->query("SELECT 1 FROM settings WHERE setting_key='ltr_sig_seed_v1'");
+    if ($fs && !$fs->num_rows) {
+        if (!(int)$conn->query("SELECT COUNT(*) FROM letter_signatories")->fetch_row()[0]) {
+            $kv = []; $kr = $conn->query("SELECT setting_key, setting_value FROM settings WHERE setting_key IN ('lt_signer_name','lt_signer_title','lt_signature','president_name','president_title','president_signature')"); if ($kr) foreach ($kr->fetch_all(MYSQLI_ASSOC) as $x) $kv[$x['setting_key']] = $x['setting_value'];
+            $nm = ($kv['lt_signer_name'] ?? '') !== '' ? $kv['lt_signer_name'] : ($kv['president_name'] ?? ''); $tt = ($kv['lt_signer_title'] ?? '') !== '' ? $kv['lt_signer_title'] : 'President, Northern Uganda Filmmakers Association';
+            $sg = ($kv['lt_signature'] ?? '') !== '' ? $kv['lt_signature'] : ($kv['president_signature'] ?? '');
+            $ins = $conn->prepare("INSERT INTO letter_signatories (name, title, signature, is_default) VALUES (?,?,?,1)"); $ins->bind_param("sss", $nm, $tt, $sg); $ins->execute();
+        }
+        $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('ltr_sig_seed_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    }
     $cu = $conn->query("SHOW COLUMNS FROM invitation_letters LIKE 'updated_at'");
     if ($cu && !$cu->num_rows) $conn->query("ALTER TABLE invitation_letters ADD COLUMN updated_at DATETIME NULL");
     $c = $conn->query("SHOW COLUMNS FROM invitation_letters LIKE 'batch'");
@@ -112,6 +133,24 @@ function ltr_letterhead($conn) {
 }
 
 /** Signature image path (relative to assets/images/) and signer details. */
+function ltr_signatories($conn) { $r = $conn->query("SELECT * FROM letter_signatories ORDER BY is_default DESC, id ASC"); return $r ? $r->fetch_all(MYSQLI_ASSOC) : []; }
+
+/**
+ * Who signs this letter. $l['signer_id']: NULL = the default signatory (so changing the default updates every earlier letter),
+ * -1 = nobody, otherwise that signatory. Returns ['name','title','sig','explicit'] or null.
+ */
+function ltr_signer_for($conn, array $l) {
+    $sid = array_key_exists('signer_id', $l) ? $l['signer_id'] : null;
+    if ($sid !== null && (int)$sid === -1) return null;
+    if ($sid !== null && (int)$sid > 0) $row = $conn->query("SELECT * FROM letter_signatories WHERE id=" . (int)$sid)->fetch_assoc();
+    else $row = $conn->query("SELECT * FROM letter_signatories WHERE is_default=1 ORDER BY id LIMIT 1")->fetch_assoc() ?: ($conn->query("SELECT * FROM letter_signatories ORDER BY id LIMIT 1")->fetch_assoc());
+    if (!$row) return null;
+    $sig = ($row['signature'] !== '' && is_file(__DIR__ . '/../assets/images/' . $row['signature'])) ? $row['signature'] : '';
+    $S = ltr_settings($conn);
+    if ($S['lt_show_signature'] !== '1' && !($sid !== null && (int)$sid > 0)) return null;   // the block is printed when switched on globally, or when this letter has its own signer
+    return ['name' => $row['name'], 'title' => $row['title'], 'sig' => $sig];
+}
+
 function ltr_signer($conn) {
     $S = ltr_settings($conn); $M = mem_settings($conn);
     $name = $S['lt_signer_name'] !== '' ? $S['lt_signer_name'] : ($M['president_name'] ?? '');
@@ -122,7 +161,7 @@ function ltr_signer($conn) {
 
 /** Printable A4 headed paper (HTML fragment with its own CSS). $o['prefix'] = path to the site root ('' or '../'). */
 function ltr_html($conn, array $l, array $o = []) {
-    $C = nufa_site_settings($conn); $sg = ltr_signer($conn); $S = ltr_settings($conn); $pre = $o['prefix'] ?? '';
+    $C = nufa_site_settings($conn); $sg = ltr_signer_for($conn, $l); $pre = $o['prefix'] ?? '';
     $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
     $paras = ''; foreach (preg_split('/\n{2,}/', trim((string)$l['body'])) as $p) { $p = trim($p); if ($p === '') continue; $cls = preg_match('/^RE:/i', $p) ? ' class="re"' : ''; $paras .= '<p' . $cls . '>' . nl2br($e($p)) . '</p>'; }
     $to = array_filter([trim(($l['honorific'] ? $l['honorific'] . ' ' : '') . $l['recipient_name']), $l['position'], $l['organisation']]);
@@ -131,8 +170,8 @@ function ltr_html($conn, array $l, array $o = []) {
 <style>
 .ltr-sheet{width:210mm;min-height:297mm;margin:0 auto;background:#fff;color:#1a1a1a;font-family:'Comic Sans MS','Comic Sans','Comic Neue',Chalkboard,cursive,sans-serif;position:relative;box-sizing:border-box;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.18)}
 .ltr-sheet *{box-sizing:border-box}
-.ltr-head{padding:10mm 18mm 4mm;border-bottom:1.2mm solid #D50000;position:relative}.ltr-lh{display:block;width:100%;height:auto}
-.ltr-head::after{content:"";position:absolute;left:0;bottom:-3mm;height:.9mm;width:34%;background:#FF7900}
+.ltr-head{padding:9mm 18mm 0;position:relative}.ltr-lh{display:block;width:100%;height:auto}
+
 .ltr-org{flex:1;font-family:Montserrat,Arial,sans-serif}.ltr-org b{display:block;white-space:nowrap;font-size:5.4mm;letter-spacing:.4mm;font-weight:900;color:#111;line-height:1.1}.ltr-org span{display:block;font-size:3.1mm;letter-spacing:.7mm;text-transform:uppercase;color:#D50000;font-weight:700;margin-top:1.4mm}.ltr-org i{display:block;font-style:normal;font-size:2.9mm;color:#555;margin-top:1.4mm}
 .ltr-contact{flex:none;max-width:54mm;font-family:Arial,sans-serif;font-size:2.7mm;line-height:1.55;color:#333;text-align:right}
 .ltr-body{padding:12mm 20mm 6mm;font-size:3.7mm;line-height:1.7;flex:1}
@@ -150,7 +189,7 @@ function ltr_html($conn, array $l, array $o = []) {
     <div class="ltr-meta"><span><b>Our ref:</b> <?php echo $e($l['ref']); ?></span><span><b>Date:</b> <?php echo $e(date('j F Y', strtotime($l['letter_date'] ?: date('Y-m-d')))); ?></span></div>
     <div class="ltr-to"><?php $first = true; foreach ($to as $line): echo $first ? '<b>' . $e($line) . '</b>' : '<br>' . $e($line); $first = false; endforeach; ?></div>
     <?php echo $paras; ?>
-    <?php if ($S['lt_show_signature'] === '1'): ?><div class="ltr-sign"><?php if ($sg['sig']): ?><img src="<?php echo $e($pre); ?>assets/images/<?php echo $e($sg['sig']); ?>" alt="Signature"><?php else: ?><div style="height:15mm"></div><?php endif; ?><div class="line"></div><b><?php echo $e($sg['name']); ?></b><span><?php echo $e($sg['title']); ?></span></div><?php endif; ?>
+    <?php if ($sg): ?><div class="ltr-sign"><?php if ($sg['sig']): ?><img src="<?php echo $e($pre); ?>assets/images/<?php echo $e($sg['sig']); ?>" alt="Signature"><?php else: ?><div style="height:15mm"></div><?php endif; ?><div class="line"></div><b><?php echo $e($sg['name']); ?></b><span><?php echo $e($sg['title']); ?></span></div><?php endif; ?>
   </div>
   <div class="ltr-foot"><span><b>NUFA</b> · Northern Uganda Filmmakers Association</span><span><?php echo $e($site); ?></span></div>
 </div>
@@ -159,16 +198,16 @@ function ltr_html($conn, array $l, array $o = []) {
 
 /** Table-based HTML for email clients (headed paper look, inline styles). */
 function ltr_email_html($conn, array $l) {
-    $C = nufa_site_settings($conn); $sg = ltr_signer($conn); $base = mem_site_url();
+    $C = nufa_site_settings($conn); $sg = ltr_signer_for($conn, $l); $base = mem_site_url();
     $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
     $paras = ''; foreach (preg_split('/\n{2,}/', trim((string)$l['body'])) as $p) { $p = trim($p); if ($p === '') continue; $b = ''; $paras .= '<p style="margin:0 0 14px;line-height:1.7;text-align:justify;' . $b . '">' . nl2br($e($p)) . '</p>'; }
     $to = array_filter([trim(($l['honorific'] ? $l['honorific'] . ' ' : '') . $l['recipient_name']), $l['position'], $l['organisation']]);
     $site = preg_replace('#^https?://#', '', rtrim($C['site_website'] ?? '', '/'));
     $h = '<div style="background:#f2f2f2;padding:20px 8px;font-family:\'Comic Sans MS\',\'Comic Sans\',cursive,sans-serif"><table role="presentation" width="640" align="center" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#fff;border-collapse:collapse;color:#1a1a1a">'
-        . '<tr><td style="padding:18px 28px 10px;border-bottom:4px solid #D50000"><img src="' . $e($base) . '/assets/images/' . $e(ltr_letterhead($conn)) . '" width="584" alt="Northern Uganda Filmmakers Association (NUFA)" style="display:block;width:100%;max-width:584px;height:auto"></td></tr>'
+        . '<tr><td style="padding:18px 28px 6px"><img src="' . $e($base) . '/assets/images/' . $e(ltr_letterhead($conn)) . '" width="584" alt="Northern Uganda Filmmakers Association (NUFA)" style="display:block;width:100%;max-width:584px;height:auto"></td></tr>'
         . '<tr><td style="padding:22px 28px 6px;font-size:15px"><table role="presentation" width="100%" style="font-family:Arial,sans-serif;font-size:12px;margin-bottom:18px"><tr><td>Our ref: ' . $e($l['ref']) . '</td><td align="right">Date: ' . $e(date('j F Y', strtotime($l['letter_date'] ?: date('Y-m-d')))) . '</td></tr></table>'
         . '<p style="margin:0 0 18px;line-height:1.5">' . implode('<br>', array_map(fn($x) => $e($x), array_values($to))) . '</p>' . $paras
-        . (ltr_settings($conn)['lt_show_signature'] === '1' ? '<div style="margin-top:22px">' . ($sg['sig'] ? '<img src="' . $e($base) . '/assets/images/' . $e($sg['sig']) . '" height="56" alt="Signature" style="display:block">' : '<div style="height:44px"></div>') . '<div style="width:220px;border-top:1px solid #222;margin:3px 0 4px"></div>' . $e($sg['name']) . '<br><span style="color:#555;font-size:13px">' . $e($sg['title']) . '</span></div>' : '')
+        . ($sg ? '<div style="margin-top:22px">' . ($sg['sig'] ? '<img src="' . $e($base) . '/assets/images/' . $e($sg['sig']) . '" height="56" alt="Signature" style="display:block">' : '<div style="height:44px"></div>') . '<div style="width:220px;border-top:1px solid #222;margin:3px 0 4px"></div>' . $e($sg['name']) . '<br><span style="color:#555;font-size:13px">' . $e($sg['title']) . '</span></div>' : '')
         . '<p style="text-align:center;margin:26px 0 8px"><a href="' . $e(ltr_link($l)) . '" style="display:inline-block;background:#D50000;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;font-size:14px;padding:12px 24px;border-radius:30px">View &amp; download the letter (PDF)</a></p></td></tr>'
         . '<tr><td style="background:#111;color:#fff;font-family:Arial,sans-serif;font-size:11px;padding:12px 28px;border-top:3px solid #D50000"><b style="color:#FF7900">NUFA</b> · Northern Uganda Filmmakers Association &nbsp;·&nbsp; ' . $e($site) . '</td></tr></table></div>';
     return $h;
