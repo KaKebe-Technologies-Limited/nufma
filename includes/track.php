@@ -56,6 +56,14 @@ function track_find($conn, $ref, $email, $phone) {
             $out[] = ['Membership', 'NUFA membership application', $r['full_name'], track_member_ref($r), $r['created_at'], $r['status'], $r['reject_reason'], $info, $act];
         }
     }
+    // Membership renewals
+    if (track_has_table($conn, 'member_renewals')) {
+        foreach ($q("SELECT * FROM member_renewals WHERE {W}", 'UPPER(ref)', 'email') as $r) if ($ok($r)) {
+            $act = []; $info = [];
+            if ($r['status'] === 'approved' && $r['new_valid_until']) $info['Now valid until'] = date('j M Y', strtotime($r['new_valid_until']));
+            $out[] = ['Membership renewal', 'Membership renewal — annual subscription', $r['name'], $r['ref'], $r['created_at'], $r['status'], $r['reject_reason'], $info, $act];
+        }
+    }
     // SACCO
     if (track_has_table($conn, 'sacco_applications')) {
         foreach ($q("SELECT * FROM sacco_applications WHERE {W}", 'UPPER(reg_no)', 'email') as $r) if ($ok($r)) {

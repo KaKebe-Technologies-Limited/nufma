@@ -10,10 +10,13 @@ $S = mem_settings($conn);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!mem_csrf_ok()) { $err = "Session expired — try again."; }
     else {
-        $text = ['membership_fee', 'membership_currency', 'payment_instructions', 'reg_prefix', 'reg_format', 'president_name', 'president_title',
+        $text = ['membership_currency', 'payment_instructions', 'reg_prefix', 'reg_format', 'president_name', 'president_title',
                  'card_note', 'email_from', 'email_from_name', 'admin_notify_email',
                  'email_received_subject', 'email_received_body', 'email_approved_subject', 'email_approved_body', 'email_rejected_subject', 'email_rejected_body'];
         foreach ($text as $k) mem_save_setting($conn, $k, trim($_POST[$k] ?? ''));
+        $fj = trim($_POST['fee_joining'] ?? ''); $fs = trim($_POST['fee_subscription'] ?? '');
+        mem_save_setting($conn, 'fee_joining', $fj); mem_save_setting($conn, 'fee_subscription', $fs);
+        mem_save_setting($conn, 'membership_fee', number_format(mem_fee_num($fj) + mem_fee_num($fs)));
         mem_save_setting($conn, 'membership_open', isset($_POST['membership_open']) ? '1' : '0');
         mem_save_setting($conn, 'send_receipt_email', isset($_POST['send_receipt_email']) ? '1' : '0');
         mem_save_setting($conn, 'notify_admin', isset($_POST['notify_admin']) ? '1' : '0');
@@ -48,7 +51,7 @@ $sigOk = $S['president_signature'] && is_file(__DIR__ . "/../assets/images/" . $
 include __DIR__ . "/includes/admin-header.php";
 $v = fn($k) => htmlspecialchars($S[$k]);
 ?>
-<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="directory.php">Directory</a><a href="guilds.php">Guilds</a><a href="membership-settings.php" class="active">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-renewals.php">Renewals</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="directory.php">Directory</a><a href="guilds.php">Guilds</a><a href="membership-settings.php" class="active">Membership settings</a></div>
 <?php if ($msg): ?><div class="admin-alert ok"><?php echo $msg; ?></div><?php endif; ?>
 <?php if ($err): ?><div class="admin-alert err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
 
@@ -58,9 +61,11 @@ $v = fn($k) => htmlspecialchars($S[$k]);
     <div class="admin-card-head"><h2>Registration &amp; payment</h2></div>
     <label class="mem-check" style="margin-bottom:16px"><input type="checkbox" name="membership_open" value="1" <?php echo $S['membership_open'] === '1' ? 'checked' : ''; ?>> Accept new membership applications</label>
     <div class="admin-form-grid">
-      <div class="field"><label>Membership fee</label><input name="membership_fee" value="<?php echo $v('membership_fee'); ?>" placeholder="50,000"></div>
+      <div class="field"><label>Joining (membership) fee — new members only</label><input name="fee_joining" value="<?php echo $v('fee_joining'); ?>" placeholder="10,000"></div>
+      <div class="field"><label>Annual subscription — new members and renewals</label><input name="fee_subscription" value="<?php echo $v('fee_subscription'); ?>" placeholder="10,000"></div>
       <div class="field"><label>Currency</label><input name="membership_currency" value="<?php echo $v('membership_currency'); ?>"></div>
     </div>
+    <?php $__f = mem_fees($S); ?><p class="admin-help" style="margin:-4px 0 12px">New member pays <b><?php echo mem_money($__f['new'], $__f['cur']); ?></b> (joining + subscription). A renewing member pays <b><?php echo mem_money($__f['renew'], $__f['cur']); ?></b> (subscription only). Renewals are approved under <a href="member-renewals.php">Membership → Renewals</a>.</p>
     <div class="field"><label>Extra payment note (the bank and Mobile Money details come from Payment details in the menu)</label><textarea name="payment_instructions" style="min-height:130px"><?php echo $v('payment_instructions'); ?></textarea></div>
   </div>
 

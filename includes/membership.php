@@ -14,7 +14,9 @@ const MEM_STORAGE_DIR = __DIR__ . "/../storage/members/";
 function mem_defaults() {
     return [
         'membership_open'      => '1',
-        'membership_fee'       => '50,000',
+        'membership_fee'       => '20,000',
+        'fee_joining'          => '10,000',
+        'fee_subscription'     => '10,000',
         'membership_currency'  => 'UGX',
         'payment_instructions' => "Pay the membership fee by Mobile Money or bank deposit, then upload your receipt or a screenshot of the transaction.\n\nMobile Money: 0700 000 000 (NUFA)\nBank: Account name — NUFA, Account number — 0000000000",
         'reg_prefix'           => 'NUFA',
@@ -328,3 +330,6 @@ function mem_subregion_options() { return array_merge(array_keys(mem_subregions(
 
 mem_install($conn);
 mem_subregion_col($conn);
+require_once __DIR__ . "/renewals.php";
+mem_fees_seed($conn);
+mem_renew_install($conn);

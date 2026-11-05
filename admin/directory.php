@@ -37,7 +37,7 @@ $all = dir_members($conn, ['active' => true]);
 $nListed = 0; foreach ($all as $r) if ($r['in_directory']) $nListed++;
 include __DIR__ . "/includes/admin-header.php";
 ?>
-<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="directory.php" class="active">Directory</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
+<div class="mem-tabs"><a href="member-dashboard.php">Dashboard</a><a href="members.php">Applications</a><a href="member-renewals.php">Renewals</a><a href="member-add.php">Register &amp; import</a><a href="member-cards.php">Cards</a><a href="directory.php" class="active">Directory</a><a href="guilds.php">Guilds</a><a href="membership-settings.php">Membership settings</a></div>
 <?php if ($flash): ?><div class="admin-alert <?php echo $flashType; ?>"><?php echo $e($flash); ?></div><?php endif; ?>
 <div class="admin-grid" style="grid-template-columns:repeat(3,1fr)">
   <div class="admin-stat"><b><?php echo count($all); ?></b><span>Approved, active members</span></div>

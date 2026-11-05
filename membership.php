@@ -11,8 +11,45 @@ while ($g = $gr->fetch_assoc()) $guilds[] = $g;
 
 $old = [];
 $errors = [];
+$type = ($_GET['type'] ?? $_POST['type'] ?? 'new') === 'renew' ? 'renew' : 'new';
+$F = mem_fees($S); $curL = $S['membership_currency'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+/* ---------- renewal of an existing membership (subscription only) ---------- */
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'renew') {
+    $type = 'renew'; $old = $_POST; $f = fn($k) => trim($_POST[$k] ?? '');
+    if (!mem_csrf_ok()) $errors[] = "Your session expired. Please try again.";
+    if ($f('website') !== '') $errors[] = "Submission rejected.";
+    $rm = mem_renew_find($conn, $f('email'), $f('who'));
+    if (!$rm && !$errors) $errors[] = "We could not find an approved NUFA member with that email and membership ID (or phone number). Check the details, or register as a new member instead.";
+    $payChoice = $_POST['payment_choice'] ?? '';
+    if ($payGroups && !isset($payGroups[$payChoice])) $errors[] = "Choose how you will pay: Bank or Mobile Money.";
+    if (pay_proof_required($conn) && $f('payment_ref') === '') $errors[] = "Enter the payment reference / transaction ID.";
+    if (empty($_POST['agree'])) $errors[] = "Please confirm the declaration.";
+    if (!$errors && $conn->query("SELECT 1 FROM member_renewals WHERE member_id=" . (int)$rm['id'] . " AND status='pending'")->num_rows) $errors[] = "A renewal for this membership is already awaiting review.";
+    $proof = '';
+    if (!$errors && (!empty($_FILES['payment_proof']['name']) || pay_proof_required($conn))) {
+        [$proof, $e2] = mem_store_upload($_FILES['payment_proof'] ?? [], MEM_PROOF_TYPES, 5 * 1048576, 'renewproof');
+        if ($e2) $errors[] = "Proof of payment: " . $e2;
+    }
+    if (!$errors) {
+        $ref = mem_renew_ref(); $amt = mem_money($F['renew'], $curL); $payDate = $f('payment_date') ?: null; $pm = $payChoice !== '' ? pay_label($payChoice) : ''; $pr = $f('payment_ref');
+        $st = $conn->prepare("INSERT INTO member_renewals (ref, member_id, name, email, phone, amount, payment_method, payment_ref, payment_date, payment_proof) VALUES (?,?,?,?,?,?,?,?,?,?)");
+        $mid = (int)$rm['id']; $st->bind_param("sissssssss", $ref, $mid, $rm['full_name'], $rm['email'], $rm['phone'], $amt, $pm, $pr, $payDate, $proof);
+        if ($st->execute()) {
+            $until = $rm['valid_until'] ? date('j F Y', strtotime($rm['valid_until'])) : 'not set';
+            mem_send($conn, $mid, 'renew-received', $rm['email'], "We received your NUFA membership renewal ($ref)",
+                "Hello {$rm['full_name']},\n\nThank you for renewing your NUFA membership. We have your renewal request.\n\nReference: $ref\nMembership ID: {$rm['reg_no']}\nSubscription: $amt\nCurrent validity ends: $until\n\nOnce the NUFA team confirms your payment, your membership will be extended and we will email you.\n\n" . pay_text($conn, $payChoice, ['amount' => $amt, 'ref' => $rm['reg_no']]) . "\n\n— NUFA Membership Team");
+            if ($S['notify_admin'] === '1' && $S['admin_notify_email']) { $au = mem_site_url() . '/admin/member-renewals.php'; mem_send($conn, $mid, 'admin', $S['admin_notify_email'], "Membership renewal: {$rm['full_name']}", "A member has asked to renew.\n\nName: {$rm['full_name']}\nMembership ID: {$rm['reg_no']}\nAmount: $amt\nPayment ref: $pr\n\nReview it: $au", $au, $rm['email']); }
+            $_SESSION['mem_csrf'] = bin2hex(random_bytes(16));
+            $_SESSION['mem_pay'] = ['choice' => $payChoice, 'name' => $rm['reg_no'], 'amount' => $amt];
+            header("Location: membership.php?type=renew&done=1&ref=$ref#top"); exit;
+        }
+        $errors[] = "We couldn't save your renewal. Please try again.";
+        if ($proof) @unlink(MEM_STORAGE_DIR . $proof);
+    } elseif ($proof) @unlink(MEM_STORAGE_DIR . $proof);
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') !== 'renew') {
     $old = $_POST;
     $f = fn($k) => trim($_POST[$k] ?? '');
 
@@ -114,19 +151,43 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
   <div class="container member-grid">
     <aside class="member-side" data-reveal>
       <h3>How it works</h3>
-      <ol class="member-steps">
+      <?php if ($type === 'renew'): ?><ol class="member-steps">
+        <li><b>Confirm who you are</b><span>Your email and membership ID (or phone number).</span></li>
+        <li><b>Pay the annual subscription</b><span>Choose Bank or Mobile Money — the payment details appear straight away.</span></li>
+        <li><b>NUFA confirms your payment</b><span>You get an email once it is confirmed.</span></li>
+        <li><b>Your membership is extended</b><span>Your card shows the new validity period.</span></li>
+      </ol>
+      <?php else: ?><ol class="member-steps">
         <li><b>Complete the application</b><span>Your details, area of creative practice and a passport photo.</span></li>
         <li><b>Pay the membership fee</b><span>Choose Bank or Mobile Money — the payment details appear straight away.</span></li>
         <li><b>Review &amp; confirmation</b><span>NUFA reviews your application and emails you the outcome and your registration number.</span></li>
         <li><b>Receive your card</b><span>Confirmed members get a membership card showing the validity period.</span></li>
       </ol>
-      <?php if ($S['membership_fee'] !== ''): ?><div class="member-fee"><span>Membership fee</span><b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b></div><?php endif; ?>
+      <?php endif; ?>
+      <?php if ($type === 'renew'): ?><div class="member-fee"><span>Renewal fee</span><b><?php echo htmlspecialchars(mem_money($F['renew'], $curL)); ?></b></div>
+      <?php else: ?><div class="member-fee"><span>New member fee</span><b><?php echo htmlspecialchars(mem_money($F['new'], $curL)); ?></b></div><p style="font-size:.8rem;color:var(--muted-on-dark);margin:8px 0 0"><?php echo htmlspecialchars(mem_money($F['joining'], $curL)); ?> joining fee + <?php echo htmlspecialchars(mem_money($F['subscription'], $curL)); ?> annual subscription.</p><?php endif; ?>
       <div class="member-pay"><h4>How to pay</h4><p><?php echo $payGroups ? 'Choose <b>Bank</b> or <b>Mobile Money</b> in step 3 of the form. The account details appear immediately, and again once you submit.' : htmlspecialchars('NUFA will show you the payment details as soon as you submit your application.'); ?></p></div>
       <p style="font-size:.82rem;color:var(--muted-on-dark);margin-top:20px"><?php echo cms_t('about', 'membership_criteria'); ?></p>
     </aside>
 
     <div class="form-card" data-reveal>
-    <?php if (isset($_GET['done'])): ?>
+    <?php if (!isset($_GET['done'])): ?>
+      <style>.mtype{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 22px}.mtype a{display:block;border:2px solid #E3E3E3;border-radius:14px;padding:14px 16px;color:#111;background:#fff;transition:border-color .2s,box-shadow .2s}.mtype a b{display:block;font-size:1rem}.mtype a span{display:block;font-size:.82rem;color:#666;margin-top:3px}.mtype a em{display:inline-block;font-style:normal;font-weight:800;font-size:.8rem;color:var(--nufa-primary,#D50000);margin-top:6px}.mtype a.on{border-color:var(--nufa-primary,#D50000);box-shadow:0 6px 20px rgba(213,0,0,.12)}.mtype a:hover{border-color:var(--nufa-primary,#D50000)}@media(max-width:560px){.mtype{grid-template-columns:1fr}}</style>
+      <div class="mtype" role="tablist" aria-label="Registration type">
+        <a href="membership.php?type=new" class="<?php echo $type === 'new' ? 'on' : ''; ?>" role="tab" aria-selected="<?php echo $type === 'new' ? 'true' : 'false'; ?>"><b>New member</b><span>First time joining NUFA</span><em><?php echo htmlspecialchars(mem_money($F['new'], $curL)); ?> · <?php echo htmlspecialchars(number_format($F['joining'])); ?> joining + <?php echo htmlspecialchars(number_format($F['subscription'])); ?> subscription</em></a>
+        <a href="membership.php?type=renew" class="<?php echo $type === 'renew' ? 'on' : ''; ?>" role="tab" aria-selected="<?php echo $type === 'renew' ? 'true' : 'false'; ?>"><b>Renew my membership</b><span>Already a NUFA member</span><em><?php echo htmlspecialchars(mem_money($F['renew'], $curL)); ?> · annual subscription</em></a>
+      </div>
+    <?php endif; ?>
+    <?php if (isset($_GET['done']) && $type === 'renew'): ?>
+      <div class="member-done">
+        <div class="member-done-ico" aria-hidden="true">✓</div>
+        <h2 style="font-size:1.6rem">Renewal request received</h2>
+        <p>Thank you. We have emailed you a confirmation. Once the NUFA team confirms your subscription payment, your membership will be extended and we will email you.</p>
+        <?php if (preg_match('/^REN-[A-F0-9]{8}$/', $_GET['ref'] ?? '')): ?><p style="margin-top:14px">Your renewal reference: <span class="reg-badge" style="display:inline-block;font-size:1.1rem"><?php echo htmlspecialchars($_GET['ref']); ?></span></p><p>You can <a href="track.php?ref=<?php echo htmlspecialchars($_GET['ref']); ?>" style="text-decoration:underline">track your renewal</a> at any time.</p><?php endif; ?>
+        <?php $__mp = $_SESSION['mem_pay'] ?? []; echo pay_block($conn, $__mp['choice'] ?? '', ['amount' => $__mp['amount'] ?? '', 'ref' => $__mp['name'] ?? ''], false, 'Now pay your annual subscription'); ?>
+        <p style="margin-top:20px"><a href="index.php" class="btn btn-gold">Back to home</a></p>
+      </div>
+    <?php elseif (isset($_GET['done'])): ?>
       <div class="member-done">
         <div class="member-done-ico" aria-hidden="true">✓</div>
         <h2 style="font-size:1.6rem">Application received</h2>
@@ -135,6 +196,31 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
         <?php $__mp = $_SESSION['mem_pay'] ?? []; echo pay_block($conn, $__mp['choice'] ?? '', ['amount' => $__mp['amount'] ?? '', 'ref' => $__mp['name'] ?? ''], false, 'Now pay your membership fee'); ?>
         <p style="margin-top:20px"><a href="index.php" class="btn btn-gold">Back to home</a></p>
       </div>
+    <?php elseif ($type === 'renew'): ?>
+      <h2 style="font-size:1.6rem;margin-bottom:6px">Renew your membership</h2>
+      <p class="muted" style="margin-bottom:24px">Already a NUFA member? Confirm who you are, then pay the <b><?php echo htmlspecialchars(mem_money($F['renew'], $curL)); ?></b> annual subscription. You do not need to register again.</p>
+      <?php if ($errors): ?><div class="alert err" role="alert"><b>Please fix the following:</b><ul><?php foreach ($errors as $e) echo '<li>' . htmlspecialchars($e) . '</li>'; ?></ul></div><?php endif; ?>
+      <form method="post" enctype="multipart/form-data" autocomplete="on">
+        <?php echo mem_csrf_field(); ?><input type="hidden" name="form" value="renew"><input type="hidden" name="type" value="renew">
+        <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="hp-field" aria-hidden="true">
+        <h3 class="form-section">1 · Who is renewing?</h3>
+        <div class="form-grid">
+          <div class="field"><label for="r-email">Email you joined with <span class="req">*</span></label><input id="r-email" name="email" type="email" required value="<?php echo $val('email'); ?>"></div>
+          <div class="field"><label for="r-who">Membership ID or phone number <span class="req">*</span></label><input id="r-who" name="who" required placeholder="e.g. NUFA/2026/0001 or 0772…" value="<?php echo $val('who'); ?>"><span class="hint">Your membership ID is on your membership card and in your approval email.</span></div>
+        </div>
+        <h3 class="form-section">2 · Subscription payment</h3>
+        <p class="muted" style="font-size:.9rem;margin-bottom:14px">Annual subscription: <b><?php echo htmlspecialchars(mem_money($F['renew'], $curL)); ?></b></p>
+        <div class="field full"><label>How will you pay?<?php echo $payGroups ? ' <span class="req">*</span>' : ''; ?></label><?php echo pay_picker($conn, 'payment_choice', $old['payment_choice'] ?? '', ['amount' => mem_money($F['renew'], $curL), 'ref' => 'Your membership ID']); ?></div>
+        <details class="pay-already"<?php echo (!empty($old['payment_ref']) || pay_proof_required($conn)) ? ' open' : ''; ?>><summary><?php echo pay_proof_required($conn) ? 'Payment proof (required)' : 'Already paid? Add your transaction reference (optional)'; ?></summary>
+          <div class="form-grid">
+            <div class="field"><label for="r-ref">Transaction ID / reference<?php echo pay_proof_required($conn) ? ' <span class="req">*</span>' : ''; ?></label><input id="r-ref" name="payment_ref" value="<?php echo $val('payment_ref'); ?>"></div>
+            <div class="field"><label for="r-pd">Date paid</label><input id="r-pd" name="payment_date" type="date" max="<?php echo date('Y-m-d'); ?>" value="<?php echo $val('payment_date'); ?>"></div>
+          </div>
+          <div class="field"><label for="r-proof">Proof of payment<?php echo pay_proof_required($conn) ? ' <span class="req">*</span>' : ' (optional)'; ?></label><input id="r-proof" name="payment_proof" type="file" accept="image/jpeg,image/png,image/webp,application/pdf"<?php echo pay_proof_required($conn) ? ' required' : ''; ?>><span class="hint">Receipt or screenshot — JPG, PNG, WebP or PDF, max 5 MB.</span></div>
+        </details>
+        <label class="check"><input type="checkbox" name="agree" value="1" required <?php echo !empty($old['agree']) ? 'checked' : ''; ?>><span>I confirm I am renewing my own NUFA membership and the payment details above are correct.</span></label>
+        <button type="submit" class="btn btn-gold btn-block">Submit renewal</button>
+      </form>
     <?php elseif ($S['membership_open'] !== '1'): ?>
       <div class="member-done"><h2 style="font-size:1.6rem">Applications are closed</h2><p>Membership registration is not open right now. Please check back soon or <a href="contact.php?topic=Membership" style="text-decoration:underline">contact us</a>.</p></div>
     <?php else: ?>
@@ -177,7 +263,7 @@ echo ui_page_hero('Membership', cms_value('membership', 'hero_title'), cms_value
         <div class="field full"><label for="m-bio">Short professional profile</label><textarea id="m-bio" name="bio" placeholder="Tell us briefly about your work in film."><?php echo $val('bio'); ?></textarea></div>
 
         <h3 class="form-section">3 · Membership payment</h3>
-        <?php if ($S['membership_fee'] !== ''): ?><p class="muted" style="font-size:.9rem;margin-bottom:14px">Membership fee: <b><?php echo $cur . ' ' . htmlspecialchars($S['membership_fee']); ?></b></p><?php endif; ?>
+        <?php if ($S['membership_fee'] !== ''): ?><p class="muted" style="font-size:.9rem;margin-bottom:14px">New member fee: <b><?php echo htmlspecialchars(mem_money($F['new'], $curL)); ?></b> <span style="color:#777">(<?php echo htmlspecialchars(number_format($F['joining'])); ?> joining fee + <?php echo htmlspecialchars(number_format($F['subscription'])); ?> annual subscription)</span></p><?php endif; ?>
         <div class="field full"><label>How will you pay?<?php echo $payGroups ? ' <span class="req">*</span>' : ''; ?></label><?php echo pay_picker($conn, 'payment_choice', $old['payment_choice'] ?? '', ['amount' => $S['membership_fee'] !== '' ? $S['membership_currency'] . ' ' . $S['membership_fee'] : '', 'ref' => 'Your full name']); ?></div>
         <details class="pay-already"<?php echo (!empty($old['payment_ref']) || pay_proof_required($conn)) ? ' open' : ''; ?>><summary><?php echo pay_proof_required($conn) ? 'Payment proof (required)' : 'Already paid? Add your transaction reference (optional)'; ?></summary>
           <div class="form-grid">
