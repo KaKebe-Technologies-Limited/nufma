@@ -75,6 +75,7 @@ $mobileCta2Label = cms_value('site', 'mobile_cta2_label');
 
 <?php if (($cfg['pwa_enabled'] ?? '1') === '1'): ?><script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('<?php echo $base; ?>sw.php').catch(function(){});});}</script>
 <?php endif; ?>
+<?php require_once __DIR__ . "/popup.php"; echo popup_render($conn, $base); ?>
 <script src="<?php echo $base; ?>assets/js/main.js?v=<?php echo @filemtime(__DIR__ . '/../assets/js/main.js'); ?>" defer></script>
 </body>
 </html>

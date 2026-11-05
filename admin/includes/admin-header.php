@@ -10,6 +10,7 @@ if (isset($conn)) {
 }
 
 $__ico = [
+    'popup' => '<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 9h16M15 13l3 3M18 13v3h-3" stroke-linecap="round" stroke-linejoin="round"/>',
     'emaildelivery' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6" stroke-linecap="round"/>',
     'letters' => '<path d="M5 3h10l4 4v14H5V3Z"/><path d="M15 3v4h4M8 12h8M8 15h8M8 18h5" stroke-linecap="round"/>',
     'siteimages' => '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.800"/><path d="m4 18 5-5 4 4 3-3 4 4" stroke-linecap="round" stroke-linejoin="round"/>',
@@ -84,6 +85,7 @@ $__nav = [
         ['pages', 'pages.php', 'All pages, page by page'],
         ['siteimages', 'site-images.php', 'All pictures on the site'],
         ['sliders', 'sliders.php', 'Home hero slider (first picture)'],
+        ['popup', 'popup.php', 'Welcome popup'],
     ],
     'Edit a page' => $__pageLinks,
     'People' => [
