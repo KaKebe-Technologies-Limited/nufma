@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($app && in_array($act, ['approve', 'reject', 'resend_card'], true)) {
         if ($act === 'resend_card' && $app['status'] === 'approved') {
             $v = sac_vars($app, ['{next_steps}' => $S0['sacapp_approved_next_steps']]);
-            $ok = mem_send($conn, null, 'sacco-approved', $app['email'], strtr($S0['sacapp_email_approved_subject'], $v), strtr($S0['sacapp_email_approved_body'], $v));
+            $ok = mem_send($conn, null, 'sacco-approved', $app['email'], strtr($S0['sacapp_email_approved_subject'], $v), strtr($S0['sacapp_email_approved_body'], $v), sac_card_url($app));
             $conn->query("UPDATE sacco_applications SET card_sent_at=NOW() WHERE id=$id");
             $msg = $ok ? "The approval email with the card link was sent again." : "The mail system refused it (normal on a local XAMPP install). The card link is: " . sac_card_url($app);
         } elseif ($act === 'approve') {
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $u->bind_param("isssi", $sh, $feeC, $shv, $until, $id); $u->execute();
                 $app = $conn->query("SELECT * FROM sacco_applications WHERE id=$id")->fetch_assoc();
                 $v = sac_vars($app, ['{next_steps}' => $S0['sacapp_approved_next_steps']]);
-                $ok = mem_send($conn, null, 'sacco-approved', $app['email'], strtr($S0['sacapp_email_approved_subject'], $v), strtr($S0['sacapp_email_approved_body'], $v));
+                $ok = mem_send($conn, null, 'sacco-approved', $app['email'], strtr($S0['sacapp_email_approved_subject'], $v), strtr($S0['sacapp_email_approved_body'], $v), sac_card_url($app));
                 $msg = "Application approved and the membership card was issued" . ($ok ? " — the approval email with the card link was sent." : " (the email could not be sent from this server — it is saved in the email log).");
             }
         } else {
@@ -66,6 +66,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tab = 'settings';
         foreach (['sacapp_reg_prefix', 'sacapp_reg_format', 'sacapp_reg_fee', 'sacapp_share_price', 'sacapp_pay_instructions', 'sacapp_intro', 'sacapp_declaration', 'sacapp_income_bands', 'sacapp_pay_methods', 'sacapp_notify_email',
                   'sacapp_email_received_subject', 'sacapp_email_received_body', 'sacapp_email_approved_subject', 'sacapp_email_approved_body', 'sacapp_approved_next_steps', 'sacapp_signer_name', 'sacapp_signer_title', 'sacapp_card_note', 'sacapp_email_rejected_subject', 'sacapp_email_rejected_body'] as $k) $save($k, mb_substr(trim($_POST[$k] ?? ''), 0, 4000));
+        // Chairperson's signature picture (transparent PNG works best)
+        $sigDir = __DIR__ . "/../assets/images/uploads/signature/";
+        if (!empty($_POST['remove_chair_signature']) && $S0['sacapp_chair_signature']) { @unlink(__DIR__ . "/../assets/images/" . $S0['sacapp_chair_signature']); $save('sacapp_chair_signature', ''); }
+        if (!empty($_FILES['sacapp_chair_signature']['name'])) {
+            [$fn, $se] = mem_store_upload($_FILES['sacapp_chair_signature'], MEM_IMG_TYPES, 2 * 1048576, 'chair-signature', $sigDir);
+            if ($se) $err = "Signature: " . $se; else { if ($S0['sacapp_chair_signature']) @unlink(__DIR__ . "/../assets/images/" . $S0['sacapp_chair_signature']); $save('sacapp_chair_signature', 'uploads/signature/' . $fn); }
+        }
         $save('sacapp_card_validity_months', (string)max(0, (int)($_POST['sacapp_card_validity_months'] ?? 0)));
         $save('sacapp_reg_pad', (string)max(1, min(8, (int)($_POST['sacapp_reg_pad'] ?? 4)))); $save('sacapp_min_shares', (string)max(2, (int)($_POST['sacapp_min_shares'] ?? 2)));
         foreach (['sacapp_require_photo', 'sacapp_require_id', 'sacapp_require_proof'] as $k) $save($k, isset($_POST[$k]) ? '1' : '0');
@@ -89,7 +96,7 @@ include __DIR__ . "/includes/admin-header.php";
 <?php $cfgNow = nufa_site_settings($conn); if (($cfgNow['sacco_applications_open'] ?? '0') !== '1'): ?><div class="admin-alert" style="background:#FDECEC;border:1px solid #F4C7C3;color:#8A0000">The public application form is <b>closed</b> (the SACCO is not accepting applications). Switch it on in <a href="sacco-manager.php">SACCO manager → Status &amp; regulatory</a> only once the SACCO's registration and readiness are verified.</div><?php endif; ?>
 
 <?php if ($tab === 'settings'): $nextPreview = strtr($S['sacapp_reg_format'], ['{PREFIX}' => $S['sacapp_reg_prefix'], '{YEAR}' => date('Y'), '{SEQ}' => str_pad($S['sacapp_reg_next'], max(1, (int)$S['sacapp_reg_pad']), '0', STR_PAD_LEFT)]); ?>
-<form method="post" class="admin-form"><input type="hidden" name="action" value="settings">
+<form method="post" class="admin-form" enctype="multipart/form-data"><input type="hidden" name="action" value="settings">
   <div class="admin-card"><div class="admin-card-head"><h2>Registration numbers</h2><span class="admin-help">Every applicant gets one automatically the moment they submit.</span></div>
     <div class="admin-form-grid"><div class="field"><label>Prefix</label><input name="sacapp_reg_prefix" value="<?php echo $e($S['sacapp_reg_prefix']); ?>"></div>
       <div class="field"><label>Format</label><input name="sacapp_reg_format" value="<?php echo $e($S['sacapp_reg_format']); ?>"><span class="admin-help">Use {PREFIX}, {YEAR} and {SEQ}</span></div>
@@ -106,8 +113,9 @@ include __DIR__ . "/includes/admin-header.php";
     <label class="mem-check"><input type="checkbox" name="sacapp_require_photo" value="1" <?php echo $S['sacapp_require_photo'] === '1' ? 'checked' : ''; ?>> Passport photo is required</label>
     <label class="mem-check"><input type="checkbox" name="sacapp_require_id" value="1" <?php echo $S['sacapp_require_id'] === '1' ? 'checked' : ''; ?>> A copy of the ID is required</label>
     <label class="mem-check"><input type="checkbox" name="sacapp_require_proof" value="1" <?php echo $S['sacapp_require_proof'] === '1' ? 'checked' : ''; ?>> Proof of payment is required (only when a fee is set)</label></div>
-  <div class="admin-card"><div class="admin-card-head"><h2>Membership card</h2><span class="admin-help">Issued automatically when you approve an application. The signature image comes from Membership settings (president's signature).</span></div>
-    <div class="admin-form-grid"><div class="field"><label>Signed by (name) — blank uses the president's name</label><input name="sacapp_signer_name" value="<?php echo $e($S['sacapp_signer_name']); ?>"></div><div class="field"><label>Signer's title on the card</label><input name="sacapp_signer_title" value="<?php echo $e($S['sacapp_signer_title']); ?>"></div>
+  <div class="admin-card"><div class="admin-card-head"><h2>Membership card</h2><span class="admin-help">Issued automatically when you approve an application and emailed to the member with a link. The card carries the Chairperson's signature uploaded below.</span></div>
+    <div class="admin-form-grid"><div class="field"><label>Chairperson's name (printed under the signature)</label><input name="sacapp_signer_name" value="<?php echo $e($S['sacapp_signer_name']); ?>"></div><div class="field"><label>Signer's title on the card</label><input name="sacapp_signer_title" value="<?php echo $e($S['sacapp_signer_title']); ?>"></div>
+      <div class="field"><label>Chairperson's signature (PNG with transparent background works best)</label><input data-no-picker type="file" name="sacapp_chair_signature" accept="image/png,image/jpeg,image/webp"><?php if (!empty($S['sacapp_chair_signature']) && is_file(__DIR__ . '/../assets/images/' . $S['sacapp_chair_signature'])): ?><div style="margin-top:8px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;display:inline-block"><img src="../assets/images/<?php echo $e($S['sacapp_chair_signature']); ?>" alt="" style="height:54px"></div> <label style="display:inline-flex;gap:6px;align-items:center;margin-left:10px"><input type="checkbox" name="remove_chair_signature" value="1"> Remove</label><?php else: ?><span class="admin-help">No signature uploaded yet — the card shows an empty signature line.</span><?php endif; ?></div>
       <div class="field"><label>Card valid for (months; 0 = no expiry)</label><input type="number" min="0" name="sacapp_card_validity_months" value="<?php echo $e($S['sacapp_card_validity_months']); ?>"></div></div>
     <div class="field"><label>Note printed on the card</label><textarea name="sacapp_card_note" style="min-height:60px"><?php echo $e($S['sacapp_card_note']); ?></textarea></div></div>
   <div class="admin-card"><div class="admin-card-head"><h2>Form text</h2></div>
@@ -138,7 +146,7 @@ include __DIR__ . "/includes/admin-header.php";
   <?php if ($a['reject_reason']): ?><div class="admin-alert err">Rejected: <?php echo $e($a['reject_reason']); ?></div><?php endif; ?>
   <?php $due = sac_total_due($S, (int)$a['shares_applied']); $minSh = max(2, (int)$S['sacapp_min_shares']); ?>
   <div class="admin-alert" style="background:#FDECEC;border:1px solid #F4C7C3;color:#8A0000"><b>Payment to verify:</b> applicant says they paid <b><?php echo $e($a['pay_amount'] ?: '—'); ?></b> by <?php echo $e($a['pay_method'] ?: '—'); ?> (ref <?php echo $e($a['pay_ref'] ?: '—'); ?><?php echo $a['pay_date'] ? ', ' . date('d M Y', strtotime($a['pay_date'])) : ''; ?>). <?php if ($due): ?><br>Expected: fee <?php echo number_format($due[0]); ?> + <?php echo (int)$a['shares_applied']; ?> share(s) × <?php echo number_format($due[1]); ?> = <b><?php echo number_format($due[2]); ?></b>.<?php endif; ?> <?php echo $a['pay_proof'] ? 'Check the uploaded proof above.' : '<b>No proof was uploaded.</b>'; ?></div>
-  <?php if ($a['status'] === 'approved'): ?><div class="admin-alert ok">Approved — card issued <?php echo $a['card_issued_at'] ? date('d M Y', strtotime($a['card_issued_at'])) : ''; ?>. Shares confirmed: <b><?php echo (int)$a['shares_confirmed']; ?></b>.</div>
+  <?php if ($a['status'] === 'approved'): require_once __DIR__ . "/../includes/sacco-card.php"; ?><link rel="stylesheet" href="../assets/css/member-card.css"><div style="background:#F2F2F2;border-radius:14px;padding:16px;margin-bottom:14px"><div class="idc-single"><?php echo sac_card_html($conn, $a, ['prefix' => '../']); ?></div></div><div class="admin-alert ok">Approved — card issued <?php echo $a['card_issued_at'] ? date('d M Y', strtotime($a['card_issued_at'])) : ''; ?>. Shares confirmed: <b><?php echo (int)$a['shares_confirmed']; ?></b>.</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px"><a class="admin-btn admin-btn-brand" href="<?php echo $e(sac_card_url($a)); ?>" target="_blank">Open the member's card</a><form method="post"><input type="hidden" name="action" value="resend_card"><input type="hidden" name="id" value="<?php echo $a['id']; ?>"><button class="admin-btn admin-btn-line">Email the card link again</button></form></div><?php endif; ?>
   <form method="post" class="admin-form" onsubmit="return confirm('Approve this member and issue the membership card?')"><input type="hidden" name="action" value="approve"><input type="hidden" name="id" value="<?php echo $a['id']; ?>">
     <h3 class="mem-h3" style="margin-top:0"><?php echo $a['status'] === 'approved' ? 'Update what was verified' : 'Verify payment & approve'; ?></h3>

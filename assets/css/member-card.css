@@ -54,3 +54,27 @@
   .idc{box-shadow:none!important}
   .idc-single .idc{--w:85.6mm}
 }
+
+/* ===== NUFA SACCO card variant ===== */
+.idc--sacco .idc-head{background:linear-gradient(115deg,#0d0d0d 0%,#1b1b1b 60%,#2a2a2a 100%)}
+.idc--sacco .idc-head::after{background:linear-gradient(90deg,var(--orange) 0 65%,var(--red) 65% 100%)}
+.idc--sacco .idc-tag{background:var(--orange);color:#111}
+.idc--sacco .idc-org b{letter-spacing:.08em}
+.idc--sacco .idc-org i{font-size:.54em}
+.idc--sacco .idc-role{margin-top:.4em;font-size:.7em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.idc--sacco .idc-info h3{font-size:1.25em;max-height:1.2em;-webkit-line-clamp:1}
+.idc--sacco .idc-info dl{gap:.45em .8em;margin-top:.6em}
+.idc--sacco .idc-info dd{font-size:.74em}
+.idc--sacco.idc-back::before{background:linear-gradient(90deg,var(--orange) 0 65%,var(--red) 65% 100%)}
+.idc-qr--sm{width:8.6em;top:2.2em}.idc-qr--sm svg{width:8.6em;height:8.6em}
+.idc-det{position:absolute;left:11.2em;right:1.4em;top:2.1em}
+.idc-det h4{font-size:.66em;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:800;margin-bottom:.55em}
+.idc-det dl{display:grid;grid-template-columns:1fr 1fr;gap:.5em .9em}
+.idc-det dl .wide{grid-column:1/-1}
+.idc-det dt{font-size:.5em;letter-spacing:.14em;text-transform:uppercase;color:#7A7A7A;font-weight:700}
+.idc-det dd{font-size:.68em;font-weight:700;color:#111;margin-top:.1em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.idc-sign--sacco{left:11.2em;right:auto;top:14.1em;height:4.4em;width:12em}
+.idc-sign--sacco img{height:2.2em}
+.idc-fine{position:absolute;left:calc(var(--w)/24);right:calc(var(--w)/24);bottom:calc(var(--w)/10.5);font-size:.5em;line-height:1.4;color:#555;text-align:right}
+.idc--sacco .idc-fine{left:calc(var(--w)*23.6/36);right:calc(var(--w)/26);bottom:calc(var(--w)/11);text-align:left;font-size:.48em}
+.idc--sacco .idc-band--back span{font-size:.54em}

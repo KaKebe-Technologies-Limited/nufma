@@ -77,7 +77,7 @@ function sac_install($conn) {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
     foreach (['employment_status' => "VARCHAR(40) NOT NULL DEFAULT ''", 'how_heard' => "VARCHAR(100) NOT NULL DEFAULT ''", 'payout_method' => "VARCHAR(60) NOT NULL DEFAULT ''", 'payout_account' => "VARCHAR(120) NOT NULL DEFAULT ''", 'payout_name' => "VARCHAR(150) NOT NULL DEFAULT ''",
               'pay_verified' => 'TINYINT(1) NOT NULL DEFAULT 0', 'shares_confirmed' => 'INT NOT NULL DEFAULT 0', 'fee_confirmed' => "VARCHAR(40) NOT NULL DEFAULT ''", 'shares_value' => "VARCHAR(40) NOT NULL DEFAULT ''",
-              'card_issued_at' => 'DATETIME NULL', 'card_valid_until' => 'DATE NULL', 'card_sent_at' => 'DATETIME NULL'] as $c => $ddl)
+              'card_issued_at' => 'DATETIME NULL', 'card_valid_until' => 'DATE NULL', 'card_sent_at' => 'DATETIME NULL', 'subregion' => "VARCHAR(40) NOT NULL DEFAULT ''"] as $c => $ddl)
         if ($conn->query("SHOW COLUMNS FROM sacco_applications LIKE '$c'")->num_rows === 0) $conn->query("ALTER TABLE sacco_applications ADD COLUMN `$c` $ddl");
 }
 
@@ -89,7 +89,7 @@ function sac_defaults() {
         'sacapp_intro' => "Complete this form to apply for membership of the NUFA SACCO. Your application is reviewed by the SACCO committee. Submitting it does not make you a member until you are told in writing that it has been approved.",
         'sacapp_declaration' => "I declare that the information I have given is true and complete.\nI have read and agree to be bound by the NUFA SACCO bylaws and membership rules.\nI understand that my application is not accepted until approved in writing by the SACCO.",
         'sacapp_require_photo' => '1', 'sacapp_require_id' => '1', 'sacapp_require_proof' => '1',
-        'sacapp_signer_name' => '', 'sacapp_signer_title' => 'Chairperson, NUFA SACCO', 'sacapp_card_validity_months' => '0',
+        'sacapp_signer_name' => '', 'sacapp_signer_title' => 'Chairperson, NUFA SACCO', 'sacapp_chair_signature' => '', 'sacapp_card_validity_months' => '0',
         'sacapp_card_note' => 'This card identifies a member of the NUFA SACCO. It is not a bank card. Keep it safe and report it lost to the SACCO office.',
         'sacapp_income_bands' => "Below UGX 200,000\nUGX 200,000 – 500,000\nUGX 500,000 – 1,000,000\nUGX 1,000,000 – 3,000,000\nAbove UGX 3,000,000\nIrregular / project-based",
         'sacapp_pay_methods' => "Mobile Money\nBank deposit\nCash at the office",
@@ -156,7 +156,7 @@ function sac_status_badge($s) {
 function sac_sections() {
     return [
         'Personal details' => [['Full name', 'full_name'], ['Gender', 'gender'], ['Date of birth', 'dob'], ['Nationality', 'nationality'], ['Marital status', 'marital_status'], ['ID type', 'id_type'], ['ID number', 'id_number'], ['Phone', 'phone'], ['Alternative phone', 'alt_phone'], ['Email', 'email']],
-        'Residence' => [['District', 'district'], ['Sub-county / division', 'subcounty'], ['Village / parish', 'village'], ['Physical address', 'address']],
+        'Residence' => [['District', 'district'], ['Sub-region', 'subregion'], ['Sub-county / division', 'subcounty'], ['Village / parish', 'village'], ['Physical address', 'address']],
         'Work & NUFA' => [['Occupation', 'occupation'], ['Employment status', 'employment_status'], ['Employer / business', 'employer'], ['Area of film / creative practice', 'creative_role'], ['Years in the industry', 'years_in_industry'], ['Monthly income', 'income_band'], ['NUFA member?', 'nufa_member'], ['NUFA registration no.', 'nufa_reg_no']],
         'Savings plan' => [['Shares applied for', 'shares_applied'], ['Initial deposit (UGX)', 'initial_deposit'], ['Planned regular savings (UGX)', 'monthly_savings'], ['Saving frequency', 'frequency'], ['Products of interest', 'products'], ['Why join', 'purpose']],
         'Payout account' => [['Payout method', 'payout_method'], ['Account / mobile number', 'payout_account'], ['Account name', 'payout_name']],

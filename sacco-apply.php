@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $open && !$done) {
     $need = ['full_name' => 'Full name', 'gender' => 'Gender', 'nationality' => 'Nationality', 'marital_status' => 'Marital status', 'id_type' => 'ID type', 'id_number' => 'ID number', 'district' => 'District', 'village' => 'Village / parish',
              'occupation' => 'Occupation', 'creative_role' => 'Area of film / creative practice', 'kin_name' => 'Next of kin name', 'kin_relationship' => 'Next of kin relationship', 'kin_phone' => 'Next of kin phone'];
     foreach ($need as $k => $l) if ($p($k) === '') $errors[] = "$l is required.";
+    $subregion = $p('subregion', 40); if (!in_array($subregion, mem_subregion_options(), true)) $errors[] = "Choose your sub-region.";
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = "Enter a valid email address.";
     if (strlen(preg_replace('/\D/', '', $phone)) < 9) $errors[] = "Enter a valid phone number.";
     if (!$dob || !strtotime($dob) || strtotime($dob) > strtotime('-16 years') || strtotime($dob) < strtotime('-110 years')) $errors[] = "Enter a valid date of birth (applicants must be at least 16).";
@@ -62,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $open && !$done) {
         $prods = implode(', ', array_map(fn($x) => mb_substr(form_clean($x, 100), 0, 100), array_slice((array)($_POST['products'] ?? []), 0, 12)));
         $payDate = $p('pay_date', 10) ?: null;
         $cols = ['reg_no' => $reg, 'token' => $tok, 'full_name' => $name, 'gender' => $p('gender', 20), 'dob' => $dob, 'nationality' => $p('nationality', 80), 'marital_status' => $p('marital_status', 30), 'id_type' => $p('id_type', 40), 'id_number' => $idn,
-            'phone' => $phone, 'alt_phone' => $p('alt_phone', 40), 'email' => $email, 'district' => $p('district', 100), 'subcounty' => $p('subcounty', 100), 'village' => $p('village', 150), 'address' => $p('address', 255),
+            'phone' => $phone, 'alt_phone' => $p('alt_phone', 40), 'email' => $email, 'district' => $p('district', 100), 'subregion' => $subregion, 'subcounty' => $p('subcounty', 100), 'village' => $p('village', 150), 'address' => $p('address', 255),
             'occupation' => $p('occupation', 150), 'employer' => $p('employer'), 'creative_role' => $p('creative_role', 150), 'years_in_industry' => $p('years_in_industry', 40), 'income_band' => $p('income_band', 60),
             'nufa_member' => in_array($_POST['nufa_member'] ?? '', ['Yes', 'No'], true) ? $_POST['nufa_member'] : '', 'nufa_reg_no' => $p('nufa_reg_no', 60), 'shares_applied' => $shares, 'initial_deposit' => $p('initial_deposit', 40),
             'monthly_savings' => $p('monthly_savings', 40), 'frequency' => $p('frequency', 30), 'products' => $prods, 'purpose' => form_clean($_POST['purpose'] ?? '', 1500),
@@ -127,7 +128,7 @@ $file = fn($k, $label, $req, $hint) => '<div class="field full"><label for="f-' 
       <?php echo f_input('email', 'Email address', ['type' => 'email', 'required' => true, 'autocomplete' => 'email']); ?>
     </div></fieldset>
     <fieldset class="apply-card"><legend><span>2</span> Where you live</legend><div class="form-grid">
-      <?php echo f_input('district', 'District', ['required' => true]); ?><?php echo f_input('subcounty', 'Sub-county / division'); ?><?php echo f_input('village', 'Village / parish', ['required' => true]); ?><?php echo f_input('address', 'Physical address / landmark'); ?>
+      <?php echo f_input('district', 'District', ['required' => true]); ?><?php echo f_select('subregion', 'Sub-region', mem_subregion_options(), ['required' => true]); ?><?php echo f_input('subcounty', 'Sub-county / division'); ?><?php echo f_input('village', 'Village / parish', ['required' => true]); ?><?php echo f_input('address', 'Physical address / landmark'); ?>
     </div></fieldset>
     <fieldset class="apply-card"><legend><span>3</span> Work &amp; NUFA</legend><div class="form-grid">
       <?php echo f_input('occupation', 'Occupation', ['required' => true]); ?><?php echo f_input('employer', 'Employer or business name'); ?>
