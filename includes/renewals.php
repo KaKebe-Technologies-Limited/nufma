@@ -83,6 +83,17 @@ function mem_renew_approve($conn, $rid, $note = '') {
     return $until;
 }
 
+/** One-time: add "SACCO Leadership" to the saved list of leadership categories (Admin → Leadership & team). */
+function mem_team_cat_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='team_cat_sacco_v1'");
+    if (!$f || $f->num_rows) return;
+    $tc = $conn->query("SELECT setting_value FROM settings WHERE setting_key='list_team_categories'")->fetch_assoc();
+    if ($tc && trim($tc['setting_value']) !== '' && stripos($tc['setting_value'], 'SACCO Leadership') === false) { $nv = rtrim($tc['setting_value']) . "
+SACCO Leadership"; $u = $conn->prepare("UPDATE settings SET setting_value=? WHERE setting_key='list_team_categories'"); $u->bind_param('s', $nv); $u->execute(); }
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('team_cat_sacco_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+}
+
 /** One-time: the website is www.nufawards.com — replace any saved www.nufa.media / @nufa.media in settings, page text, menus and stories. */
 function mem_domain_seed($conn) {
     static $done = false; if ($done) return; $done = true;

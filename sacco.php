@@ -152,8 +152,16 @@ $regBtn = $appsOpen
 <?php if (nufa_show('sacco', 'governance')): ?><section class="section section--soft" id="governance">
   <div class="container">
     <div class="section-head" data-reveal><div class="eyebrow">Governance &amp; leadership</div><h2>Who will run it</h2></div>
+    <?php $__sl = $conn->query("SELECT * FROM team_members WHERE is_active=1 AND category='SACCO Leadership' ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC); if ($__sl): ?>
+    <div class="guest-grid team-grid" data-reveal-stagger style="margin-bottom:26px">
+      <?php foreach ($__sl as $m): $mp = (!empty($m['photo']) && is_file(__DIR__ . '/assets/images/' . $m['photo'])) ? $m['photo'] : ''; ?>
+      <article class="guest"><div class="guest-photo"><?php if ($mp): ?><img src="assets/images/<?php echo ui_e($mp); ?>" alt="<?php echo ui_e($m['name']); ?>" loading="lazy"><?php else: echo nufa_icon('users', 34); endif; ?></div>
+        <h4><?php echo ui_e($m['name']); ?></h4><span><?php echo ui_e($m['role']); ?></span><?php if (!empty($m['bio'])): ?><p><?php echo ui_e(ui_excerpt($m['bio'], 180)); ?></p><?php endif; ?></article>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
     <?php if ($govPeople !== ''): ?><div class="stack" data-reveal><?php echo $govPeople; ?></div>
-    <?php else: ?><div class="empty-state"><h3>To be published</h3><p><?php echo cms_t('sacco', 'governance_note'); ?></p></div><?php endif; ?>
+    <?php elseif (!$__sl): ?><div class="empty-state"><h3>To be published</h3><p><?php echo cms_t('sacco', 'governance_note'); ?></p></div><?php endif; ?>
   </div>
 </section><?php endif; ?>
 

@@ -333,4 +333,5 @@ mem_subregion_col($conn);
 require_once __DIR__ . "/renewals.php";
 mem_fees_seed($conn);
 mem_domain_seed($conn);
+mem_team_cat_seed($conn);
 mem_renew_install($conn);
