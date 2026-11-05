@@ -59,14 +59,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ids = array_values(array_filter(array_map('intval', $_POST['ids'] ?? []))); $sentN = 0; $failN = 0; $skip = 0; @set_time_limit(300);
             foreach ($ids as $lid) { $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc(); if (!$l || !filter_var($l['email'], FILTER_VALIDATE_EMAIL)) { $skip++; continue; } ltr_send_email($conn, $l) ? $sentN++ : $failN++; usleep(150000); }
             $flash = $ids ? "Emailed $sentN letter(s)" . ($failN ? ", $failN could not be sent" : '') . ($skip ? ", $skip skipped (no email address)" : '') . '.' : 'Tick at least one letter.'; if ($failN || !$ids) $flashType = 'warn';
-        } elseif (in_array($act, ['save', 'email', 'mark_wa', 'delete', 'regenerate'], true)) {
+        } elseif (in_array($act, ['save', 'save_email', 'email', 'mark_wa', 'delete', 'regenerate'], true)) {
             $lid = (int)($_POST['id'] ?? 0); $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc();
             if ($l) {
-                if ($act === 'save') {
+                if ($act === 'save' || $act === 'save_email') {
                     $u = $conn->prepare("UPDATE invitation_letters SET honorific=?, recipient_name=?, position=?, organisation=?, email=?, phone=?, event_title=?, event_date=?, event_time=?, venue=?, body=? WHERE id=?");
                     $ed = !empty($_POST['event_date']) && strtotime($_POST['event_date']) ? date('Y-m-d', strtotime($_POST['event_date'])) : null;
                     $vals = [trim($_POST['honorific'] ?? ''), trim($_POST['recipient_name'] ?? ''), trim($_POST['position'] ?? ''), trim($_POST['organisation'] ?? ''), trim($_POST['email'] ?? ''), trim($_POST['phone'] ?? ''), trim($_POST['event_title'] ?? ''), $ed, trim($_POST['event_time'] ?? ''), trim($_POST['venue'] ?? ''), trim($_POST['body'] ?? '')];
                     $u->bind_param(str_repeat('s', 11) . 'i', ...array_merge($vals, [$lid])); $u->execute(); $flash = 'Letter saved.';
+                    if ($act === 'save_email') { $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc(); $ok = ltr_send_email($conn, $l); $flash = $ok ? 'Saved and emailed to ' . $l['email'] . '.' : 'Saved, but the email could not be sent. ' . (nufa_mail_error() ?: 'No valid email address.') . ' Set up delivery under System → Email delivery.'; if (!$ok) $flashType = 'warn'; }
                 } elseif ($act === 'regenerate') {
                     $l['purpose'] = $l['purpose'] ?? ''; $b = ltr_generate($conn, $l); $u = $conn->prepare("UPDATE invitation_letters SET body=? WHERE id=?"); $u->bind_param("si", $b, $lid); $u->execute(); $flash = 'The letter text was rewritten from the template.';
                 } elseif ($act === 'email') {
@@ -100,6 +101,8 @@ $batchId = preg_replace('/[^0-9-]/', '', $_GET['batch'] ?? '');
 if (isset($_GET['deleted'])) $flash = 'Letter deleted.';
 
 $L = $id ? $conn->query("SELECT * FROM invitation_letters WHERE id=$id")->fetch_assoc() : null;
+$prevL = $nextL = null;
+if ($L) { $bw = $L['batch'] !== '' ? "batch='" . $conn->real_escape_string($L['batch']) . "'" : '1=1'; $prevL = $conn->query("SELECT id, recipient_name FROM invitation_letters WHERE $bw AND id<" . (int)$L['id'] . " ORDER BY id DESC LIMIT 1")->fetch_assoc(); $nextL = $conn->query("SELECT id, recipient_name FROM invitation_letters WHERE $bw AND id>" . (int)$L['id'] . " ORDER BY id ASC LIMIT 1")->fetch_assoc(); }
 // quick-fill sources: leadership team and distinguished guests
 $people = [];
 foreach ($conn->query("SELECT name, role FROM team_members WHERE is_active=1 ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC) as $t) $people[$t['name']] = ['position' => $t['role'], 'organisation' => 'Northern Uganda Filmmakers Association'];
@@ -129,12 +132,14 @@ $eventFields = function ($v = []) use ($e) { ?>
     <?php if ($wa): ?><a class="admin-btn admin-btn-brand" style="background:#128C4A;border-color:#128C4A" href="<?php echo $e($wa); ?>" target="_blank" rel="noopener" id="waBtn">&#9742; Send on WhatsApp</a><?php else: ?><button class="admin-btn admin-btn-line" disabled title="Add a phone number below">Send on WhatsApp</button><?php endif; ?>
     <a class="admin-btn admin-btn-line" href="../invitation-letter.php?t=<?php echo $e($L['token']); ?>" target="_blank">Print / save as PDF</a>
     <button type="button" class="admin-btn admin-btn-line" onclick="navigator.clipboard.writeText('<?php echo $e(ltr_link($L)); ?>');this.textContent='Link copied'">Copy letter link</button>
-    <a class="admin-btn admin-btn-line" href="letters.php">&larr; All letters</a>
+    <a class="admin-btn admin-btn-line" href="letters.php<?php echo $L['batch'] !== '' ? '?batch=' . $e($L['batch']) : ''; ?>">&larr; <?php echo $L['batch'] !== '' ? 'Back to this batch' : 'All letters'; ?></a>
   </div>
+  <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px"><?php if ($prevL): ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?id=<?php echo $prevL['id']; ?>">&larr; Previous letter (<?php echo $e($prevL['recipient_name']); ?>)</a><?php else: ?><span></span><?php endif; ?><?php if ($nextL): ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?id=<?php echo $nextL['id']; ?>">Next letter (<?php echo $e($nextL['recipient_name']); ?>) &rarr;</a><?php endif; ?></div>
   <p class="admin-help" style="margin-top:10px">WhatsApp opens with a ready message and the link to the letter on headed paper; the person taps the link to read or download it.</p>
 </div>
 <div class="edit-grid" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:16px;align-items:start">
-  <div class="admin-card"><div class="admin-card-head"><h2>Edit details &amp; text</h2></div>
+  <div class="admin-card"><div class="admin-card-head"><h2>Edit before sending</h2></div>
+    <p class="admin-help" style="margin:0 0 10px">Change the name, contact details, event details or the wording of this letter, then save. The preview on the right updates after you save.</p>
     <form method="post" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="id" value="<?php echo $L['id']; ?>"><input type="hidden" name="action" value="save">
       <div class="admin-form-grid">
         <div class="field"><label>Title (Hon., Dr., Mr., Ms.…)</label><input name="honorific" value="<?php echo $e($L['honorific']); ?>"></div>
@@ -149,7 +154,7 @@ $eventFields = function ($v = []) use ($e) { ?>
         <div class="field"><label>Venue</label><input name="venue" value="<?php echo $e($L['venue']); ?>"></div>
       </div>
       <div class="field"><label>Letter text (separate paragraphs with a blank line)</label><textarea name="body" style="min-height:300px"><?php echo $e($L['body']); ?></textarea></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="admin-btn admin-btn-brand">Save changes</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="admin-btn admin-btn-brand">Save changes</button><button class="admin-btn admin-btn-line" name="action" value="save_email" data-confirm="Save and email this letter now?">Save &amp; email</button></div>
     </form>
     <form method="post" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><?php echo mem_csrf_field(); ?><input type="hidden" name="id" value="<?php echo $L['id']; ?>">
       <button class="admin-btn admin-btn-line admin-btn-sm" name="action" value="regenerate" data-confirm="Rewrite the letter text from the template? Your edits to the text will be replaced.">Rewrite from template</button>
@@ -237,7 +242,7 @@ $eventFields = function ($v = []) use ($e) { ?>
         <td style="font-size:.84rem"><?php echo $e($r['email'] ?: '—'); ?><br><?php echo $e($r['phone'] ?: '—'); ?></td>
         <td><?php echo $e($r['event_title']); ?><br><span style="color:#777;font-size:.82rem"><?php echo $r['event_date'] ? date('d M Y', strtotime($r['event_date'])) : '—'; ?></span></td>
         <td class="ltSent"><?php echo $r['email_sent_at'] ? '<span class="admin-badge">Email</span> ' : ''; echo $r['wa_sent_at'] ? '<span class="admin-badge">WhatsApp</span>' : ''; echo (!$r['email_sent_at'] && !$r['wa_sent_at']) ? '<span class="admin-badge gray">Not sent</span>' : ''; ?></td>
-        <td style="white-space:nowrap"><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?id=<?php echo $r['id']; ?>">Open</a>
+        <td style="white-space:nowrap"><a class="admin-btn admin-btn-brand admin-btn-sm" href="letters.php?id=<?php echo $r['id']; ?><?php echo $batchId !== '' ? '&amp;batch=' . $e($batchId) : ''; ?>" title="Change the details or the wording, then send">&#9998; Edit before sending</a>
           <?php if ($wa): ?><a class="admin-btn admin-btn-sm" style="background:#128C4A;color:#fff;border-color:#128C4A" href="<?php echo $e($wa); ?>" target="_blank" rel="noopener" data-wa="<?php echo $r['id']; ?>">WhatsApp</a><?php endif; ?></td></tr>
     <?php endforeach; ?></tbody></table></div>
   </form>
