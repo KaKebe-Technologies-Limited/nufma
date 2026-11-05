@@ -33,6 +33,15 @@ function ltr_install($conn) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE KEY uq_token (token), KEY idx_created (created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    $c = $conn->query("SHOW COLUMNS FROM invitation_letters LIKE 'batch'");
+    if ($c && !$c->num_rows) $conn->query("ALTER TABLE invitation_letters ADD COLUMN batch VARCHAR(30) NOT NULL DEFAULT '', ADD KEY idx_batch (batch)");
+}
+
+/** "Hon." / "Dr." / "Prof." … are salutations; anything longer (e.g. "Executive Director") is the person's position. Returns [honorific, position]. */
+function ltr_split_title($t) {
+    $t = trim((string)$t); if ($t === '') return ['', ''];
+    if (preg_match('/^(hon\.?|dr\.?|mr\.?|mrs\.?|ms\.?|miss|prof\.?|professor|eng\.?|rev\.?|rt\.? rev\.?|amb\.?|ambassador|sir|dame|his excellency|her excellency|h\.?e\.?|rt\.? hon\.?|chief|pastor|bishop|sheikh|col\.?|gen\.?|maj\.?|capt\.?|lt\.?|hon\. dr\.?|dr\. hon\.?)$/i', $t)) return [$t, ''];
+    return ['', $t];
 }
 
 function ltr_defaults() {
@@ -111,10 +120,10 @@ function ltr_html($conn, array $l, array $o = []) {
 .ltr-org{flex:1;font-family:Montserrat,Arial,sans-serif}.ltr-org b{display:block;white-space:nowrap;font-size:5.4mm;letter-spacing:.4mm;font-weight:900;color:#111;line-height:1.1}.ltr-org span{display:block;font-size:3.1mm;letter-spacing:.7mm;text-transform:uppercase;color:#D50000;font-weight:700;margin-top:1.4mm}.ltr-org i{display:block;font-style:normal;font-size:2.9mm;color:#555;margin-top:1.4mm}
 .ltr-contact{flex:none;max-width:54mm;font-family:Arial,sans-serif;font-size:2.7mm;line-height:1.55;color:#333;text-align:right}
 .ltr-body{padding:12mm 20mm 6mm;font-size:3.9mm;line-height:1.65;flex:1}
-.ltr-meta{display:flex;justify-content:space-between;gap:8mm;font-size:3.5mm;margin-bottom:8mm;font-family:Arial,sans-serif}.ltr-meta b{font-weight:700}
-.ltr-to{margin-bottom:7mm;line-height:1.5}.ltr-to b{font-size:4.1mm}
-.ltr-body p{margin:0 0 4.2mm;text-align:justify}.ltr-body p.re{font-weight:700;text-align:left;margin-top:5mm}
-.ltr-sign{margin-top:8mm;font-size:3.8mm}.ltr-sign img{height:17mm;width:auto;max-width:60mm;object-fit:contain;display:block;margin-bottom:-2mm}.ltr-sign .line{width:62mm;border-top:.3mm solid #222;margin:1mm 0 1.5mm}.ltr-sign b{display:block}.ltr-sign span{color:#555;font-size:3.4mm}
+.ltr-meta{display:flex;justify-content:space-between;gap:8mm;font-size:3.5mm;margin-bottom:8mm;font-family:Arial,sans-serif}.ltr-meta b{font-weight:400}
+.ltr-to{margin-bottom:7mm;line-height:1.5}.ltr-to b{font-weight:400}
+.ltr-body p{margin:0 0 4.2mm;text-align:justify}.ltr-body p.re{font-weight:400;text-align:left;margin-top:5mm;letter-spacing:.2mm}
+.ltr-sign{margin-top:8mm;font-size:3.8mm}.ltr-sign img{height:17mm;width:auto;max-width:60mm;object-fit:contain;display:block;margin-bottom:-2mm}.ltr-sign .line{width:62mm;border-top:.3mm solid #222;margin:1mm 0 1.5mm}.ltr-sign b{display:block;font-weight:400}.ltr-sign span{color:#555;font-size:3.4mm}
 .ltr-foot{background:#111;color:#fff;font-family:Arial,sans-serif;font-size:2.9mm;padding:4mm 18mm;display:flex;justify-content:space-between;gap:6mm;align-items:center;border-top:1.4mm solid #D50000}
 .ltr-foot b{color:#FF7900;letter-spacing:.3mm}
 @media print{@page{size:A4;margin:0}.ltr-sheet{box-shadow:none;width:210mm;min-height:297mm}body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
@@ -136,14 +145,14 @@ function ltr_html($conn, array $l, array $o = []) {
 function ltr_email_html($conn, array $l) {
     $C = nufa_site_settings($conn); $sg = ltr_signer($conn); $base = mem_site_url();
     $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
-    $paras = ''; foreach (preg_split('/\n{2,}/', trim((string)$l['body'])) as $p) { $p = trim($p); if ($p === '') continue; $b = preg_match('/^RE:/i', $p) ? 'font-weight:bold;' : ''; $paras .= '<p style="margin:0 0 14px;line-height:1.65;' . $b . '">' . nl2br($e($p)) . '</p>'; }
+    $paras = ''; foreach (preg_split('/\n{2,}/', trim((string)$l['body'])) as $p) { $p = trim($p); if ($p === '') continue; $b = ''; $paras .= '<p style="margin:0 0 14px;line-height:1.65;' . $b . '">' . nl2br($e($p)) . '</p>'; }
     $to = array_filter([trim(($l['honorific'] ? $l['honorific'] . ' ' : '') . $l['recipient_name']), $l['position'], $l['organisation']]);
     $site = preg_replace('#^https?://#', '', rtrim($C['site_website'] ?? '', '/'));
     $h = '<div style="background:#f2f2f2;padding:20px 8px;font-family:Georgia,\'Times New Roman\',serif"><table role="presentation" width="640" align="center" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#fff;border-collapse:collapse;color:#1a1a1a">'
         . '<tr><td style="padding:18px 28px 10px;border-bottom:4px solid #D50000"><img src="' . $e($base) . '/assets/images/' . $e(ltr_letterhead($conn)) . '" width="584" alt="Northern Uganda Filmmakers Association (NUFA)" style="display:block;width:100%;max-width:584px;height:auto"></td></tr>'
-        . '<tr><td style="padding:22px 28px 6px;font-size:15px"><table role="presentation" width="100%" style="font-family:Arial,sans-serif;font-size:12px;margin-bottom:18px"><tr><td><b>Our ref:</b> ' . $e($l['ref']) . '</td><td align="right"><b>Date:</b> ' . $e(date('j F Y', strtotime($l['letter_date'] ?: date('Y-m-d')))) . '</td></tr></table>'
-        . '<p style="margin:0 0 18px;line-height:1.5">' . implode('<br>', array_map(fn($x, $i) => $i === 0 ? '<b>' . $e($x) . '</b>' : $e($x), array_values($to), array_keys(array_values($to)))) . '</p>' . $paras
-        . '<div style="margin-top:22px">' . ($sg['sig'] ? '<img src="' . $e($base) . '/assets/images/' . $e($sg['sig']) . '" height="56" alt="Signature" style="display:block">' : '<div style="height:44px"></div>') . '<div style="width:220px;border-top:1px solid #222;margin:3px 0 4px"></div><b>' . $e($sg['name']) . '</b><br><span style="color:#555;font-size:13px">' . $e($sg['title']) . '</span></div>'
+        . '<tr><td style="padding:22px 28px 6px;font-size:15px"><table role="presentation" width="100%" style="font-family:Arial,sans-serif;font-size:12px;margin-bottom:18px"><tr><td>Our ref: ' . $e($l['ref']) . '</td><td align="right">Date: ' . $e(date('j F Y', strtotime($l['letter_date'] ?: date('Y-m-d')))) . '</td></tr></table>'
+        . '<p style="margin:0 0 18px;line-height:1.5">' . implode('<br>', array_map(fn($x) => $e($x), array_values($to))) . '</p>' . $paras
+        . '<div style="margin-top:22px">' . ($sg['sig'] ? '<img src="' . $e($base) . '/assets/images/' . $e($sg['sig']) . '" height="56" alt="Signature" style="display:block">' : '<div style="height:44px"></div>') . '<div style="width:220px;border-top:1px solid #222;margin:3px 0 4px"></div>' . $e($sg['name']) . '<br><span style="color:#555;font-size:13px">' . $e($sg['title']) . '</span></div>'
         . '<p style="text-align:center;margin:26px 0 8px"><a href="' . $e(ltr_link($l)) . '" style="display:inline-block;background:#D50000;color:#fff;text-decoration:none;font-family:Arial,sans-serif;font-weight:bold;font-size:14px;padding:12px 24px;border-radius:30px">View &amp; download the letter (PDF)</a></p></td></tr>'
         . '<tr><td style="background:#111;color:#fff;font-family:Arial,sans-serif;font-size:11px;padding:12px 28px;border-top:3px solid #D50000"><b style="color:#FF7900">NUFA</b> · Northern Uganda Filmmakers Association &nbsp;·&nbsp; ' . $e($site) . '</td></tr></table></div>';
     return $h;

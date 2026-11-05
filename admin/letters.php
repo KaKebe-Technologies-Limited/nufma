@@ -11,14 +11,14 @@ $tabs = ['list' => 'All letters', 'new' => 'New letter', 'bulk' => 'Several at o
 $tab = isset($tabs[$_GET['tab'] ?? '']) ? $_GET['tab'] : 'list';
 $id = (int)($_GET['id'] ?? 0);
 
-$create = function (array $d) use ($conn, $S) {
+$create = function (array $d, $batch = '') use ($conn, $S) {
     $d['body'] = ltr_generate($conn, $d);
     $tok = bin2hex(random_bytes(16)); $ref = ltr_next_ref($conn, $S); $by = $_SESSION['admin_name'] ?? 'admin';
     $date = !empty($d['event_date']) && strtotime($d['event_date']) ? date('Y-m-d', strtotime($d['event_date'])) : null;
     $ld = date('Y-m-d');
-    $st = $conn->prepare("INSERT INTO invitation_letters (token, ref, honorific, recipient_name, position, organisation, email, phone, event_title, event_date, event_time, venue, purpose, body, letter_date, created_by) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
-    $vals = [$tok, $ref, trim($d['honorific'] ?? ''), trim($d['recipient_name']), trim($d['position'] ?? ''), trim($d['organisation'] ?? ''), trim($d['email'] ?? ''), trim($d['phone'] ?? ''), trim($d['event_title']), $date, trim($d['event_time'] ?? ''), trim($d['venue'] ?? ''), trim($d['purpose'] ?? ''), $d['body'], $ld, $by];
-    $st->bind_param(str_repeat('s', 16), ...$vals); $st->execute();
+    $st = $conn->prepare("INSERT INTO invitation_letters (token, ref, honorific, recipient_name, position, organisation, email, phone, event_title, event_date, event_time, venue, purpose, body, letter_date, created_by, batch) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+    $vals = [$tok, $ref, trim($d['honorific'] ?? ''), trim($d['recipient_name']), trim($d['position'] ?? ''), trim($d['organisation'] ?? ''), trim($d['email'] ?? ''), trim($d['phone'] ?? ''), trim($d['event_title']), $date, trim($d['event_time'] ?? ''), trim($d['venue'] ?? ''), trim($d['purpose'] ?? ''), $d['body'], $ld, $by, $batch];
+    $st->bind_param(str_repeat('s', 17), ...$vals); $st->execute();
     return (int)$conn->insert_id;
 };
 
@@ -30,13 +30,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (trim($_POST['recipient_name'] ?? '') === '' || trim($_POST['event_title'] ?? '') === '') { $flash = 'Enter the name and the event.'; $flashType = 'err'; $tab = 'new'; }
             else { $nid = $create($_POST); header("Location: letters.php?id=$nid&created=1"); exit; }
         } elseif ($act === 'bulk') {
-            $n = 0; $shared = $_POST;
-            foreach (preg_split('/\R/', (string)($_POST['people'] ?? '')) as $ln) {
-                $p = array_map('trim', explode('|', $ln)); if (($p[0] ?? '') === '') continue;
-                $d = $shared; $d['recipient_name'] = $p[0]; $d['honorific'] = $p[1] ?? ''; $d['position'] = $p[2] ?? ''; $d['email'] = $p[3] ?? ''; $d['phone'] = $p[4] ?? '';
-                if (trim($d['event_title'] ?? '') === '') break; $create($d); $n++;
+            // rows typed into the table + anything pasted from Excel / Google Sheets (Name, Title, Contact, Email[, Organisation])
+            $people = [];
+            foreach (($_POST['rname'] ?? []) as $i => $nm) if (trim($nm) !== '') $people[] = [trim($nm), trim($_POST['rtitle'][$i] ?? ''), trim($_POST['rphone'][$i] ?? ''), trim($_POST['remail'][$i] ?? ''), trim($_POST['rorg'][$i] ?? '')];
+            foreach (preg_split('/\R/', (string)($_POST['paste'] ?? '')) as $k => $ln) {
+                if (trim($ln) === '') continue;
+                $c = array_map('trim', preg_split('/\t|\||;|,(?=(?:[^"]*"[^"]*")*[^"]*$)/', $ln)); $c = array_map(fn($x) => trim($x, " \"'"), $c);
+                if ($k === 0 && preg_match('/^(full )?name$/i', $c[0] ?? '')) continue;
+                if (($c[0] ?? '') !== '') $people[] = [$c[0], $c[1] ?? '', $c[2] ?? '', $c[3] ?? '', $c[4] ?? ''];
             }
-            if ($n) { header("Location: letters.php?bulk=$n"); exit; } $flash = 'Enter the event and at least one person.'; $flashType = 'err'; $tab = 'bulk';
+            if (trim($_POST['event_title'] ?? '') === '' || !$people) { $flash = 'Enter the event and at least one person.'; $flashType = 'err'; $tab = 'bulk'; }
+            else {
+                $batch = date('ymd-His'); $made = [];
+                foreach ($people as [$nm, $ti, $ph, $em, $og]) {
+                    [$hon, $pos] = ltr_split_title($ti);
+                    // contact may hold an email or a phone number — put each in the right place
+                    if (strpos($ph, '@') !== false && $em === '') { $em = $ph; $ph = ''; }
+                    $made[] = $create(array_merge($_POST, ['recipient_name' => $nm, 'honorific' => $hon, 'position' => $pos, 'organisation' => $og, 'email' => $em, 'phone' => $ph]), $batch);
+                }
+                $sentN = 0; $failN = 0;
+                if (($_POST['mode'] ?? '') === 'email') {
+                    @set_time_limit(300);
+                    foreach ($made as $mid) { $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$mid")->fetch_assoc(); if (filter_var($l['email'], FILTER_VALIDATE_EMAIL)) { ltr_send_email($conn, $l) ? $sentN++ : $failN++; usleep(150000); } }
+                }
+                header("Location: letters.php?batch=$batch&made=" . count($made) . "&esent=$sentN&efail=$failN"); exit;
+            }
+        } elseif ($act === 'bulk_email') {
+            $ids = array_values(array_filter(array_map('intval', $_POST['ids'] ?? []))); $sentN = 0; $failN = 0; $skip = 0; @set_time_limit(300);
+            foreach ($ids as $lid) { $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc(); if (!$l || !filter_var($l['email'], FILTER_VALIDATE_EMAIL)) { $skip++; continue; } ltr_send_email($conn, $l) ? $sentN++ : $failN++; usleep(150000); }
+            $flash = $ids ? "Emailed $sentN letter(s)" . ($failN ? ", $failN could not be sent" : '') . ($skip ? ", $skip skipped (no email address)" : '') . '.' : 'Tick at least one letter.'; if ($failN || !$ids) $flashType = 'warn';
         } elseif (in_array($act, ['save', 'email', 'mark_wa', 'delete', 'regenerate'], true)) {
             $lid = (int)($_POST['id'] ?? 0); $l = $conn->query("SELECT * FROM invitation_letters WHERE id=$lid")->fetch_assoc();
             if ($l) {
@@ -72,7 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-if (isset($_GET['bulk'])) $flash = (int)$_GET['bulk'] . ' letter(s) created. Send each one by email or WhatsApp from the list below.';
+if (isset($_GET['made'])) { $flash = (int)$_GET['made'] . ' letter(s) created.' . ((int)($_GET['esent'] ?? 0) ? ' ' . (int)$_GET['esent'] . ' emailed.' : '') . ((int)($_GET['efail'] ?? 0) ? ' ' . (int)$_GET['efail'] . ' could not be emailed (mail may be unavailable on this server — try WhatsApp).' : ' Use the buttons below to email them all or send each on WhatsApp.'); }
+$batchId = preg_replace('/[^0-9-]/', '', $_GET['batch'] ?? '');
 if (isset($_GET['deleted'])) $flash = 'Letter deleted.';
 
 $L = $id ? $conn->query("SELECT * FROM invitation_letters WHERE id=$id")->fetch_assoc() : null;
@@ -156,11 +179,24 @@ $eventFields = function ($v = []) use ($e) { ?>
 
 <?php elseif ($tab === 'bulk'): ?>
 <div class="admin-card"><div class="admin-card-head"><h2>Several letters at once</h2><span class="admin-help">Same event, many people — one line each.</span></div>
-  <form method="post" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="bulk">
-    <div class="field"><label>People — one per line: Name | Title | Position | Email | WhatsApp</label><textarea name="people" style="min-height:160px;font-family:monospace;font-size:.85rem" placeholder="Jane Akello | Hon. | Chairperson | jane@example.org | 0772000000&#10;Peter Okello | Dr. | Executive Director, Example Foundation | | +256700111222"></textarea></div>
+  <form method="post" class="admin-form" id="bulkForm"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="bulk">
+    <h3 style="margin:4px 0 8px">1 · The invitation (same for everyone)</h3>
     <?php $eventFields(); ?>
+    <h3 style="margin:14px 0 8px">2 · The people</h3>
+    <p class="admin-help" style="margin:0 0 8px">Add a name, title, contact and email for each person. <b>Title</b> can be Hon., Dr., Prof. … <i>or</i> a position such as “Executive Director”. <b>Contact</b> is their WhatsApp / phone number. The organisation is optional.</p>
+    <div style="overflow-x:auto"><table class="admin-table" data-noexport id="bulkTable"><thead><tr><th style="width:26%">Name *</th><th style="width:20%">Title</th><th style="width:18%">Contact (WhatsApp)</th><th style="width:22%">Email</th><th>Organisation</th></tr></thead><tbody>
+    <?php for ($i = 0; $i < 8; $i++): ?><tr><td><input name="rname[]" style="width:100%"></td><td><input name="rtitle[]" style="width:100%" placeholder="Hon. / Dr. / position"></td><td><input name="rphone[]" style="width:100%" placeholder="+256…"></td><td><input name="remail[]" type="email" style="width:100%"></td><td><input name="rorg[]" style="width:100%"></td></tr><?php endfor; ?>
+    </tbody></table></div>
+    <p><button type="button" class="admin-btn admin-btn-line admin-btn-sm" id="addRows">+ Add 5 more rows</button></p>
+    <details style="margin:6px 0 14px"><summary style="cursor:pointer;font-weight:700">Or paste a list from Excel / Google Sheets</summary>
+      <p class="admin-help" style="margin:8px 0">Copy four columns — Name, Title, Contact, Email (and optionally Organisation) — and paste them here, one person per line.</p>
+      <textarea name="paste" style="min-height:140px;font-family:monospace;font-size:.85rem" placeholder="Jane Akello&#9;Hon.&#9;0772000000&#9;jane@example.org&#10;Peter Okello&#9;Executive Director&#9;+256700111222&#9;peter@example.org"></textarea></details>
+    <h3 style="margin:14px 0 8px">3 · What next?</h3>
+    <label style="display:flex;gap:8px;align-items:center;margin-bottom:6px"><input type="radio" name="mode" value="create" checked> Create the letters — then choose how to send them</label>
+    <label style="display:flex;gap:8px;align-items:center;margin-bottom:12px"><input type="radio" name="mode" value="email"> Create the letters and <b>email them all now</b> (everyone with an email address)</label>
     <button class="admin-btn admin-btn-brand">Create the letters</button>
-  </form></div>
+  </form>
+  <script>document.getElementById('addRows').addEventListener('click',function(){var tb=document.querySelector('#bulkTable tbody');for(var i=0;i<5;i++){var r=tb.rows[0].cloneNode(true);r.querySelectorAll('input').forEach(function(x){x.value='';});tb.appendChild(r);}});</script></div>
 
 <?php elseif ($tab === 'settings'): ?>
 <div class="admin-card"><div class="admin-card-head"><h2>Letterhead &amp; template</h2><span class="admin-help">Letters use the official NUFA letterhead picture below.</span></div>
@@ -180,20 +216,38 @@ $eventFields = function ($v = []) use ($e) { ?>
   </form></div>
 
 <?php else:
-    $rows = $conn->query("SELECT * FROM invitation_letters ORDER BY created_at DESC, id DESC LIMIT 300")->fetch_all(MYSQLI_ASSOC); ?>
-<div class="admin-card"><div class="admin-card-head"><h2>Invitation letters (<?php echo count($rows); ?>)</h2><a class="admin-btn admin-btn-brand admin-btn-sm" href="letters.php?tab=new">+ New letter</a></div>
-  <?php if (!$rows): ?><p style="color:var(--text-muted);padding:14px 0">No letters yet. Create the first one with <b>New letter</b>.</p><?php else: ?>
-  <div style="overflow-x:auto"><table class="admin-table" data-noexport><thead><tr><th>Ref</th><th>Invitee</th><th>Event</th><th>Date</th><th>Sent</th><th></th></tr></thead><tbody>
-  <?php foreach ($rows as $r): $wa = ltr_wa_url($r); ?>
-    <tr><td><?php echo $e($r['ref']); ?></td>
-      <td><b><?php echo $e(trim($r['honorific'] . ' ' . $r['recipient_name'])); ?></b><br><span style="color:#777;font-size:.82rem"><?php echo $e($r['position']); ?></span></td>
-      <td><?php echo $e($r['event_title']); ?></td><td><?php echo $r['event_date'] ? date('d M Y', strtotime($r['event_date'])) : '—'; ?></td>
-      <td><?php echo $r['email_sent_at'] ? '<span class="admin-badge">Email</span> ' : ''; echo $r['wa_sent_at'] ? '<span class="admin-badge">WhatsApp</span>' : ''; echo (!$r['email_sent_at'] && !$r['wa_sent_at']) ? '<span class="admin-badge gray">Not sent</span>' : ''; ?></td>
-      <td style="white-space:nowrap"><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?id=<?php echo $r['id']; ?>">Open</a>
-        <form method="post" style="display:inline"><?php echo mem_csrf_field(); ?><input type="hidden" name="id" value="<?php echo $r['id']; ?>"><button class="admin-btn admin-btn-line admin-btn-sm" name="action" value="email" <?php echo filter_var($r['email'], FILTER_VALIDATE_EMAIL) ? '' : 'disabled'; ?> data-confirm="Send this letter to <?php echo $e($r['email']); ?>?">Email</button></form>
-        <?php if ($wa): ?><a class="admin-btn admin-btn-sm" style="background:#128C4A;color:#fff;border-color:#128C4A" href="<?php echo $e($wa); ?>" target="_blank" rel="noopener" data-wa="<?php echo $r['id']; ?>">WhatsApp</a><?php endif; ?></td></tr>
-  <?php endforeach; ?></tbody></table></div>
-  <script>document.querySelectorAll('[data-wa]').forEach(function(a){a.addEventListener('click',function(){var f=new FormData();f.append('csrf','<?php echo mem_csrf(); ?>');f.append('action','mark_wa');f.append('id',a.dataset.wa);f.append('ajax','1');fetch('letters.php',{method:'POST',body:f,credentials:'same-origin'});});});</script>
+    $where = $batchId !== '' ? "WHERE batch='" . $conn->real_escape_string($batchId) . "'" : '';
+    $rows = $conn->query("SELECT * FROM invitation_letters $where ORDER BY created_at DESC, id " . ($batchId !== '' ? 'ASC' : 'DESC') . " LIMIT 500")->fetch_all(MYSQLI_ASSOC);
+    $waQueue = []; foreach ($rows as $r) { $u = ltr_wa_url($r); if ($u && !$r['wa_sent_at']) $waQueue[] = ['id' => (int)$r['id'], 'url' => $u, 'name' => trim($r['honorific'] . ' ' . $r['recipient_name'])]; } ?>
+<div class="admin-card"><div class="admin-card-head"><h2><?php echo $batchId !== '' ? 'This batch' : 'Invitation letters'; ?> (<?php echo count($rows); ?>)</h2><span><?php if ($batchId !== ''): ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php">All letters</a> <?php endif; ?><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?tab=bulk">+ Several at once</a> <a class="admin-btn admin-btn-brand admin-btn-sm" href="letters.php?tab=new">+ New letter</a></span></div>
+  <?php if (!$rows): ?><p style="color:var(--text-muted);padding:14px 0">No letters yet. Create the first one with <b>New letter</b> or <b>Several at once</b>.</p><?php else: ?>
+  <form method="post" id="lettersForm"><?php echo mem_csrf_field(); ?>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px;padding:12px;background:#F7F7F7;border-radius:12px">
+      <label style="display:flex;gap:6px;align-items:center;font-weight:700"><input type="checkbox" id="ltAll"> Select all</label>
+      <button class="admin-btn admin-btn-brand admin-btn-sm" name="action" value="bulk_email" data-confirm="Email the selected letters now?">&#9993; Email selected</button>
+      <button type="button" class="admin-btn admin-btn-sm" id="waNext" style="background:#128C4A;color:#fff;border-color:#128C4A" <?php echo $waQueue ? '' : 'disabled'; ?>>&#9742; WhatsApp: send next (<span id="waLeft"><?php echo count($waQueue); ?></span> left)</button>
+      <span class="admin-help">WhatsApp opens one person at a time with the message ready — press Send there, come back and press the green button again for the next one.</span>
+    </div>
+    <div style="overflow-x:auto"><table class="admin-table" data-noexport><thead><tr><th></th><th>Ref</th><th>Invitee</th><th>Contact</th><th>Event</th><th>Sent</th><th></th></tr></thead><tbody>
+    <?php foreach ($rows as $r): $wa = ltr_wa_url($r); ?>
+      <tr data-row="<?php echo $r['id']; ?>"><td><input type="checkbox" name="ids[]" value="<?php echo $r['id']; ?>" class="ltRow"></td><td><?php echo $e($r['ref']); ?></td>
+        <td><?php echo $e(trim($r['honorific'] . ' ' . $r['recipient_name'])); ?><br><span style="color:#777;font-size:.82rem"><?php echo $e($r['position']); ?></span></td>
+        <td style="font-size:.84rem"><?php echo $e($r['email'] ?: '—'); ?><br><?php echo $e($r['phone'] ?: '—'); ?></td>
+        <td><?php echo $e($r['event_title']); ?><br><span style="color:#777;font-size:.82rem"><?php echo $r['event_date'] ? date('d M Y', strtotime($r['event_date'])) : '—'; ?></span></td>
+        <td class="ltSent"><?php echo $r['email_sent_at'] ? '<span class="admin-badge">Email</span> ' : ''; echo $r['wa_sent_at'] ? '<span class="admin-badge">WhatsApp</span>' : ''; echo (!$r['email_sent_at'] && !$r['wa_sent_at']) ? '<span class="admin-badge gray">Not sent</span>' : ''; ?></td>
+        <td style="white-space:nowrap"><a class="admin-btn admin-btn-line admin-btn-sm" href="letters.php?id=<?php echo $r['id']; ?>">Open</a>
+          <?php if ($wa): ?><a class="admin-btn admin-btn-sm" style="background:#128C4A;color:#fff;border-color:#128C4A" href="<?php echo $e($wa); ?>" target="_blank" rel="noopener" data-wa="<?php echo $r['id']; ?>">WhatsApp</a><?php endif; ?></td></tr>
+    <?php endforeach; ?></tbody></table></div>
+  </form>
+  <script>(function(){
+    var Q=<?php echo json_encode($waQueue, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>,tok='<?php echo mem_csrf(); ?>';
+    function mark(id){var f=new FormData();f.append('csrf',tok);f.append('action','mark_wa');f.append('id',id);f.append('ajax','1');fetch('letters.php',{method:'POST',body:f,credentials:'same-origin'});var td=document.querySelector('[data-row="'+id+'"] .ltSent');if(td){var g=td.querySelector('.gray');if(g)g.remove();if(!td.querySelector('.wa-done'))td.insertAdjacentHTML('beforeend','<span class="admin-badge wa-done">WhatsApp</span>');}}
+    document.querySelectorAll('[data-wa]').forEach(function(a){a.addEventListener('click',function(){mark(a.dataset.wa);Q=Q.filter(function(q){return String(q.id)!==a.dataset.wa;});upd();});});
+    var nb=document.getElementById('waNext'),left=document.getElementById('waLeft');
+    function upd(){if(left)left.textContent=Q.length;if(nb)nb.disabled=!Q.length;}
+    if(nb)nb.addEventListener('click',function(){var n=Q.shift();if(!n)return;window.open(n.url,'_blank');mark(n.id);upd();});
+    var all=document.getElementById('ltAll');if(all)all.addEventListener('change',function(){document.querySelectorAll('.ltRow').forEach(function(c){c.checked=all.checked;});});
+  })();</script>
   <?php endif; ?></div>
 <?php endif; ?>
 <?php include __DIR__ . "/includes/admin-footer.php"; ?>
