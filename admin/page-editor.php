@@ -25,7 +25,23 @@ $save = function ($k, $v) use ($conn) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $act = $_POST['action'] ?? '';
     if ($act === 'content') {
-        $errors = cms_save($conn, $schemaKey, $schema, $_POST, $_FILES);
+        if ($key === 'home') {   // hero background pictures (the slider at the top of the home page)
+            foreach ($_FILES as $fn => $f) {
+                if (strpos($fn, 'slide_') !== 0 || ($f['error'] ?? 4) !== UPLOAD_ERR_OK) continue;
+                [$saved, $err] = mem_store_upload($f, MEM_IMG_TYPES, 8 * 1048576, 'slide', __DIR__ . "/../assets/images/uploads/posts/");
+                if ($err) { $errors[] = 'Background picture: ' . $err; continue; }
+                $v = 'uploads/posts/' . $saved; $sid = (int)substr($fn, 6);
+                $u = $conn->prepare("UPDATE hero_slides SET image=? WHERE id=?"); $u->bind_param("si", $v, $sid); $u->execute();
+            }
+            $nf = $_FILES['new_slide'] ?? null;
+            if ($nf && ($nf['error'] ?? 4) === UPLOAD_ERR_OK) {
+                [$saved, $err] = mem_store_upload($nf, MEM_IMG_TYPES, 8 * 1048576, 'slide', __DIR__ . "/../assets/images/uploads/posts/");
+                if ($err) $errors[] = 'New background picture: ' . $err;
+                else { $v = 'uploads/posts/' . $saved; $alt = mb_substr(trim($_POST['new_slide_alt'] ?? ''), 0, 200); $u = $conn->prepare("INSERT INTO hero_slides (image, alt_text, sort_order) VALUES (?,?,(SELECT m FROM (SELECT COALESCE(MAX(sort_order),0)+1 m FROM hero_slides) t))"); $u->bind_param("ss", $v, $alt); $u->execute(); }
+            }
+            foreach ($_POST['slide_alt'] ?? [] as $sid => $alt) { $a = mb_substr(trim((string)$alt), 0, 200); $u = $conn->prepare("UPDATE hero_slides SET alt_text=? WHERE id=?"); $sid = (int)$sid; $u->bind_param("si", $a, $sid); $u->execute(); }
+        }
+        $errors = array_merge($errors, cms_save($conn, $schemaKey, $schema, $_POST, $_FILES));
         if (!$errors) { header("Location: page-editor.php?page=$key&tab=content&saved=1"); exit; }
     } elseif ($act === 'reset_content') {
         $d = $conn->prepare("DELETE FROM page_content WHERE page=?"); $d->bind_param("s", $schemaKey); $d->execute();
@@ -93,12 +109,28 @@ $viewUrl = '../' . ($key === 'policies' ? 'policy.php?p=privacy' : $pg['file']);
   <form method="post" enctype="multipart/form-data" class="admin-form">
     <input type="hidden" name="action" value="content">
     <p class="admin-help" style="margin-bottom:14px">Change any text or image below. Leave a field unchanged to keep what is live; clear it to restore the original wording. <?php echo count($schema); ?> editable items, grouped by area of the page.</p>
-    <?php if ($key === 'home'): ?><div class="notice-inline" style="margin-bottom:14px"><b>Looking for the first picture on the home page?</b> It is the <a href="sliders.php">Hero slider</a> (or change any home picture in <a href="site-images.php?open=home">All pictures → Home</a>).</div><?php endif; ?>
+    <?php if ($key === 'home'): ?><div class="notice-inline" style="margin-bottom:14px"><b>Looking for the first picture on the home page?</b> It is the <b>Hero</b> group just below (Background pictures). You can also change any home picture in <a href="site-images.php?open=home">All pictures → Home</a>).</div><?php endif; ?>
     <div class="si-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px"><b style="align-self:center">Jump to:</b><?php $__gi = 0; foreach ($groups as $gname => $fields): $__gi++; ?><a href="#grp-<?php echo $__gi; ?>" class="admin-badge gray" style="text-decoration:none"><?php echo htmlspecialchars($gname); ?></a><?php endforeach; ?></div>
     <?php $__gi = 0; foreach ($groups as $gname => $fields): $__gi++; ?>
     <details class="pe-group" id="grp-<?php echo $__gi; ?>" open>
       <summary><?php echo htmlspecialchars($gname); ?> <span class="admin-badge gray"><?php echo count($fields); ?></span></summary>
       <div class="pe-group-body">
+      <?php if ($key === 'home' && $gname === 'Hero'): $__hs = $conn->query("SELECT id, image, alt_text, is_active FROM hero_slides ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC); ?>
+        <div class="field"><label>Background pictures (the slideshow behind the heading)</label>
+          <p class="admin-help" style="margin:0 0 10px">These are the big pictures that change behind “Our Stories. Our Culture. Our Future.” The first one is what visitors see first. Replace any picture, or add another below (up to 6 are shown). <a href="sliders.php">Reorder, hide or delete →</a></p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">
+          <?php foreach ($__hs as $__i => $__s): ?>
+            <div style="border:1px solid #e3e3e3;border-radius:12px;overflow:hidden;background:#fff">
+              <div style="aspect-ratio:16/10;background:#eee"><?php if (is_file(__DIR__ . '/../assets/images/' . $__s['image'])): ?><img src="../assets/images/<?php echo htmlspecialchars($__s['image']); ?>" alt="" style="width:100%;height:100%;object-fit:cover;display:block"><?php endif; ?></div>
+              <div style="padding:10px 12px;display:flex;flex-direction:column;gap:6px"><b><?php echo $__i === 0 ? 'Picture 1 — shown first' : 'Picture ' . ($__i + 1); ?><?php echo $__s['is_active'] ? '' : ' <span class="admin-badge gray">hidden</span>'; ?></b>
+                <input type="file" name="slide_<?php echo (int)$__s['id']; ?>" accept="image/jpeg,image/png,image/webp">
+                <input type="text" name="slide_alt[<?php echo (int)$__s['id']; ?>]" value="<?php echo htmlspecialchars($__s['alt_text']); ?>" placeholder="Describe the picture (for screen readers)"></div></div>
+          <?php endforeach; ?>
+            <div style="border:2px dashed #ccc;border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px;justify-content:center"><b>+ Add another background picture</b>
+              <input type="file" name="new_slide" accept="image/jpeg,image/png,image/webp"><input type="text" name="new_slide_alt" placeholder="Describe the picture"></div>
+          </div>
+          <span class="admin-help">Best size: wide (landscape) photos, at least 1600 px wide.</span></div>
+      <?php endif; ?>
       <?php foreach ($fields as $fk => $def): $type = $def['type'] ?? 'text'; $val = $values[$fk] ?? ''; $label = strpos($def['label'], ' — ') !== false ? explode(' — ', $def['label'], 2)[1] : $def['label']; ?>
         <div class="field">
           <label><?php echo htmlspecialchars($label); ?></label>

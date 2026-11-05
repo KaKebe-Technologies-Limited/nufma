@@ -6,7 +6,7 @@ $pageDesc  = cms_value('seo', 'home_desc');
 $activeNav = "home";
 $canonicalPath = "index.php";
 // hero data comes first so the first photo can be preloaded in the page head
-$heroSlides = array_values(array_filter($conn->query("SELECT image FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC, id ASC LIMIT 4")->fetch_all(MYSQLI_ASSOC), fn($s) => is_file(__DIR__ . '/assets/images/' . $s['image'])));
+$heroSlides = array_values(array_filter($conn->query("SELECT image FROM hero_slides WHERE is_active=1 ORDER BY sort_order ASC, id ASC LIMIT 6")->fetch_all(MYSQLI_ASSOC), fn($s) => is_file(__DIR__ . '/assets/images/' . $s['image'])));
 if (!$heroSlides) $heroSlides = [['image' => 'production/karamoja-shoot-1.webp']];
 $preloadImages = ['assets/images/' . $heroSlides[0]['image']];   // the first slide is the page's largest paint: fetch it early
 $heroBtns = [];
