@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/mailer.php";
 /**
  * Newsletters, managed in admin → Newsletters.
  *  - `newsletters`: issues written in the admin ('written') or uploaded as a PDF ('pdf'); published online and optionally e-mailed
@@ -116,7 +117,7 @@ function nl_mail($conn, $to, $subject, $html, $text) {
     $b = 'nufa_' . bin2hex(random_bytes(8));
     $headers = "From: " . mb_encode_mimeheader($fromName) . " <{$from}>\r\nReply-To: {$from}\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"{$b}\"\r\nList-Unsubscribe: <" . mem_site_url() . "/newsletters.php>\r\n";
     $msg = "--{$b}\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n{$text}\r\n\r\n--{$b}\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n{$html}\r\n\r\n--{$b}--";
-    $ok = false; try { $ok = @mail($to, mb_encode_mimeheader($subject), $msg, $headers); } catch (Throwable $e) { $ok = false; }
+    $ok = false; try { $ok = nufa_mail($to, mb_encode_mimeheader($subject), $msg, $headers); } catch (Throwable $e) { $ok = false; }
     $l = $conn->prepare("INSERT INTO member_emails (member_id, kind, to_email, subject, body, sent) VALUES (NULL, 'newsletter', ?, ?, ?, ?)"); $sent = $ok ? 1 : 0; $short = mb_substr($text, 0, 500);
     $l->bind_param("sssi", $to, $subject, $short, $sent); $l->execute();
     return $ok;

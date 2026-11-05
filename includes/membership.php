@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/mailer.php";
 /**
  * Membership module — shared helpers.
  *
@@ -276,7 +277,7 @@ function mem_send($conn, $memberId, $kind, $to, $subject, $text, $buttonUrl = nu
     $msg  = "--{$boundary}\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n" . $text . "\r\n\r\n";
     $msg .= "--{$boundary}\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n" . $html . "\r\n\r\n--{$boundary}--";
     $ok = false;
-    try { $ok = @mail($to, mb_encode_mimeheader($subject), $msg, $headers); } catch (Throwable $e) { $ok = false; }
+    try { $ok = nufa_mail($to, mb_encode_mimeheader($subject), $msg, $headers); } catch (Throwable $e) { $ok = false; }
 
     $log = $conn->prepare("INSERT INTO member_emails (member_id, kind, to_email, subject, body, sent) VALUES (?,?,?,?,?,?)");
     $sent = $ok ? 1 : 0;

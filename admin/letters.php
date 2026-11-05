@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 } elseif ($act === 'regenerate') {
                     $l['purpose'] = $l['purpose'] ?? ''; $b = ltr_generate($conn, $l); $u = $conn->prepare("UPDATE invitation_letters SET body=? WHERE id=?"); $u->bind_param("si", $b, $lid); $u->execute(); $flash = 'The letter text was rewritten from the template.';
                 } elseif ($act === 'email') {
-                    $ok = ltr_send_email($conn, $l); $flash = $ok ? 'Email sent to ' . $l['email'] . '.' : 'The email could not be sent (no valid email address, or mail is not available on this server). It is saved in the email log — you can still send the link by WhatsApp.'; if (!$ok) $flashType = 'warn';
+                    $ok = ltr_send_email($conn, $l); $flash = $ok ? 'Email sent to ' . $l['email'] . '.' : 'The email could not be sent. ' . (nufa_mail_error() ?: 'No valid email address.') . ' Set up delivery under System → Email delivery. You can still send the link by WhatsApp.'; if (!$ok) $flashType = 'warn';
                 } elseif ($act === 'mark_wa') { $conn->query("UPDATE invitation_letters SET wa_sent_at=NOW(), status='sent' WHERE id=$lid"); if (!empty($_POST['ajax'])) { echo 'ok'; exit; } }
                 elseif ($act === 'delete') { $conn->query("DELETE FROM invitation_letters WHERE id=$lid"); header("Location: letters.php?deleted=1"); exit; }
                 $id = $lid;

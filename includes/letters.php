@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/mailer.php";
 /**
  * Invitation letters on NUFA headed paper. An admin enters a name, title, event, date (and venue/time); the letter is written
  * automatically, can be edited, printed / saved as PDF, and sent by email or WhatsApp with one click.
@@ -180,7 +181,7 @@ function ltr_send_email($conn, array $l) {
     $html = ltr_email_html($conn, $l); $b = 'nufa_' . bin2hex(random_bytes(8));
     $hd = "From: " . mb_encode_mimeheader($fromName) . " <$from>\r\nReply-To: $from\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"$b\"\r\n";
     $msg = "--$b\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n$text\r\n\r\n--$b\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n$html\r\n\r\n--$b--";
-    $ok = false; try { $ok = @mail($l['email'], mb_encode_mimeheader($subject), $msg, $hd); } catch (Throwable $e) { $ok = false; }
+    $ok = false; try { $ok = nufa_mail($l['email'], mb_encode_mimeheader($subject), $msg, $hd); } catch (Throwable $e) { $ok = false; }
     $lg = $conn->prepare("INSERT INTO member_emails (member_id, kind, to_email, subject, body, sent) VALUES (NULL,'invitation-letter',?,?,?,?)"); $s = $ok ? 1 : 0; $lg->bind_param("sssi", $l['email'], $subject, $text, $s); $lg->execute();
     if ($ok) { $u = $conn->prepare("UPDATE invitation_letters SET email_sent_at=NOW(), status='sent' WHERE id=?"); $u->bind_param("i", $l['id']); $u->execute(); }
     return $ok;

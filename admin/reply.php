@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/../includes/mailer.php";
 $adminNav = "messages";
 require __DIR__ . "/includes/auth.php";
 
@@ -17,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $headers  = "From: NUFA <{$fromEmail}>\r\n";
         $headers .= "Reply-To: {$fromEmail}\r\n";
         $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-        $ok = @mail($msg['email'], $subject, $body, $headers);
+        $ok = nufa_mail($msg['email'], $subject, $body, $headers);
         if ($ok) {
             $conn->query("UPDATE messages SET is_read=1 WHERE id=" . (int)$id);
             $sent = true;

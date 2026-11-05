@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . "/mailer.php";
 /**
  * NUFA Awards invitations, managed in admin → Award invitations.
  * A campaign holds a PDF invitation template (kept in private storage), a message, and a guest list.
@@ -124,7 +125,7 @@ function inv_mail($conn, $camp, $g, $toOverride = null) {
          . "--{$b2}\r\nContent-Type: text/html; charset=UTF-8\r\n\r\n" . inv_email_html($camp, $g) . "\r\n\r\n--{$b2}--\r\n";
     if ($pdf !== null && $camp['attach_mode'] !== 'none') $msg .= "--{$b1}\r\nContent-Type: application/pdf; name=\"{$fname}\"\r\nContent-Transfer-Encoding: base64\r\nContent-Disposition: attachment; filename=\"{$fname}\"\r\n\r\n" . chunk_split(base64_encode($pdf)) . "\r\n";
     $msg .= "--{$b1}--";
-    $ok = false; try { $ok = @mail($to, mb_encode_mimeheader($subject), $msg, $headers); } catch (Throwable $e) { $ok = false; }
+    $ok = false; try { $ok = nufa_mail($to, mb_encode_mimeheader($subject), $msg, $headers); } catch (Throwable $e) { $ok = false; }
     $l = $conn->prepare("INSERT INTO member_emails (member_id, kind, to_email, subject, body, sent) VALUES (NULL, 'invitation', ?, ?, ?, ?)"); $sent = $ok ? 1 : 0; $short = mb_substr(inv_email_text($camp, $g), 0, 500);
     $l->bind_param("sssi", $to, $subject, $short, $sent); $l->execute();
     return [$ok, $ok ? $note : trim('Mail system refused. ' . $note)];

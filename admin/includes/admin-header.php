@@ -10,6 +10,7 @@ if (isset($conn)) {
 }
 
 $__ico = [
+    'emaildelivery' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6" stroke-linecap="round"/>',
     'letters' => '<path d="M5 3h10l4 4v14H5V3Z"/><path d="M15 3v4h4M8 12h8M8 15h8M8 18h5" stroke-linecap="round"/>',
     'siteimages' => '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.800"/><path d="m4 18 5-5 4 4 3-3 4 4" stroke-linecap="round" stroke-linejoin="round"/>',
     'dashboard'   => '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="11" width="8" height="10" rx="2"/><rect x="3" y="14" width="8" height="7" rx="2"/>',
@@ -135,6 +136,7 @@ $__nav = [
         ['paydetails', 'support-setup.php?tab=methods', 'Payment details'],
         ['settings', 'settings.php', 'Site settings'],
         ['maintenance', 'maintenance.php', 'Maintenance mode'],
+        ['emaildelivery', 'email-settings.php', 'Email delivery'],
         ['users', 'users.php', 'Admin users'],
         ['roles', 'roles.php', 'Roles & permissions'],
     ],
