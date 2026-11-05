@@ -1157,3 +1157,5 @@ body{color:var(--nufa-text);background:var(--nufa-white)}
 .hero-media img{transform:scale(1)}
 .hero::before{background:linear-gradient(90deg,rgba(8,8,8,.74) 0%,rgba(8,8,8,.42) 52%,rgba(8,8,8,.1) 100%),linear-gradient(0deg,rgba(8,8,8,.6),transparent 38%)}
 @media (max-width:860px){.hero{min-height:min(82svh,700px)}.hero-media img{object-position:center 25%}}
+
+.leader-link{display:inline-block;margin-top:10px;font-weight:700;font-size:.82rem;color:var(--accent);border:1px solid rgba(255,255,255,.25);border-radius:99px;padding:7px 16px;transition:.2s}.leader-link:hover{background:var(--nufa-primary);border-color:var(--nufa-primary);color:#fff}

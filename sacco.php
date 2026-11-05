@@ -219,7 +219,7 @@ $regBtn = $appsOpen
         <article class="gv-card">
           <div class="gv-photo"><?php if ($mp): ?><img src="assets/images/<?php echo ui_e($mp); ?>" alt="Portrait of <?php echo ui_e($m['name']); ?>" loading="lazy"><?php else: ?><span><?php echo ui_e(mb_strtoupper(mb_substr($m['name'], 0, 1))); ?></span><?php endif; ?></div>
           <div class="gv-body"><h4><?php echo ui_e($m['name']); ?></h4><p class="gv-role"><?php echo ui_e($m['role']); ?></p>
-            <?php if ($bio !== ''): ?><?php if (mb_strlen($bio) > 170): ?><p class="gv-bio"><?php echo ui_e(ui_excerpt($bio, 150)); ?></p><details class="gv-more"><summary>Read full profile</summary><div class="gv-full"><?php echo ui_paragraphs($bio); ?></div></details><?php else: ?><p class="gv-bio"><?php echo ui_e($bio); ?></p><?php endif; ?><?php endif; ?>
+            <?php if ($bio !== ''): ?><p class="gv-bio"><?php echo ui_e(ui_excerpt($bio, 150)); ?></p><a class="gv-link" href="profile.php?id=<?php echo (int)$m['id']; ?>" target="_blank" rel="noopener">Read full profile &#8599;</a><?php endif; ?>
             <?php if ($soc): ?><div class="gv-soc"><?php foreach ($soc as [$u, $sl, $ic]): ?><a href="<?php echo ui_e($u); ?>" target="_blank" rel="noopener" aria-label="<?php echo ui_e($m['name'] . ' on ' . $sl); ?>"><?php echo nufa_icon($ic, 16); ?></a><?php endforeach; ?></div><?php endif; ?></div>
         </article>
       <?php endforeach; ?>

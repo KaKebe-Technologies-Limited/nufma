@@ -120,3 +120,5 @@
 .sp .gv-soc{display:flex;gap:8px;margin-top:14px}
 .sp .gv-soc a{width:36px;height:36px;border-radius:50%;border:1px solid var(--sp-line);display:flex;align-items:center;justify-content:center;color:var(--sp-ink);transition:.2s}
 .sp .gv-soc a:hover{background:var(--sp-red);border-color:var(--sp-red);color:#fff;transform:translateY(-2px)}
+
+.sp .gv-link{display:inline-block;margin-top:12px;cursor:pointer;font-weight:700;font-size:.84rem;color:var(--sp-red);border:1px solid #F4C7C3;border-radius:99px;padding:7px 15px;transition:.2s}.sp .gv-link:hover{background:var(--sp-red);color:#fff;border-color:var(--sp-red)}
