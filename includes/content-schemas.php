@@ -426,3 +426,141 @@ $CMS_SCHEMAS['feedback'] = ['label' => 'Feedback', 'fields' => [
     'showcase_heading' => ['label' => 'Public comments — heading', 'type' => 'text', 'default' => 'Voices from our community'],
     'showcase_intro'   => ['label' => 'Public comments — intro', 'type' => 'textarea', 'default' => 'A selection of comments shared with permission.'],
 ]];
+
+
+/* ------------------------------------------------------------------ AWARDS PAGE — every remaining label, heading, button and picture, section by section */
+(function () use (&$CMS_SCHEMAS) {
+    $f = &$CMS_SCHEMAS['awards']['fields'];
+    $add = function ($key, $label, $default, $type = 'text') use (&$f) { $f[$key] = ['label' => $label, 'type' => $type, 'default' => $default]; };
+    // Hero
+    $add('hero_eyebrow', 'Hero — small label above the heading', 'NUFA Awards');
+    $add('hero_btn1_label', 'Hero — button 1 label', 'Co-host or sponsor an event'); $add('hero_btn1_url', 'Hero — button 1 link', 'awards-cohost.php');
+    $add('hero_btn2_label', 'Hero — button 2 label', 'Explore the Archive'); $add('hero_btn2_url', 'Hero — button 2 link', '#archive');
+    $add('hero_btn3_label', 'Hero — button 3 label', 'Awards enquiries'); $add('hero_btn3_url', 'Hero — button 3 link', 'contact.php?topic=Awards');
+    // Page menu
+    $add('subnav_links', 'Page menu — jump links (one per line: section id | label)', "events|Events\nbuildup|Get involved\nroadmap|Road map\nwinners|Winners\nhighlights|Highlights\nmoments|Key moments\nimpact|Impact\nfilms|Films\narchive|Archive\ntakepart|Take part\nsubmissions|Submit a film\ntickets|Tickets\nteam|Technical team\nfaq|FAQ", 'textarea');
+    // Purpose
+    $add('purpose_eyebrow', 'Purpose — small label', 'Purpose & significance');
+    $add('platform_heading', 'On this platform — heading', 'On this platform');
+    // Upcoming edition
+    $add('upcoming_chip', 'Upcoming edition — label when the edition has none', 'Upcoming Edition');
+    $add('upcoming_title', 'Upcoming edition — title before the year', 'NUFA Awards');
+    $add('upcoming_fallback_image', 'Upcoming edition — background image (used when the edition has no picture of its own)', 'slider/hero/hero-slide-3.webp', 'image');
+    $add('upcoming_tickets_title', 'Upcoming edition — tickets note title', 'Tickets');
+    $add('upcoming_tickets_text', 'Upcoming edition — tickets note ({price} becomes “ — general admission UGX …” when a price is set)', 'Ticket information is available from the NUFA team{price}. Please enquire through the contact form.', 'textarea');
+    $add('upcoming_btn1_label', 'Upcoming edition — button 1 label', 'Edition details');
+    $add('upcoming_btn2_label', 'Upcoming edition — button 2 label', 'Sponsorship opportunities'); $add('upcoming_btn2_url', 'Upcoming edition — button 2 link', 'partners.php#enquiry');
+    // Road to the awards (pre-events)
+    $add('events_eyebrow', 'Road to the awards — small label', 'Road to the awards');
+    $add('events_heading', 'Road to the awards — heading', 'Launch · Nomination Night · Grand Finale');
+    $add('events_btn_label', 'Road to the awards — button label', 'Apply to co-host or sponsor'); $add('events_btn_url', 'Road to the awards — button link', 'awards-cohost.php');
+    $add('events_chip_done', 'Road to the awards — status: event finished', 'Completed');
+    $add('events_chip_confirmed', 'Road to the awards — status: date confirmed', 'Date confirmed');
+    $add('events_chip_tbc', 'Road to the awards — status: date not yet set', 'Date to be announced');
+    $add('events_venue_tbc', 'Road to the awards — text when there is no venue yet', 'Venue to be announced');
+    $add('events_sponsors_heading', 'Road to the awards — sponsors heading', 'Co-hosts & sponsors');
+    $add('events_nosp', 'Road to the awards — text when there are no sponsors yet', 'Co-host and sponsor spots are open.');
+    $add('events_lineup_heading', 'Road to the awards — line-up heading', 'On the line-up');
+    $add('events_btn_perform', 'Road to the awards — “perform” button', 'Perform at this event');
+    $add('events_btn_cohost', 'Road to the awards — “co-host” button', 'Co-host or sponsor this event');
+    // Build-up
+    $add('buildup_eyebrow', 'Build-up — small label', 'Build the moment with us');
+    $add('buildup_heading', 'Build-up — heading', 'Be part of the road to the NUFA Awards');
+    $add('bu_perform_title', 'Build-up — card 1 (perform): title', 'Perform on the night');
+    $add('bu_perform_text', 'Build-up — card 1 (perform): text', 'Musicians, poets, spoken-word artists, dancers and cultural performers — showcase your act at the Launch, Nomination Night or Grand Finale.', 'textarea');
+    $add('bu_perform_btn', 'Build-up — card 1 (perform): button', 'Apply to perform');
+    $add('bu_workshop_title', 'Build-up — card 2 (workshop): title', 'Host a pre-event workshop');
+    $add('bu_workshop_text', 'Build-up — card 2 (workshop): text', 'Bring filmmakers together in your town. Tell us your venue, how many filmmakers you need and what you will contribute.', 'textarea');
+    $add('bu_workshop_btn', 'Build-up — card 2 (workshop): button', 'Host a workshop');
+    $add('bu_amb_title', 'Build-up — card 3 (ambassador): title', 'Become an ambassador');
+    $add('bu_amb_text', 'Build-up — card 3 (ambassador): text', 'Lobby for NUFA, share our proposal with donors, hold fundraising and meet the Board every month.', 'textarea');
+    $add('bu_amb_btn', 'Build-up — card 3 (ambassador): button', 'Become an ambassador');
+    $add('bu_cohost_title', 'Build-up — card 4 (co-host): title', 'Co-host or sponsor');
+    $add('bu_cohost_text', 'Build-up — card 4 (co-host): text', 'Put your name behind the Launch, Nomination Night or Grand Finale.', 'textarea');
+    $add('bu_cohost_btn', 'Build-up — card 4 (co-host): button', 'Co-host or sponsor');
+    $add('buildup_lineup_heading', 'Build-up — line-up heading', 'Announced line-up');
+    $add('buildup_workshops_heading', 'Build-up — workshops heading', 'Pre-event workshops');
+    $add('buildup_workshop_btn', 'Build-up — workshop “join” button', 'I want to take part');
+    // Road map
+    $add('roadmap_eyebrow', 'Road map — small label', 'Road map');
+    $add('roadmap_empty', 'Road map — placeholder when there are no steps yet', 'The road map for the next edition will be published here.');
+    // Teaser
+    $add('teaser_eyebrow', 'Teaser — small label', 'Teaser');
+    $add('teaser_btn1_label', 'Teaser — button 1 label', 'Get tickets'); $add('teaser_btn1_url', 'Teaser — button 1 link', '#tickets');
+    $add('teaser_btn2_label', 'Teaser — button 2 label', 'Submit your film'); $add('teaser_btn2_url', 'Teaser — button 2 link', '#submissions');
+    // Winners / highlights / moments / impact / films
+    $add('winners_eyebrow', 'Winners — small label', 'Winners');
+    $add('winners_link', 'Winners — “full details” link text', 'Full edition details');
+    $add('highlights_eyebrow', 'Highlights & guests — small label', 'Highlights & guests');
+    $add('highlights_guests_heading', 'Highlights & guests — guests sub-heading', 'Guests & dignitaries');
+    $add('moments_eyebrow', 'Key moments — small label', 'Key moments');
+    $add('moments_strip_heading', 'Key moments — photo strip heading', 'From the ceremonies');
+    $add('moments_gallery_link', 'Key moments — gallery link text', 'Open the full gallery');
+    $add('impact_eyebrow', 'Impact stories — small label', 'Impact');
+    $add('impact_readmore', 'Impact stories — “read more” link text', 'Read more');
+    $add('films_eyebrow', 'Highlight films — small label', 'Screen');
+    $add('films_btn', 'Highlight films — trailer button', 'Watch trailer');
+    // Archive
+    $add('archive_eyebrow', 'Archive — small label', 'Awards archive');
+    $add('archive_heading', 'Archive — heading', 'Previous editions');
+    $add('archive_intro', 'Archive — intro', 'Verified records of each edition. Information that has not been confirmed is not published.', 'textarea');
+    $add('archive_empty_title', 'Archive — title when empty', 'No past editions published yet');
+    $add('archive_empty_text', 'Archive — text when empty', 'Archive pages will appear here as editions are documented.');
+    $add('archive_chip', 'Archive — label when an edition has none', 'Past Edition');
+    $add('archive_link', 'Archive — link text', 'View edition');
+    $add('archive_fallback_image', 'Archive — picture used when an edition has none', 'slider/hero/hero-slide-1.webp', 'image');
+    // Take part / rules
+    $add('takepart_eyebrow', 'Take part — small label', 'Take part');
+    $add('judging_eyebrow', 'Judging & eligibility — small label', 'Rules & criteria');
+    // Submissions
+    $add('submit_eyebrow', 'Submissions — small label', 'Submission portal');
+    $add('submit_status_soon', 'Submissions — status: opening soon', 'Opening soon');
+    $add('submit_status_open', 'Submissions — status: open', 'Open for submissions');
+    $add('submit_status_closed', 'Submissions — status: closed', 'Submissions closed');
+    $add('submit_label_opens', 'Submissions — “Opens” label', 'Opens');
+    $add('submit_label_deadline', 'Submissions — “Deadline” label', 'Deadline');
+    $add('submit_label_fee', 'Submissions — “Entry fee” label', 'Entry fee');
+    $add('submit_tba', 'Submissions — text for dates / fee not yet set', 'To be announced');
+    $add('submit_btn_submit', 'Submissions — submit button', 'Submit your film');
+    $add('submit_btn_ask', 'Submissions — enquiry button', 'Ask about submissions');
+    $add('submit_note_closed', 'Submissions — note when closed', 'Submissions are closed for now. Watch the road map for the next call for entries.', 'textarea');
+    $add('submit_note_soon', 'Submissions — note when not yet open', 'The submission portal opens once the call for entries is announced. Become a member or join the mailing list to hear first.', 'textarea');
+    $add('submit_who_title', 'Submissions — “who can submit” card title', 'Who can submit');
+    $add('submit_who_empty', 'Submissions — “who can submit” text when empty', 'Eligibility rules will be published here once confirmed.');
+    $add('submit_guide_title', 'Submissions — guidelines card title', 'Submission guidelines');
+    $add('submit_guide_empty', 'Submissions — guidelines text when empty', 'Guidelines on format, length, language and what to upload will be published here.');
+    // Tickets
+    $add('tickets_eyebrow', 'Tickets — small label', 'Tickets');
+    $add('tickets_status_soon', 'Tickets — status: coming soon', 'Tickets coming soon');
+    $add('tickets_status_on_sale', 'Tickets — status: on sale', 'On sale now');
+    $add('tickets_status_sold_out', 'Tickets — status: sold out', 'Sold out');
+    $add('tickets_status_closed', 'Tickets — status: sales closed', 'Sales closed');
+    $add('tickets_empty', 'Tickets — text when no ticket types yet', 'Ticket types and prices will be published here once sales are announced.');
+    $add('tickets_howto_title', 'Tickets — “how to book” card title', 'How to book');
+    $add('tickets_howto_empty', 'Tickets — “how to book” text when empty', 'Booking and payment instructions will be published here. You can already send a request using the form and the team will reply with details.', 'textarea');
+    $add('tickets_btn_buy', 'Tickets — online purchase button', 'Buy tickets online');
+    $add('tickets_form_title', 'Tickets — request form title', 'Request tickets');
+    $add('tickets_form_success', 'Tickets — message after the form is sent', 'Your request has been received. The NUFA team will contact you with booking and payment details. No payment is taken on this page.', 'textarea');
+    $add('tickets_form_name', 'Tickets — form field: name', 'Full name');
+    $add('tickets_form_email', 'Tickets — form field: email', 'Email address');
+    $add('tickets_form_phone', 'Tickets — form field: phone', 'Phone / WhatsApp');
+    $add('tickets_form_type', 'Tickets — form field: ticket type', 'Ticket type');
+    $add('tickets_form_qty', 'Tickets — form field: quantity', 'Number of tickets');
+    $add('tickets_form_message', 'Tickets — form field: message', 'Anything we should know?');
+    $add('tickets_form_consent', 'Tickets — form consent line', 'I agree that NUFA may contact me about my ticket request.');
+    $add('tickets_form_btn', 'Tickets — form button', 'Send ticket request');
+    // Team / FAQ
+    $add('tech_eyebrow', 'Technical team — small label', 'Technical team');
+    $add('faq_eyebrow', 'FAQ — small label', 'FAQ');
+    // News
+    $add('news_eyebrow', 'Awards news — small label', 'Awards news');
+    $add('news_heading', 'Awards news — heading', 'News & announcements');
+    $add('news_link', 'Awards news — “all news” link', 'All awards news');
+    $add('news_read', 'Awards news — card link text', 'Read story');
+    // Keep the editor in the same order as the page, section by section
+    $order = ['Hero', 'Page menu', 'Purpose', 'On this platform', 'Participation information', 'Upcoming edition', 'Road to the awards', 'Build-up', 'Road map', 'Teaser', 'Winners', 'Highlights & guests', 'Key moments', 'Impact stories', 'Highlight films', 'Archive', 'Take part', 'Judging & eligibility', 'Submissions', 'Official submission platform link (leave blank unless officially confirmed)', 'Tickets', 'Technical team', 'FAQ', 'Awards news', 'Bottom call-to-action', 'Call-to-action button 1', 'Call-to-action button 2'];
+    $idx = array_flip(array_map(fn($x) => $x, $order)); $pos = 0; $keyed = [];
+    foreach ($f as $k => $d) { $g = strpos($d['label'], ' — ') !== false ? explode(' — ', $d['label'], 2)[0] : $d['label']; if (strpos($g, 'FAQ') === 0) $g = 'FAQ'; $keyed[] = [$idx[$g] ?? 999, $pos++, $k, $d]; }
+    usort($keyed, fn($a, $b) => [$a[0], $a[1]] <=> [$b[0], $b[1]]);
+    $f = []; foreach ($keyed as [, , $k, $d]) $f[$k] = $d;
+})();

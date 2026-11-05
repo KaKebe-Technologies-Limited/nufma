@@ -43,20 +43,20 @@ $past     = array_values(array_filter($editions, fn($x) => $x['status'] !== 'upc
 $awardNews = $conn->query("SELECT title, slug, category, excerpt, image, published_at FROM posts WHERE is_published=1 AND category='NUFA Awards' ORDER BY published_at DESC LIMIT 3")->fetch_all(MYSQLI_ASSOC);
 $submission = trim(cms_value('awards', 'submission_url'));
 
-echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value('awards', 'hero_lede'), cms_img_raw('awards', 'hero_image'), [['NUFA Awards']],
-    '<a href="awards-cohost.php" class="btn btn-gold">Co-host or sponsor an event</a><a href="#archive" class="btn btn-outline">Explore the Archive</a><a href="contact.php?topic=Awards" class="btn btn-ghost">Awards enquiries</a>');
+echo ui_page_hero(cms_value('awards', 'hero_eyebrow'), cms_value('awards', 'hero_heading'), cms_value('awards', 'hero_lede'), cms_img_raw('awards', 'hero_image'), [['NUFA Awards']],
+    (function () { $o = ''; foreach ([1 => 'btn-gold', 2 => 'btn-outline', 3 => 'btn-ghost'] as $n => $cls) { $l = trim(cms_value('awards', "hero_btn{$n}_label")); $u = trim(cms_value('awards', "hero_btn{$n}_url")); if ($l !== '' && $u !== '') $o .= '<a href="' . ui_e($u) . '" class="btn ' . $cls . '">' . ui_e($l) . '</a>'; } return $o; })());
 ?>
-<nav class="aw-subnav" aria-label="On this page"><div class="container"><?php foreach ([['events', 'Events'], ['buildup', 'Get involved'], ['roadmap', 'Road map'], ['winners', 'Winners'], ['highlights', 'Highlights'], ['moments', 'Key moments'], ['impact', 'Impact'], ['films', 'Films'], ['archive', 'Archive'], ['takepart', 'Take part'], ['submissions', 'Submit a film'], ['tickets', 'Tickets'], ['team', 'Technical team'], ['faq', 'FAQ']] as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
+<nav class="aw-subnav" aria-label="On this page"><div class="container"><?php $__sub = []; foreach (preg_split('/\R/', cms_value('awards', 'subnav_links')) as $__ln) { $__p = array_map('trim', explode('|', $__ln)); if ($__p[0] !== '' && !empty($__p[1])) $__sub[] = [$__p[0], $__p[1]]; } foreach ($__sub as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
 
 <?php if (nufa_show('awards', 'purpose')): ?><section class="section">
   <div class="container split">
     <div data-reveal>
-      <div class="eyebrow">Purpose &amp; significance</div>
+      <div class="eyebrow"><?php echo cms_t('awards', 'purpose_eyebrow'); ?></div>
       <h2><?php echo cms_t('awards', 'purpose_heading'); ?></h2>
       <div class="lede stack"><?php echo ui_paragraphs(cms_value('awards', 'purpose_body')); ?></div>
     </div>
     <div data-reveal>
-      <h3>On this platform</h3>
+      <h3><?php echo cms_t('awards', 'platform_heading'); ?></h3>
       <?php echo ui_list(cms_value('awards', 'platform_list')); ?>
     </div>
   </div>
@@ -64,20 +64,20 @@ echo ui_page_hero('NUFA Awards', cms_value('awards', 'hero_heading'), cms_value(
 
 <?php foreach ($upcoming as $u): ?>
 <?php if (nufa_show('awards', 'upcoming')): ?><section class="section feature-band section--black" id="upcoming">
-  <div class="bg"><img src="assets/images/<?php echo ui_e($u['image'] ?: 'slider/hero/hero-slide-3.webp'); ?>" alt="" loading="lazy"></div>
+  <div class="bg"><img src="assets/images/<?php echo ui_e($u['image'] ?: cms_img_raw('awards', 'upcoming_fallback_image')); ?>" alt="" loading="lazy"></div>
   <div class="container">
     <div style="max-width:720px" data-reveal>
-      <span class="chip chip--dark" style="border:1px solid var(--gold)"><?php echo ui_e($u['badge_text'] ?: 'Upcoming Edition'); ?></span>
-      <h2 style="margin-top:18px">NUFA Awards <span class="hl"><?php echo (int)$u['year']; ?></span></h2>
+      <span class="chip chip--dark" style="border:1px solid var(--gold)"><?php echo ui_e($u['badge_text'] ?: cms_value('awards', 'upcoming_chip')); ?></span>
+      <h2 style="margin-top:18px"><?php echo cms_t('awards', 'upcoming_title'); ?> <span class="hl"><?php echo (int)$u['year']; ?></span></h2>
       <p class="lede" style="color:var(--muted-on-dark)"><?php echo ui_e($u['description']); ?></p>
       <ul class="meta-list" style="color:var(--muted-on-dark);margin:20px 0">
         <?php if ($u['event_date_label']): ?><li><?php echo nufa_icon('calendar', 18); ?><span><?php echo ui_e($u['event_date_label']); ?></span></li><?php endif; ?>
         <?php if ($u['location_label']): ?><li><?php echo nufa_icon('pin', 18); ?><span><?php echo ui_e($u['location_label']); ?></span></li><?php endif; ?>
       </ul>
       <?php if ($cfg['tickets_open'] === '1'): ?>
-        <div class="notice notice--dark" style="margin-bottom:22px"><span><?php echo nufa_icon('star', 22); ?></span><div><b>Tickets</b><br>Ticket information is available from the NUFA team<?php echo $cfg['ticket_price'] !== '' ? ' — general admission UGX ' . ui_e($cfg['ticket_price']) : ''; ?>. Please enquire through the contact form.</div></div>
+        <div class="notice notice--dark" style="margin-bottom:22px"><span><?php echo nufa_icon('star', 22); ?></span><div><b><?php echo cms_t('awards', 'upcoming_tickets_title'); ?></b><br><?php echo str_replace('{price}', $cfg['ticket_price'] !== '' ? ' — general admission UGX ' . ui_e($cfg['ticket_price']) : '', cms_t('awards', 'upcoming_tickets_text')); ?></div></div>
       <?php endif; ?>
-      <div class="actions"><a href="award.php?e=<?php echo ui_e($u['slug']); ?>" class="btn btn-gold">Edition details</a><a href="partners.php#enquiry" class="btn btn-outline">Sponsorship opportunities</a></div>
+      <div class="actions"><a href="award.php?e=<?php echo ui_e($u['slug']); ?>" class="btn btn-gold"><?php echo cms_t('awards', 'upcoming_btn1_label'); ?></a><a href="<?php echo ui_e(cms_value('awards', 'upcoming_btn2_url')); ?>" class="btn btn-outline"><?php echo cms_t('awards', 'upcoming_btn2_label'); ?></a></div>
     </div>
   </div>
 </section><?php endif; ?>
@@ -106,30 +106,30 @@ $films = awd_items($conn, 'film', $last2Ids); $roadmap = awd_items($conn, 'roadm
   if ($aev): ?>
 <section class="section section--black" id="events">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Road to the awards</div><h2>Launch · Nomination Night · Grand Finale</h2><p><?php echo ui_e($AE['aev_intro']); ?></p>
-      <div class="actions" style="justify-content:center;margin-top:18px"><a href="awards-cohost.php" class="btn btn-gold">Apply to co-host or sponsor</a></div></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'events_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'events_heading'); ?></h2><p><?php echo ui_e($AE['aev_intro']); ?></p>
+      <div class="actions" style="justify-content:center;margin-top:18px"><a href="<?php echo ui_e(cms_value('awards', 'events_btn_url')); ?>" class="btn btn-gold"><?php echo cms_t('awards', 'events_btn_label'); ?></a></div></div>
     <div class="ev-grid" data-reveal-stagger>
       <?php foreach ($aev as $ev): $iso = aev_countdown_iso($ev); $confirmed = !empty($ev['date_confirmed']) && !empty($ev['event_date']); $past = $confirmed && strtotime($ev['event_date'] . ' 23:59:59') < time(); $evImg = $ev['image'] !== '' && is_file(__DIR__ . '/assets/images/' . $ev['image']) ? $ev['image'] : '';
         $sp = $aevSp[$ev['id']] ?? []; ?>
       <article class="ev-card" id="ev-<?php echo ui_e($ev['slug']); ?>">
         <?php if ($evImg): ?><div class="ev-img"><img src="assets/images/<?php echo ui_e($evImg); ?>" alt="" loading="lazy"></div><?php endif; ?>
         <div class="ev-body">
-          <span class="ev-chip <?php echo $past ? 'is-past' : ($confirmed ? 'is-ok' : ''); ?>"><?php echo $past ? 'Completed' : ($confirmed ? 'Date confirmed' : 'Date to be announced'); ?></span>
+          <span class="ev-chip <?php echo $past ? 'is-past' : ($confirmed ? 'is-ok' : ''); ?>"><?php echo $past ? cms_t('awards', 'events_chip_done') : ($confirmed ? cms_t('awards', 'events_chip_confirmed') : cms_t('awards', 'events_chip_tbc')); ?></span>
           <h3><?php echo ui_e($ev['title']); ?></h3>
           <?php if ($ev['tagline'] !== ''): ?><p class="ev-tag"><?php echo ui_e($ev['tagline']); ?></p><?php endif; ?>
           <?php if ($iso !== '' && !$past): ?><div class="ev-countdown" data-countdown="<?php echo ui_e($iso); ?>" aria-live="off"><div><b data-u="d">--</b><span>days</span></div><div><b data-u="h">--</b><span>hours</span></div><div><b data-u="m">--</b><span>mins</span></div><div><b data-u="s">--</b><span>secs</span></div></div><?php endif; ?>
           <ul class="ev-facts">
             <li><?php echo nufa_icon('calendar', 17); ?><span><b>When</b><?php echo ui_e(aev_when($ev)); ?></span></li>
-            <li><?php echo nufa_icon('pin', 17); ?><span><b>Venue</b><?php echo $ev['venue'] !== '' ? ui_e($ev['venue']) . ($ev['venue_note'] !== '' ? '<small>' . ui_e($ev['venue_note']) . '</small>' : '') : 'Venue to be announced'; ?><?php if ($ev['map_url'] !== ''): ?> · <a href="<?php echo ui_e($ev['map_url']); ?>" target="_blank" rel="noopener">Map</a><?php endif; ?></span></li>
+            <li><?php echo nufa_icon('pin', 17); ?><span><b>Venue</b><?php echo $ev['venue'] !== '' ? ui_e($ev['venue']) . ($ev['venue_note'] !== '' ? '<small>' . ui_e($ev['venue_note']) . '</small>' : '') : cms_t('awards', 'events_venue_tbc'); ?><?php if ($ev['map_url'] !== ''): ?> · <a href="<?php echo ui_e($ev['map_url']); ?>" target="_blank" rel="noopener">Map</a><?php endif; ?></span></li>
           </ul>
           <?php if (trim((string)$ev['description']) !== ''): ?><p class="ev-desc"><?php echo ui_e($ev['description']); ?></p><?php endif; ?>
-          <?php if ($sp): ?><div class="ev-sponsors"><h4>Co-hosts &amp; sponsors</h4><div class="ev-sp-row"><?php foreach ($sp as $s): $has = $s['logo'] !== '' && is_file(__DIR__ . '/assets/images/' . $s['logo']);
+          <?php if ($sp): ?><div class="ev-sponsors"><h4><?php echo cms_t('awards', 'events_sponsors_heading'); ?></h4><div class="ev-sp-row"><?php foreach ($sp as $s): $has = $s['logo'] !== '' && is_file(__DIR__ . '/assets/images/' . $s['logo']);
             $in = $has ? '<img src="assets/images/' . ui_e($s['logo']) . '" alt="' . ui_e($s['name']) . '" loading="lazy">' : '<b>' . ui_e($s['name']) . '</b>'; ?>
             <div class="ev-sp" title="<?php echo ui_e($s['name'] . ' — ' . $s['tier']); ?>"><?php echo $s['website'] !== '' ? '<a href="' . ui_e($s['website']) . '" target="_blank" rel="noopener">' . $in . '</a>' : $in; ?><span><?php echo ui_e($s['tier']); ?></span></div><?php endforeach; ?></div></div>
-          <?php else: ?><p class="ev-nosp">Co-host and sponsor spots are open.</p><?php endif; ?>
-          <?php $__ac = $aevActs[$ev['id']] ?? []; if ($__ac): ?><div class="ev-sponsors"><h4>On the line-up</h4><div class="ev-sp-row"><?php foreach ($__ac as $__a): ?><div class="ev-sp" title="<?php echo ui_e($__a['act_type']); ?>"><b><?php echo ui_e($__a['name']); ?></b><span><?php echo ui_e($__a['act_type']); ?></span></div><?php endforeach; ?></div></div><?php endif; ?>
-          <?php if (!$past): ?><a class="btn btn-ghost btn-sm" href="awards-perform.php?event=<?php echo ui_e($ev['slug']); ?>">Perform at this event</a><?php endif; ?>
-          <?php if (!$past && !empty($ev['cohost_open'])): ?><a class="btn btn-outline btn-sm" href="awards-cohost.php?event=<?php echo ui_e($ev['slug']); ?>">Co-host or sponsor this event</a><?php endif; ?>
+          <?php else: ?><p class="ev-nosp"><?php echo cms_t('awards', 'events_nosp'); ?></p><?php endif; ?>
+          <?php $__ac = $aevActs[$ev['id']] ?? []; if ($__ac): ?><div class="ev-sponsors"><h4><?php echo cms_t('awards', 'events_lineup_heading'); ?></h4><div class="ev-sp-row"><?php foreach ($__ac as $__a): ?><div class="ev-sp" title="<?php echo ui_e($__a['act_type']); ?>"><b><?php echo ui_e($__a['name']); ?></b><span><?php echo ui_e($__a['act_type']); ?></span></div><?php endforeach; ?></div></div><?php endif; ?>
+          <?php if (!$past): ?><a class="btn btn-ghost btn-sm" href="awards-perform.php?event=<?php echo ui_e($ev['slug']); ?>"><?php echo cms_t('awards', 'events_btn_perform'); ?></a><?php endif; ?>
+          <?php if (!$past && !empty($ev['cohost_open'])): ?><a class="btn btn-outline btn-sm" href="awards-cohost.php?event=<?php echo ui_e($ev['slug']); ?>"><?php echo cms_t('awards', 'events_btn_cohost'); ?></a><?php endif; ?>
         </div>
       </article>
       <?php endforeach; ?>
@@ -153,23 +153,23 @@ tick();setInterval(tick,1000);})();
   $evNames = []; foreach ($aev ?? [] as $__e) $evNames[$__e['id']] = $__e['title']; ?>
 <section class="section" id="buildup">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Build the moment with us</div><h2>Be part of the road to the NUFA Awards</h2><p><?php echo ui_e($OS['bld_intro']); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'buildup_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'buildup_heading'); ?></h2><p><?php echo ui_e($OS['bld_intro']); ?></p></div>
     <div class="bu-grid" data-reveal-stagger>
-      <?php if ($OS['bld_acts_open'] === '1'): ?><div class="bu-card"><span class="bu-ic">♪</span><h3>Perform on the night</h3><p>Musicians, poets, spoken-word artists, dancers and cultural performers — showcase your act at the Launch, Nomination Night or Grand Finale.</p><a class="btn btn-gold btn-sm" href="awards-perform.php">Apply to perform</a></div><?php endif; ?>
-      <?php if ($OS['bld_workshops_open'] === '1'): ?><div class="bu-card"><span class="bu-ic">✦</span><h3>Host a pre-event workshop</h3><p>Bring filmmakers together in your town. Tell us your venue, how many filmmakers you need and what you will contribute.</p><a class="btn btn-gold btn-sm" href="awards-workshop.php">Host a workshop</a></div><?php endif; ?>
-      <div class="bu-card"><span class="bu-ic">★</span><h3>Become an ambassador</h3><p>Lobby for NUFA, share our proposal with donors, hold fundraising and meet the Board every month.</p><a class="btn btn-gold btn-sm" href="ambassadors.php">Become an ambassador</a></div>
-      <div class="bu-card"><span class="bu-ic">♥</span><h3>Co-host or sponsor</h3><p>Put your name behind the Launch, Nomination Night or Grand Finale.</p><a class="btn btn-gold btn-sm" href="awards-cohost.php">Co-host or sponsor</a></div>
+      <?php if ($OS['bld_acts_open'] === '1'): ?><div class="bu-card"><span class="bu-ic">♪</span><h3><?php echo cms_t('awards', 'bu_perform_title'); ?></h3><p><?php echo cms_t('awards', 'bu_perform_text'); ?></p><a class="btn btn-gold btn-sm" href="awards-perform.php"><?php echo cms_t('awards', 'bu_perform_btn'); ?></a></div><?php endif; ?>
+      <?php if ($OS['bld_workshops_open'] === '1'): ?><div class="bu-card"><span class="bu-ic">✦</span><h3><?php echo cms_t('awards', 'bu_workshop_title'); ?></h3><p><?php echo cms_t('awards', 'bu_workshop_text'); ?></p><a class="btn btn-gold btn-sm" href="awards-workshop.php"><?php echo cms_t('awards', 'bu_workshop_btn'); ?></a></div><?php endif; ?>
+      <div class="bu-card"><span class="bu-ic">★</span><h3><?php echo cms_t('awards', 'bu_amb_title'); ?></h3><p><?php echo cms_t('awards', 'bu_amb_text'); ?></p><a class="btn btn-gold btn-sm" href="ambassadors.php"><?php echo cms_t('awards', 'bu_amb_btn'); ?></a></div>
+      <div class="bu-card"><span class="bu-ic">♥</span><h3><?php echo cms_t('awards', 'bu_cohost_title'); ?></h3><p><?php echo cms_t('awards', 'bu_cohost_text'); ?></p><a class="btn btn-gold btn-sm" href="awards-cohost.php"><?php echo cms_t('awards', 'bu_cohost_btn'); ?></a></div>
     </div>
-    <?php if ($bacts): ?><h3 style="margin:44px 0 14px">Announced line-up</h3><div class="gs-grid"><?php foreach ($bacts as $a): ?><div class="gs-card"><div class="gs-photo" style="aspect-ratio:16/10"><?php if ($a['photo'] !== '' && is_file(__DIR__ . '/assets/images/' . $a['photo'])): ?><img src="assets/images/<?php echo ui_e($a['photo']); ?>" alt="<?php echo ui_e($a['name']); ?>" loading="lazy"><?php else: ?><span style="font-size:2rem">♪</span><?php endif; ?></div><div class="gs-body"><span class="gs-cat"><?php echo ui_e($evNames[$a['assigned_event_id']] ?? 'NUFA Awards'); ?></span><h3><?php echo ui_e($a['name']); ?></h3><p class="gs-title"><?php echo ui_e($a['act_type']); ?></p></div></div><?php endforeach; ?></div><?php endif; ?>
-    <?php if ($bwork): ?><h3 style="margin:44px 0 14px">Pre-event workshops</h3><div class="ac-classes"><?php foreach ($bwork as $w): $d = $w['confirmed_date'] ?: $w['proposed_date']; ?>
-      <div class="ac-class"><span class="ac-mode">Workshop</span><h3><?php echo ui_e($w['title']); ?></h3><p><?php echo $d ? ui_e(date('j F Y', strtotime($d))) . ($w['confirmed_date'] ? '' : ' (proposed)') : 'Date to be confirmed'; ?></p><p class="muted"><?php echo ui_e($w['venue']); ?>, <?php echo ui_e($w['town']); ?></p><p class="muted">Hosted by <?php echo ui_e($w['host_name']); ?> · looking for <b><?php echo (int)$w['filmmakers_needed']; ?></b> filmmakers</p><a class="btn btn-outline btn-sm" href="contact.php?topic=Awards&amp;message=<?php echo urlencode('I would like to join the workshop: ' . $w['title'] . ' (' . $w['town'] . ')'); ?>">I want to take part</a></div><?php endforeach; ?></div><?php endif; ?>
+    <?php if ($bacts): ?><h3 style="margin:44px 0 14px"><?php echo cms_t('awards', 'buildup_lineup_heading'); ?></h3><div class="gs-grid"><?php foreach ($bacts as $a): ?><div class="gs-card"><div class="gs-photo" style="aspect-ratio:16/10"><?php if ($a['photo'] !== '' && is_file(__DIR__ . '/assets/images/' . $a['photo'])): ?><img src="assets/images/<?php echo ui_e($a['photo']); ?>" alt="<?php echo ui_e($a['name']); ?>" loading="lazy"><?php else: ?><span style="font-size:2rem">♪</span><?php endif; ?></div><div class="gs-body"><span class="gs-cat"><?php echo ui_e($evNames[$a['assigned_event_id']] ?? 'NUFA Awards'); ?></span><h3><?php echo ui_e($a['name']); ?></h3><p class="gs-title"><?php echo ui_e($a['act_type']); ?></p></div></div><?php endforeach; ?></div><?php endif; ?>
+    <?php if ($bwork): ?><h3 style="margin:44px 0 14px"><?php echo cms_t('awards', 'buildup_workshops_heading'); ?></h3><div class="ac-classes"><?php foreach ($bwork as $w): $d = $w['confirmed_date'] ?: $w['proposed_date']; ?>
+      <div class="ac-class"><span class="ac-mode">Workshop</span><h3><?php echo ui_e($w['title']); ?></h3><p><?php echo $d ? ui_e(date('j F Y', strtotime($d))) . ($w['confirmed_date'] ? '' : ' (proposed)') : 'Date to be confirmed'; ?></p><p class="muted"><?php echo ui_e($w['venue']); ?>, <?php echo ui_e($w['town']); ?></p><p class="muted">Hosted by <?php echo ui_e($w['host_name']); ?> · looking for <b><?php echo (int)$w['filmmakers_needed']; ?></b> filmmakers</p><a class="btn btn-outline btn-sm" href="contact.php?topic=Awards&amp;message=<?php echo urlencode('I would like to join the workshop: ' . $w['title'] . ' (' . $w['town'] . ')'); ?>"><?php echo cms_t('awards', 'buildup_workshop_btn'); ?></a></div><?php endforeach; ?></div><?php endif; ?>
   </div>
 </section>
 <?php endif; ?>
 <?php if (nufa_show('awards', 'roadmap')): ?><section class="section" id="roadmap">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Road map</div><h2><?php echo cms_t('awards', 'roadmap_heading'); ?><?php echo $nextEd ? ' — ' . (int)$nextEd['year'] : ''; ?></h2><p><?php echo cms_t('awards', 'roadmap_intro'); ?></p></div>
-    <?php if (!$roadmap): echo $ph('The road map for the next edition will be published here.'); else: ?>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'roadmap_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'roadmap_heading'); ?><?php echo $nextEd ? ' — ' . (int)$nextEd['year'] : ''; ?></h2><p><?php echo cms_t('awards', 'roadmap_intro'); ?></p></div>
+    <?php if (!$roadmap): echo $ph(cms_value('awards', 'roadmap_empty')); else: ?>
     <ol class="roadmap" data-reveal-stagger>
       <?php foreach ($roadmap as $i => $s): ?>
       <li class="roadmap-step roadmap-step--<?php echo ui_e($s['status']); ?>">
@@ -188,8 +188,8 @@ tick();setInterval(tick,1000);})();
   $tv = ui_video_embed(cms_value('awards', 'teaser_video_url')); $ti = cms_img_raw('awards', 'teaser_image'); ?>
 <section class="section section--black teaser" id="teaser">
   <div class="container split">
-    <div data-reveal><div class="eyebrow">Teaser</div><h2><?php echo cms_t('awards', 'teaser_heading'); ?></h2><p class="lede" style="color:var(--muted-on-dark)"><?php echo cms_t('awards', 'teaser_text'); ?></p>
-      <div class="actions"><a href="#tickets" class="btn btn-gold">Get tickets</a><a href="#submissions" class="btn btn-outline">Submit your film</a></div></div>
+    <div data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'teaser_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'teaser_heading'); ?></h2><p class="lede" style="color:var(--muted-on-dark)"><?php echo cms_t('awards', 'teaser_text'); ?></p>
+      <div class="actions"><?php foreach ([1 => 'btn-gold', 2 => 'btn-outline'] as $__n => $__c): $__l = trim(cms_value('awards', "teaser_btn{$__n}_label")); $__u = trim(cms_value('awards', "teaser_btn{$__n}_url")); if ($__l !== '' && $__u !== ''): ?><a href="<?php echo ui_e($__u); ?>" class="btn <?php echo $__c; ?>"><?php echo ui_e($__l); ?></a><?php endif; endforeach; ?></div></div>
     <div data-reveal>
       <?php if ($tv): ?><div class="video-card"><div class="frame"><iframe src="<?php echo ui_e($tv); ?>" title="NUFA Awards teaser" loading="lazy" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div></div>
       <?php elseif ($img($ti)): ?><div class="media-frame"><img src="assets/images/<?php echo ui_e($ti); ?>" alt="A first look at the next NUFA Awards" loading="lazy"></div><?php endif; ?>
@@ -199,14 +199,14 @@ tick();setInterval(tick,1000);})();
 
 <?php if (nufa_show('awards', 'winners')): ?><section class="section section--soft" id="winners">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Winners</div><h2><?php echo cms_t('awards', 'winners_heading'); ?></h2><p><?php echo cms_t('awards', 'winners_intro'); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'winners_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'winners_heading'); ?></h2><p><?php echo cms_t('awards', 'winners_intro'); ?></p></div>
     <?php if (!$last2): echo $ph(cms_value('awards', 'winners_empty')); endif; ?>
     <?php foreach ($last2 as $ed): $ws = $winsBy[$ed['id']] ?? []; ?>
     <div class="ed-block" id="winners-<?php echo (int)$ed['year']; ?>">
       <div class="ed-block__head" data-reveal>
         <div><span class="chip chip--dark">NUFA Awards <?php echo (int)$ed['year']; ?></span><?php if ($ed['theme_quote']): ?><h3><?php echo ui_e($ed['theme_quote']); ?></h3><?php endif; ?>
           <p class="muted"><?php echo ui_e(trim($ed['event_date_label'] . ($ed['event_date_label'] && $ed['location_label'] ? ' · ' : '') . $ed['location_label'])); ?></p></div>
-        <a class="link-arrow" href="award.php?e=<?php echo ui_e($ed['slug']); ?>">Full edition details</a>
+        <a class="link-arrow" href="award.php?e=<?php echo ui_e($ed['slug']); ?>"><?php echo cms_t('awards', 'winners_link'); ?></a>
       </div>
       <?php if (!$ws): echo $ph(cms_value('awards', 'winners_empty')); else: ?>
       <div class="win-grid" data-reveal-stagger>
@@ -228,12 +228,12 @@ tick();setInterval(tick,1000);})();
 
 <?php if (nufa_show('awards', 'highlights')): ?><section class="section" id="highlights">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Highlights &amp; guests</div><h2><?php echo cms_t('awards', 'highlights_heading'); ?></h2></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'highlights_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'highlights_heading'); ?></h2></div>
     <?php $anyHl = false; foreach ($last2 as $ed): if (trim(strip_tags($ed['highlights_html'] ?? '')) === '') continue; $anyHl = true; ?>
       <div class="hl-card" data-reveal><span class="chip chip--dark">NUFA Awards <?php echo (int)$ed['year']; ?> highlights</span><div class="stack"><?php echo $ed['highlights_html']; ?></div></div>
     <?php endforeach; ?>
     <?php if ($guests): ?>
-      <h3 class="sub-title" data-reveal>Guests &amp; dignitaries</h3>
+      <h3 class="sub-title" data-reveal><?php echo cms_t('awards', 'highlights_guests_heading'); ?></h3>
       <div class="guest-grid" data-reveal-stagger>
         <?php foreach ($guests as $g): $gi = $img($g['image']); ?>
         <article class="guest"><div class="guest-photo"><?php if ($gi): ?><img src="assets/images/<?php echo ui_e($gi); ?>" alt="<?php echo ui_e($g['title']); ?>" loading="lazy"><?php else: echo nufa_icon('users', 34); endif; ?></div>
@@ -248,7 +248,7 @@ tick();setInterval(tick,1000);})();
 
 <?php if (nufa_show('awards', 'moments')): ?><section class="section section--soft" id="moments">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Key moments</div><h2><?php echo cms_t('awards', 'moments_heading'); ?></h2></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'moments_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'moments_heading'); ?></h2></div>
     <?php if (!$moments): echo $ph(cms_value('awards', 'moments_empty')); else: ?>
     <div class="grid grid-3" data-reveal-stagger>
       <?php foreach ($moments as $m): $mi = $img($m['image']); ?>
@@ -267,24 +267,24 @@ tick();setInterval(tick,1000);})();
         if (!$got) foreach (array_slice(glob(__DIR__ . '/assets/images/gallery/' . $yy . '/*.{jpg,jpeg,webp}', GLOB_BRACE) ?: [], 0, 6) as $p) if (stripos(basename($p), 'poster') === false) $strip[] = ['gallery/' . $yy . '/' . basename($p), 'NUFA Awards ' . $yy, $yy];
     }
     if ($strip): ?>
-    <h3 class="sub-title" data-reveal>From the ceremonies</h3>
+    <h3 class="sub-title" data-reveal><?php echo cms_t('awards', 'moments_strip_heading'); ?></h3>
     <div class="photo-strip" data-reveal-stagger>
       <?php foreach (array_slice($strip, 0, 12) as [$p, $cap, $yy]): ?><figure><img src="assets/images/<?php echo ui_e($p); ?>" data-lightbox="assets/images/<?php echo ui_e($p); ?>" data-caption="<?php echo ui_e($cap); ?>" alt="<?php echo ui_e($cap); ?>" loading="lazy"><figcaption><?php echo ui_e($yy); ?></figcaption></figure><?php endforeach; ?>
     </div>
-    <p class="center mt-2"><a href="gallery.php" class="link-arrow">Open the full gallery</a></p>
+    <p class="center mt-2"><a href="gallery.php" class="link-arrow"><?php echo cms_t('awards', 'moments_gallery_link'); ?></a></p>
     <?php endif; ?>
   </div>
 </section><?php endif; ?>
 
 <?php if (nufa_show('awards', 'impact')): ?><section class="section" id="impact">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Impact</div><h2><?php echo cms_t('awards', 'impact_heading'); ?></h2><p><?php echo cms_t('awards', 'impact_intro'); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'impact_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'impact_heading'); ?></h2><p><?php echo cms_t('awards', 'impact_intro'); ?></p></div>
     <?php if (!$impacts): echo $ph(cms_value('awards', 'impact_empty')); else: ?>
     <div class="impact-stories" data-reveal-stagger>
       <?php foreach ($impacts as $s): $si = $img($s['image']); ?>
       <article class="story"><?php if ($si): ?><div class="story-img"><img src="assets/images/<?php echo ui_e($si); ?>" alt="<?php echo ui_e($s['title']); ?>" loading="lazy"></div><?php endif; ?>
         <div class="story-body"><span class="story-q" aria-hidden="true">“</span><h3><?php echo ui_e($s['title']); ?></h3><?php if ($s['subtitle']): ?><span class="story-who"><?php echo ui_e($s['subtitle']); ?></span><?php endif; ?>
-          <p><?php echo ui_e($s['body']); ?></p><?php if ($s['link_url']): ?><a class="link-arrow" href="<?php echo ui_e($s['link_url']); ?>" target="_blank" rel="noopener">Read more</a><?php endif; ?></div></article>
+          <p><?php echo ui_e($s['body']); ?></p><?php if ($s['link_url']): ?><a class="link-arrow" href="<?php echo ui_e($s['link_url']); ?>" target="_blank" rel="noopener"><?php echo cms_t('awards', 'impact_readmore'); ?></a><?php endif; ?></div></article>
       <?php endforeach; ?>
     </div>
     <?php endif; ?>
@@ -293,14 +293,14 @@ tick();setInterval(tick,1000);})();
 
 <?php if (nufa_show('awards', 'films')): ?><section class="section section--black" id="films">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Screen</div><h2><?php echo cms_t('awards', 'films_heading'); ?></h2></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'films_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'films_heading'); ?></h2></div>
     <?php if (!$films): echo $ph(cms_value('awards', 'films_empty')); else: ?>
     <div class="grid grid-3" data-reveal-stagger>
       <?php foreach ($films as $f): $fi = $img($f['image']); ?>
       <article class="film-card"><div class="film-poster"><?php if ($fi): ?><img src="assets/images/<?php echo ui_e($fi); ?>" alt="<?php echo ui_e($f['title']); ?> poster" loading="lazy"><?php else: echo nufa_icon('film', 40); endif; ?></div>
         <div class="film-body"><h3><?php echo ui_e($f['title']); ?></h3><?php if ($f['subtitle']): ?><span class="film-meta"><?php echo ui_e($f['subtitle']); ?></span><?php endif; ?>
           <?php if ($f['body']): ?><p><?php echo ui_e(ui_excerpt($f['body'], 220)); ?></p><?php endif; ?>
-          <?php if ($f['link_url']): ?><a class="btn btn-gold btn-sm" href="<?php echo ui_e($f['link_url']); ?>" target="_blank" rel="noopener">Watch trailer</a><?php endif; ?></div></article>
+          <?php if ($f['link_url']): ?><a class="btn btn-gold btn-sm" href="<?php echo ui_e($f['link_url']); ?>" target="_blank" rel="noopener"><?php echo cms_t('awards', 'films_btn'); ?></a><?php endif; ?></div></article>
       <?php endforeach; ?>
     </div>
     <?php endif; ?>
@@ -309,16 +309,16 @@ tick();setInterval(tick,1000);})();
 
 <?php if (nufa_show('awards', 'archive')): ?><section class="section section--soft" id="archive">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Awards archive</div><h2>Previous editions</h2><p>Verified records of each edition. Information that has not been confirmed is not published.</p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'archive_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'archive_heading'); ?></h2><p><?php echo cms_t('awards', 'archive_intro'); ?></p></div>
     <?php if (!$past): ?>
-      <div class="empty-state"><h3>No past editions published yet</h3><p>Archive pages will appear here as editions are documented.</p></div>
+      <div class="empty-state"><h3><?php echo cms_t('awards', 'archive_empty_title'); ?></h3><p><?php echo cms_t('awards', 'archive_empty_text'); ?></p></div>
     <?php else: ?>
     <div class="grid" style="gap:28px" data-reveal-stagger>
       <?php foreach ($past as $p): ?>
       <article class="edition-card">
-        <div class="media"><img src="assets/images/<?php echo ui_e($p['image'] ?: 'slider/hero/hero-slide-1.webp'); ?>" alt="NUFA Awards <?php echo (int)$p['year']; ?> ceremony" loading="lazy"></div>
+        <div class="media"><img src="assets/images/<?php echo ui_e($p['image'] ?: cms_img_raw('awards', 'archive_fallback_image')); ?>" alt="NUFA Awards <?php echo (int)$p['year']; ?> ceremony" loading="lazy"></div>
         <div class="body">
-          <span class="chip chip--dark" style="width:max-content"><?php echo ui_e($p['badge_text'] ?: 'Past Edition'); ?></span>
+          <span class="chip chip--dark" style="width:max-content"><?php echo ui_e($p['badge_text'] ?: cms_value('awards', 'archive_chip')); ?></span>
           <div class="year"><?php echo (int)$p['year']; ?></div>
           <?php if ($p['theme_quote']): ?><p style="font-weight:700;margin:0"><?php echo ui_e($p['theme_quote']); ?></p><?php endif; ?>
           <p class="muted"><?php echo ui_e(ui_excerpt($p['description'], 230)); ?></p>
@@ -326,7 +326,7 @@ tick();setInterval(tick,1000);})();
             <?php if ($p['event_date_label']): ?><li><?php echo nufa_icon('calendar', 17); ?><span><?php echo ui_e($p['event_date_label']); ?></span></li><?php endif; ?>
             <?php if ($p['location_label']): ?><li><?php echo nufa_icon('pin', 17); ?><span><?php echo ui_e($p['location_label']); ?></span></li><?php endif; ?>
           </ul>
-          <a href="award.php?e=<?php echo ui_e($p['slug']); ?>" class="link-arrow">View edition</a>
+          <a href="award.php?e=<?php echo ui_e($p['slug']); ?>" class="link-arrow"><?php echo cms_t('awards', 'archive_link'); ?></a>
         </div>
       </article>
       <?php endforeach; ?>
@@ -341,7 +341,7 @@ tick();setInterval(tick,1000);})();
   $wayIcons = ['film', 'users', 'heart', 'handshake', 'star', 'camera', 'compass']; ?>
 <section class="section" id="takepart">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Take part</div><h2><?php echo cms_t('awards', 'takepart_heading'); ?></h2><p><?php echo cms_t('awards', 'takepart_intro'); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'takepart_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'takepart_heading'); ?></h2><p><?php echo cms_t('awards', 'takepart_intro'); ?></p></div>
     <div class="grid grid-3" data-reveal-stagger>
       <?php foreach ($ways as $i => $w): ?>
       <div class="value"><span class="icon-circle"><?php echo nufa_icon($wayIcons[$i % count($wayIcons)], 24); ?></span><h3><?php echo ui_e($w['t']); ?></h3><p><?php echo ui_e($w['d']); ?></p>
@@ -352,32 +352,32 @@ tick();setInterval(tick,1000);})();
 </section><?php endif; ?>
 
 <?php if (nufa_show('awards', 'judging')): ?><section class="section section--soft" id="judging">
-  <div class="container"><div class="section-head" data-reveal><div class="eyebrow">Rules &amp; criteria</div><h2><?php echo cms_t('awards', 'judging_heading'); ?></h2></div>
+  <div class="container"><div class="section-head" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'judging_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'judging_heading'); ?></h2></div>
     <div class="stack" data-reveal><?php echo cms_value('awards', 'judging_body'); ?></div></div>
 </section><?php endif; ?>
 
 <?php if (nufa_show('awards', 'submissions')):
   $st = $AW['awd_sub_status']; $subUrl = trim($AW['awd_sub_url']) !== '' ? $AW['awd_sub_url'] : trim(cms_value('awards', 'submission_url'));
-  $stLabel = ['soon' => 'Opening soon', 'open' => 'Open for submissions', 'closed' => 'Submissions closed'][$st] ?? 'Opening soon'; ?>
+  $stLabel = ['soon' => cms_value('awards', 'submit_status_soon'), 'open' => cms_value('awards', 'submit_status_open'), 'closed' => cms_value('awards', 'submit_status_closed')][$st] ?? cms_value('awards', 'submit_status_soon'); $tba = cms_value('awards', 'submit_tba'); ?>
 <section class="section" id="submissions">
   <div class="container split">
     <div data-reveal>
-      <div class="eyebrow">Submission portal</div><h2><?php echo cms_t('awards', 'submit_heading'); ?></h2>
+      <div class="eyebrow"><?php echo cms_t('awards', 'submit_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'submit_heading'); ?></h2>
       <span class="chip chip--<?php echo $st === 'open' ? 'operational' : 'dark'; ?>"><?php echo ui_e($stLabel); ?></span>
       <ul class="fact-list">
-        <li><b>Opens</b><span><?php echo ui_e($AW['awd_sub_opens'] ?: 'To be announced'); ?></span></li>
-        <li><b>Deadline</b><span><?php echo ui_e($AW['awd_sub_deadline'] ?: 'To be announced'); ?></span></li>
-        <li><b>Entry fee</b><span><?php echo ui_e($AW['awd_sub_fee'] ?: 'To be announced'); ?></span></li>
+        <li><b><?php echo cms_t('awards', 'submit_label_opens'); ?></b><span><?php echo ui_e($AW['awd_sub_opens'] ?: $tba); ?></span></li>
+        <li><b><?php echo cms_t('awards', 'submit_label_deadline'); ?></b><span><?php echo ui_e($AW['awd_sub_deadline'] ?: $tba); ?></span></li>
+        <li><b><?php echo cms_t('awards', 'submit_label_fee'); ?></b><span><?php echo ui_e($AW['awd_sub_fee'] ?: $tba); ?></span></li>
       </ul>
       <div class="actions mt-2">
-        <?php if ($st === 'open' && $subUrl !== ''): ?><a href="<?php echo ui_e($subUrl); ?>" class="btn btn-gold" target="_blank" rel="noopener">Submit your film</a><?php endif; ?>
-        <a href="<?php echo $AW['awd_sub_email'] !== '' ? 'mailto:' . ui_e($AW['awd_sub_email']) : 'contact.php?topic=Awards'; ?>" class="btn btn-outline-dark">Ask about submissions</a>
+        <?php if ($st === 'open' && $subUrl !== ''): ?><a href="<?php echo ui_e($subUrl); ?>" class="btn btn-gold" target="_blank" rel="noopener"><?php echo cms_t('awards', 'submit_btn_submit'); ?></a><?php endif; ?>
+        <a href="<?php echo $AW['awd_sub_email'] !== '' ? 'mailto:' . ui_e($AW['awd_sub_email']) : 'contact.php?topic=Awards'; ?>" class="btn btn-outline-dark"><?php echo cms_t('awards', 'submit_btn_ask'); ?></a>
       </div>
-      <?php if ($st !== 'open'): ?><p class="muted" style="margin-top:14px"><?php echo $st === 'closed' ? 'Submissions are closed for now. Watch the road map for the next call for entries.' : 'The submission portal opens once the call for entries is announced. Become a member or join the mailing list to hear first.'; ?></p><?php endif; ?>
+      <?php if ($st !== 'open'): ?><p class="muted" style="margin-top:14px"><?php echo $st === 'closed' ? cms_t('awards', 'submit_note_closed') : cms_t('awards', 'submit_note_soon'); ?></p><?php endif; ?>
     </div>
     <div data-reveal>
-      <div class="info-card"><h3>Who can submit</h3><?php echo trim($AW['awd_sub_eligibility']) !== '' ? '<div class="stack">' . ui_paragraphs($AW['awd_sub_eligibility']) . '</div>' : '<p class="muted">Eligibility rules will be published here once confirmed.</p>'; ?></div>
-      <div class="info-card"><h3>Submission guidelines</h3><?php echo trim($AW['awd_sub_guidelines']) !== '' ? ui_list($AW['awd_sub_guidelines']) : '<p class="muted">Guidelines on format, length, language and what to upload will be published here.</p>'; ?></div>
+      <div class="info-card"><h3><?php echo cms_t('awards', 'submit_who_title'); ?></h3><?php echo trim($AW['awd_sub_eligibility']) !== '' ? '<div class="stack">' . ui_paragraphs($AW['awd_sub_eligibility']) . '</div>' : '<p class="muted">' . cms_t('awards', 'submit_who_empty') . '</p>'; ?></div>
+      <div class="info-card"><h3><?php echo cms_t('awards', 'submit_guide_title'); ?></h3><?php echo trim($AW['awd_sub_guidelines']) !== '' ? ui_list($AW['awd_sub_guidelines']) : '<p class="muted">' . cms_t('awards', 'submit_guide_empty') . '</p>'; ?></div>
     </div>
   </div>
 </section><?php endif; ?>
@@ -385,34 +385,34 @@ tick();setInterval(tick,1000);})();
 <?php if (nufa_show('awards', 'tickets')):
   $tst = $AW['awd_tix_status']; $tiers = awd_tiers($AW['awd_tix_tiers']);
   if (!$tiers && trim((string)($cfg['ticket_price'] ?? '')) !== '') $tiers[] = ['name' => 'General admission', 'price' => 'UGX ' . $cfg['ticket_price'], 'note' => ''];
-  $tstLabel = ['soon' => 'Tickets coming soon', 'on_sale' => 'On sale now', 'sold_out' => 'Sold out', 'closed' => 'Sales closed'][$tst] ?? 'Tickets coming soon';
+  $tstLabel = ['soon' => cms_value('awards', 'tickets_status_soon'), 'on_sale' => cms_value('awards', 'tickets_status_on_sale'), 'sold_out' => cms_value('awards', 'tickets_status_sold_out'), 'closed' => cms_value('awards', 'tickets_status_closed')][$tst] ?? cms_value('awards', 'tickets_status_soon');
   $tixVenue = trim($AW['awd_tix_venue']) !== '' ? $AW['awd_tix_venue'] : ($nextEd ? trim($nextEd['event_date_label'] . ($nextEd['event_date_label'] && $nextEd['location_label'] ? ' · ' : '') . $nextEd['location_label']) : ''); ?>
 <section class="section section--soft" id="tickets">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Tickets</div><h2><?php echo cms_t('awards', 'tickets_heading'); ?></h2><span class="chip chip--<?php echo $tst === 'on_sale' ? 'operational' : 'dark'; ?>"><?php echo ui_e($tstLabel); ?></span><?php if ($tixVenue !== ''): ?><p><?php echo nufa_icon('pin', 16); ?> <?php echo ui_e($tixVenue); ?></p><?php endif; ?></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'tickets_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'tickets_heading'); ?></h2><span class="chip chip--<?php echo $tst === 'on_sale' ? 'operational' : 'dark'; ?>"><?php echo ui_e($tstLabel); ?></span><?php if ($tixVenue !== ''): ?><p><?php echo nufa_icon('pin', 16); ?> <?php echo ui_e($tixVenue); ?></p><?php endif; ?></div>
     <div class="split" style="align-items:start">
       <div data-reveal>
         <?php if ($tiers): ?><div class="tier-list"><?php foreach ($tiers as $t): ?><div class="tier"><div><b><?php echo ui_e($t['name']); ?></b><?php if ($t['note']): ?><span><?php echo ui_e($t['note']); ?></span><?php endif; ?></div><em><?php echo ui_e($t['price']); ?></em></div><?php endforeach; ?></div>
-        <?php else: echo $ph('Ticket types and prices will be published here once sales are announced.'); endif; ?>
-        <div class="info-card" style="margin-top:20px"><h3>How to book</h3><?php echo trim($AW['awd_tix_howto']) !== '' ? '<div class="stack">' . ui_paragraphs($AW['awd_tix_howto']) . '</div>' : '<p class="muted">Booking and payment instructions will be published here. You can already send a request using the form and the team will reply with details.</p>'; ?></div>
-        <?php if ($tst === 'on_sale' && trim($AW['awd_tix_url']) !== ''): ?><div class="actions mt-2"><a class="btn btn-gold" href="<?php echo ui_e($AW['awd_tix_url']); ?>" target="_blank" rel="noopener">Buy tickets online</a></div><?php endif; ?>
+        <?php else: echo $ph(cms_value('awards', 'tickets_empty')); endif; ?>
+        <div class="info-card" style="margin-top:20px"><h3><?php echo cms_t('awards', 'tickets_howto_title'); ?></h3><?php echo trim($AW['awd_tix_howto']) !== '' ? '<div class="stack">' . ui_paragraphs($AW['awd_tix_howto']) . '</div>' : '<p class="muted">' . cms_t('awards', 'tickets_howto_empty') . '</p>'; ?></div>
+        <?php if ($tst === 'on_sale' && trim($AW['awd_tix_url']) !== ''): ?><div class="actions mt-2"><a class="btn btn-gold" href="<?php echo ui_e($AW['awd_tix_url']); ?>" target="_blank" rel="noopener"><?php echo cms_t('awards', 'tickets_btn_buy'); ?></a></div><?php endif; ?>
       </div>
       <?php if ($AW['awd_tix_booking_form'] === '1'): ?>
       <div class="form-card" data-reveal>
-        <h3 style="margin-top:0">Request tickets</h3>
-        <?php echo form_banner($tixSent, $tixErrors, 'Your request has been received. The NUFA team will contact you with booking and payment details. No payment is taken on this page.'); ?>
+        <h3 style="margin-top:0"><?php echo cms_t('awards', 'tickets_form_title'); ?></h3>
+        <?php echo form_banner($tixSent, $tixErrors, cms_value('awards', 'tickets_form_success')); ?>
         <?php if (!$tixSent): ?>
         <form method="post" action="awards.php#tickets"><input type="hidden" name="form" value="tickets"><?php echo form_open_fields(); ?>
           <div class="form-grid">
-            <?php echo f_input('name', 'Full name', ['required' => true, 'autocomplete' => 'name']); ?>
-            <?php echo f_input('email', 'Email address', ['type' => 'email', 'required' => true, 'autocomplete' => 'email']); ?>
-            <?php echo f_input('phone', 'Phone / WhatsApp', ['type' => 'tel', 'required' => true, 'autocomplete' => 'tel']); ?>
-            <?php echo $tiers ? f_select('ticket_type', 'Ticket type', array_column($tiers, 'name')) : f_input('ticket_type', 'Ticket type (optional)'); ?>
-            <?php echo f_input('qty', 'Number of tickets', ['type' => 'number', 'default' => '1']); ?>
+            <?php echo f_input('name', cms_value('awards', 'tickets_form_name'), ['required' => true, 'autocomplete' => 'name']); ?>
+            <?php echo f_input('email', cms_value('awards', 'tickets_form_email'), ['type' => 'email', 'required' => true, 'autocomplete' => 'email']); ?>
+            <?php echo f_input('phone', cms_value('awards', 'tickets_form_phone'), ['type' => 'tel', 'required' => true, 'autocomplete' => 'tel']); ?>
+            <?php echo $tiers ? f_select('ticket_type', cms_value('awards', 'tickets_form_type'), array_column($tiers, 'name')) : f_input('ticket_type', cms_value('awards', 'tickets_form_type') . ' (optional)'); ?>
+            <?php echo f_input('qty', cms_value('awards', 'tickets_form_qty'), ['type' => 'number', 'default' => '1']); ?>
           </div>
-          <?php echo f_textarea('message', 'Anything we should know?', ['maxlength' => 1000]); ?>
-          <?php echo f_check('consent', 'I agree that NUFA may contact me about my ticket request.'); ?>
-          <button class="btn btn-gold btn-block" type="submit">Send ticket request</button>
+          <?php echo f_textarea('message', cms_value('awards', 'tickets_form_message'), ['maxlength' => 1000]); ?>
+          <?php echo f_check('consent', cms_value('awards', 'tickets_form_consent')); ?>
+          <button class="btn btn-gold btn-block" type="submit"><?php echo cms_t('awards', 'tickets_form_btn'); ?></button>
         </form><?php endif; ?>
       </div><?php endif; ?>
     </div>
@@ -423,7 +423,7 @@ tick();setInterval(tick,1000);})();
   $awTeam = $conn->query("SELECT * FROM team_members WHERE is_active=1 AND category='" . AWD_TEAM_CATEGORY . "' ORDER BY sort_order, id")->fetch_all(MYSQLI_ASSOC); ?>
 <section class="section" id="team">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Technical team</div><h2><?php echo cms_t('awards', 'tech_heading'); ?></h2><p><?php echo cms_t('awards', 'tech_intro'); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'tech_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'tech_heading'); ?></h2><p><?php echo cms_t('awards', 'tech_intro'); ?></p></div>
     <?php if (!$awTeam): echo $ph(cms_value('awards', 'tech_empty')); else: ?>
     <div class="guest-grid team-grid" data-reveal-stagger>
       <?php foreach ($awTeam as $m): $mp = $img($m['photo'] ?? '') ?: ((!empty($m['photo']) && is_file(__DIR__ . '/assets/images/uploads/team/' . $m['photo'])) ? 'uploads/team/' . $m['photo'] : ''); ?>
@@ -436,19 +436,19 @@ tick();setInterval(tick,1000);})();
 </section><?php endif; ?>
 
 <?php if (nufa_show('awards', 'faq')): ?><section class="section" id="faq">
-  <div class="container narrow"><div class="section-head center" data-reveal><div class="eyebrow">FAQ</div><h2><?php echo cms_t('awards', 'faq_heading'); ?></h2></div>
+  <div class="container narrow"><div class="section-head center" data-reveal><div class="eyebrow"><?php echo cms_t('awards', 'faq_eyebrow'); ?></div><h2><?php echo cms_t('awards', 'faq_heading'); ?></h2></div>
     <div class="faq" data-reveal><?php echo cms_value('awards', 'faq_html'); ?></div></div>
 </section><?php endif; ?>
 
 <?php if ($awardNews): ?>
 <?php if (nufa_show('awards', 'news')): ?><section class="section section--soft">
   <div class="container">
-    <div class="section-head" style="max-width:none;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap"><div><div class="eyebrow">Awards news</div><h2 class="mb-0">News &amp; announcements</h2></div><a class="link-arrow" href="news.php?cat=NUFA+Awards">All awards news</a></div>
+    <div class="section-head" style="max-width:none;display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap"><div><div class="eyebrow"><?php echo cms_t('awards', 'news_eyebrow'); ?></div><h2 class="mb-0"><?php echo cms_t('awards', 'news_heading'); ?></h2></div><a class="link-arrow" href="news.php?cat=NUFA+Awards"><?php echo cms_t('awards', 'news_link'); ?></a></div>
     <div class="grid grid-3" data-reveal-stagger>
       <?php foreach ($awardNews as $p): ?>
       <article class="card"><a href="post.php?slug=<?php echo urlencode($p['slug']); ?>" style="display:flex;flex-direction:column;height:100%">
         <div class="card-media"><?php echo ui_img($p['image'], ''); ?></div>
-        <div class="card-body"><div class="card-meta"><b><?php echo ui_e($p['category']); ?></b><span><?php echo ui_date($p['published_at']); ?></span></div><h3><?php echo ui_e($p['title']); ?></h3><span class="link-arrow">Read story</span></div></a></article>
+        <div class="card-body"><div class="card-meta"><b><?php echo ui_e($p['category']); ?></b><span><?php echo ui_date($p['published_at']); ?></span></div><h3><?php echo ui_e($p['title']); ?></h3><span class="link-arrow"><?php echo cms_t('awards', 'news_read'); ?></span></div></a></article>
       <?php endforeach; ?>
     </div>
   </div>
