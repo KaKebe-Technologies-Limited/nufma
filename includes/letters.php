@@ -37,7 +37,7 @@ function ltr_install($conn) {
 
 function ltr_defaults() {
     return [
-        'lt_ref_prefix' => 'NUFA/INV',
+        'lt_ref_prefix' => 'NUFA/INV', 'lt_letterhead' => '',
         'lt_signer_name' => '', 'lt_signer_title' => 'President, Northern Uganda Filmmakers Association', 'lt_signature' => '',
         'lt_rsvp' => 'Kindly confirm your attendance by replying to this letter, calling {phone} or emailing {email}.',
         'lt_closing' => 'Please accept the assurances of our highest regard.',
@@ -79,6 +79,13 @@ function ltr_generate($conn, array $d) {
 
 function ltr_link($l) { return mem_site_url() . '/invitation-letter.php?t=' . $l['token']; }
 
+/** The NUFA letterhead picture (logo + name + address block). An admin can upload a replacement in Invitation letters → Letterhead. */
+function ltr_letterhead($conn) {
+    $S = ltr_settings($conn);
+    if ($S['lt_letterhead'] !== '' && is_file(__DIR__ . '/../assets/images/' . $S['lt_letterhead'])) return $S['lt_letterhead'];
+    return 'letterhead/nufa-letterhead.png';
+}
+
 /** Signature image path (relative to assets/images/) and signer details. */
 function ltr_signer($conn) {
     $S = ltr_settings($conn); $M = mem_settings($conn);
@@ -99,9 +106,8 @@ function ltr_html($conn, array $l, array $o = []) {
 <style>
 .ltr-sheet{width:210mm;min-height:297mm;margin:0 auto;background:#fff;color:#1a1a1a;font-family:Georgia,'Times New Roman',serif;position:relative;box-sizing:border-box;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.18)}
 .ltr-sheet *{box-sizing:border-box}
-.ltr-head{padding:14mm 18mm 5mm;display:flex;align-items:center;gap:6mm;border-bottom:1.6mm solid #D50000;position:relative}
-.ltr-head::after{content:"";position:absolute;left:0;bottom:-3.4mm;height:1.1mm;width:34%;background:#FF7900}
-.ltr-head img{width:26mm;height:26mm;object-fit:contain}
+.ltr-head{padding:10mm 18mm 4mm;border-bottom:1.2mm solid #D50000;position:relative}.ltr-lh{display:block;width:100%;height:auto}
+.ltr-head::after{content:"";position:absolute;left:0;bottom:-3mm;height:.9mm;width:34%;background:#FF7900}
 .ltr-org{flex:1;font-family:Montserrat,Arial,sans-serif}.ltr-org b{display:block;white-space:nowrap;font-size:5.4mm;letter-spacing:.4mm;font-weight:900;color:#111;line-height:1.1}.ltr-org span{display:block;font-size:3.1mm;letter-spacing:.7mm;text-transform:uppercase;color:#D50000;font-weight:700;margin-top:1.4mm}.ltr-org i{display:block;font-style:normal;font-size:2.9mm;color:#555;margin-top:1.4mm}
 .ltr-contact{flex:none;max-width:54mm;font-family:Arial,sans-serif;font-size:2.7mm;line-height:1.55;color:#333;text-align:right}
 .ltr-body{padding:12mm 20mm 6mm;font-size:3.9mm;line-height:1.65;flex:1}
@@ -114,9 +120,7 @@ function ltr_html($conn, array $l, array $o = []) {
 @media print{@page{size:A4;margin:0}.ltr-sheet{box-shadow:none;width:210mm;min-height:297mm}body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 </style>
 <div class="ltr-sheet">
-  <div class="ltr-head"><img src="<?php echo $e($pre); ?>assets/images/logo/nufa-logo.png" alt="NUFA">
-    <div class="ltr-org"><b>NORTHERN UGANDA<br>FILMMAKERS ASSOCIATION</b><span>NUFA</span><i>Our Stories. Our Culture. Our Future.</i></div>
-    <div class="ltr-contact"><?php echo $e($C['site_address'] ?? ''); ?><br><?php echo $e(trim(($C['site_phone'] ?? '') . (($C['site_phone2'] ?? '') ? ' / ' . $C['site_phone2'] : ''))); ?><br><?php echo $e($C['site_email'] ?? ''); ?><br><?php echo $e($site); ?></div></div>
+  <div class="ltr-head"><img class="ltr-lh" src="<?php echo $e($pre); ?>assets/images/<?php echo $e(ltr_letterhead($conn)); ?>" alt="Northern Uganda Filmmakers Association (NUFA) — Plot 75, Jomo Kenyatta Road, Gulu City, Uganda"></div>
   <div class="ltr-body">
     <div class="ltr-meta"><span><b>Our ref:</b> <?php echo $e($l['ref']); ?></span><span><b>Date:</b> <?php echo $e(date('j F Y', strtotime($l['letter_date'] ?: date('Y-m-d')))); ?></span></div>
     <div class="ltr-to"><?php $first = true; foreach ($to as $line): echo $first ? '<b>' . $e($line) . '</b>' : '<br>' . $e($line); $first = false; endforeach; ?></div>
@@ -136,9 +140,7 @@ function ltr_email_html($conn, array $l) {
     $to = array_filter([trim(($l['honorific'] ? $l['honorific'] . ' ' : '') . $l['recipient_name']), $l['position'], $l['organisation']]);
     $site = preg_replace('#^https?://#', '', rtrim($C['site_website'] ?? '', '/'));
     $h = '<div style="background:#f2f2f2;padding:20px 8px;font-family:Georgia,\'Times New Roman\',serif"><table role="presentation" width="640" align="center" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#fff;border-collapse:collapse;color:#1a1a1a">'
-        . '<tr><td style="padding:22px 28px 12px;border-bottom:4px solid #D50000"><table role="presentation" width="100%"><tr><td width="84" valign="middle"><img src="' . $e($base) . '/assets/images/logo/nufa-logo.png" width="76" height="76" alt="NUFA" style="display:block"></td>'
-        . '<td valign="middle" style="font-family:Arial,sans-serif"><div style="font-size:19px;font-weight:900;letter-spacing:.5px;color:#111;line-height:1.15">NORTHERN UGANDA<br>FILMMAKERS ASSOCIATION</div><div style="font-size:11px;letter-spacing:2px;color:#D50000;font-weight:bold;margin-top:5px">NUFA</div></td>'
-        . '<td valign="middle" align="right" style="font-family:Arial,sans-serif;font-size:11px;line-height:1.6;color:#444">' . $e($C['site_address'] ?? '') . '<br>' . $e($C['site_phone'] ?? '') . '<br>' . $e($C['site_email'] ?? '') . '</td></tr></table></td></tr>'
+        . '<tr><td style="padding:18px 28px 10px;border-bottom:4px solid #D50000"><img src="' . $e($base) . '/assets/images/' . $e(ltr_letterhead($conn)) . '" width="584" alt="Northern Uganda Filmmakers Association (NUFA)" style="display:block;width:100%;max-width:584px;height:auto"></td></tr>'
         . '<tr><td style="padding:22px 28px 6px;font-size:15px"><table role="presentation" width="100%" style="font-family:Arial,sans-serif;font-size:12px;margin-bottom:18px"><tr><td><b>Our ref:</b> ' . $e($l['ref']) . '</td><td align="right"><b>Date:</b> ' . $e(date('j F Y', strtotime($l['letter_date'] ?: date('Y-m-d')))) . '</td></tr></table>'
         . '<p style="margin:0 0 18px;line-height:1.5">' . implode('<br>', array_map(fn($x, $i) => $i === 0 ? '<b>' . $e($x) . '</b>' : $e($x), array_values($to), array_keys(array_values($to)))) . '</p>' . $paras
         . '<div style="margin-top:22px">' . ($sg['sig'] ? '<img src="' . $e($base) . '/assets/images/' . $e($sg['sig']) . '" height="56" alt="Signature" style="display:block">' : '<div style="height:44px"></div>') . '<div style="width:220px;border-top:1px solid #222;margin:3px 0 4px"></div><b>' . $e($sg['name']) . '</b><br><span style="color:#555;font-size:13px">' . $e($sg['title']) . '</span></div>'

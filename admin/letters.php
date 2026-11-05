@@ -56,6 +56,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($act === 'settings') {
             $save = function ($k, $v) use ($conn) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param("ss", $k, $v); $s->execute(); };
             foreach (['lt_ref_prefix', 'lt_signer_name', 'lt_signer_title', 'lt_rsvp', 'lt_closing', 'lt_template'] as $k) $save($k, trim($_POST[$k] ?? ''));
+            $lhDir = __DIR__ . "/../assets/images/uploads/letterhead/";
+            if (!empty($_POST['remove_letterhead']) && $S['lt_letterhead']) { @unlink(__DIR__ . "/../assets/images/" . $S['lt_letterhead']); $save('lt_letterhead', ''); }
+            if (!empty($_FILES['lt_letterhead']['name'])) {
+                [$lf, $le] = mem_store_upload($_FILES['lt_letterhead'], MEM_IMG_TYPES, 4 * 1048576, 'letterhead', $lhDir);
+                if ($le) { $flash = 'Letterhead: ' . $le; $flashType = 'err'; } else { if ($S['lt_letterhead']) @unlink(__DIR__ . "/../assets/images/" . $S['lt_letterhead']); $save('lt_letterhead', 'uploads/letterhead/' . $lf); }
+            }
             $sigDir = __DIR__ . "/../assets/images/uploads/signature/";
             if (!empty($_POST['remove_signature']) && $S['lt_signature']) { @unlink(__DIR__ . "/../assets/images/" . $S['lt_signature']); $save('lt_signature', ''); }
             if (!empty($_FILES['lt_signature']['name'])) {
@@ -157,8 +163,9 @@ $eventFields = function ($v = []) use ($e) { ?>
   </form></div>
 
 <?php elseif ($tab === 'settings'): ?>
-<div class="admin-card"><div class="admin-card-head"><h2>Letterhead &amp; template</h2><span class="admin-help">The letterhead uses the NUFA logo and the address, phones and email from Site settings.</span></div>
+<div class="admin-card"><div class="admin-card-head"><h2>Letterhead &amp; template</h2><span class="admin-help">Letters use the official NUFA letterhead picture below.</span></div>
   <form method="post" enctype="multipart/form-data" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="settings">
+    <div class="field"><label>Letterhead picture (shown at the top of every letter and email — about 4.5 × wider than tall)</label><input data-no-picker type="file" name="lt_letterhead" accept="image/png,image/jpeg,image/webp"><div style="margin-top:8px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;display:inline-block"><img src="../assets/images/<?php echo $e(ltr_letterhead($conn)); ?>" alt="" style="max-width:100%;height:70px"></div><?php if ($S['lt_letterhead']): ?> <label style="display:inline-flex;gap:6px;align-items:center;margin-left:10px"><input type="checkbox" name="remove_letterhead" value="1"> Go back to the NUFA letterhead</label><?php else: ?><span class="admin-help"> The official NUFA letterhead is in use.</span><?php endif; ?></div>
     <div class="admin-form-grid">
       <div class="field"><label>Signed by (name)</label><input name="lt_signer_name" value="<?php echo $e($S['lt_signer_name']); ?>" placeholder="Blank = the president's name from Membership settings"></div>
       <div class="field"><label>Signer's title</label><input name="lt_signer_title" value="<?php echo $e($S['lt_signer_title']); ?>"></div>
