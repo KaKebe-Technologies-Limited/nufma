@@ -199,8 +199,15 @@ $regBtn = $appsOpen
 <?php if (nufa_show('sacco', 'regulatory')): ?><section class="section section--soft" id="regulatory">
   <div class="container" style="max-width:900px">
     <div class="section-head" data-reveal><div class="eyebrow">Regulatory information</div><h2>Registration &amp; authorisation</h2></div>
-    <?php if ($reg): ?><table class="data" style="margin-bottom:20px"><tbody><?php foreach ($reg as $k => $v): ?><tr><th style="width:240px"><?php echo ui_e($k); ?></th><td><?php echo ui_e($v); ?></td></tr><?php endforeach; ?></tbody></table><?php endif; ?>
+    <?php if ($reg): $__k = array_keys($reg); $__first = array_shift($__k); ?>
+    <style>.reg-card{background:#fff;border:1px solid #e6e6e6;border-radius:18px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.06)}.reg-name{padding:26px 28px;border-left:6px solid var(--nufa-primary,#D50000);background:linear-gradient(90deg,#FFF6F0,#fff)}.reg-name small,.reg-tile small{display:block;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;font-weight:800;color:#8a8a8a;margin-bottom:6px}.reg-name b{display:block;font-size:1.15rem;line-height:1.4;letter-spacing:.02em}.reg-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));border-top:1px solid #eee}.reg-tile{padding:20px 28px;border-right:1px solid #eee}.reg-tile:last-child{border-right:0}.reg-tile b{display:block;font-size:1.02rem;line-height:1.35}.reg-tile.ok b{color:#0E7A3F}.reg-tile.ok b::before{content:"\2713 ";font-weight:900}@media(max-width:640px){.reg-tile{border-right:0;border-bottom:1px solid #eee}}</style>
+    <div class="reg-card" data-reveal>
+      <div class="reg-name"><small><?php echo ui_e($__first); ?></small><b><?php echo ui_e($reg[$__first]); ?></b></div>
+      <?php if ($__k): ?><div class="reg-grid"><?php foreach ($__k as $k): $ok = (bool)preg_match('/licen[cs]e|authori|status/i', $k); ?><div class="reg-tile<?php echo $ok ? ' ok' : ''; ?>"><small><?php echo ui_e($k); ?></small><b><?php echo ui_e($reg[$k]); ?></b></div><?php endforeach; ?></div><?php endif; ?>
+    </div>
+    <?php else: ?>
     <div class="stack"><?php echo cms_h('sacco', 'regulatory_note'); ?></div>
+    <?php endif; ?>
   </div>
 </section><?php endif; ?>
 
