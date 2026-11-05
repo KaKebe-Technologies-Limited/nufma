@@ -77,6 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         } elseif ($act === 'settings') {
             $save = function ($k, $v) use ($conn) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param("ss", $k, $v); $s->execute(); };
+            $save('lt_show_signature', isset($_POST['lt_show_signature']) ? '1' : '0');
             foreach (['lt_ref_prefix', 'lt_signer_name', 'lt_signer_title', 'lt_rsvp', 'lt_closing', 'lt_template'] as $k) $save($k, trim($_POST[$k] ?? ''));
             $lhDir = __DIR__ . "/../assets/images/uploads/letterhead/";
             if (!empty($_POST['remove_letterhead']) && $S['lt_letterhead']) { @unlink(__DIR__ . "/../assets/images/" . $S['lt_letterhead']); $save('lt_letterhead', ''); }
@@ -202,6 +203,7 @@ $eventFields = function ($v = []) use ($e) { ?>
 <div class="admin-card"><div class="admin-card-head"><h2>Letterhead &amp; template</h2><span class="admin-help">Letters use the official NUFA letterhead picture below.</span></div>
   <form method="post" enctype="multipart/form-data" class="admin-form"><?php echo mem_csrf_field(); ?><input type="hidden" name="action" value="settings">
     <div class="field"><label>Letterhead picture (shown at the top of every letter and email — about 4.5 × wider than tall)</label><input data-no-picker type="file" name="lt_letterhead" accept="image/png,image/jpeg,image/webp"><div style="margin-top:8px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:8px;display:inline-block"><img src="../assets/images/<?php echo $e(ltr_letterhead($conn)); ?>" alt="" style="max-width:100%;height:70px"></div><?php if ($S['lt_letterhead']): ?> <label style="display:inline-flex;gap:6px;align-items:center;margin-left:10px"><input type="checkbox" name="remove_letterhead" value="1"> Go back to the NUFA letterhead</label><?php else: ?><span class="admin-help"> The official NUFA letterhead is in use.</span><?php endif; ?></div>
+    <label style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" name="lt_show_signature" value="1" <?php echo $S['lt_show_signature'] === '1' ? 'checked' : ''; ?>> Print the signature block (signature picture, name and title) at the bottom of the letter</label>
     <div class="admin-form-grid">
       <div class="field"><label>Signed by (name)</label><input name="lt_signer_name" value="<?php echo $e($S['lt_signer_name']); ?>" placeholder="Blank = the president's name from Membership settings"></div>
       <div class="field"><label>Signer's title</label><input name="lt_signer_title" value="<?php echo $e($S['lt_signer_title']); ?>"></div>
