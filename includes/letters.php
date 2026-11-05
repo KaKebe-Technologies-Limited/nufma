@@ -33,6 +33,19 @@ function ltr_install($conn) {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE KEY uq_token (token), KEY idx_created (created_at)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+    // one-time: drop the "presence and counsel / RSVP" paragraph and the closing line from the saved template and from existing letters
+    $fl = $conn->query("SELECT 1 FROM settings WHERE setting_key='ltr_trim_v1'");
+    if ($fl && !$fl->num_rows) {
+        $conn->query("DELETE FROM settings WHERE setting_key='lt_template' AND setting_value LIKE '%Your presence and counsel%'");
+        $rs = $conn->query("SELECT id, body FROM invitation_letters");
+        if ($rs) foreach ($rs->fetch_all(MYSQLI_ASSOC) as $r) {
+            $b = preg_replace('/\n*Your presence and counsel will be highly valued[^\n]*(\n|$)/u', "\n", (string)$r['body']);
+            $b = preg_replace('/\n*Please accept the assurances of our highest regard\.?\s*$/u', '', $b);
+            $b = trim(preg_replace("/\n{3,}/", "\n\n", $b));
+            if ($b !== trim((string)$r['body'])) { $u = $conn->prepare("UPDATE invitation_letters SET body=? WHERE id=?"); $u->bind_param("si", $b, $r['id']); $u->execute(); }
+        }
+        $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('ltr_trim_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    }
     $c = $conn->query("SHOW COLUMNS FROM invitation_letters LIKE 'batch'");
     if ($c && !$c->num_rows) $conn->query("ALTER TABLE invitation_letters ADD COLUMN batch VARCHAR(30) NOT NULL DEFAULT '', ADD KEY idx_batch (batch)");
 }
@@ -50,7 +63,7 @@ function ltr_defaults() {
         'lt_signer_name' => '', 'lt_signer_title' => 'President, Northern Uganda Filmmakers Association', 'lt_signature' => '',
         'lt_rsvp' => 'Kindly confirm your attendance by replying to this letter, calling {phone} or emailing {email}.',
         'lt_closing' => 'Please accept the assurances of our highest regard.',
-        'lt_template' => "Dear {salutation},\n\nRE: INVITATION TO {EVENT}\n\nOn behalf of the Northern Uganda Filmmakers Association (NUFA), we are pleased to invite you{position_phrase} to {event}, to be held on {date}{time_phrase}{venue_phrase}.\n\n{purpose}\n\nYour presence and counsel will be highly valued by the association and the filmmakers we serve. {rsvp}\n\n{closing}",
+        'lt_template' => "Dear {salutation},\n\nRE: INVITATION TO {EVENT}\n\nOn behalf of the Northern Uganda Filmmakers Association (NUFA), we are pleased to invite you{position_phrase} to {event}, to be held on {date}{time_phrase}{venue_phrase}.\n\n{purpose}",
     ];
 }
 function ltr_settings($conn) {
