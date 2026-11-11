@@ -3,7 +3,13 @@ Disallow: /admin/
 Disallow: /includes/
 Disallow: /storage/
 Disallow: /card.php
+Disallow: /sacco-card.php
+Disallow: /invitation-letter.php
+Disallow: /track.php
+Disallow: /academy-portal.php
+Disallow: /academy-login.php
+Disallow: /academy-register.php
+Disallow: /film-status.php
 Allow: /
 
-# Replace with the live domain when deploying (the sitemap is generated dynamically)
 Sitemap: https://www.nufawards.com/sitemap.php

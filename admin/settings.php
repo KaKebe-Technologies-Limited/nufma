@@ -5,7 +5,7 @@ require __DIR__ . "/includes/auth.php";
 require __DIR__ . "/../includes/fonts.php";
 require_once __DIR__ . "/../includes/schema.php";
 
-$textKeys = ['site_email', 'site_phone', 'site_phone2', 'site_address', 'site_website', 'facebook_url', 'instagram_url', 'x_url', 'linkedin_url', 'youtube_url', 'ticket_price',
+$textKeys = ['site_email', 'site_phone', 'site_phone2', 'site_address', 'site_website', 'google_site_verification', 'facebook_url', 'instagram_url', 'x_url', 'linkedin_url', 'youtube_url', 'ticket_price',
              'impact1_value', 'impact1_label', 'impact2_value', 'impact2_label', 'impact3_value', 'impact3_label', 'impact4_value', 'impact4_label'];
 $switchKeys = ['tickets_open', 'vm_approved', 'policies_approved'];
 $err = '';
@@ -52,6 +52,7 @@ include __DIR__ . "/includes/admin-header.php";
       <div class="field"><label>Alternative telephone</label><input name="site_phone2" value="<?php echo $v('site_phone2'); ?>" placeholder="<?php echo $ph('site_phone2'); ?>"></div>
       <div class="field"><label>Website</label><input type="url" name="site_website" value="<?php echo $v('site_website'); ?>" placeholder="<?php echo $ph('site_website'); ?>"></div>
     </div>
+    <div class="field"><label>Google Search Console verification code</label><input name="google_site_verification" value="<?php echo $v('google_site_verification'); ?>" placeholder="e.g. aBc123… (only the code from the HTML tag)"><span class="admin-help">Paste the <b>content</b> value of the verification tag Google gives you. Sitemap address: <code>https://www.nufawards.com/sitemap.php</code></span></div>
     <div class="field"><label>Address</label><input name="site_address" value="<?php echo $v('site_address'); ?>" placeholder="<?php echo $ph('site_address'); ?>"></div>
   </div>
 

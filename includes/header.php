@@ -25,8 +25,8 @@ if (!isset($ogImage))   $ogImage = $cfg['og_default_image'] !== '' ? "assets/ima
 if (!isset($ogType))    $ogType = "website";
 if (!isset($canonicalPath)) $canonicalPath = basename($_SERVER['PHP_SELF']);
 
-$https = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
-$siteUrl = ($https ? 'https://' : 'http://') . ($_SERVER['HTTP_HOST'] ?? 'localhost') . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+require_once __DIR__ . "/seo.php";
+$siteUrl = nufa_site_base($cfg);
 $canonical = $siteUrl . '/' . ltrim($canonicalPath, '/');
 $font = nufa_get_font_preset($conn);
 $menu = nufa_menu($conn, 'header');
@@ -64,6 +64,8 @@ if (http_response_code() === 200) nufa_hit($conn, substr(preg_replace('/\.php$/'
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <?php endif; ?>
 <link rel="canonical" href="<?php echo $hx($canonical); ?>">
+<?php if (trim((string)($cfg['google_site_verification'] ?? '')) !== ''): ?><meta name="google-site-verification" content="<?php echo $hx(trim($cfg['google_site_verification'])); ?>">
+<?php endif; ?>
 <?php if (!empty($noindex)): ?><meta name="robots" content="noindex, follow"><?php endif; ?>
 
 <meta property="og:site_name" content="<?php echo $hx($cfg['site_name']); ?>">
