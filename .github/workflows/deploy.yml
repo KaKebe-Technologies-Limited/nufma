@@ -1,0 +1,76 @@
+name: Deploy to Hostinger
+
+# Every push to `main` is checked for PHP errors and, if clean, uploaded to the live site.
+# You can also run it by hand: GitHub → Actions → "Deploy to Hostinger" → Run workflow
+# (tick "dry run" the first time to see what WOULD change without touching the live site).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (list changes only, upload nothing)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: deploy-live
+  cancel-in-progress: false
+
+jobs:
+  lint:
+    name: Check PHP for errors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+      - name: Syntax-check every PHP file
+        run: |
+          status=0
+          while IFS= read -r -d '' f; do
+            out=$(php -l "$f" 2>&1) || { echo "$out"; status=1; }
+          done < <(find . -name '*.php' -not -path './.git/*' -print0)
+          exit $status
+
+  deploy:
+    name: Upload to the live site
+    needs: lint
+    runs-on: ubuntu-latest
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+    steps:
+      - name: Check the FTP secrets are set
+        id: chk
+        run: |
+          if [ -z "$FTP_SERVER" ]; then echo "FTP secrets are not set yet — skipping the upload (see docs/DEPLOYMENT.md)."; echo ok=false >> "$GITHUB_OUTPUT"; else echo ok=true >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/checkout@v4
+        if: steps.chk.outputs.ok == 'true'
+      - name: Upload changed files
+        if: steps.chk.outputs.ok == 'true'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          port: ${{ vars.FTP_PORT || 21 }}
+          server-dir: ${{ vars.FTP_DIR || '/public_html/' }}
+          dry-run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+          # kept with a .log name because the site's .htaccess already blocks *.log files from the public
+          state-name: .ftp-deploy-sync-state.log
+          # Never touch things that belong to the live site: its database login, member / learner / film uploads,
+          # photos uploaded in the admin, server rules, and repository-only files.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            docs/**
+            database/**
+            README.md
+            .htaccess
+            includes/db.config.php
+            storage/**
+            assets/images/uploads/**
