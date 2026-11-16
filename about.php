@@ -134,34 +134,47 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
 })();</script>
 </section><?php endif; ?>
 
-<?php if (nufa_show('about', 'leadership')): ?><section class="section section--dark" id="leadership">
+<?php if (nufa_show('about', 'leadership')): ?><section class="section section--dark lead-sec" id="leadership">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Leadership &amp; Governance</div><h2>The people guiding NUFA</h2><p><?php echo cms_t('about', 'leadership_note'); ?></p></div>
+    <div class="section-head center" data-reveal><div class="eyebrow">Leadership &amp; Governance</div><h2>The people guiding NUFA</h2><?php $__ln = trim((string)cms_t('about', 'leadership_note')); if ($__ln !== '' && stripos($__ln, 'The people guiding NUFA') !== 0): ?><p><?php echo $__ln; ?></p><?php endif; ?></div>
     <?php if (!$team): ?>
       <div class="empty-state" style="background:rgba(255,255,255,.05);border-color:var(--line-dark)"><h3>Leadership profiles coming soon</h3><p style="color:var(--muted-on-dark)">Profiles will be published once names, roles and portraits have been approved.</p></div>
     <?php else: ?>
+    <?php if (count($teamGroups) > 1): ?><div class="lead-tabs" role="tablist" aria-label="Filter the team"><button type="button" class="lead-tab is-active" data-g="all" role="tab">Everyone</button><?php foreach ($teamGroups as $__gi => $__gm): ?><button type="button" class="lead-tab" role="tab" data-g="g<?php echo (int)$__gi === $__gi ? $__gi : md5($__gi); ?>"><?php echo ui_e($__gi !== '' ? $__gi : 'Team'); ?></button><?php endforeach; ?></div><?php endif; ?>
     <?php foreach ($teamGroups as $gname => $members): ?>
-    <?php if ($gname !== "" && count($teamGroups) > 1): ?><h3 class="group-title" style="color:var(--gold);margin:44px 0 22px;font-size:1rem;letter-spacing:.14em;text-transform:uppercase"><?php echo ui_e($gname); ?></h3><?php endif; ?>
-    <div class="grid grid-4" data-reveal-stagger>
-      <?php foreach ($members as $m): ?>
-      <article class="leader-card">
-        <div class="photo"><?php if ($m['photo'] && is_file(__DIR__ . '/assets/images/' . $m['photo'])): ?><img src="assets/images/<?php echo ui_e($m['photo']); ?>" alt="Portrait of <?php echo ui_e($m['name']); ?>" width="600" height="750" loading="lazy"><?php endif; ?></div>
-        <h3 style="color:var(--white)"><?php echo ui_e($m['name']); ?></h3>
-        <div class="role" style="color:var(--gold)"><?php echo ui_e($m['role']); ?></div>
-        <?php if (!empty($m['bio'])): ?><p style="color:var(--muted-on-dark)"><?php echo ui_e(ui_excerpt($m['bio'], 140)); ?></p><a class="leader-link" href="profile.php?id=<?php echo (int)$m['id']; ?>" target="_blank" rel="noopener">Read profile &#8599;</a><?php endif; ?>
-        <?php if ($m['linkedin_url'] || $m['x_url'] || $m['facebook_url'] || $m['instagram_url']): ?>
-        <div class="social-row" style="justify-content:center;margin-top:12px">
-          <?php foreach (['linkedin_url' => ['LinkedIn', 'linkedin'], 'x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram']] as $k => [$l, $ic]) if ($m[$k]): ?>
-            <a href="<?php echo ui_e($m[$k]); ?>" target="_blank" rel="noopener" aria-label="<?php echo ui_e($m['name'] . ' on ' . $l); ?>"><?php echo nufa_icon($ic, 15); ?></a>
-          <?php endif; ?>
+    <div class="lead-group" data-g="g<?php echo (int)$gname === $gname ? $gname : md5($gname); ?>">
+    <?php if ($gname !== "" && count($teamGroups) > 1): ?><h3 class="lead-group-title"><span><?php echo ui_e($gname); ?></span></h3><?php endif; ?>
+    <div class="lead-grid">
+      <?php foreach ($members as $m):
+        $__has = $m['photo'] && is_file(__DIR__ . '/assets/images/' . $m['photo']);
+        $__ini = ''; foreach (array_slice(preg_split('/\s+/', trim($m['name'])), 0, 2) as $__w) $__ini .= mb_strtoupper(mb_substr($__w, 0, 1));
+        $__soc = $m['linkedin_url'] || $m['x_url'] || $m['facebook_url'] || $m['instagram_url']; ?>
+      <article class="lc" tabindex="0">
+        <div class="lc-photo<?php echo $__has ? '' : ' is-empty'; ?>">
+          <?php if ($__has): ?><img src="assets/images/<?php echo ui_e($m['photo']); ?>" alt="Portrait of <?php echo ui_e($m['name']); ?>" width="600" height="750" loading="lazy"><?php else: ?><span class="lc-initials" aria-hidden="true"><?php echo ui_e($__ini); ?></span><?php endif; ?>
+          <div class="lc-more">
+            <?php if (!empty($m['bio'])): ?><p><?php echo ui_e(ui_excerpt($m['bio'], 170)); ?></p><a class="lc-btn" href="profile.php?id=<?php echo (int)$m['id']; ?>" target="_blank" rel="noopener">Read full profile &#8599;</a>
+            <?php else: ?><p>Serving NUFA as <?php echo ui_e($m['role']); ?>.</p><?php endif; ?>
+            <?php if ($__soc): ?><div class="lc-soc"><?php foreach (['linkedin_url' => ['LinkedIn', 'linkedin'], 'x_url' => ['X', 'x'], 'facebook_url' => ['Facebook', 'facebook'], 'instagram_url' => ['Instagram', 'instagram']] as $k => [$l, $ic]) if ($m[$k]): ?><a href="<?php echo ui_e($m[$k]); ?>" target="_blank" rel="noopener" aria-label="<?php echo ui_e($m['name'] . ' on ' . $l); ?>"><?php echo nufa_icon($ic, 15); ?></a><?php endif; ?></div><?php endif; ?>
+          </div>
         </div>
-        <?php endif; ?>
+        <h3><?php echo ui_e($m['name']); ?></h3>
+        <div class="lc-role"><?php echo ui_e($m['role']); ?></div>
+        <?php if (!empty($m['bio'])): ?><span class="lc-hint">Tap or hover to read more</span><?php endif; ?>
       </article>
       <?php endforeach; ?>
+    </div>
     </div>
     <?php endforeach; ?>
     <?php endif; ?>
   </div>
+<script>(function(){
+  var sec=document.getElementById('leadership');if(!sec)return;
+  var tabs=[].slice.call(sec.querySelectorAll('.lead-tab')),groups=[].slice.call(sec.querySelectorAll('.lead-group'));
+  tabs.forEach(function(t){t.addEventListener('click',function(){var g=t.getAttribute('data-g');tabs.forEach(function(x){x.classList.toggle('is-active',x===t);});groups.forEach(function(x){x.style.display=(g==='all'||x.getAttribute('data-g')===g)?'':'none';});});});
+  var cards=[].slice.call(sec.querySelectorAll('.lc'));
+  cards.forEach(function(c){c.addEventListener('click',function(e){if(e.target.closest('a'))return;var on=c.classList.contains('is-open');cards.forEach(function(x){x.classList.remove('is-open');});if(!on)c.classList.add('is-open');});c.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();c.click();}});});
+})();</script>
 </section><?php endif; ?>
 
 <?php if (nufa_show('about', 'membership')): ?><section class="section" id="membership">
