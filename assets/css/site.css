@@ -1262,3 +1262,26 @@ body{color:var(--nufa-text);background:var(--nufa-white)}
 .vm-next:hover{background:#D50000;border-color:#D50000;color:#fff}
 @media(max-width:860px){.vm-stage{grid-template-columns:1fr}.vm-hexes{height:200px;width:min(100%,380px);margin:0 auto}.vm-hex{--w:150px}.vm-hex-in i{width:44px;height:44px}.vm-hex--0{left:2%;top:0}.vm-hex--1{right:2%;bottom:auto;top:0}.vm-slide{transform:translateY(14px)}}
 @media(prefers-reduced-motion:reduce){.vm-hex,.vm-slide{transition:none}}
+
+/* ---------- About: Core Values, circling orbit ---------- */
+.val-orbit{--s:clamp(320px,46vw,560px);--r:calc(var(--s)/2);position:relative;width:var(--s);height:var(--s);margin:56px auto 40px}
+.val-ring{position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(213,0,0,.3);animation:valSpin 70s linear infinite reverse}
+.val-ring--2{inset:11%;border:2px solid rgba(255,121,0,.18);animation:none}
+.val-track{position:absolute;inset:0;animation:valSpin 60s linear infinite}
+.val-node{position:absolute;left:50%;top:50%;width:68px;height:68px;margin:-34px 0 0 -34px;padding:0;border:0;background:none;cursor:pointer;transform:rotate(var(--a)) translateX(var(--r)) rotate(calc(var(--a) * -1))}
+.val-dot{display:flex;align-items:center;justify-content:center;width:100%;height:100%;border-radius:50%;background:#fff;color:#D50000;border:3px solid #fff;box-shadow:0 10px 26px rgba(0,0,0,.18);animation:valUnspin 60s linear infinite;transition:background .3s,color .3s,box-shadow .3s}
+.val-node:hover .val-dot,.val-node:focus-visible .val-dot{box-shadow:0 12px 30px rgba(213,0,0,.3)}
+.val-node.is-active .val-dot{background:linear-gradient(135deg,#FF7900,#D50000);color:#fff;box-shadow:0 0 0 8px rgba(213,0,0,.16),0 14px 32px rgba(213,0,0,.4)}
+.val-node:focus-visible{outline:none}.val-node:focus-visible .val-dot{outline:3px solid #FF7900;outline-offset:3px}
+.val-orbit.is-paused .val-track,.val-orbit.is-paused .val-dot,.val-orbit.is-paused .val-ring,.val-orbit.is-held .val-track,.val-orbit.is-held .val-dot,.val-orbit.is-held .val-ring{animation-play-state:paused}
+@keyframes valSpin{to{transform:rotate(360deg)}}
+@keyframes valUnspin{to{transform:rotate(-360deg)}}
+.val-hub{position:absolute;inset:17%;display:grid;border-radius:50%;background:radial-gradient(circle at 30% 25%,#1f1f1f,#0b0b0b);color:#fff;box-shadow:0 24px 60px rgba(0,0,0,.35);border:6px solid #fff;overflow:hidden}
+.val-card{grid-area:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 12%;opacity:0;visibility:hidden;transform:scale(.92);transition:opacity .45s,transform .45s,visibility .45s}
+.val-card.is-active{opacity:1;visibility:visible;transform:none}
+.val-num{font-size:.68rem;font-weight:800;letter-spacing:.22em;color:#FF7900;margin-bottom:8px}
+.val-ico{display:flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#FF7900,#D50000);margin-bottom:10px}
+.val-card h3{margin:0 0 6px;font-size:clamp(1.1rem,2.3vw,1.6rem);color:#fff}
+.val-card p{margin:0;font-size:clamp(.78rem,1.25vw,.93rem);line-height:1.55;color:#cfcfcf}
+@media(max-width:640px){.val-orbit{--s:min(92vw,400px);margin:44px auto 30px}.val-node{width:50px;height:50px;margin:-25px 0 0 -25px}.val-node svg{width:20px;height:20px}.val-hub{inset:19%}.val-ico{width:40px;height:40px;margin-bottom:6px}.val-ico svg{width:20px;height:20px}.val-card{padding:0 9%}.val-card p{font-size:.7rem;line-height:1.4}.val-num{margin-bottom:4px}}
+@media(prefers-reduced-motion:reduce){.val-track,.val-dot,.val-ring{animation:none}.val-card{transition:none}}

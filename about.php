@@ -102,15 +102,36 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
 })();</script>
 </section><?php endif; ?>
 
-<?php if (nufa_show('about', 'values')): ?><section class="section" id="values">
+<?php if (nufa_show('about', 'values')): $__vn = 7; ?><section class="section values-sec" id="values">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">What guides us</div><h2>Our Core Values</h2></div>
-    <div class="grid grid-4" data-reveal-stagger>
-      <?php for ($i = 1; $i <= 7; $i++): ?>
-      <div class="value"><span class="icon-circle"><?php echo nufa_icon($valueIcons[$i - 1], 24); ?></span><h3><?php echo cms_t('about', "val{$i}_title"); ?></h3><p><?php echo cms_t('about', "val{$i}_text"); ?></p></div>
-      <?php endfor; ?>
+    <div class="section-head center" data-reveal><div class="eyebrow">What guides us</div><h2>Our Core Values</h2><p>Seven values keep us on course. They keep circling, so tap or hover over one to stop and read it.</p></div>
+    <div class="val-orbit" data-reveal style="--n:<?php echo $__vn; ?>">
+      <span class="val-ring" aria-hidden="true"></span><span class="val-ring val-ring--2" aria-hidden="true"></span>
+      <div class="val-track" role="tablist" aria-label="Our core values">
+        <?php for ($i = 1; $i <= $__vn; $i++): ?>
+        <button type="button" class="val-node<?php echo $i === 1 ? ' is-active' : ''; ?>" role="tab" aria-selected="<?php echo $i === 1 ? 'true' : 'false'; ?>" aria-controls="valhub" data-i="<?php echo $i - 1; ?>" aria-label="<?php echo htmlspecialchars(strip_tags((string)cms_t('about', "val{$i}_title")), ENT_QUOTES, 'UTF-8'); ?>" style="--a:<?php echo round(-90 + ($i - 1) * 360 / $__vn, 3); ?>deg"><span class="val-dot"><?php echo nufa_icon($valueIcons[$i - 1], 26); ?></span></button>
+        <?php endfor; ?>
+      </div>
+      <div class="val-hub" id="valhub" role="tabpanel" aria-live="polite">
+        <?php for ($i = 1; $i <= $__vn; $i++): ?>
+        <div class="val-card<?php echo $i === 1 ? ' is-active' : ''; ?>" data-i="<?php echo $i - 1; ?>"><span class="val-num"><?php echo str_pad((string)$i, 2, '0', STR_PAD_LEFT); ?> / <?php echo str_pad((string)$__vn, 2, '0', STR_PAD_LEFT); ?></span><i class="val-ico"><?php echo nufa_icon($valueIcons[$i - 1], 30); ?></i><h3><?php echo cms_t('about', "val{$i}_title"); ?></h3><p><?php echo cms_t('about', "val{$i}_text"); ?></p></div>
+        <?php endfor; ?>
+      </div>
     </div>
   </div>
+<script>(function(){
+  var sec=document.getElementById('values');if(!sec)return;
+  var orbit=sec.querySelector('.val-orbit'),nodes=[].slice.call(sec.querySelectorAll('.val-node')),cards=[].slice.call(sec.querySelectorAll('.val-card')),n=nodes.length,cur=0,timer=null;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function go(i){cur=(i+n)%n;nodes.forEach(function(x,k){x.classList.toggle('is-active',k===cur);x.setAttribute('aria-selected',k===cur?'true':'false');});cards.forEach(function(x,k){x.classList.toggle('is-active',k===cur);});}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){if(reduce)return;stop();timer=setInterval(function(){go(cur+1);},4200);}
+  nodes.forEach(function(b,k){b.addEventListener('mouseenter',function(){go(k);});b.addEventListener('focus',function(){go(k);});b.addEventListener('click',function(){go(k);orbit.classList.add('is-held');stop();});});
+  orbit.addEventListener('mouseenter',function(){orbit.classList.add('is-paused');stop();});
+  orbit.addEventListener('mouseleave',function(){orbit.classList.remove('is-paused');if(!orbit.classList.contains('is-held'))start();});
+  document.addEventListener('click',function(e){if(!e.target.closest('.val-orbit')&&orbit.classList.contains('is-held')){orbit.classList.remove('is-held');start();}});
+  go(0);start();
+})();</script>
 </section><?php endif; ?>
 
 <?php if (nufa_show('about', 'leadership')): ?><section class="section section--dark" id="leadership">
