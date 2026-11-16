@@ -66,14 +66,40 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
   go(0);start();
 })();</script><?php endif; ?>
 
-<?php if (nufa_show('about', 'vision')): ?><section class="section section--soft" id="vision">
+<?php if (nufa_show('about', 'vision')): $__vm = [['Our Vision', 'compass', cms_t('about', 'vision_text'), 'Next: our mission'], ['Our Mission', 'star', cms_t('about', 'mission_text'), 'Back to our vision']]; ?><section class="section section--soft vm-sec" id="vision">
   <div class="container">
-    <div class="section-head center" data-reveal><div class="eyebrow">Direction</div><h2>Vision &amp; Mission</h2></div>
-    <div class="vm-grid" data-reveal-stagger>
-      <div class="vm-card"><h3>Our Vision</h3><p><?php echo cms_t('about', 'vision_text'); ?></p><?php if ($draft): ?><span class="draft-flag">Draft — pending leadership approval</span><?php endif; ?></div>
-      <div class="vm-card"><h3>Our Mission</h3><p><?php echo cms_t('about', 'mission_text'); ?></p><?php if ($draft): ?><span class="draft-flag">Draft — pending leadership approval</span><?php endif; ?></div>
+    <div class="section-head center" data-reveal><div class="eyebrow">Direction</div><h2>Vision &amp; Mission</h2><p>Where we are going, and how we will get there. Choose a hexagon.</p></div>
+    <div class="vm-stage" data-reveal>
+      <div class="vm-hexes" role="tablist" aria-label="Vision and mission">
+        <?php foreach ($__vm as $__i => [$__t, $__ic]): ?>
+        <button type="button" class="vm-hex vm-hex--<?php echo $__i; ?><?php echo $__i === 0 ? ' is-active' : ''; ?>" role="tab" id="vmtab<?php echo $__i; ?>" aria-controls="vmpanel" aria-selected="<?php echo $__i === 0 ? 'true' : 'false'; ?>" data-i="<?php echo $__i; ?>"><span class="vm-hex-in"><i><?php echo nufa_icon($__ic, 30); ?></i><b><?php echo $__t; ?></b></span></button>
+        <?php endforeach; ?>
+      </div>
+      <div class="vm-view" id="vmpanel" role="tabpanel" aria-live="polite">
+        <?php foreach ($__vm as $__i => [$__t, $__ic, $__txt, $__next]): ?>
+        <article class="vm-slide<?php echo $__i === 0 ? ' is-active' : ''; ?>" data-i="<?php echo $__i; ?>">
+          <span class="vm-kick"><?php echo $__i === 0 ? 'Where we are going' : 'How we get there'; ?></span>
+          <h3><?php echo $__t; ?></h3>
+          <p><?php echo $__txt; ?></p>
+          <?php if ($draft): ?><span class="draft-flag">Draft — pending leadership approval</span><?php endif; ?>
+          <button type="button" class="vm-next" data-go="<?php echo 1 - $__i; ?>"><?php echo $__next; ?> <span aria-hidden="true">&rarr;</span></button>
+        </article>
+        <?php endforeach; ?>
+      </div>
     </div>
   </div>
+<script>(function(){
+  var sec=document.getElementById('vision');if(!sec)return;
+  var hex=[].slice.call(sec.querySelectorAll('.vm-hex')),sl=[].slice.call(sec.querySelectorAll('.vm-slide')),stage=sec.querySelector('.vm-stage'),timer=null,cur=0;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function go(i){cur=i;hex.forEach(function(x,k){x.classList.toggle('is-active',k===i);x.setAttribute('aria-selected',k===i?'true':'false');});sl.forEach(function(x,k){x.classList.toggle('is-active',k===i);});stage.setAttribute('data-cur',i);}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){if(reduce)return;stop();timer=setInterval(function(){go(1-cur);},11000);}
+  hex.forEach(function(b,k){b.addEventListener('click',function(){go(k);stop();});b.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){go(1-cur);hex[cur].focus();stop();}});});
+  [].forEach.call(sec.querySelectorAll('.vm-next'),function(b){b.addEventListener('click',function(){go(parseInt(b.getAttribute('data-go'),10));stop();});});
+  sec.addEventListener('mouseenter',stop);sec.addEventListener('mouseleave',start);sec.addEventListener('focusin',stop);
+  go(0);start();
+})();</script>
 </section><?php endif; ?>
 
 <?php if (nufa_show('about', 'values')): ?><section class="section" id="values">
