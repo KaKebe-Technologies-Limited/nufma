@@ -45,9 +45,11 @@ echo ui_page_hero('Gallery & Video Library', cms_value('gallery', 'hero_title'),
       <div class="m-item" data-gallery-item="<?php echo ui_e($k); ?>">
         <img src="assets/images/<?php echo ui_e(gallery_thumb($img)); ?>" data-lightbox="assets/images/<?php echo ui_e($img); ?>" data-caption="<?php echo ui_e($cap); ?>" alt="<?php echo ui_e($cap); ?>" loading="lazy" decoding="async">
         <div class="m-overlay"><span><?php echo ui_e($g['label']); ?></span></div>
+        <a class="m-dl" href="assets/images/<?php echo ui_e($img); ?>" download="<?php echo ui_e(basename($img)); ?>" aria-label="Download this picture" title="Download"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg></a>
       </div>
       <?php endforeach; ?>
     </div>
+    <p style="text-align:center;margin:26px var(--gutter) 0"><span id="galCount" class="muted" style="display:block;margin-bottom:12px;font-weight:600"></span><button type="button" id="galMore" class="btn btn-dark" style="display:none">Show more photos</button></p>
   </div>
 </section><?php endif; ?>
 

@@ -71,6 +71,7 @@ $mobileCta2Label = cms_value('site', 'mobile_cta2_label');
   <img src="" alt="">
   <button class="lightbox-next" aria-label="Next image">&#8250;</button>
   <div class="lightbox-caption"></div>
+  <a class="lightbox-dl" href="#" download aria-label="Download this picture"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/></svg> Download</a>
 </div>
 
 <?php if (($cfg['pwa_enabled'] ?? '1') === '1'): ?><script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('<?php echo $base; ?>sw.php').catch(function(){});});}</script>

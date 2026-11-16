@@ -11,7 +11,26 @@ function gallery_thumb($rel) {
         $t = GALLERY_HL_DIR . 'thumbs/' . basename($rel);
         if (is_file(__DIR__ . '/../assets/images/' . $t)) return $t;
     }
+    if (strpos($rel, 'uploads/posts/') === 0 && strpos($rel, 'thumbs/') === false) {   // admin uploads: small preview made at upload time
+        $t = 'uploads/posts/thumbs/' . pathinfo($rel, PATHINFO_FILENAME) . '.jpg';
+        if (is_file(__DIR__ . '/../assets/images/' . $t)) return $t;
+    }
     return $rel;
+}
+
+/** Makes a small JPEG preview (max 760 px wide) of an uploaded picture so big originals are not sent to every visitor. Does nothing if the server has no image library. */
+function gallery_make_thumb($srcAbs, $destAbs) {
+    if (!function_exists('imagecreatetruecolor')) return false;
+    $info = @getimagesize($srcAbs); if (!$info || $info[0] < 1 || $info[1] < 1) return false;
+    if ($info[0] * $info[1] > 60000000) return false;   // too large to decode safely
+    $im = $info[2] === IMAGETYPE_JPEG && function_exists('imagecreatefromjpeg') ? @imagecreatefromjpeg($srcAbs) : ($info[2] === IMAGETYPE_PNG && function_exists('imagecreatefrompng') ? @imagecreatefrompng($srcAbs) : ($info[2] === IMAGETYPE_WEBP && function_exists('imagecreatefromwebp') ? @imagecreatefromwebp($srcAbs) : false));
+    if (!$im) return false;
+    if ($info[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')) { $ex = @exif_read_data($srcAbs); $o = $ex['Orientation'] ?? 1; if ($o === 3) $im = imagerotate($im, 180, 0); elseif ($o === 6) $im = imagerotate($im, -90, 0); elseif ($o === 8) $im = imagerotate($im, 90, 0); }
+    $w = imagesx($im); $h = imagesy($im); $nw = min(760, $w); $nh = (int)round($h * $nw / $w);
+    $t = imagecreatetruecolor($nw, $nh); imagefill($t, 0, 0, imagecolorallocate($t, 255, 255, 255)); imagecopyresampled($t, $im, 0, 0, 0, 0, $nw, $nh, $w, $h);
+    if (!is_dir(dirname($destAbs))) @mkdir(dirname($destAbs), 0775, true);
+    $ok = @imagejpeg($t, $destAbs, 82); imagedestroy($im); imagedestroy($t);
+    return $ok;
 }
 
 /** Makes sure the "featured on the home page" column exists (checked once, then remembered). */

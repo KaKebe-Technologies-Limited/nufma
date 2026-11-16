@@ -99,43 +99,61 @@
     revealEls.forEach(function(el){ el.classList.add("is-visible"); });
   }
 
-  /* ---------- gallery filter tabs ---------- */
+  /* ---------- gallery filter tabs + "show more" ---------- */
   var tabs = document.querySelectorAll(".gallery-tab");
   var items = document.querySelectorAll("[data-gallery-item]");
+  var moreBtn = document.getElementById("galMore"), galCount = document.getElementById("galCount");
+  var PAGE = 60, shown = PAGE, curFilter = "all";
+  function applyGallery(){
+    var total = 0, visible = 0;
+    items.forEach(function(item){
+      var match = curFilter === "all" || item.getAttribute("data-gallery-item") === curFilter;
+      if(match) total++;
+      var on = match && total <= shown;
+      if(on) visible++;
+      item.style.display = on ? "" : "none";
+    });
+    if(moreBtn){ moreBtn.style.display = total > visible ? "" : "none"; moreBtn.textContent = "Show more photos (" + (total - visible) + " left)"; }
+    if(galCount) galCount.textContent = total + (total === 1 ? " photo" : " photos");
+  }
   if(tabs.length){
     tabs.forEach(function(tab){
       tab.addEventListener("click", function(){
         tabs.forEach(function(t){ t.classList.remove("is-active"); });
         tab.classList.add("is-active");
-        var filter = tab.getAttribute("data-filter");
-        items.forEach(function(item){
-          var match = filter === "all" || item.getAttribute("data-gallery-item") === filter;
-          item.style.display = match ? "" : "none";
-        });
+        curFilter = tab.getAttribute("data-filter"); shown = PAGE; applyGallery();
       });
     });
+    if(moreBtn) moreBtn.addEventListener("click", function(){ shown += PAGE; applyGallery(); });
+    applyGallery();
   }
 
-  /* ---------- lightbox ---------- */
+  /* ---------- lightbox (with download) ---------- */
   var lightbox = document.querySelector(".lightbox");
   if(lightbox){
     var lbImg = lightbox.querySelector("img");
     var lbCaption = lightbox.querySelector(".lightbox-caption");
-    var gallerySources = Array.prototype.map.call(
-      document.querySelectorAll("[data-lightbox]"),
-      function(el){ return {src: el.getAttribute("data-lightbox"), caption: el.getAttribute("data-caption") || ""}; }
-    );
-    var current = 0;
+    var lbDl = lightbox.querySelector(".lightbox-dl");
+    var list = [], current = 0;
 
+    function visibleList(){
+      return Array.prototype.filter.call(document.querySelectorAll("[data-lightbox]"), function(el){
+        var g = el.closest("[data-gallery-item]");
+        return !g || g.style.display !== "none";
+      });
+    }
     function show(i){
-      current = (i + gallerySources.length) % gallerySources.length;
-      lbImg.src = gallerySources[current].src;
-      lbCaption.textContent = gallerySources[current].caption;
+      current = (i + list.length) % list.length;
+      var el = list[current], src = el.getAttribute("data-lightbox");
+      lbImg.src = src;
+      lbCaption.textContent = el.getAttribute("data-caption") || "";
+      if(lbDl){ lbDl.href = src; lbDl.setAttribute("download", src.split("/").pop()); }
     }
 
-    document.querySelectorAll("[data-lightbox]").forEach(function(el, i){
+    document.querySelectorAll("[data-lightbox]").forEach(function(el){
       el.addEventListener("click", function(){
-        show(i);
+        list = visibleList();
+        show(Math.max(0, list.indexOf(el)));
         lightbox.classList.add("is-open"); lightbox.setAttribute("aria-hidden", "false");
         document.body.classList.add("nav-locked");
       });
@@ -160,7 +178,6 @@
       if(e.key === "ArrowLeft") show(current - 1);
     });
   }
-
 
   /* ---------- current year ---------- */
   document.querySelectorAll("[data-year]").forEach(function(el){
