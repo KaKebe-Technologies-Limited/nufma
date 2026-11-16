@@ -29,6 +29,7 @@ require_once __DIR__ . "/seo.php";
 $siteUrl = nufa_site_base($cfg);
 $canonical = $siteUrl . '/' . ltrim($canonicalPath, '/');
 $font = nufa_get_font_preset($conn);
+nufa_menu_v2_seed($conn);
 $menu = nufa_menu($conn, 'header');
 $sameAs = array_values(array_filter([$cfg['facebook_url'], $cfg['instagram_url'], $cfg['x_url'], $cfg['linkedin_url'], $cfg['youtube_url']]));
 $cssVer = @filemtime(__DIR__ . '/../assets/css/site.css');
@@ -147,7 +148,7 @@ if (http_response_code() === 200) nufa_hit($conn, substr(preg_replace('/\.php$/'
         <li class="<?php echo ($has ? 'has-dropdown ' : '') . ($active ? 'active' : ''); ?>">
           <a href="<?php echo nufa_href($item['url']); ?>"<?php echo nufa_link_attrs($item); ?>><?php echo $hx($item['label']); ?></a>
           <?php if ($has): echo $dropdownToggle($item['label']); ?>
-          <div class="dropdown"><?php foreach ($item['children'] as $c): ?><a href="<?php echo nufa_href($c['url']); ?>"<?php echo nufa_link_attrs($c); ?>><?php echo $hx($c['label']); ?></a><?php endforeach; ?></div>
+          <div class="dropdown"><?php foreach ($item['children'] as $c): if (!empty($c['sub'])): ?><div class="dd-group"><a href="<?php echo nufa_href($c['url']); ?>" class="dd-group-link"><?php echo $hx($c['label']); ?></a><button type="button" class="dd-sub-btn" aria-label="Open <?php echo $hx($c['label']); ?> list" aria-expanded="false"><svg viewBox="0 0 6 10" width="6" height="10" fill="none"><path d="M1 1l4 4-4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button><div class="dd-flyout"><?php foreach ($c['sub'] as $s): ?><a href="<?php echo nufa_href($s['url']); ?>"><?php echo $hx($s['label']); ?></a><?php endforeach; ?></div></div><?php else: ?><a href="<?php echo nufa_href($c['url']); ?>"<?php echo nufa_link_attrs($c); ?>><?php echo $hx($c['label']); ?></a><?php endif; endforeach; ?></div>
           <?php endif; ?>
         </li>
         <?php endforeach; ?>
@@ -172,9 +173,9 @@ if (http_response_code() === 200) nufa_hit($conn, substr(preg_replace('/\.php$/'
       <?php if ($has):
         $kids = $item['children'];
         $dup = nufa_href($kids[0]['url']) === nufa_href($item['url']);   // first child repeats the parent link: don't list it twice
-        $open = count($kids) + ($dup ? 0 : 1) <= 3;                      // short sub-menus (e.g. Contact → Calendar) start open so nothing is hidden ?>
+        $open = count($kids) + ($dup ? 0 : 1) <= 3 && empty(array_filter($kids, fn($k) => !empty($k['sub'])));                      // short sub-menus (e.g. Contact → Calendar) start open so nothing is hidden ?>
         <a href="<?php echo nufa_href($item['url']); ?>" data-toggle-sub class="<?php echo $open ? 'is-open' : ''; ?>" onclick="return false;"><?php echo $hx($item['label']) . ' ' . nufa_icon('down', 16); ?></a>
-        <div class="mobile-sub<?php echo $open ? ' is-open' : ''; ?>"><?php if (!$dup): ?><a href="<?php echo nufa_href($item['url']); ?>"><?php echo $hx($item['label']); ?></a><?php endif; foreach ($kids as $c): ?><a href="<?php echo nufa_href($c['url']); ?>"><?php echo $hx($c['label']); ?></a><?php endforeach; ?></div>
+        <div class="mobile-sub<?php echo $open ? ' is-open' : ''; ?>"><?php if (!$dup): ?><a href="<?php echo nufa_href($item['url']); ?>"><?php echo $hx($item['label']); ?></a><?php endif; foreach ($kids as $c): ?><a href="<?php echo nufa_href($c['url']); ?>"><?php echo $hx($c['label']); ?></a><?php if (!empty($c['sub'])): foreach ($c['sub'] as $s): ?><a href="<?php echo nufa_href($s['url']); ?>" class="mobile-sub-nested"><?php echo $hx($s['label']); ?></a><?php endforeach; endif; endforeach; ?></div>
       <?php else: ?><a href="<?php echo nufa_href($item['url']); ?>"<?php echo nufa_link_attrs($item); ?>><?php echo $hx($item['label']); ?></a><?php endif; ?>
     </li>
     <?php endforeach; ?>

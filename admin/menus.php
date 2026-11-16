@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $loc = array_key_exists($_POST['location'] ?? '', NUFA_MENU_LOCATIONS) ? $_POST['location'] : 'header';
     $label = trim($_POST['label'] ?? ''); $url = trim($_POST['url'] ?? ''); $key = trim($_POST['nav_key'] ?? '');
     $sort = (int)($_POST['sort_order'] ?? 0); $active = isset($_POST['is_active']) ? 1 : 0; $tab = isset($_POST['new_tab']) ? 1 : 0;
-    $urlOk = fn($u) => $u !== '' && (preg_match('#^(https?://|mailto:|tel:|\#)#i', $u) || preg_match('#^[A-Za-z0-9_./?=&%\#:+-]+$#', $u) || in_array($u, ['auto:editions', 'auto:programmes'], true));
+    $urlOk = fn($u) => $u !== '' && (preg_match('#^(https?://|mailto:|tel:|\#)#i', $u) || preg_match('#^[A-Za-z0-9_./?=&%\#:+-]+$#', $u) || in_array($u, ['auto:editions', 'auto:programmes', 'auto:guilds'], true));
 
     if ($act === 'add' || $act === 'save') {
         if ($label === '') $err = "Enter a label.";
@@ -59,7 +59,7 @@ $rowForm = function ($r, $isChild = false) {
 ?>
 <?php if ($msg): ?><div class="admin-alert ok"><?php echo htmlspecialchars($msg); ?></div><?php endif; ?>
 <?php if ($err): ?><div class="admin-alert err"><?php echo htmlspecialchars($err); ?></div><?php endif; ?>
-<p class="admin-help" style="margin-bottom:16px">These control the links visitors see in the header and footer. Use a site page (<code>about.php</code>), an anchor (<code>about.php#story</code>) or a full <code>https://</code> address. A sub-item with the link <code>auto:editions</code> or <code>auto:programmes</code> automatically lists every award edition / programme. Footer headings, the header button and tagline are edited under <a href="content-edit.php?page=site">Page Content → Site-wide</a>.</p>
+<p class="admin-help" style="margin-bottom:16px">These control the links visitors see in the header and footer. Use a site page (<code>about.php</code>), an anchor (<code>about.php#story</code>) or a full <code>https://</code> address. A sub-item with the link <code>auto:editions</code> or <code>auto:programmes</code> automatically lists every award edition / programme, and <code>auto:guilds</code> adds a Guilds fly-out listing every guild. Footer headings, the header button and tagline are edited under <a href="content-edit.php?page=site">Page Content → Site-wide</a>.</p>
 
 <div class="admin-card">
   <div class="admin-card-head"><h2><?php echo NUFA_MENU_LOCATIONS['header']; ?></h2></div>

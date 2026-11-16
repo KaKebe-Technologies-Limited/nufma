@@ -16,7 +16,7 @@ $urls = [
 foreach ($conn->query("SELECT slug FROM award_editions WHERE is_active=1") as $r) $urls[] = ["award.php?e=" . $r['slug'], "0.8", "monthly"];
 foreach ($conn->query("SELECT slug FROM programmes WHERE is_active=1") as $r) $urls[] = ["programme.php?slug=" . $r['slug'], "0.7", "monthly"];
 
-foreach (['guests.php' => '0.6', 'gallery.php' => '0.7', 'directory.php' => '0.7', 'opportunities.php' => '0.7', 'partners.php' => '0.7', 'contact.php' => '0.6', 'schedule.php' => '0.6', 'newsletters.php' => '0.6', 'sacco-apply.php' => '0.6', 'ambassadors.php' => '0.6'] as $__p => $__pr) if (is_file(__DIR__ . '/' . $__p) && !in_array($__p, array_column($urls, 0), true)) $urls[] = [$__p, $__pr, 'monthly'];
+foreach (['guests.php' => '0.6', 'gallery.php' => '0.7', 'directory.php' => '0.7', 'opportunities.php' => '0.7', 'partners.php' => '0.7', 'contact.php' => '0.6', 'schedule.php' => '0.6', 'newsletters.php' => '0.6', 'sacco-apply.php' => '0.6', 'ambassadors.php' => '0.6', 'film-fund.php' => '0.8', 'membership.php' => '0.8'] as $__p => $__pr) if (is_file(__DIR__ . '/' . $__p) && !in_array($__p, array_column($urls, 0), true)) $urls[] = [$__p, $__pr, 'monthly'];
 $__q = function ($sql) use ($conn) { $r = @$conn->query($sql); return $r ? $r->fetch_all(MYSQLI_ASSOC) : []; };
 foreach ($__q("SELECT id FROM team_members WHERE is_active=1 AND bio IS NOT NULL AND bio<>''") as $r) $urls[] = ["profile.php?id=" . $r['id'], "0.5", "monthly"];
 foreach ($__q("SELECT id FROM vip_guests WHERE is_active=1") as $r) $urls[] = ["guest.php?id=" . $r['id'], "0.5", "monthly"];

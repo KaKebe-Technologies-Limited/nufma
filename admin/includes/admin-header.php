@@ -10,6 +10,7 @@ if (isset($conn)) {
 }
 
 $__ico = [
+    'filmfund' => '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M8 6v12M16 6v12M12 13v2" stroke-linecap="round"/>',
     'popup' => '<rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 9h16M15 13l3 3M18 13v3h-3" stroke-linecap="round" stroke-linejoin="round"/>',
     'emaildelivery' => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6" stroke-linecap="round"/>',
     'letters' => '<path d="M5 3h10l4 4v14H5V3Z"/><path d="M15 3v4h4M8 12h8M8 15h8M8 18h5" stroke-linecap="round"/>',
@@ -86,6 +87,7 @@ $__nav = [
         ['siteimages', 'site-images.php', 'All pictures on the site'],
         ['sliders', 'sliders.php', 'Home hero slider (first picture)'],
         ['popup', 'popup.php', 'Welcome popup'],
+        ['filmfund', 'film-fund.php', 'NUFA Film Fund page'],
     ],
     'Edit a page' => $__pageLinks,
     'People' => [

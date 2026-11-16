@@ -11,19 +11,14 @@
 function nufa_menu_defaults() {
     return [
         'header' => [
-            ['Home', 'index.php', 'home', []],
-            ['About NUFA', 'about.php', 'about,membership', [['Our Story', 'about.php#story'], ['Vision & Mission', 'about.php#vision'], ['Core Values', 'about.php#values'], ['Leadership & Governance', 'about.php#leadership'], ['Membership', 'membership.php']]],
+            ['Home', 'index.php', 'home,about,membership,directory,track', [['About NUFA', 'about.php'], ['Become a member', 'membership.php'], ['Renew membership', 'membership.php?type=renew'], ['Track my registration', 'track.php'], ['Guilds', 'auto:guilds'], ['Filmmakers Directory', 'directory.php']]],
             ['NUFA Awards', 'awards.php', 'awards', [['Awards Overview', 'awards.php'], ['auto:editions', 'auto:editions'], ['Awards Archive', 'awards.php#archive']]],
-            ['Programmes', 'programmes.php', 'programmes', [['All Programmes', 'programmes.php'], ['auto:programmes', 'auto:programmes']]],
             ['NUFA SACCO', 'sacco.php', 'sacco', []],
-            ['Industry Network', 'network.php', 'network', []],
-            ['News & Stories', 'news.php', 'news,newsletters', [['News & Stories', 'news.php'], ['Newsletter', 'newsletters.php']]],
-            ['Resources', 'resources.php', 'resources,gallery', [['Resource Library', 'resources.php'], ['Gallery & Video Library', 'gallery.php']]],
-            ['Partner With Us', 'partners.php', 'partner', [['Partner With Us', 'partners.php'], ['Apply to co-host or partner', 'partner-apply.php']]],
-            ['Contact', 'contact.php', 'contact,schedule', [['Contact us', 'contact.php'], ['Calendar', 'schedule.php'], ['Feedback', 'feedback.php']]],
+            ['NUFA Film Fund', 'film-fund.php', 'filmfund', []],
+            ['More', 'contact.php', 'programmes,network,news,newsletters,resources,gallery,partner,contact,schedule', [['Programmes', 'programmes.php'], ['Industry Network', 'network.php'], ['News & Stories', 'news.php'], ['Resources', 'resources.php'], ['Gallery & Video', 'gallery.php'], ['Partner With Us', 'partners.php'], ['Contact us', 'contact.php']]],
         ],
         'footer1' => [
-            ['About NUFA', 'about.php', '', []], ['Programmes', 'programmes.php', '', []], ['NUFA SACCO', 'sacco.php', '', []], ['Industry Network', 'network.php', '', []],
+            ['About NUFA', 'about.php', '', []], ['Programmes', 'programmes.php', '', []], ['NUFA SACCO', 'sacco.php', '', []], ['NUFA Film Fund', 'film-fund.php', '', []], ['Industry Network', 'network.php', '', []],
             ['News & Stories', 'news.php', '', []], ['Resources', 'resources.php', '', []], ['Gallery & Video', 'gallery.php', '', []],
         ],
         'footer2' => [
@@ -95,6 +90,10 @@ function nufa_menu_expand($conn, array $items) {
             if ($c['url'] === 'auto:editions') {
                 $q = $conn->query("SELECT slug, year FROM award_editions WHERE is_active=1 ORDER BY year DESC");
                 if ($q) foreach ($q->fetch_all(MYSQLI_ASSOC) as $e) $exp[] = ['label' => 'NUFA Awards ' . (int)$e['year'], 'url' => 'award.php?e=' . $e['slug'], 'new_tab' => 0];
+            } elseif ($c['url'] === 'auto:guilds') {
+                $q = @$conn->query("SELECT id, name FROM guilds WHERE is_active=1 ORDER BY sort_order, name");
+                $gs = $q ? $q->fetch_all(MYSQLI_ASSOC) : [];
+                if ($gs) $exp[] = ['label' => $c['label'] !== '' && $c['label'] !== 'auto:guilds' ? $c['label'] : 'Guilds', 'url' => 'network.php#numbers', 'new_tab' => 0, 'sub' => array_map(fn($g) => ['label' => $g['name'], 'url' => 'directory.php?guild=' . (int)$g['id'], 'new_tab' => 0], $gs)];
             } elseif ($c['url'] === 'auto:programmes') {
                 $q = $conn->query("SELECT slug, title FROM programmes WHERE is_active=1 ORDER BY sort_order, id");
                 if ($q) foreach ($q->fetch_all(MYSQLI_ASSOC) as $p) $exp[] = ['label' => $p['title'], 'url' => 'programme.php?slug=' . $p['slug'], 'new_tab' => 0];
@@ -103,6 +102,32 @@ function nufa_menu_expand($conn, array $items) {
         $it['children'] = $exp;
     }
     return $items;
+}
+
+/** One-time: replaces the long header menu with the simple one (Home · NUFA Awards · NUFA SACCO · NUFA Film Fund · More). Admins can still edit it afterwards under Menus. */
+function nufa_menu_v2_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = @$conn->query("SELECT 1 FROM settings WHERE setting_key='menu_v2_simple'");
+    if (!$f || $f->num_rows) return;
+    $t = @$conn->query("SELECT COUNT(*) FROM nav_items"); if (!$t) return;
+    $conn->query("DELETE FROM nav_items WHERE location='header'");
+    $ins = $conn->prepare("INSERT INTO nav_items (location, parent_id, label, url, nav_key, sort_order) VALUES (?,?,?,?,?,?)");
+    $loc = 'header';
+    foreach (nufa_menu_defaults()['header'] as $i => [$label, $url, $key, $children]) {
+        $pid = null; $o = $i + 1; $ins->bind_param("sisssi", $loc, $pid, $label, $url, $key, $o); $ins->execute(); $parent = $conn->insert_id;
+        foreach ($children as $j => [$cl, $cu]) { $o2 = $j + 1; $ck = ''; $ins->bind_param("sisssi", $loc, $parent, $cl, $cu, $ck, $o2); $ins->execute(); }
+    }
+    if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE location='footer1' AND url='film-fund.php'")->fetch_row()[0]) {
+        $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer1'")->fetch_row()[0];
+        $conn->query("INSERT INTO nav_items (location, label, url, sort_order) VALUES ('footer1', 'NUFA Film Fund', 'film-fund.php', $o)");
+    }
+    foreach ([['footer1', 'Partner With Us', 'partners.php'], ['footer1', 'Contact us', 'contact.php']] as [$l, $lab, $u]) {
+        if (!(int)$conn->query("SELECT COUNT(*) FROM nav_items WHERE location IN ('footer1','footer2') AND url='" . $conn->real_escape_string($u) . "'")->fetch_row()[0]) {
+            $o = (int)$conn->query("SELECT COALESCE(MAX(sort_order),0)+1 FROM nav_items WHERE location='footer1'")->fetch_row()[0];
+            $conn->query("INSERT INTO nav_items (location, label, url, sort_order) VALUES ('$l', '" . $conn->real_escape_string($lab) . "', '" . $conn->real_escape_string($u) . "', $o)");
+        }
+    }
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('menu_v2_simple','1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
 
 function nufa_menu_is_active($item, $activeNav) {

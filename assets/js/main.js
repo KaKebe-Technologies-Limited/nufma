@@ -273,3 +273,16 @@
   }
   if(isIOS){ showButtons(); maybeBanner(); }   // iOS has no install prompt event: show our own instructions
 })();
+
+/* Header fly-out lists (Home > Guilds): tap the arrow on touch screens */
+(function(){
+  document.querySelectorAll(".main-nav .dd-sub-btn").forEach(function(b){
+    b.addEventListener("click", function(e){
+      e.preventDefault(); e.stopPropagation();
+      var g = b.closest(".dd-group"), open = !g.classList.contains("is-open");
+      document.querySelectorAll(".main-nav .dd-group.is-open").forEach(function(x){ x.classList.remove("is-open"); });
+      if(open) g.classList.add("is-open");
+      b.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  });
+})();
