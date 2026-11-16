@@ -18,15 +18,15 @@ function nufa_menu_defaults() {
             ['More', 'contact.php', 'programmes,network,news,newsletters,resources,gallery,partner,contact,schedule', [['Programmes', 'programmes.php'], ['Industry Network', 'network.php'], ['News & Stories', 'news.php'], ['Resources', 'resources.php'], ['Gallery & Video', 'gallery.php'], ['Partner With Us', 'partners.php'], ['Contact us', 'contact.php']]],
         ],
         'footer1' => [
-            ['About NUFA', 'about.php', '', []], ['Programmes', 'programmes.php', '', []], ['NUFA SACCO', 'sacco.php', '', []], ['NUFA Film Fund', 'film-fund.php', '', []], ['Industry Network', 'network.php', '', []],
-            ['News & Stories', 'news.php', '', []], ['Resources', 'resources.php', '', []], ['Gallery & Video', 'gallery.php', '', []],
+            ['About NUFA', 'about.php', '', []], ['NUFA Awards', 'awards.php', '', []], ['NUFA SACCO', 'sacco.php', '', []], ['NUFA Film Fund', 'film-fund.php', '', []],
+            ['Programmes', 'programmes.php', '', []], ['News & Stories', 'news.php', '', []], ['Gallery & Video', 'gallery.php', '', []],
         ],
         'footer2' => [
-            ['NUFA Awards', 'awards.php', '', []], ['Membership', 'membership.php', '', []], ['Partnership enquiries', 'partners.php#enquiry', '', []], ['Contact us', 'contact.php', '', []],
-            ['Privacy Policy', 'policy.php?p=privacy', '', []], ['Terms of Use', 'policy.php?p=terms', '', []], ['Accessibility', 'policy.php?p=accessibility', '', []],
+            ['Become a member', 'membership.php', '', []], ['Track my application', 'track.php', '', []], ['Opportunities', 'opportunities.php', '', []], ['NUFA Academy', 'academy.php', '', []],
+            ['Partner With Us', 'partners.php', '', []], ['Newsletter', 'newsletters.php', '', []], ['Contact us', 'contact.php', '', []],
         ],
         'footer_legal' => [
-            ['Privacy', 'policy.php?p=privacy', '', []], ['Cookies', 'policy.php?p=cookies', '', []], ['Image & content permissions', 'policy.php?p=permissions', '', []], ['Sitemap', 'sitemap.php', '', []],
+            ['Privacy', 'policy.php?p=privacy', '', []], ['Terms', 'policy.php?p=terms', '', []], ['Cookies', 'policy.php?p=cookies', '', []], ['Accessibility', 'policy.php?p=accessibility', '', []],
         ],
     ];
 }
@@ -102,6 +102,17 @@ function nufa_menu_expand($conn, array $items) {
         $it['children'] = $exp;
     }
     return $items;
+}
+/** One-time: replaces the long footer link lists with short, tidy ones. Later edits in Admin → Menus are kept. */
+function nufa_footer_v2_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = @$conn->query("SELECT 1 FROM settings WHERE setting_key='footer_v2_simple'");
+    if (!$f || $f->num_rows) return;
+    if (!@$conn->query("SELECT 1 FROM nav_items LIMIT 1")) return;
+    foreach (['track_menu_added', 'dir_menu_added', 'footer_v2_simple'] as $k) $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('$k','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    $conn->query("DELETE FROM nav_items WHERE location IN ('footer1','footer2','footer_legal')");
+    $ins = $conn->prepare("INSERT INTO nav_items (location, parent_id, label, url, nav_key, sort_order) VALUES (?,NULL,?,?,'',?)");
+    foreach (['footer1', 'footer2', 'footer_legal'] as $loc) foreach (nufa_menu_defaults()[$loc] as $i => [$label, $url]) { $o = $i + 1; $ins->bind_param("sssi", $loc, $label, $url, $o); $ins->execute(); }
 }
 
 /** One-time: replaces the long header menu with the simple one (Home · NUFA Awards · NUFA SACCO · NUFA Film Fund · More). Admins can still edit it afterwards under Menus. */
