@@ -476,7 +476,7 @@ function nufa_migrate($conn) {
 
     // official contact details from the brief (applied once; editable afterwards in Site Settings)
     $official = [
-        'site_email' => 'nuf.association@gmail.com', 'site_phone' => '+256 774 757 587', 'site_phone2' => '+256 779 712 990',
+        'site_email' => 'nuf.association@gmail.com', 'site_phone' => '+256 779 712 990', 'site_phone2' => '+256 774 757 587',
         'site_address' => 'Plot 75, Jomo Kenyatta Road, Gulu City, Uganda',
     ];
     $up = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)");

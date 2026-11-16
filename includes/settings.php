@@ -11,8 +11,8 @@ function nufa_site_settings($conn) {
     $settings = [
         'site_name'     => 'Northern Uganda Filmmakers Association',
         'site_email'    => 'nuf.association@gmail.com',
-        'site_phone'    => '+256 774 757 587',
-        'site_phone2'   => '+256 779 712 990',
+        'site_phone'    => '+256 779 712 990',
+        'site_phone2'   => '+256 774 757 587',
         'site_address'  => 'Plot 75, Jomo Kenyatta Road, Gulu City, Uganda',
         'site_website'  => 'https://www.nufawards.com/',
         'google_site_verification' => '',
