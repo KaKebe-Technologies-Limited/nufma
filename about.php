@@ -21,18 +21,50 @@ echo ui_page_hero('About NUFA', cms_value('about', 'hero_title'), cms_value('abo
     '<a href="membership.php" class="btn btn-gold">Become a Member</a><a href="programmes.php" class="btn btn-outline">Our Programmes</a>');
 ?>
 
-<?php if (nufa_show('about', 'story')): ?><section class="section" id="story">
-  <div class="container split">
-    <div data-reveal>
+<?php if (nufa_show('about', 'story')):
+    $__body = (string)cms_h('about', 'story_body'); $__paras = [];
+    if (preg_match_all('#<p\b[^>]*>(.*?)</p>#is', $__body, $__m)) foreach ($__m[1] as $__p) if (trim(strip_tags($__p)) !== '') $__paras[] = $__p;
+    if (!$__paras && trim(strip_tags($__body)) !== '') $__paras[] = $__body;
+    $__labels = array_map('trim', explode(',', (string)cms_value('about', 'story_labels'))); $__n = max(1, count($__paras));
+?><section class="section story-sec" id="story">
+  <div class="container story-wrap">
+    <div class="story-orbit" data-reveal style="--n:<?php echo $__n; ?>" aria-label="Our story, tap a circle to read each part">
+      <span class="story-ring" aria-hidden="true"></span><span class="story-ring story-ring--2" aria-hidden="true"></span>
+      <div class="story-photo"><img src="assets/images/<?php echo cms_img('about', 'story_image'); ?>" alt="A woman from Northern Uganda in traditional dress" width="1200" height="1500" loading="lazy"></div>
+      <div class="story-nodes" role="tablist" aria-label="Parts of our story">
+        <?php foreach ($__paras as $__i => $__p): $__l = $__labels[$__i] ?? ('Part ' . ($__i + 1)); if ($__l === '') $__l = 'Part ' . ($__i + 1); ?>
+        <button type="button" class="story-node<?php echo $__i === 0 ? ' is-active' : ''; ?>" role="tab" id="stab<?php echo $__i; ?>" aria-controls="spanel" aria-selected="<?php echo $__i === 0 ? 'true' : 'false'; ?>" data-i="<?php echo $__i; ?>" style="--a:<?php echo round(-90 + ($__i + .5) * 360 / $__n - 360 / $__n / 2 + 0, 2); ?>deg"><b><?php echo $__i + 1; ?></b><span><?php echo htmlspecialchars($__l, ENT_QUOTES, 'UTF-8'); ?></span></button>
+        <?php endforeach; ?>
+      </div>
+    </div>
+    <div class="story-text" data-reveal>
       <div class="eyebrow">Our Story</div>
       <h2><?php echo cms_t('about', 'story_heading'); ?></h2>
-      <div class="stack"><?php echo cms_h('about', 'story_body'); ?></div>
-    </div>
-    <div class="media-frame media-frame--tall" data-reveal>
-      <img src="assets/images/<?php echo cms_img('about', 'story_image'); ?>" alt="A woman from Northern Uganda in traditional dress" width="1200" height="1500" loading="lazy">
+      <div class="story-panel" id="spanel" role="tabpanel" aria-live="polite">
+        <?php foreach ($__paras as $__i => $__p): ?><div class="story-para<?php echo $__i === 0 ? ' is-active' : ''; ?>" data-i="<?php echo $__i; ?>"><p><?php echo $__p; ?></p></div><?php endforeach; ?>
+      </div>
+      <div class="story-ctl">
+        <button type="button" class="story-arrow" data-dir="-1" aria-label="Previous part">&#8249;</button>
+        <span class="story-dots"><?php foreach ($__paras as $__i => $__p): ?><i class="<?php echo $__i === 0 ? 'is-active' : ''; ?>" data-i="<?php echo $__i; ?>"></i><?php endforeach; ?></span>
+        <button type="button" class="story-arrow" data-dir="1" aria-label="Next part">&#8250;</button>
+        <span class="story-count"><b id="storyNow">1</b> / <?php echo $__n; ?></span>
+      </div>
     </div>
   </div>
-</section><?php endif; ?>
+</section>
+<script>(function(){
+  var sec=document.getElementById('story');if(!sec)return;
+  var nodes=[].slice.call(sec.querySelectorAll('.story-node')),paras=[].slice.call(sec.querySelectorAll('.story-para')),dots=[].slice.call(sec.querySelectorAll('.story-dots i')),now=document.getElementById('storyNow'),orbit=sec.querySelector('.story-orbit');
+  var n=paras.length,cur=0,timer=null,reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function go(i){cur=(i+n)%n;nodes.forEach(function(x,k){var on=k===cur;x.classList.toggle('is-active',on);x.setAttribute('aria-selected',on?'true':'false');});paras.forEach(function(x,k){x.classList.toggle('is-active',k===cur);});dots.forEach(function(x,k){x.classList.toggle('is-active',k===cur);});if(now)now.textContent=cur+1;orbit.style.setProperty('--spin',(cur*360/n)+'deg');}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){if(reduce||n<2)return;stop();timer=setInterval(function(){go(cur+1);},9000);}
+  nodes.forEach(function(b,k){b.addEventListener('click',function(){go(k);stop();});});
+  dots.forEach(function(d,k){d.addEventListener('click',function(){go(k);stop();});});
+  [].forEach.call(sec.querySelectorAll('.story-arrow'),function(b){b.addEventListener('click',function(){go(cur+parseInt(b.getAttribute('data-dir'),10));stop();});});
+  sec.addEventListener('mouseenter',stop);sec.addEventListener('mouseleave',start);sec.addEventListener('focusin',stop);
+  go(0);start();
+})();</script><?php endif; ?>
 
 <?php if (nufa_show('about', 'vision')): ?><section class="section section--soft" id="vision">
   <div class="container">
