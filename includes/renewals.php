@@ -121,6 +121,17 @@ SACCO Leadership"; $u = $conn->prepare("UPDATE settings SET setting_value=? WHER
 }
 
 /** One-time: the website is www.nufawards.com — replace any saved www.nufa.media / @nufa.media in settings, page text, menus and stories. */
+/** One-time: main telephone becomes +256 779 712 990 (old main number kept as the alternative). Later edits in Site settings are respected. */
+function mem_phone_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='phone_main_v1'");
+    if (!$f || $f->num_rows) return;
+    $new = '+256 779 712 990'; $old = '+256 774 757 587';
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('site_phone','$new') ON DUPLICATE KEY UPDATE setting_value='$new'");
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('site_phone2','$old') ON DUPLICATE KEY UPDATE setting_value='$old'");
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('phone_main_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+    mem_settings($conn, true);
+}
 function mem_domain_seed($conn) {
     static $done = false; if ($done) return; $done = true;
     $f = $conn->query("SELECT 1 FROM settings WHERE setting_key='domain_nufawards_v1'");
