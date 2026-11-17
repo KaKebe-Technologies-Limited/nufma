@@ -267,7 +267,7 @@ $CMS_SCHEMAS['awards']['fields'] += [
     'cta_btn1_url'   => ['label' => 'Call-to-action button 1 — link', 'type' => 'text', 'default' => 'partners.php'],
     'cta_btn2_label' => ['label' => 'Call-to-action button 2 — label (blank to hide)', 'type' => 'text', 'default' => 'Become a Member'],
     'cta_btn2_url'   => ['label' => 'Call-to-action button 2 — link', 'type' => 'text', 'default' => 'membership.php'],
-    'platform_list'  => ['label' => 'On this platform — list (one item per line)', 'type' => 'textarea', 'default' => "Awards overview and purpose\nPrevious editions and the awards archive\nApproved award categories\nNominees and winners, where verified\nPhotographs and video highlights\nSponsors and partners\nNews and announcements\nParticipation information and awards enquiries"],
+    'platform_list'  => ['label' => 'On this platform — list (one tile per line; optionally add a link after a bar, e.g.  Sponsors and partners | partners.php  or  Archive | #archive)', 'type' => 'textarea', 'default' => "Awards overview and purpose\nPrevious editions and the awards archive\nApproved award categories\nNominees and winners, where verified\nPhotographs and video highlights\nSponsors and partners\nNews and announcements\nParticipation information and awards enquiries"],
 ];
 $CMS_SCHEMAS['programmes']['fields'] += [
     'cta_title'      => ['label' => 'Bottom call-to-action — title', 'type' => 'text', 'default' => 'Want to take part in a NUFA programme?'],

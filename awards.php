@@ -48,7 +48,9 @@ echo ui_page_hero(cms_value('awards', 'hero_eyebrow'), cms_value('awards', 'hero
 ?>
 <nav class="aw-subnav" aria-label="On this page"><div class="container"><?php $__sub = []; foreach (preg_split('/\R/', cms_value('awards', 'subnav_links')) as $__ln) { $__p = array_map('trim', explode('|', $__ln)); if ($__p[0] !== '' && !empty($__p[1])) $__sub[] = [$__p[0], $__p[1]]; } foreach ($__sub as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
 
-<?php if (nufa_show('awards', 'purpose')): $__pl = array_values(array_filter(array_map('trim', preg_split('/\R/', (string)cms_value('awards', 'platform_list'))))); $__pi = ['trophy', 'calendar', 'star', 'users', 'camera', 'handshake', 'pen', 'mail', 'film', 'globe']; ?><section class="section pp-sec" id="purpose">
+<?php if (nufa_show('awards', 'purpose')): $__pl = [];   // each line is "Text" or "Text | link"; without a link, the page it belongs to is chosen from the wording
+    $__map = ['overview' => '#purpose', 'purpose' => '#purpose', 'archive' => '#archive', 'edition' => '#archive', 'categor' => '#winners', 'nominee' => '#winners', 'winner' => '#winners', 'photo' => '#highlights', 'video' => '#highlights', 'sponsor' => 'partners.php', 'partner' => 'partners.php', 'news' => 'news.php', 'announce' => 'news.php', 'participat' => '#takepart', 'enquir' => '#takepart'];
+    foreach (preg_split('/\R/', (string)cms_value('awards', 'platform_list')) as $__ln) { $__pp = array_map('trim', explode('|', $__ln, 2)); if ($__pp[0] === '') continue; $__u = $__pp[1] ?? ''; if ($__u === '') foreach ($__map as $__k => $__v) if (stripos($__pp[0], $__k) !== false) { $__u = $__v; break; } $__pl[] = [$__pp[0], $__u]; } $__pi = ['trophy', 'calendar', 'star', 'users', 'camera', 'handshake', 'pen', 'mail', 'film', 'globe']; ?><section class="section pp-sec" id="purpose">
   <div class="container pp-wrap">
     <div class="pp-intro" data-reveal>
       <span class="pp-mark" aria-hidden="true"><?php echo nufa_icon('trophy', 120); ?></span>
@@ -58,10 +60,10 @@ echo ui_page_hero(cms_value('awards', 'hero_eyebrow'), cms_value('awards', 'hero
     </div>
     <div class="pp-side" data-reveal>
       <h3><?php echo cms_t('awards', 'platform_heading'); ?></h3>
-      <p class="pp-sub">Everything you will find here. Hover or tap a tile.</p>
+      <p class="pp-sub">Everything you will find here. Pick a tile to jump straight to it.</p>
       <div class="pp-tiles">
-        <?php foreach ($__pl as $__i => $__t): ?>
-        <button type="button" class="pp-tile<?php echo $__i === 0 ? ' is-on' : ''; ?>" style="--d:<?php echo $__i * 70; ?>ms"><i><?php echo nufa_icon($__pi[$__i % count($__pi)], 22); ?></i><span><?php echo ui_e($__t); ?></span><em><?php echo str_pad((string)($__i + 1), 2, '0', STR_PAD_LEFT); ?></em></button>
+        <?php foreach ($__pl as $__i => [$__t, $__u]): ?>
+        <<?php echo $__u !== '' ? 'a href="' . ui_e($__u) . '"' : 'div'; ?> class="pp-tile<?php echo $__i === 0 ? ' is-on' : ''; ?>"><i><?php echo nufa_icon($__pi[$__i % count($__pi)], 22); ?></i><span><?php echo ui_e($__t); ?></span><em><?php echo str_pad((string)($__i + 1), 2, '0', STR_PAD_LEFT); ?></em><?php if ($__u !== ''): ?><b class="pp-go" aria-hidden="true">&rarr;</b><?php endif; ?></<?php echo $__u !== '' ? 'a' : 'div'; ?>>
         <?php endforeach; ?>
       </div>
     </div>
@@ -72,7 +74,7 @@ echo ui_page_hero(cms_value('awards', 'hero_eyebrow'), cms_value('awards', 'hero
   function go(i){cur=(i+t.length)%t.length;t.forEach(function(x,k){x.classList.toggle('is-on',k===cur);});}
   function stop(){if(timer){clearInterval(timer);timer=null;}}
   function start(){if(reduce||t.length<2)return;stop();timer=setInterval(function(){go(cur+1);},2600);}
-  t.forEach(function(x,k){x.addEventListener('mouseenter',function(){go(k);stop();});x.addEventListener('focus',function(){go(k);stop();});x.addEventListener('click',function(){go(k);stop();});});
+  t.forEach(function(x,k){x.addEventListener('mouseenter',function(){go(k);stop();});x.addEventListener('focus',function(){go(k);stop();});x.addEventListener('touchstart',function(){go(k);stop();},{passive:true});});
   sec.addEventListener('mouseleave',start);start();
 })();</script>
 </section><?php endif; ?>

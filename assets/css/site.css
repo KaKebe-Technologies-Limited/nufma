@@ -1338,3 +1338,8 @@ body{color:var(--nufa-text);background:var(--nufa-white)}
 @media(max-width:900px){.pp-wrap{grid-template-columns:1fr}}
 @media(max-width:520px){.pp-tiles{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.pp-mark{animation:none}.pp-tile{transition:none}}
+a.pp-tile{text-decoration:none;color:#222}
+a.pp-tile:hover,a.pp-tile.is-on{color:#fff}
+.pp-go{position:absolute;right:16px;bottom:9px;font-size:1.05rem;opacity:0;transform:translateX(-8px);transition:.3s;color:#fff}
+a.pp-tile:hover .pp-go,a.pp-tile.is-on .pp-go,a.pp-tile:focus-visible .pp-go{opacity:1;transform:none}
+a.pp-tile:active{transform:scale(.98)}
