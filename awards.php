@@ -48,18 +48,33 @@ echo ui_page_hero(cms_value('awards', 'hero_eyebrow'), cms_value('awards', 'hero
 ?>
 <nav class="aw-subnav" aria-label="On this page"><div class="container"><?php $__sub = []; foreach (preg_split('/\R/', cms_value('awards', 'subnav_links')) as $__ln) { $__p = array_map('trim', explode('|', $__ln)); if ($__p[0] !== '' && !empty($__p[1])) $__sub[] = [$__p[0], $__p[1]]; } foreach ($__sub as [$a, $l]): ?><a href="#<?php echo $a; ?>"><?php echo $l; ?></a><?php endforeach; ?></div></nav>
 
-<?php if (nufa_show('awards', 'purpose')): ?><section class="section">
-  <div class="container split">
-    <div data-reveal>
+<?php if (nufa_show('awards', 'purpose')): $__pl = array_values(array_filter(array_map('trim', preg_split('/\R/', (string)cms_value('awards', 'platform_list'))))); $__pi = ['trophy', 'calendar', 'star', 'users', 'camera', 'handshake', 'pen', 'mail', 'film', 'globe']; ?><section class="section pp-sec" id="purpose">
+  <div class="container pp-wrap">
+    <div class="pp-intro" data-reveal>
+      <span class="pp-mark" aria-hidden="true"><?php echo nufa_icon('trophy', 120); ?></span>
       <div class="eyebrow"><?php echo cms_t('awards', 'purpose_eyebrow'); ?></div>
       <h2><?php echo cms_t('awards', 'purpose_heading'); ?></h2>
-      <div class="lede stack"><?php echo ui_paragraphs(cms_value('awards', 'purpose_body')); ?></div>
+      <div class="pp-copy"><?php echo ui_paragraphs(cms_value('awards', 'purpose_body')); ?></div>
     </div>
-    <div data-reveal>
+    <div class="pp-side" data-reveal>
       <h3><?php echo cms_t('awards', 'platform_heading'); ?></h3>
-      <?php echo ui_list(cms_value('awards', 'platform_list')); ?>
+      <p class="pp-sub">Everything you will find here. Hover or tap a tile.</p>
+      <div class="pp-tiles">
+        <?php foreach ($__pl as $__i => $__t): ?>
+        <button type="button" class="pp-tile<?php echo $__i === 0 ? ' is-on' : ''; ?>" style="--d:<?php echo $__i * 70; ?>ms"><i><?php echo nufa_icon($__pi[$__i % count($__pi)], 22); ?></i><span><?php echo ui_e($__t); ?></span><em><?php echo str_pad((string)($__i + 1), 2, '0', STR_PAD_LEFT); ?></em></button>
+        <?php endforeach; ?>
+      </div>
     </div>
   </div>
+<script>(function(){
+  var sec=document.getElementById('purpose');if(!sec)return;
+  var t=[].slice.call(sec.querySelectorAll('.pp-tile')),cur=0,timer=null,reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function go(i){cur=(i+t.length)%t.length;t.forEach(function(x,k){x.classList.toggle('is-on',k===cur);});}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  function start(){if(reduce||t.length<2)return;stop();timer=setInterval(function(){go(cur+1);},2600);}
+  t.forEach(function(x,k){x.addEventListener('mouseenter',function(){go(k);stop();});x.addEventListener('focus',function(){go(k);stop();});x.addEventListener('click',function(){go(k);stop();});});
+  sec.addEventListener('mouseleave',start);start();
+})();</script>
 </section><?php endif; ?>
 
 <?php foreach ($upcoming as $u): ?>
