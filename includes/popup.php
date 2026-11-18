@@ -16,13 +16,29 @@ function popup_defaults() {
         'popup_tags' => '#NUFAAwards2027 #NUFAAwards #NorthernUgandaToTheWorld #UgandaFilmIndustry',
         'popup_btn_label' => 'Explore NUFA Awards',
         'popup_btn_url' => 'awards.php',
+        // Poster popup: a picture-only announcement that switches itself off after the end date (Uganda time).
+        'popup_poster_image' => 'popup/friendly-match-bcfc-nufa.jpg',
+        'popup_poster_alt' => 'Friendly match, return leg: Creative FC vs Northern Uganda Filmmakers Association, 28 November 2026, 4:00 PM, Nyamusasa Stadium, Bweyale',
+        'popup_poster_until' => '2026-11-21',
+        'popup_poster_btn_label' => '',
+        'popup_poster_btn_url' => '',
     ];
+}
+
+/** Is a poster currently scheduled to show? (picture exists and the end date, end of that day in Uganda, has not passed) */
+function popup_poster_active($P) {
+    if (($P['popup_poster_image'] ?? '') === '' || $P['popup_poster_image'] === '__none__') return false;
+    if (!is_file(__DIR__ . '/../assets/images/' . $P['popup_poster_image'])) return false;
+    $u = trim((string)$P['popup_poster_until']);
+    if ($u === '') return true;
+    $t = strtotime($u . ' 23:59:59 Africa/Kampala');
+    return $t === false || time() <= $t;
 }
 
 function popup_settings($conn) {
     $d = popup_defaults();
     $r = @$conn->query("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'popup\\_%'");
-    if ($r) foreach ($r->fetch_all(MYSQLI_ASSOC) as $x) if (array_key_exists($x['setting_key'], $d) && ($x['setting_value'] !== '' || in_array($x['setting_key'], ['popup_btn_label', 'popup_btn_url', 'popup_tags', 'popup_tagline', 'popup_lead'], true))) $d[$x['setting_key']] = $x['setting_value'];
+    if ($r) foreach ($r->fetch_all(MYSQLI_ASSOC) as $x) if (array_key_exists($x['setting_key'], $d) && ($x['setting_value'] !== '' || in_array($x['setting_key'], ['popup_btn_label', 'popup_btn_url', 'popup_tags', 'popup_tagline', 'popup_lead', 'popup_poster_until', 'popup_poster_btn_label', 'popup_poster_btn_url'], true))) $d[$x['setting_key']] = $x['setting_value'];
     return $d;
 }
 
@@ -31,8 +47,47 @@ function popup_render($conn, $base = '') {
     static $done = false; if ($done) return ''; $done = true;
     $P = popup_settings($conn);
     $preview = ($_GET['popup'] ?? '') === '1';
-    if ($P['popup_enabled'] !== '1' && !$preview) return '';
     $e = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+    if ($P['popup_enabled'] !== '1' && !$preview) return '';
+    // A scheduled poster takes the place of the welcome message until its end date.
+    if (popup_poster_active($P) || ($preview && ($_GET['poster'] ?? '') === '1' && ($P['popup_poster_image'] ?? '') !== '')) {
+        $pimg = $P['popup_poster_image'];
+        $pkey = 'nufa_poster_' . substr(md5($pimg . '|' . $P['popup_version']), 0, 10);
+        $pbtn = ($P['popup_poster_btn_label'] !== '' && $P['popup_poster_btn_url'] !== '') ? '<a class="pp-btn" id="ppGo" href="' . $e((preg_match('#^(https?:|mailto:|tel:|\#)#i', $P['popup_poster_btn_url']) ? '' : $base) . $P['popup_poster_btn_url']) . '">' . $e($P['popup_poster_btn_label']) . '</a>' : '';
+        ob_start(); ?>
+<style>
+.pp-ov{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(10,4,4,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .35s ease}
+.pp-ov.is-open{display:flex}.pp-ov.is-show{opacity:1}
+.pp-box{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;max-width:100%;transform:translateY(26px) scale(.96);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.pp-ov.is-show .pp-box{transform:none}
+.pp-box img{display:block;width:auto;height:auto;max-width:min(94vw,640px);max-height:80vh;border-radius:18px;box-shadow:0 30px 90px rgba(0,0,0,.6)}
+.pp-x{position:absolute;right:-8px;top:-8px;z-index:3;width:42px;height:42px;border-radius:50%;border:0;background:#fff;color:#111;font-size:1.5rem;line-height:1;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center}.pp-x:hover{background:#D50000;color:#fff}
+.pp-btn{display:inline-flex;padding:12px 26px;border-radius:99px;background:#D50000;color:#fff;font:800 .9rem Montserrat,system-ui,sans-serif;text-decoration:none}
+@media(prefers-reduced-motion:reduce){.pp-ov,.pp-box{transition:none}}
+</style>
+<div class="pp-ov" id="ppOv" role="dialog" aria-modal="true" aria-label="Announcement" aria-hidden="true">
+  <div class="pp-box">
+    <button type="button" class="pp-x" id="ppClose" aria-label="Close announcement">&times;</button>
+    <img data-src="<?php echo $e($base); ?>assets/images/<?php echo $e($pimg); ?>" alt="<?php echo $e($P['popup_poster_alt']); ?>">
+    <?php echo $pbtn; ?>
+  </div>
+</div>
+<script>(function(){
+  var KEY=<?php echo json_encode($pkey); ?>,DELAY=<?php echo max(0, (int)$P['popup_delay']) * 1000; ?>,ov=document.getElementById('ppOv');if(!ov)return;
+  var force=/[?&]popup=1(&|$)/.test(location.search);
+  if(!force){try{if(localStorage.getItem(KEY))return;}catch(e){try{if(sessionStorage.getItem(KEY))return;}catch(e2){}}}
+  function remember(){try{localStorage.setItem(KEY,String(Date.now()));}catch(e){try{sessionStorage.setItem(KEY,'1');}catch(e2){}}}
+  function open(){var im=ov.querySelector('img[data-src]');if(im){im.src=im.getAttribute('data-src');im.removeAttribute('data-src');}document.documentElement.style.overflow='hidden';ov.classList.add('is-open');ov.setAttribute('aria-hidden','false');requestAnimationFrame(function(){requestAnimationFrame(function(){ov.classList.add('is-show');});});document.getElementById('ppClose').focus({preventScroll:true});}
+  function close(){remember();ov.classList.remove('is-show');ov.setAttribute('aria-hidden','true');document.documentElement.style.overflow='';setTimeout(function(){ov.classList.remove('is-open');},350);}
+  document.getElementById('ppClose').addEventListener('click',close);
+  ov.addEventListener('click',function(e){if(e.target===ov)close();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&ov.classList.contains('is-open'))close();});
+  function start(){setTimeout(open,DELAY);}
+  if(document.readyState==='complete')start();else window.addEventListener('load',start);
+  window.nufaPopupOpen=open;
+})();</script>
+<?php return ob_get_clean();
+    }
     $img = ($P['popup_image'] !== '' && $P['popup_image'] !== '__none__' && is_file(__DIR__ . '/../assets/images/' . $P['popup_image'])) ? $P['popup_image'] : '';
     $key = 'nufa_popup_v' . preg_replace('/[^A-Za-z0-9_-]/', '', $P['popup_version']);
     $paras = ''; foreach (preg_split('/\n{2,}/', trim($P['popup_body'])) as $p) { $p = trim($p); if ($p !== '') $paras .= '<p>' . nl2br($e($p)) . '</p>'; }

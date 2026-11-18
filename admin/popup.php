@@ -15,6 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         foreach (['popup_title', 'popup_lead', 'popup_tagline', 'popup_tags', 'popup_btn_label', 'popup_btn_url'] as $k) $save($k, trim($_POST[$k] ?? ''));
         $save('popup_body', trim(str_replace("\r\n", "\n", $_POST['popup_body'] ?? '')));
         $save('popup_delay', (string)max(0, min(30, (int)($_POST['popup_delay'] ?? 1))));
+        $until = trim($_POST['popup_poster_until'] ?? '');
+        $save('popup_poster_until', preg_match('/^\d{4}-\d{2}-\d{2}$/', $until) ? $until : '');
+        foreach (['popup_poster_alt', 'popup_poster_btn_label', 'popup_poster_btn_url'] as $k) $save($k, trim($_POST[$k] ?? ''));
+        if (!empty($_POST['remove_poster'])) $save('popup_poster_image', '__none__');
+        if (!empty($_FILES['popup_poster_image']['name'])) {
+            [$fn, $err] = mem_store_upload($_FILES['popup_poster_image'], MEM_IMG_TYPES, 6 * 1048576, 'poster', __DIR__ . "/../assets/images/uploads/content/");
+            if ($err) { $flash = 'Poster: ' . $err; $flashType = 'err'; } else { $save('popup_poster_image', 'uploads/content/' . $fn); $save('popup_version', (string)((int)$P['popup_version'] + 1)); }
+        }
         if (!empty($_POST['popup_reshow'])) $save('popup_version', (string)((int)$P['popup_version'] + 1));
         if (!empty($_POST['remove_image'])) $save('popup_image', '__none__');
         if (!empty($_FILES['popup_image']['name'])) {
@@ -34,6 +42,17 @@ include __DIR__ . "/includes/admin-header.php";
   <p class="admin-help">A message that opens on top of the website the <b>first time</b> someone visits from a phone or computer. After they close it, it does not appear again on that device — until you tick “Show it again to everyone” below.</p>
   <form method="post" enctype="multipart/form-data" class="admin-form"><?php echo mem_csrf_field(); ?>
     <label style="display:flex;gap:8px;align-items:center;margin:8px 0 14px"><input type="checkbox" name="popup_enabled" value="1" <?php echo $P['popup_enabled'] === '1' ? 'checked' : ''; ?>> Show the popup to new visitors</label>
+    <h3>Poster popup (picture only, switches itself off)</h3>
+    <p class="admin-help">While a poster is scheduled, visitors see it <b>instead of</b> the welcome message below. After the “stop showing on” date it disappears by itself and the welcome message returns. <?php echo popup_poster_active($P) ? '<b>Status: showing now' . ($P['popup_poster_until'] !== '' ? ' until the end of ' . $e($P['popup_poster_until']) : '') . '.</b>' : '<b>Status: not showing (no poster, or the date has passed).</b>'; ?> <a href="../index.php?popup=1&poster=1" target="_blank">Preview the poster ↗</a></p>
+    <div class="field"><label>Poster picture (JPG, PNG or WebP, up to 6 MB)</label><input type="file" name="popup_poster_image" accept="image/jpeg,image/png,image/webp">
+      <?php $pi = $P['popup_poster_image']; if ($pi !== '' && $pi !== '__none__' && is_file(__DIR__ . '/../assets/images/' . $pi)): ?><div style="margin-top:8px;display:flex;gap:12px;align-items:center"><img src="../assets/images/<?php echo $e($pi); ?>" alt="" style="height:110px;border-radius:10px;border:1px solid #ddd"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="remove_poster" value="1"> Remove the poster</label></div><?php endif; ?></div>
+    <div class="admin-form-grid">
+      <div class="field"><label>Stop showing on (last day)</label><input type="date" name="popup_poster_until" value="<?php echo $e($P['popup_poster_until']); ?>"></div>
+      <div class="field"><label>Describe the picture (for screen readers)</label><input name="popup_poster_alt" value="<?php echo $e($P['popup_poster_alt']); ?>"></div>
+      <div class="field"><label>Button text under the poster (optional)</label><input name="popup_poster_btn_label" value="<?php echo $e($P['popup_poster_btn_label']); ?>"></div>
+      <div class="field"><label>Button link</label><input name="popup_poster_btn_url" value="<?php echo $e($P['popup_poster_btn_url']); ?>" placeholder="events.php or https://…"></div>
+    </div>
+    <h3>Welcome message</h3>
     <div class="field"><label>Picture (portrait poster works best, e.g. 640 × 960)</label><input type="file" name="popup_image" accept="image/jpeg,image/png,image/webp">
       <?php if ($imgShown): ?><div style="margin-top:8px;display:flex;gap:12px;align-items:center"><img src="../assets/images/<?php echo $e($imgShown); ?>" alt="" style="height:110px;border-radius:10px;border:1px solid #ddd"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="remove_image" value="1"> Show the popup without a picture</label></div><?php endif; ?></div>
     <div class="admin-form-grid">
