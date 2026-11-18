@@ -24,8 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['form'] ?? '') === 'setting
     $int = fn($k, $min, $max) => (string)max($min, min($max, (int)($_POST[$k] ?? 0)));
     $f = ['acad_pass_mark' => $int('acad_pass_mark', 1, 100), 'acad_exam_minutes' => $int('acad_exam_minutes', 1, 300), 'acad_exam_questions' => $int('acad_exam_questions', 1, 200), 'acad_max_attempts' => $int('acad_max_attempts', 0, 99), 'acad_retake_hours' => $int('acad_retake_hours', 0, 720),
           'acad_registration_open' => isset($_POST['acad_registration_open']) ? '1' : '0', 'acad_require_lessons' => isset($_POST['acad_require_lessons']) ? '1' : '0', 'acad_show_answers' => isset($_POST['acad_show_answers']) ? '1' : '0', 'acad_trainers_open' => isset($_POST['acad_trainers_open']) ? '1' : '0'];
+    if (!empty($_POST['acad_remove_sign1'])) $f['acad_sign1_image'] = '';
+    if (!empty($_FILES['acad_sign1_image']['name'])) { require_once __DIR__ . '/../includes/membership.php'; [$sfn, $ser] = mem_store_upload($_FILES['acad_sign1_image'], MEM_IMG_TYPES, 2 * 1048576, 'director-signature', __DIR__ . '/../assets/images/uploads/academy/'); if ($ser) $error = 'Signature: ' . $ser; else $f['acad_sign1_image'] = 'uploads/academy/' . $sfn; }
     foreach (['acad_intro', 'acad_cert_title', 'acad_cert_org', 'acad_cert_sub', 'acad_sign1_name', 'acad_sign1_title', 'acad_sign2_name', 'acad_sign2_title', 'acad_accreditation', 'acad_payment_info', 'acad_notify_email', 'acad_trainer_intro'] as $k) $f[$k] = trim($_POST[$k] ?? '');
     if ($f['acad_notify_email'] !== '' && !filter_var($f['acad_notify_email'], FILTER_VALIDATE_EMAIL)) { $error = "Enter a valid notification email."; $tab = 'settings'; }
+    elseif ($error) { $tab = 'settings'; }
     else { foreach ($f as $k => $v) acad_save_setting($conn, $k, $v); header("Location: academy.php?tab=settings&saved=1"); exit; }
 }
 $id = (int)($_GET['edit'] ?? 0);
@@ -59,7 +62,7 @@ echo acad_admin_tabs($tab === 'settings' ? 'academy.php?tab=settings' : 'academy
 <?php if ($error): ?><div class="admin-alert err"><?php echo $e($error); ?></div><?php endif; ?>
 
 <?php if ($tab === 'settings'): ?>
-<form method="post" class="admin-card admin-form"><input type="hidden" name="form" value="settings">
+<form method="post" enctype="multipart/form-data" class="admin-card admin-form"><input type="hidden" name="form" value="settings">
   <div class="admin-card-head"><h2>Academy settings</h2></div>
   <h3>Exams</h3>
   <div class="admin-form-grid">
@@ -78,12 +81,13 @@ echo acad_admin_tabs($tab === 'settings' ? 'academy.php?tab=settings' : 'academy
   <div class="field"><label>Payment instructions (shown for paid courses)</label><textarea name="acad_payment_info" rows="3"><?php echo $e($S['acad_payment_info']); ?></textarea></div>
   <h3>Certificate</h3>
   <div class="admin-form-grid">
-    <p class="admin-help" style="grid-column:1/-1"><a class="admin-btn admin-btn-line admin-btn-sm" href="../academy-certificate.php?sample=1" target="_blank">Preview the certificate ↗</a> The President's signature and the gold seal print on every certificate. The President's name and signature picture come from <a href="membership-settings.php">Membership settings</a>.</p>
+    <p class="admin-help" style="grid-column:1/-1"><a class="admin-btn admin-btn-line admin-btn-sm" href="../academy-certificate.php?sample=1" target="_blank">Preview the certificate ↗</a> The Academy Director signs on the left (picture below), the President on the right, with a gold seal between them. The President's name and signature picture come from <a href="membership-settings.php">Membership settings</a>.</p>
     <div class="field"><label>Certificate heading</label><input name="acad_cert_title" value="<?php echo $e($S['acad_cert_title']); ?>"></div>
     <div class="field"><label>Issuing body</label><input name="acad_cert_org" value="<?php echo $e($S['acad_cert_org']); ?>"></div>
     <div class="field"><label>Sub-line</label><input name="acad_cert_sub" value="<?php echo $e($S['acad_cert_sub']); ?>"></div>
     <div class="field"><label>First signatory — name</label><input name="acad_sign1_name" value="<?php echo $e($S['acad_sign1_name']); ?>"></div>
     <div class="field"><label>First signatory — title</label><input name="acad_sign1_title" value="<?php echo $e($S['acad_sign1_title']); ?>"></div>
+    <div class="field"><label>First signatory — signature picture (PNG with transparent background works best)</label><input data-no-picker type="file" name="acad_sign1_image" accept="image/png,image/jpeg,image/webp"><?php if (!empty($S['acad_sign1_image']) && is_file(__DIR__ . '/../assets/images/' . $S['acad_sign1_image'])): ?><div style="margin-top:8px;display:flex;gap:12px;align-items:center"><img src="../assets/images/<?php echo $e($S['acad_sign1_image']); ?>" alt="" style="height:56px;background:#fff;border:1px solid #ddd;border-radius:8px;padding:4px"><label style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="acad_remove_sign1" value="1"> Remove</label></div><?php endif; ?></div>
     <div class="field"><label>Second signatory — name</label><input name="acad_sign2_name" value="<?php echo $e($S['acad_sign2_name']); ?>"></div>
     <div class="field"><label>Second signatory — title</label><input name="acad_sign2_title" value="<?php echo $e($S['acad_sign2_title']); ?>"></div>
   </div>

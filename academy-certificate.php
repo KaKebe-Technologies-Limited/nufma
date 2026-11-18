@@ -29,7 +29,8 @@ $signers = [];
 foreach ([1, 2] as $__n) {
     $t = trim($S['acad_sign' . $__n . '_title']); if ($t === '') $t = $__n === 1 ? 'Academy Director' : 'President'; $nm = trim($S['acad_sign' . $__n . '_name']); $isPres = (bool)preg_match('/president/i', $t) && !preg_match('/vice/i', $t);
     if ($isPres && $nm === '') $nm = $presName;
-    $signers[] = ['name' => $nm, 'title' => $t, 'sig' => $isPres ? $presSig : ''];
+    $own = trim((string)($S['acad_sign' . $__n . '_image'] ?? '')); $ownOk = $own !== '' && is_file(__DIR__ . '/assets/images/' . $own);
+    $signers[] = ['name' => $nm, 'title' => $t, 'sig' => $ownOk ? $own : ($isPres ? $presSig : '')];
 }
 /** Gold embossed seal (scalloped edge, ring text, star, ribbon tails) as inline SVG. */
 function acad_gold_seal($id = 'gs') {

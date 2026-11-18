@@ -25,7 +25,7 @@ function acad_defaults() {
         'acad_require_lessons' => '1', 'acad_show_answers' => '1', 'acad_trainers_open' => '1',
         'acad_intro' => 'Learn film from the basics to advanced practice — at your own pace, online. Create a free learner account, enrol in a course, work through the lessons, pass the exam and earn a NUFA Academy certificate.',
         'acad_cert_title' => 'Certificate of Achievement', 'acad_cert_org' => 'NUFA Academy', 'acad_cert_sub' => 'Northern Uganda Filmmakers Association',
-        'acad_sign1_name' => '', 'acad_sign1_title' => 'Academy Director', 'acad_sign2_name' => '', 'acad_sign2_title' => 'President',
+        'acad_sign1_name' => 'Komakech Moses', 'acad_sign1_title' => 'Academy Director', 'acad_sign1_image' => 'signature/membership-signature.png', 'acad_sign2_name' => '', 'acad_sign2_title' => 'President',
         'acad_accreditation' => '', 'acad_payment_info' => 'Payment instructions will be shown here for paid courses. After paying, your enrolment is confirmed by the Academy team.',
         'acad_notify_email' => '', 'acad_trainer_intro' => 'Are you an experienced film professional? Apply to facilitate a class — in person in Northern Uganda, or online.',
     ];
@@ -38,8 +38,20 @@ function acad_cert_seed($conn) {
     $conn->query("UPDATE settings SET setting_value='President' WHERE setting_key='acad_sign2_title' AND setting_value IN ('NUFA Chairperson','Chairperson','')");
     $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('acad_cert_president_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
 }
+/** One-time: the Academy Director (Komakech Moses) signs the certificate too, with his own signature picture. */
+function acad_cert_director_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = @$conn->query("SELECT 1 FROM settings WHERE setting_key='acad_cert_director_v1'");
+    if (!$f || $f->num_rows) return;
+    $set = function ($k, $v) use ($conn) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param('ss', $k, $v); $s->execute(); };
+    $cur = function ($k) use ($conn) { $r = @$conn->query("SELECT setting_value FROM settings WHERE setting_key='" . $conn->real_escape_string($k) . "'"); $x = $r ? $r->fetch_assoc() : null; return $x ? trim($x['setting_value']) : ''; };
+    if ($cur('acad_sign1_name') === '') $set('acad_sign1_name', 'Komakech Moses');
+    if ($cur('acad_sign1_title') === '') $set('acad_sign1_title', 'Academy Director');
+    if ($cur('acad_sign1_image') === '' && is_file(__DIR__ . '/../assets/images/signature/membership-signature.png')) $set('acad_sign1_image', 'signature/membership-signature.png');
+    $set('acad_cert_director_v1', '1');
+}
 function acad_settings($conn) {
-    acad_cert_seed($conn);
+    acad_cert_seed($conn); acad_cert_director_seed($conn);
     $d = acad_defaults();
     $r = $conn->query("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'acad\\_%'");
     if ($r) foreach ($r->fetch_all(MYSQLI_ASSOC) as $x) if (array_key_exists($x['setting_key'], $d)) $d[$x['setting_key']] = $x['setting_value'];
