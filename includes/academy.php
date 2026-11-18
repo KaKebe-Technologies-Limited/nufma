@@ -25,12 +25,21 @@ function acad_defaults() {
         'acad_require_lessons' => '1', 'acad_show_answers' => '1', 'acad_trainers_open' => '1',
         'acad_intro' => 'Learn film from the basics to advanced practice — at your own pace, online. Create a free learner account, enrol in a course, work through the lessons, pass the exam and earn a NUFA Academy certificate.',
         'acad_cert_title' => 'Certificate of Achievement', 'acad_cert_org' => 'NUFA Academy', 'acad_cert_sub' => 'Northern Uganda Filmmakers Association',
-        'acad_sign1_name' => '', 'acad_sign1_title' => 'Academy Director', 'acad_sign2_name' => '', 'acad_sign2_title' => 'NUFA Chairperson',
+        'acad_sign1_name' => '', 'acad_sign1_title' => 'Academy Director', 'acad_sign2_name' => '', 'acad_sign2_title' => 'President',
         'acad_accreditation' => '', 'acad_payment_info' => 'Payment instructions will be shown here for paid courses. After paying, your enrolment is confirmed by the Academy team.',
         'acad_notify_email' => '', 'acad_trainer_intro' => 'Are you an experienced film professional? Apply to facilitate a class — in person in Northern Uganda, or online.',
     ];
 }
+/** One-time: the certificate's second signatory was "NUFA Chairperson"; it is now the President (only changed if it still shows the old wording). */
+function acad_cert_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = @$conn->query("SELECT 1 FROM settings WHERE setting_key='acad_cert_president_v1'");
+    if (!$f || $f->num_rows) return;
+    $conn->query("UPDATE settings SET setting_value='President' WHERE setting_key='acad_sign2_title' AND setting_value IN ('NUFA Chairperson','Chairperson','')");
+    $conn->query("INSERT INTO settings (setting_key, setting_value) VALUES ('acad_cert_president_v1','1') ON DUPLICATE KEY UPDATE setting_value='1'");
+}
 function acad_settings($conn) {
+    acad_cert_seed($conn);
     $d = acad_defaults();
     $r = $conn->query("SELECT setting_key, setting_value FROM settings WHERE setting_key LIKE 'acad\\_%'");
     if ($r) foreach ($r->fetch_all(MYSQLI_ASSOC) as $x) if (array_key_exists($x['setting_key'], $d)) $d[$x['setting_key']] = $x['setting_value'];

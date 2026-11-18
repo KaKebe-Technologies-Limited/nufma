@@ -78,6 +78,7 @@ echo acad_admin_tabs($tab === 'settings' ? 'academy.php?tab=settings' : 'academy
   <div class="field"><label>Payment instructions (shown for paid courses)</label><textarea name="acad_payment_info" rows="3"><?php echo $e($S['acad_payment_info']); ?></textarea></div>
   <h3>Certificate</h3>
   <div class="admin-form-grid">
+    <p class="admin-help" style="grid-column:1/-1"><a class="admin-btn admin-btn-line admin-btn-sm" href="../academy-certificate.php?sample=1" target="_blank">Preview the certificate ↗</a> The President's signature and the gold seal print on every certificate. The President's name and signature picture come from <a href="membership-settings.php">Membership settings</a>.</p>
     <div class="field"><label>Certificate heading</label><input name="acad_cert_title" value="<?php echo $e($S['acad_cert_title']); ?>"></div>
     <div class="field"><label>Issuing body</label><input name="acad_cert_org" value="<?php echo $e($S['acad_cert_org']); ?>"></div>
     <div class="field"><label>Sub-line</label><input name="acad_cert_sub" value="<?php echo $e($S['acad_cert_sub']); ?>"></div>
