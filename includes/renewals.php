@@ -109,6 +109,20 @@ function mem_card_signature_seed($conn) {
     mem_settings($conn, true);
 }
 
+/** One-time: the NUFA President's own signature (Ojok Odong) replaces the earlier signature on membership cards, letters and Academy certificates. Admins can change it later in Membership settings. */
+function mem_president_sig_seed($conn) {
+    static $done = false; if ($done) return; $done = true;
+    $f = @$conn->query("SELECT 1 FROM settings WHERE setting_key='president_sig_v2'");
+    if (!$f || $f->num_rows) return;
+    $rel = 'signature/president-ojok-signature.png';
+    if (!is_file(__DIR__ . '/../assets/images/' . $rel)) return;   // picture not uploaded yet
+    $set = function ($k, $v) use ($conn) { $s = $conn->prepare("INSERT INTO settings (setting_key, setting_value) VALUES (?,?) ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)"); $s->bind_param("ss", $k, $v); $s->execute(); };
+    $set('president_signature', $rel);
+    $n = @$conn->query("SELECT setting_value FROM settings WHERE setting_key='president_name'");
+    if (!$n || !($r = $n->fetch_assoc()) || trim($r['setting_value']) === '') $set('president_name', 'Ojok Odong');
+    $set('president_sig_v2', '1');
+    mem_settings($conn, true);
+}
 /** One-time: add "SACCO Leadership" to the saved list of leadership categories (Admin → Leadership & team). */
 function mem_team_cat_seed($conn) {
     static $done = false; if ($done) return; $done = true;
